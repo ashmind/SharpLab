@@ -2,7 +2,6 @@
 bin/
 obj/
 \#packages/
-\#libraries/
 *.suo
 *.user
 _ReSharper.*
