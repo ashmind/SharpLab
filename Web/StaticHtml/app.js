@@ -4,18 +4,18 @@ $(function() {
   'use strict';
   var storageKey = '__tryroslyn__code__';
   var editor = CodeMirror.fromTextArea($('#code textarea')[0], {
-    mode: 'text/x-csharp',
+    mode:        'text/x-csharp',
     lineNumbers: true,
-    indentUnit: 4
+    indentUnit:  4
   });
     
   var decompiled = CodeMirror.fromTextArea($('#decompiled textarea')[0], {
-    mode: 'text/x-csharp',
+    mode:     'text/x-csharp',
     readOnly: true
   });
   
   load(editor);
-  editor.on('change', $.throttle(500, function() {
+  editor.on('change', $.debounce(600, function() {
     save(editor);
     update();
   }));
