@@ -1,0 +1,18 @@
+{
+  "browser":   true,
+  "devel":     true,
+  "jquery":    true,
+  
+  "camelcase": true,
+  "eqeqeq":    true,
+  "indent":    2,
+  "noempty":   true,
+  "nonew":     true,
+  "plusplus":  true,
+  "quotmark":  true,
+  "undef":     true,
+  "unused":    true,
+  "strict":    true,
+  "trailing":  true,
+  "laxbreak":  true
+}

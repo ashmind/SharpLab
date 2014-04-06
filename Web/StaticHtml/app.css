@@ -1,0 +1,89 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed);
+
+* {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+} 
+
+html, body, main {
+  width: 100%;
+  height: 100%;
+  font-family: 'Open Sans', sans-serif;
+}
+
+main {
+  display: -webkit-flex;
+  display: flex;
+}
+
+section {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;  
+  -webkit-flex: 0 0 50%;
+  flex: 0 0 50%;
+  height: 100%;
+}
+
+section > * {
+  width: 100%;
+}
+
+section header {
+  padding: 5px;
+  padding-left: 7px;
+  background-color: #aaa;  
+  font-family: 'Roboto Condensed', sans-serif;
+  color: #fff; 
+  background-color: #4684ee;
+}
+
+section header.error {
+  background-color: #dc3912;
+}
+
+section h1 {
+  display: inline;
+  margin: 0;
+  
+  font-size: 100%;
+  font-weight: normal;  
+}
+
+#output-type::before { content: '('; }
+#output-type::after  { content: ')'; }
+
+section header,
+section footer {
+  -webkit-flex: 0 0 auto;
+  flex: 0 0 auto; 
+  border-right: 1px solid #fff;
+}
+
+section .content {
+  -webkit-flex: 1 0 auto;
+  flex: 1 0 auto;
+  border-right: 1px solid #aaa;
+  position: relative;
+}
+
+textarea, .CodeMirror {
+  position: absolute;
+  left: 5px;
+  right: 5px;
+  height: 100%;
+  
+  font-family: Consolas, Menlo, Monaco, monospace; 
+  line-height: 1.2;
+}
+
+/*.CodeMirror-gutters {
+  background-color: transparent;
+  border: 0;
+}
+
+.CodeMirror-linenumber {
+  color: #eee;
+}*/

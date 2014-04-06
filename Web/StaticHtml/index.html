@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Try Roslyn</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/codemirror.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.0/normalize.min.css" />
+    <link rel="stylesheet" href="app.css" />
+    
+    <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/codemirror.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-throttle-debounce/1.1/jquery.ba-throttle-debounce.min.js"></script>
+    <script src="app.js"></script>
+    <script src="config.js"></script>
+  </head>
+  <body>
+    <main>
+      <section id="code">
+        <header>
+          <h1>Code</h1>
+        </header>
+        <div class="content">
+          <textarea id="code"></textarea>
+            <script data-default type="text/x-csharp">
+            using System;
+            using System.Collections.Generic;
+          
+            public class Class {
+                public void Method() {
+                }
+            }          
+          </script>
+        </div>
+      </section>
+      
+      <section id="decompiled">
+        <header>
+          <h1>Decompiled</h1>
+        </header>
+        <div class="content">
+          <textarea id="decompiled"></textarea>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
