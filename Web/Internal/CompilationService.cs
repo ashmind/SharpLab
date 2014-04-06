@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Mono.Cecil;
 
 namespace TryRoslyn.Web.Internal {
-    public class ProcessingService {
+    public class CompilationService {
         public string CompileThenDecompile(string code) {
             var syntaxTree = CSharpSyntaxTree.ParseText(code);
             using (var stream = new MemoryStream()) {
@@ -21,7 +21,7 @@ namespace TryRoslyn.Web.Internal {
                     .Emit(stream);
 
                 if (!emitResult.Success)
-                    throw new ProcessingException(string.Join(Environment.NewLine, emitResult.Diagnostics));
+                    throw new CompilationException(string.Join(Environment.NewLine, emitResult.Diagnostics));
 
                 stream.Seek(0, SeekOrigin.Begin);
 
@@ -31,7 +31,18 @@ namespace TryRoslyn.Web.Internal {
 
         private static string Decompile(Stream stream) {
             var module = ModuleDefinition.ReadModule(stream);
-            var decompiler = new AstBuilder(new DecompilerContext(module));
+            var decompiler = new AstBuilder(new DecompilerContext(module) {
+                Settings = {
+                    AnonymousMethods = false,
+                    YieldReturn = false,
+                    AsyncAwait = false/*,
+                    CSharpFormattingOptions = {
+                        BlankLinesBetweenMembers = 2,
+                        BlankLinesAfterUsings = 2,
+                        BlankLinesBetweenTypes = 2
+                    }*/
+                }
+            });
             decompiler.AddAssembly(module.Assembly);
             decompiler.RunTransformations();
             var resultWriter = new StringWriter();

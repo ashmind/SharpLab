@@ -9,12 +9,12 @@ using TryRoslyn.Web.Internal;
 
 namespace TryRoslyn.Web.Controllers {
     public class RoslynController : ApiController {
-        private readonly ProcessingService _service;
+        private readonly CompilationService _service;
 
-        public RoslynController() : this(new ProcessingService()) {
+        public RoslynController() : this(new CompilationService()) {
         }
 
-        public RoslynController(ProcessingService service) {
+        public RoslynController(CompilationService service) {
             _service = service;
         }
 
@@ -25,7 +25,7 @@ namespace TryRoslyn.Web.Controllers {
                 var result = _service.CompileThenDecompile(code);
                 return Request.CreateResponse(HttpStatusCode.OK, result, "text/x-csharp");
             }
-            catch (ProcessingException ex) {
+            catch (CompilationException ex) {
                 return Request.CreateResponse((HttpStatusCode)422, ex.Message, "text/plain");
             }
         }
