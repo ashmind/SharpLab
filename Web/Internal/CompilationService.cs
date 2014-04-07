@@ -2,21 +2,29 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
+using System.Runtime.CompilerServices;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CSharp.RuntimeBinder;
 using Mono.Cecil;
 
 namespace TryRoslyn.Web.Internal {
     public class CompilationService {
+        private static readonly MetadataReference[] References = {
+            new MetadataFileReference(typeof(object).Assembly.Location),
+            new MetadataFileReference(typeof(Uri).Assembly.Location),
+            new MetadataFileReference(typeof(DynamicAttribute).Assembly.Location),
+            new MetadataFileReference(typeof(Binder).Assembly.Location),
+        };
+
         public string CompileThenDecompile(string code) {
             var syntaxTree = CSharpSyntaxTree.ParseText(code);
             using (var stream = new MemoryStream()) {
                 var emitResult = CSharpCompilation.Create("Test")
                     .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-                    .AddReferences(new MetadataFileReference(typeof(object).Assembly.Location))
+                    .AddReferences(References)
                     .AddSyntaxTrees(syntaxTree)
                     .Emit(stream);
 
