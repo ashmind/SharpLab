@@ -87,3 +87,20 @@ textarea, .CodeMirror {
 .CodeMirror-linenumber {
   color: #eee;
 }*/
+section header {
+  position: relative;
+}
+
+.loader-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.loader {
+  position: absolute;
+  height: calc(100% - 10px);
+  margin-left: 10px;
+  top: 5px;
+  bottom: 5px;
+}

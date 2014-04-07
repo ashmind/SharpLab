@@ -147,6 +147,7 @@
     <Content Include="StaticHtml\app.css" />
     <Content Include="StaticHtml\app.js" />
     <Content Include="StaticHtml\index.html" />
+    <Content Include="StaticHtml\loader.css" />
     <Content Include="StaticHtml\lz-string-1.3.3-min.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

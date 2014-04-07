@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/codemirror.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.0/normalize.min.css" />
     <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="loader.css" />
     
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/codemirror.js"></script>
@@ -39,6 +40,19 @@
       <section id="decompiled">
         <header>
           <h1>Decompiled</h1>
+          <span class="loader-container">
+            <svg class="loader" viewbox="0 0 5 5">
+              <rect x="0" y="0" width="1" height="1" />
+              <rect x="2" y="0" width="1" height="1" />
+              <rect x="4" y="0" width="1" height="1" />
+              <rect x="0" y="2" width="1" height="1" />
+              <rect x="2" y="2" width="1" height="1" />
+              <rect x="4" y="2" width="1" height="1" />
+              <rect x="0" y="4" width="1" height="1" />
+              <rect x="2" y="4" width="1" height="1" />
+              <rect x="4" y="4" width="1" height="1" />
+            </svg>
+          </span>
         </header>
         <div class="content">
           <textarea id="decompiled"></textarea>

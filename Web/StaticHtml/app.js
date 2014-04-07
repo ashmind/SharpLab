@@ -1,27 +1,25 @@
-/* globals CodeMirror:false, config:false */
+/* globals CodeMirror:false */
 
 $(function() {
   'use strict';
 
-  var editor;
-  var decompiled;
+  var $loader = $('.loader');
+  $loader.width($loader.height() + 'px');
 
+  var editor = CodeMirror.fromTextArea($('#code textarea')[0], {
+    mode:        'text/x-csharp',
+    lineNumbers: true,
+    indentUnit:  4
+  });
+  var decompiled = CodeMirror.fromTextArea($('#decompiled textarea')[0], {
+    mode: 'text/x-csharp',
+    readOnly: true
+  });
   var lastHash;
 
   start();
 
   function start() {
-    editor = CodeMirror.fromTextArea($('#code textarea')[0], {
-      mode:        'text/x-csharp',
-      lineNumbers: true,
-      indentUnit:  4
-    });
-    
-    decompiled = CodeMirror.fromTextArea($('#decompiled textarea')[0], {
-      mode:     'text/x-csharp',
-      readOnly: true
-    });
-
     if (!tryLoadUrl())
       editor.setValue(getDefaultValue());
 
@@ -76,6 +74,7 @@ $(function() {
   }
     
   function updateFromServer() {
+    $loader.show();
     var code = editor.getValue();
     $.ajax("api/compilation", {
       method: 'POST',
@@ -84,8 +83,10 @@ $(function() {
     }).done(function(result) {
       clearErrors();
       decompiled.setValue(result);
+      $loader.hide();
     }).fail(function(xhr) {
       reportErrors(xhr.responseText);
+      $loader.hide();
     });
   }
   
