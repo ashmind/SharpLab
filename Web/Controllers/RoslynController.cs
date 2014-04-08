@@ -4,11 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Web.Http;
 using Microsoft.CodeAnalysis;
 using TryRoslyn.Web.Internal;
 
 namespace TryRoslyn.Web.Controllers {
+    // routes are a mess at the moment
     public class RoslynController : ApiController {
         private readonly CompilationService _service;
 
@@ -29,6 +31,17 @@ namespace TryRoslyn.Web.Controllers {
                 errors   = result.GetDiagnostics(DiagnosticSeverity.Error).Select(d => d.ToString()),
                 warnings = result.GetDiagnostics(DiagnosticSeverity.Warning).Select(d => d.ToString())
             };
+        }
+
+        [HttpGet]
+        [Route("api/info")]
+        public object Info() {
+            var assembly = typeof(SyntaxTree).Assembly;
+            var informationalAttribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            var roslynVersion = informationalAttribute != null
+                              ? informationalAttribute.InformationalVersion
+                              : assembly.GetName().Version.ToString();
+            return new { roslynVersion };
         }
     }
 }

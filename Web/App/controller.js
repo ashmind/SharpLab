@@ -1,7 +1,14 @@
 ﻿angular.module('app').controller('AppController', ['$scope', 'UrlService', 'CompilationService', function ($scope, urlService, compilationService) {
     'use strict';
 
-    $scope.code = urlService.loadFromUrl() || $scope.defaultCode;
+    $scope.code = urlService.loadFromUrl();
+    var unwatchDefault = $scope.$watch('defaultCode', function() {
+        $scope.code = $scope.code || $scope.defaultCode;
+        unwatchDefault();
+    });
+    compilationService.getRoslynVersion().then(function(value) {
+        $scope.roslynVersion = value;
+    });
 
     var saveToUrlThrottled = $.debounce(100, urlService.saveToUrl);
     var updateFromServerThrottled = $.debounce(600, updateFromServer);
