@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Try Roslyn</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/codemirror.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.0/normalize.min.css" />
+    <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="loader/loader.css" />
+    
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/codemirror.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/mode/clike/clike.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-throttle-debounce/1.1/jquery.ba-throttle-debounce.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-hashchange/v1.3/jquery.ba-hashchange.min.js"></script>
+    <script src="external/lz-string-1.3.3-min.js"></script>
+
+    <script src="app.js"></script>
+    <script src="directives/codemirror.js"></script>
+    <script src="directives/read.js"></script>
+    <script src="directives/loader.js"></script>
+    <script src="services/compilation-service.js"></script>
+    <script src="services/url-service.js"></script>
+    <script src="controller.js"></script>
+  </head>
+  <body data-ng-app="app">
+    <main data-ng-controller="AppController" data-ng-class="{failed: result && !result.success}">
+      <section class="code">
+        <header>
+          <h1>Code</h1>
+        </header>
+        <div class="content">
+          <app-codemirror value="code" mode="text/x-csharp" linenumbers></app-codemirror>
+          <script type="text/x-csharp" data-app-read="defaultCode">
+            // https://roslyn.codeplex.com/wikipage?title=Language%20Feature%20Status&referringTitle=Documentation
+
+            using System;
+            using System.Collections.Generic;
+
+            public class MyClass(int x) {
+                public void MyMethod() {
+                }
+            }
+          
+          </script>
+        </div>
+      </section>
+      
+      <div class="results">
+        <section data-ng-show="!result || result.success" class="decompiled">
+          <header>
+            <h1>Decompiled</h1>
+            <span class="loader-container" data-ng-show="loading">
+              <app-loader></app-loader>
+            </span>
+          </header>
+          <div class="content">
+            <app-codemirror value="result.decompiled" mode="text/x-csharp" readonly></app-codemirror>
+          </div>
+        </section>
+
+        <section class="errors" data-ng-show="result.errors.length > 0">
+          <header>
+            <h1>Errors</h1>
+          </header>
+          <ul class="content">
+            <li data-ng-repeat="error in result.errors">{{error}}</li>
+          </ul>
+        </section>
+        
+        <section class="warnings" data-ng-show="result.success && result.warnings.length > 0">
+          <header>
+            <h1>Warnings</h1>
+          </header>
+          <ul class="content">
+            <li data-ng-repeat="warning in result.warnings">{{warning}}</li>
+          </ul>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

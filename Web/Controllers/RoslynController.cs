@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Microsoft.CodeAnalysis;
 using TryRoslyn.Web.Internal;
 
 namespace TryRoslyn.Web.Controllers {
@@ -20,14 +21,14 @@ namespace TryRoslyn.Web.Controllers {
 
         [HttpPost]
         [Route("api/compilation")]
-        public HttpResponseMessage Compilation([FromBody] string code) {
-            try {
-                var result = _service.CompileThenDecompile(code);
-                return Request.CreateResponse(HttpStatusCode.OK, result, "text/x-csharp");
-            }
-            catch (CompilationException ex) {
-                return Request.CreateResponse((HttpStatusCode)422, ex.Message, "text/plain");
-            }
+        public object Compilation([FromBody] string code) {
+            var result = _service.Process(code);
+            return new {
+                success = result.IsSuccess,
+                result.Decompiled,
+                errors   = result.GetDiagnostics(DiagnosticSeverity.Error).Select(d => d.ToString()),
+                warnings = result.GetDiagnostics(DiagnosticSeverity.Warning).Select(d => d.ToString())
+            };
         }
     }
 }

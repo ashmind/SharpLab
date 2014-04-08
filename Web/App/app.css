@@ -17,14 +17,17 @@ main {
   display: flex;
 }
 
+main > * {
+  -webkit-flex: 0 0 50%;
+  flex: 0 0 50%;
+  height: 100%;
+}
+
 section {
   display: -webkit-flex;
   display: flex;
   -webkit-flex-direction: column;
-  flex-direction: column;  
-  -webkit-flex: 0 0 50%;
-  flex: 0 0 50%;
-  height: 100%;
+  flex-direction: column; 
 }
 
 section > * {
@@ -38,10 +41,6 @@ section header {
   font-family: 'Roboto Condensed', sans-serif;
   color: #fff; 
   background-color: #4684ee;
-}
-
-section header.error {
-  background-color: #dc3912;
 }
 
 section h1 {
@@ -58,25 +57,81 @@ section h1 {
 section header,
 section footer {
   -webkit-flex: 0 0 auto;
-  flex: 0 0 auto; 
-  border-right: 1px solid #fff;
+  flex: 0 0 auto;
 }
 
 section .content {
   -webkit-flex: 1 0 auto;
   flex: 1 0 auto;
-  border-right: 1px solid #aaa;
   position: relative;
+}
+
+.results {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column; 
+}
+
+.results section header {
+  border-left: 1px solid #fff;
+}
+
+.results section .content {
+  border-left: 1px solid #aaa;
+}
+
+.results .decompiled {
+  -webkit-flex: 1 0 auto;
+  flex: 1 0 auto;
+}
+
+.results .errors {
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+
+.results .warnings {
+  -webkit-flex: 0 1 auto;
+  flex: 0 1 auto;
+}
+
+.results .errors header,
+.failed .code header {
+  background-color: #dc3912;
+}
+
+.results .warnings header {
+  background-color: #ff9900;
+}
+
+.errors .content, .warnings .content {
+  font-family: Consolas, Menlo, Monaco, monospace;
+  line-height: 1.2;
+}
+
+.errors ul, .warnings ul {
+  margin: 0;
+  padding: 0;
+}
+
+.errors li, .warnings li {
+  list-style-type: none;
+  padding: 5px 10px;
 }
 
 textarea, .CodeMirror {
   position: absolute;
-  left: 5px;
+  left: 0;
   right: 5px;
   height: 100%;
   
   font-family: Consolas, Menlo, Monaco, monospace; 
   line-height: 1.2;
+}
+
+.results .CodeMirror {
+  left: 5px;
 }
 
 /*.CodeMirror-gutters {
@@ -87,20 +142,28 @@ textarea, .CodeMirror {
 .CodeMirror-linenumber {
   color: #eee;
 }*/
-section header {
-  position: relative;
+.decompiled header {
+  display: -webkit-flex;
+  display: flex;
+}
+
+.decompiled header h1 {
+  -webkit-flex: 0 0 auto;
+  flex: 0 0 auto;
 }
 
 .loader-container {
-  position: absolute;
-  top: 0;
-  bottom: 0;
+  -webkit-flex: 1 0 auto;
+  flex: 1 0 auto;
+  position: relative;
 }
 
 .loader {
   position: absolute;
-  height: calc(100% - 10px);
+  height: calc(100% - 6px);
   margin-left: 10px;
-  top: 5px;
-  bottom: 5px;
+  top: 3px;
+  bottom: 3px;
+  left: 0;
+  right: 0;
 }

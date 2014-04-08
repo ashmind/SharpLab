@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -19,22 +20,22 @@ namespace TryRoslyn.Web.Internal {
             new MetadataFileReference(typeof(Binder).Assembly.Location),
         };
 
-        public string CompileThenDecompile(string code) {
+        public ProcessingResult Process(string code) {
             var syntaxTree = CSharpSyntaxTree.ParseText(code);
-            using (var stream = new MemoryStream()) {
-                var emitResult = CSharpCompilation.Create("Test")
-                    .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-                    .AddReferences(References)
-                    .AddSyntaxTrees(syntaxTree)
-                    .Emit(stream);
 
-                if (!emitResult.Success)
-                    throw new CompilationException(string.Join(Environment.NewLine, emitResult.Diagnostics));
+            var stream = new MemoryStream();
+            var emitResult = CSharpCompilation.Create("Test")
+                .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
+                .AddReferences(References)
+                .AddSyntaxTrees(syntaxTree)
+                .Emit(stream);
 
-                stream.Seek(0, SeekOrigin.Begin);
+            if (!emitResult.Success)
+                return new ProcessingResult(null, emitResult.Diagnostics);
 
-                return Decompile(stream);
-            }
+            stream.Seek(0, SeekOrigin.Begin);
+
+            return new ProcessingResult(Decompile(stream), emitResult.Diagnostics);
         }
 
         private static string Decompile(Stream stream) {
@@ -43,7 +44,8 @@ namespace TryRoslyn.Web.Internal {
                 Settings = {
                     AnonymousMethods = false,
                     YieldReturn = false,
-                    AsyncAwait = false/*,
+                    AsyncAwait = false,
+                    /*,
                     CSharpFormattingOptions = {
                         BlankLinesBetweenMembers = 2,
                         BlankLinesAfterUsings = 2,

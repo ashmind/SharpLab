@@ -2,17 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using TryRoslyn.Web.Formatters;
 
 namespace TryRoslyn.Web {
     public static class WebApiConfig {
         public static void Register(HttpConfiguration config) {
-            // Web API configuration and services
-            config.Formatters.Add(new CodeMediaTypeFormatter());
+            // formatters
+            RegisterFormatters(config);
 
-            // Web API routes
+            // routes
             config.MapHttpAttributeRoutes();
             config.EnableSystemDiagnosticsTracing();
+        }
+
+        private static void RegisterFormatters(HttpConfiguration config) {
+            config.Formatters.Add(new CodeMediaTypeFormatter());
+
+            var jsonSettings = config.Formatters.JsonFormatter.SerializerSettings;
+            jsonSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            jsonSettings.Converters.Add(new StringEnumConverter());
         }
     }
 }

@@ -143,12 +143,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App\loader\loader.css" />
+    <Content Include="App\loader\loader.html" />
     <Content Include="Global.asax" />
-    <Content Include="StaticHtml\app.css" />
-    <Content Include="StaticHtml\app.js" />
-    <Content Include="StaticHtml\index.html" />
-    <Content Include="StaticHtml\loader.css" />
-    <Content Include="StaticHtml\lz-string-1.3.3-min.js" />
+    <Content Include="App\controller.js" />
+    <Content Include="App\app.css" />
+    <Content Include="App\app.js" />
+    <Content Include="App\directives\loader.js" />
+    <Content Include="App\directives\read.js" />
+    <Content Include="App\directives\codemirror.js" />
+    <Content Include="StaticHtml\loader\loader.html" />
+    <Content Include="App\services\compilation-service.js" />
+    <Content Include="App\services\url-service.js" />
+    <Content Include="StaticHtml\_app.js" />
+    <Content Include="App\index.html" />
+    <Content Include="StaticHtml\loader\loader.css" />
+    <Content Include="App\external\lz-string-1.3.3-min.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -160,13 +170,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Internal\CompilationException.cs" />
     <Compile Include="Internal\CompilationService.cs" />
+    <Compile Include="Internal\ProcessingResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <Content Include="StaticHtml\.jshintrc" />
+    <Content Include="App\.jshintrc" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
