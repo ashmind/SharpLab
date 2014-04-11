@@ -45,6 +45,8 @@ namespace TryRoslyn.Web.Internal {
                     AnonymousMethods = false,
                     YieldReturn = false,
                     AsyncAwait = false,
+                    AutomaticProperties = false,
+                    ExpressionTrees = false
                     /*,
                     CSharpFormattingOptions = {
                         BlankLinesBetweenMembers = 2,
