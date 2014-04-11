@@ -208,7 +208,7 @@
     </VisualStudio>
   </ProjectExtensions>
   <Target Name="Chew" AfterTargets="pipelinePreDeployCopyAllFilesToOneFolder">
-    <Exec Command="&quot;$(SolutionDir)#tools\chew.exe&quot; &quot;$(_PackageTempDir)&quot;" />
+    <Exec Command="&quot;$(SolutionDir)#tools\chew.exe&quot; &quot;$(_PackageTempDir)\App&quot;" />
   </Target>
   
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
