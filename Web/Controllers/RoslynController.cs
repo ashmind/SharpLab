@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Reflection;
 using System.Web.Http;
 using Microsoft.CodeAnalysis;
@@ -14,7 +11,7 @@ namespace TryRoslyn.Web.Controllers {
     public class RoslynController : ApiController {
         private readonly CompilationService _service;
 
-        public RoslynController() : this(new CompilationService()) {
+        public RoslynController() : this(new CompilationService(new Decompiler())) {
         }
 
         public RoslynController(CompilationService service) {

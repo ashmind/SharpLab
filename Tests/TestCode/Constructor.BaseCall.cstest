@@ -1,0 +1,21 @@
+﻿public class MyClass (string name) {
+    private string name2 = name;
+}
+
+// =>
+
+using System;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+[assembly: AssemblyVersion("0.0.0.0")]
+[assembly: CompilationRelaxations(8)]
+[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+public class MyClass
+{
+    private string name2;
+    public MyClass(string name)
+    {
+        this.name2 = name;
+        base(); /* This is not valid C#, but it represents the IL correctly. */
+    }
+}

@@ -47,6 +47,9 @@
     <Reference Include="ICSharpCode.NRefactory.CSharp">
       <HintPath>..\#libraries\ICSharpCode.NRefactory.CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="JetBrains.Annotations">
+      <HintPath>..\#packages\JetBrains.Annotations.7.0\lib\net45\JetBrains.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\#packages\Microsoft.CodeAnalysis.Common.0.6.4033103-beta\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
@@ -168,7 +171,12 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Internal\CompilationService.cs" />
+    <Compile Include="Internal\Decompilation\DecompiledPseudoCSharpOutputVisitor.cs" />
+    <Compile Include="Internal\Decompilation\OverridableCSharpOutputVisitor.cs" />
+    <Compile Include="Internal\Decompiler.cs" />
+    <Compile Include="Internal\IDecompiler.cs" />
     <Compile Include="Internal\ProcessingResult.cs" />
+    <Compile Include="Internal\Decompilation\RoslynFriendlyConvertConstructorCallIntoInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -210,7 +218,6 @@
   <Target Name="Chew" AfterTargets="pipelinePreDeployCopyAllFilesToOneFolder">
     <Exec Command="&quot;$(SolutionDir)#tools\chew.exe&quot; &quot;$(_PackageTempDir)\App&quot;" />
   </Target>
-  
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
