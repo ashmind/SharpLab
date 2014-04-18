@@ -9,7 +9,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TryRoslyn.Web.Formatters {
+namespace TryRoslyn.Web.Formatting {
     public class CodeMediaTypeFormatter : MediaTypeFormatter {
         public CodeMediaTypeFormatter() {
             SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/plain"));

@@ -1,4 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+﻿@import url(http://fonts.googleapis.com/css?family=Open+Sans);
 @import url(http://fonts.googleapis.com/css?family=Roboto+Condensed);
 
 * {
@@ -61,12 +61,19 @@ section > * {
 }
 
 section header {
+  position: relative;
   padding: 5px;
   padding-left: 7px;
-  background-color: #aaa;  
   font-family: 'Roboto Condensed', sans-serif;
   color: #fff; 
   background-color: #4684ee;
+}
+
+section header a {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
 }
 
 section h1 {
@@ -76,9 +83,6 @@ section h1 {
   font-size: 100%;
   font-weight: normal;  
 }
-
-#output-type::before { content: '('; }
-#output-type::after  { content: ')'; }
 
 section header,
 section footer {
@@ -92,12 +96,73 @@ section .content {
   position: relative;
 }
 
-.results {
+section.collapsible:not(.expanded) header {
+  background-color: #aaa;
+}
+
+section.collapsible:not(.expanded) .content {
+  display: none;
+}
+
+section.collapsible header {
+  cursor: pointer;
+}
+
+section.collapsible header::after {
+  content: '>';
+  font-family:  Consolas, Menlo, Monaco, monospace;
+  position: absolute;
+  right: 5px;
+  vertical-align: middle;
+
+  -webkit-transform: rotate(-90deg);
+  transition: 0.2s all linear;
+}
+
+section.collapsible.expanded header::after {
+  -webkit-transform: rotate(90deg);
+}
+
+.section-group {
   display: -webkit-flex;
   display: flex;
   -webkit-flex-direction: column;
   flex-direction: column; 
 }
+
+.code {
+  -webkit-flex: 1 0 auto;
+  flex: 1 0 auto;
+}
+
+/* Syntax Tree ------ */
+.syntax-tree {
+  -webkit-flex: 0 1 auto;
+  flex: 0 1 auto;
+}
+
+.syntax-tree .content {
+  font-size: 80%;
+}
+
+.syntax-tree ol {
+  padding-left: 1em;
+}
+
+.syntax-tree li {
+  list-style-type: none;
+}
+
+.syntax-tree li::before {
+  content: '\00a0';
+  font-family: Consolas, Menlo, Monaco, monospace;
+  margin-right: 5px;
+}
+
+.syntax-tree li.with-children::before {
+  content: '>';
+}
+/* ------------------ */
 
 .results section header {
   border-left: 1px solid #fff;

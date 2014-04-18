@@ -20,39 +20,50 @@
     <script src="app.js"></script>
     <script src="directives/codemirror.js"></script>
     <script src="directives/cleanread.js"></script>
-    <script src="directives/loader.js"></script>
+    <script src="directives/syntaxtree.js"></script>
     <script src="services/compilation-service.js"></script>
     <script src="services/url-service.js"></script>
-    <script src="controller.js"></script>
+    <script src="controllers/app-controller.js"></script>
+    <script src="controllers/footer-controller.js"></script>
   </head>
   <body data-ng-app="app" data-ng-controller="AppController">
-    <main  data-ng-class="{failed: result && !result.success}">
-      <section class="code">
-        <header>
-          <h1>Code</h1>
-        </header>
-        <div class="content">
-          <app-codemirror value="code" mode="text/x-csharp" linenumbers></app-codemirror>
-          <script type="text/x-csharp" data-app-cleanread="defaultCode">
-            // https://roslyn.codeplex.com/wikipage?title=Language%20Feature%20Status&referringTitle=Documentation
+    <main data-ng-class="{failed: result && !result.success}">
+      <div class="section-group">
+        <section class="code">
+          <header>
+            <h1>Code</h1>
+          </header>
+          <div class="content">
+            <app-codemirror value="code" mode="text/x-csharp" linenumbers></app-codemirror>
+            <script type="text/x-csharp" data-app-cleanread="defaultCode">
+              // https://roslyn.codeplex.com/wikipage?title=Language%20Feature%20Status&referringTitle=Documentation
 
-            using System;
-            using System.Collections.Generic;
+              using System;
+              using System.Collections.Generic;
 
-            public class MyClass(int x) {
-                public void MyMethod() {
-                }
-            }          
-          </script>
-        </div>
-      </section>
+              public class MyClass(int x) {
+                  public void MyMethod() {
+                  }
+              }
+            </script>
+          </div>
+        </section>
+        
+        <section class="syntax-tree collapsible" data-ng-class="{expanded: syntaxTreeExpanded}">
+          <header data-ng-click="toggleSyntaxTree()">
+            <h1>AST</h1>
+          </header>
+          <div class="content">
+            <app-syntaxtree data-ng-if="result" root="result.syntaxTree"></app-syntaxtree>
+          </div>
+        </section>
+      </div>
       
-      <div class="results">
+      <div class="section-group results">
         <section data-ng-show="!result || result.success" class="decompiled">
           <header>
             <h1>Decompiled</h1>
-            <span class="loader-container" data-ng-show="loading">
-              <app-loader></app-loader>
+            <span class="loader-container" data-ng-show="loading" data-ng-include="'loader/loader.html'">
             </span>
           </header>
           <div class="content">
@@ -68,7 +79,7 @@
             <li data-ng-repeat="error in result.errors">{{error}}</li>
           </ul>
         </section>
-        
+
         <section class="warnings" data-ng-show="result.success && result.warnings.length > 0">
           <header>
             <h1>Warnings</h1>
@@ -79,7 +90,7 @@
         </section>
       </div>
     </main>
-    <footer>
+    <footer data-ng-controller="FooterController">
       Built by Andrey Shchekin (<a href="http://twitter.com/ashmind">@ashmind</a>). See <a href="http://github.com/ashmind/TryRoslyn">TryRoslyn</a> on GitHub. Roslyn version: {{roslynVersion || '?'}}.
     </footer>
     

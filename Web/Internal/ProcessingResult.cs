@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis;
 
 namespace TryRoslyn.Web.Internal {
     public class ProcessingResult {
+        public SyntaxTree SyntaxTree { get; private set; }
         public string Decompiled { get; private set; }
         public ImmutableArray<Diagnostic> Diagnostics { get; private set; }
 
@@ -13,7 +14,8 @@ namespace TryRoslyn.Web.Internal {
             get { return this.Decompiled != null; }
         }
 
-        public ProcessingResult(string decompiled, ImmutableArray<Diagnostic> diagnostics) {
+        public ProcessingResult(SyntaxTree syntaxTree, string decompiled, ImmutableArray<Diagnostic> diagnostics) {
+            SyntaxTree = syntaxTree;
             this.Decompiled = decompiled;
             this.Diagnostics = diagnostics;
         }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using TryRoslyn.Web.Formatters;
+using TryRoslyn.Web.Formatting;
 
 namespace TryRoslyn.Web {
     public static class WebApiConfig {
@@ -23,6 +23,7 @@ namespace TryRoslyn.Web {
             var jsonSettings = config.Formatters.JsonFormatter.SerializerSettings;
             jsonSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             jsonSettings.Converters.Add(new StringEnumConverter());
+            jsonSettings.Converters.Add(new SyntaxTreeConverter());
         }
     }
 }

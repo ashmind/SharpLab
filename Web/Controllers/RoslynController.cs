@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Web.Http;
+using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using TryRoslyn.Web.Internal;
 
@@ -11,6 +12,7 @@ namespace TryRoslyn.Web.Controllers {
     public class RoslynController : ApiController {
         private readonly CompilationService _service;
 
+        [UsedImplicitly]
         public RoslynController() : this(new CompilationService(new Decompiler())) {
         }
 
@@ -24,6 +26,7 @@ namespace TryRoslyn.Web.Controllers {
             var result = _service.Process(code);
             return new {
                 success = result.IsSuccess,
+                result.SyntaxTree,
                 result.Decompiled,
                 errors   = result.GetDiagnostics(DiagnosticSeverity.Error).Select(d => d.ToString()),
                 warnings = result.GetDiagnostics(DiagnosticSeverity.Warning).Select(d => d.ToString())

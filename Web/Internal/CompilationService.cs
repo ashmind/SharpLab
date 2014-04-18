@@ -24,7 +24,7 @@ namespace TryRoslyn.Web.Internal {
 
         public ProcessingResult Process(string code) {
             var syntaxTree = CSharpSyntaxTree.ParseText(code);
-
+            
             var stream = new MemoryStream();
             var emitResult = CSharpCompilation.Create("Test")
                 .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
@@ -33,13 +33,17 @@ namespace TryRoslyn.Web.Internal {
                 .Emit(stream);
 
             if (!emitResult.Success)
-                return new ProcessingResult(null, emitResult.Diagnostics);
+                return new ProcessingResult(syntaxTree, null, emitResult.Diagnostics);
 
             stream.Seek(0, SeekOrigin.Begin);
 
             var resultWriter = new StringWriter();
             _decompiler.Decompile(stream, resultWriter);
-            return new ProcessingResult(resultWriter.ToString(), emitResult.Diagnostics);
+            return new ProcessingResult(
+                syntaxTree,
+                resultWriter.ToString(),
+                emitResult.Diagnostics
+            );
         }
     }
 }

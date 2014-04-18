@@ -38,6 +38,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AshMind.Extensions">
+      <HintPath>..\#packages\AshMind.Extensions.1.2.1\lib\net45\AshMind.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.Decompiler">
       <HintPath>..\#libraries\ICSharpCode.Decompiler.dll</HintPath>
     </Reference>
@@ -146,14 +149,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App\controllers\footer-controller.js" />
+    <Content Include="App\directives\cleanread.js" />
+    <Content Include="App\directives\syntaxtree.js" />
     <Content Include="App\loader\loader.css" />
     <Content Include="App\loader\loader.html" />
     <Content Include="Global.asax" />
-    <Content Include="App\controller.js" />
+    <Content Include="App\controllers\app-controller.js" />
     <Content Include="App\app.css" />
     <Content Include="App\app.js" />
-    <Content Include="App\directives\loader.js" />
-    <Content Include="App\directives\cleanread.js" />
     <Content Include="App\directives\codemirror.js" />
     <Content Include="App\services\compilation-service.js" />
     <Content Include="App\services\url-service.js" />
@@ -166,7 +170,8 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\RoslynController.cs" />
-    <Compile Include="Formatters\TextMediaTypeFormatter.cs" />
+    <Compile Include="Formatting\SyntaxTreeConverter.cs" />
+    <Compile Include="Formatting\TextMediaTypeFormatter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
