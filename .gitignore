@@ -7,3 +7,4 @@ obj/
 _ReSharper.*
 *.sln.ide/
 /!roslyn-binaries
+/!roslyn-sources
