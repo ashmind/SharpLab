@@ -38,7 +38,7 @@ function Build-Branch($directory) {
     }
   
     $binariesDirectory = "$binariesRoot\" + $fsName
-    Remove-Item $binariesDirectory -ErrorAction SilentlyContinue
+    Remove-Item $binariesDirectory -Recurse -ErrorAction SilentlyContinue
     Move-Item "$directory\Binaries\Debug" $binariesDirectory
     Remove-Item "$directory\NuGet.config"
     

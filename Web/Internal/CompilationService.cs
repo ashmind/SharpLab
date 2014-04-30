@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CSharp.RuntimeBinder;
 
 namespace TryRoslyn.Web.Internal {
-    public class CompilationService {
+    public class CompilationService : ICompilationService {
         private readonly IDecompiler _decompiler;
 
         private static readonly MetadataReference[] References = {
