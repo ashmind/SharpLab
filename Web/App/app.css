@@ -100,8 +100,16 @@ section.collapsible:not(.expanded) header {
   background-color: #aaa;
 }
 
+section.collapsible.expanded .content {
+  overflow: auto;
+  max-height: 800px;
+  transition: max-height 0.5s;
+}
+
 section.collapsible:not(.expanded) .content {
-  display: none;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.5s;
 }
 
 section.collapsible header {

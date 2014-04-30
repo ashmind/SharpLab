@@ -1,15 +1,15 @@
-﻿angular.module('app').service('UrlService', ['$window', function ($window) {
+﻿angular.module('app').service('UrlService', ['$location', '$rootScope', function ($location, $rootScope) {
     var lastHash;
     this.saveToUrl = function(value) {
         var hash = LZString.compressToBase64(value);
         lastHash = hash;
-        $window.location.hash = hash;
+        $location.hash(hash);
     }
 
     this.loadFromUrl = load.bind(this, false);
 
-    this.onUrlChange = function(callback) {
-        $($window).hashchange(function() {
+    this.onUrlChange = function (callback) {
+        $rootScope.$on('$locationChangeSuccess', function () {
             var value = load(true);
             if (value !== null)
                 callback(value);
@@ -17,7 +17,7 @@
     }
 
     function load(onlyIfChanged) {
-        var hash = $window.location.hash;
+        var hash = $location.hash();
         if (!hash)
             return null;
 

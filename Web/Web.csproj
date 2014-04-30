@@ -142,6 +142,7 @@
     <Content Include="App\directives\syntaxtree.js" />
     <Content Include="App\loader\loader.css" />
     <Content Include="App\loader\loader.html" />
+    <Content Include="App\services\location-service.js" />
     <Content Include="Global.asax" />
     <Content Include="App\controllers\app-controller.js" />
     <Content Include="App\app.css" />
