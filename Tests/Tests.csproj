@@ -30,8 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AshMind.Extensions">
-      <HintPath>..\#packages\AshMind.Extensions.1.2\lib\net45\AshMind.Extensions.dll</HintPath>
+    <Reference Include="AshMind.Extensions, Version=1.3.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\#packages\AshMind.Extensions.1.3.2\lib\net45\AshMind.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -58,9 +59,9 @@
     <EmbeddedResource Include="TestCode\Constructor.BaseCall.cstest" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Web\Web.csproj">
-      <Project>{8c5359f9-5a55-4078-afb6-e524321da6c3}</Project>
-      <Name>Web</Name>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{e2b74c8d-aa27-4fdd-8dbb-c4e8495a2e7e}</Project>
+      <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

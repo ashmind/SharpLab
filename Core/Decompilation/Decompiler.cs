@@ -7,9 +7,9 @@ using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler.Ast.Transforms;
 using ICSharpCode.NRefactory.CSharp;
 using Mono.Cecil;
-using TryRoslyn.Web.Internal.Decompilation;
+using TryRoslyn.Core.Decompilation.Support;
 
-namespace TryRoslyn.Web.Internal {
+namespace TryRoslyn.Core.Decompilation {
     public class Decompiler : IDecompiler {
         public void Decompile(Stream assemblyStream, TextWriter resultWriter) {
             var module = ModuleDefinition.ReadModule(assemblyStream);

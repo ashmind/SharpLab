@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
 using ICSharpCode.NRefactory.CSharp;
 using JetBrains.Annotations;
 
-namespace TryRoslyn.Web.Internal.Decompilation {
+namespace TryRoslyn.Core.Decompilation.Support {
     public class DecompiledPseudoCSharpOutputVisitor : OverridableCSharpOutputVisitor {
         private bool _currentStatementIsNotValidCSharp = false;
 

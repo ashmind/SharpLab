@@ -38,23 +38,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AshMind.Extensions">
-      <HintPath>..\#packages\AshMind.Extensions.1.2.1\lib\net45\AshMind.Extensions.dll</HintPath>
+    <Reference Include="AshMind.Extensions, Version=1.3.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\#packages\AshMind.Extensions.1.3.2\lib\net45\AshMind.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="Autofac">
       <HintPath>..\#packages\Autofac.3.3.1\lib\net40\Autofac.dll</HintPath>
     </Reference>
     <Reference Include="Autofac.Integration.WebApi">
       <HintPath>..\#packages\Autofac.WebApi2.3.2.1\lib\net45\Autofac.Integration.WebApi.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.Decompiler">
-      <HintPath>..\#libraries\ICSharpCode.Decompiler.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.NRefactory">
-      <HintPath>..\#libraries\ICSharpCode.NRefactory.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.NRefactory.CSharp">
-      <HintPath>..\#libraries\ICSharpCode.NRefactory.CSharp.dll</HintPath>
     </Reference>
     <Reference Include="JetBrains.Annotations">
       <HintPath>..\#packages\JetBrains.Annotations.7.0\lib\net45\JetBrains.Annotations.dll</HintPath>
@@ -174,16 +166,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Internal\CompilationService.cs" />
-    <Compile Include="Internal\Decompilation\DecompiledPseudoCSharpOutputVisitor.cs" />
-    <Compile Include="Internal\Decompilation\OverridableCSharpOutputVisitor.cs" />
-    <Compile Include="Internal\Decompiler.cs" />
-    <Compile Include="Internal\ICompilationService.cs" />
-    <Compile Include="Internal\IDecompiler.cs" />
-    <Compile Include="Internal\ProcessingResult.cs" />
-    <Compile Include="Internal\Decompilation\RoslynFriendlyConvertConstructorCallIntoInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WebApiModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -195,7 +178,15 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Internal\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{e2b74c8d-aa27-4fdd-8dbb-c4e8495a2e7e}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

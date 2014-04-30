@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
-namespace TryRoslyn.Web.Internal {
+namespace TryRoslyn.Core {
     public class ProcessingResult {
         public SyntaxTree SyntaxTree { get; private set; }
         public string Decompiled { get; private set; }

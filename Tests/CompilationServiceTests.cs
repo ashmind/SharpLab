@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using AshMind.Extensions;
+using TryRoslyn.Core;
+using TryRoslyn.Core.Decompilation;
 using TryRoslyn.Tests.Support;
-using TryRoslyn.Web.Internal;
 using Xunit;
 using Xunit.Extensions;
 

@@ -1,4 +1,4 @@
-namespace TryRoslyn.Web.Internal {
+namespace TryRoslyn.Core {
     public interface ICompilationService {
         ProcessingResult Process(string code);
     }

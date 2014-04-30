@@ -6,8 +6,9 @@ using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CSharp.RuntimeBinder;
+using TryRoslyn.Core.Decompilation;
 
-namespace TryRoslyn.Web.Internal {
+namespace TryRoslyn.Core {
     public class CompilationService : ICompilationService {
         private readonly IDecompiler _decompiler;
 

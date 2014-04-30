@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using Microsoft.CodeAnalysis;
-using TryRoslyn.Web.Internal;
+using TryRoslyn.Core;
 
 namespace TryRoslyn.Web.Controllers {
     // routes are a mess at the moment
