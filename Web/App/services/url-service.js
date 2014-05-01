@@ -1,7 +1,10 @@
 ﻿angular.module('app').service('UrlService', ['$location', '$rootScope', function ($location, $rootScope) {
     var lastHash;
-    this.saveToUrl = function(value) {
-        var hash = LZString.compressToBase64(value);
+    this.saveToUrl = function(data) {
+        var hash = LZString.compressToBase64(data.code);
+        if (data.branch)
+            hash = "b:" + data.branch + "/" + hash;
+
         lastHash = hash;
         $location.hash(hash);
     }
@@ -10,9 +13,9 @@
 
     this.onUrlChange = function (callback) {
         $rootScope.$on('$locationChangeSuccess', function () {
-            var value = load(true);
-            if (value !== null)
-                callback(value);
+            var loaded = load(true);
+            if (loaded !== null)
+                callback(loaded);
         });
     }
 
@@ -26,8 +29,15 @@
             return null;
 
         lastHash = hash;
+        var match = /(?:b:([^\/]+)\/)(.+)/.exec(hash);
+        if (match == null)
+            return null;
+
         try {
-            return LZString.decompressFromBase64(hash);
+            return {
+                branch: match[1],
+                code: LZString.decompressFromBase64(match[2])
+            };
         }
         catch (e) {
             return null;

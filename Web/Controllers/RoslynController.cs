@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Web.Http;
 using Microsoft.CodeAnalysis;
 using TryRoslyn.Core;
@@ -38,17 +37,6 @@ namespace TryRoslyn.Web.Controllers {
                 errors   = result.GetDiagnostics(DiagnosticSeverity.Error).Select(d => d.ToString()),
                 warnings = result.GetDiagnostics(DiagnosticSeverity.Warning).Select(d => d.ToString())
             };
-        }
-
-        [HttpGet]
-        [Route("api/info")]
-        public object Info() {
-            var assembly = typeof(SyntaxTree).Assembly;
-            var informationalAttribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-            var roslynVersion = informationalAttribute != null
-                              ? informationalAttribute.InformationalVersion
-                              : assembly.GetName().Version.ToString();
-            return new { roslynVersion };
         }
     }
 }

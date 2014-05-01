@@ -1,10 +1,4 @@
 ﻿angular.module('app').service('CompilationService', ['$http', function ($http) {
-    this.getRoslynVersion = function () {
-        return $http.get('api/info').then(function(response) {
-            return response.data.roslynVersion;
-        });
-    };
-
     this.getBranchNames = function() {
         return $http.get('api/branches').then(function(response) {
             return response.data;

@@ -139,7 +139,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App\controllers\footer-controller.js" />
     <Content Include="App\directives\cleanread.js" />
     <Content Include="App\directives\syntaxtree.js" />
     <Content Include="App\loader\loader.css" />
