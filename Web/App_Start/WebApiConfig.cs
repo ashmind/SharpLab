@@ -34,6 +34,7 @@ namespace TryRoslyn.Web {
         }
 
         private static void RegisterFormatters(HttpConfiguration config) {
+            config.Formatters.Remove(config.Formatters.XmlFormatter);
             config.Formatters.Add(new CodeMediaTypeFormatter());
 
             var jsonSettings = config.Formatters.JsonFormatter.SerializerSettings;

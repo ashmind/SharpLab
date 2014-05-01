@@ -25,7 +25,7 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.PatternMatching;
 using Mono.Cecil;
 
-namespace TryRoslyn.Core.Decompilation.Support {
+namespace TryRoslyn.Core.Processing.DecompilationSupport {
     // This is mostly a copy of ConvertConstructorCallIntoInitializer from Decompiler library.
     // However it is simplified so that it does not try to use field initializers, as that can not be
     // correctly represented for primary constructor decompilation.

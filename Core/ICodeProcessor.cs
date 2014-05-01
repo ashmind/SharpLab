@@ -1,5 +1,5 @@
 namespace TryRoslyn.Core {
-    public interface ICompilationService {
+    public interface ICodeProcessor {
         ProcessingResult Process(string code);
     }
 }

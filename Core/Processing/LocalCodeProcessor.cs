@@ -6,21 +6,25 @@ using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CSharp.RuntimeBinder;
-using TryRoslyn.Core.Decompilation;
+using TryRoslyn.Core.Processing.RoslynSupport;
 
-namespace TryRoslyn.Core {
-    public class CompilationService : ICompilationService {
+namespace TryRoslyn.Core.Processing {
+    public class LocalCodeProcessor : ICodeProcessor {
         private readonly IDecompiler _decompiler;
+        private readonly IRoslynAbstraction _roslynAbstraction;
 
-        private static readonly MetadataReference[] References = {
-            new MetadataFileReference(typeof(object).Assembly.Location),
-            new MetadataFileReference(typeof(Uri).Assembly.Location),
-            new MetadataFileReference(typeof(DynamicAttribute).Assembly.Location),
-            new MetadataFileReference(typeof(Binder).Assembly.Location),
-        };
-
-        public CompilationService(IDecompiler decompiler) {
+        private readonly MetadataReference[] _references;
+        
+        public LocalCodeProcessor(IDecompiler decompiler, IRoslynAbstraction roslynAbstraction) {
             _decompiler = decompiler;
+            _roslynAbstraction = roslynAbstraction;
+
+            _references = new MetadataReference[] {
+                _roslynAbstraction.NewMetadataFileReference(typeof(object).Assembly.Location),
+                _roslynAbstraction.NewMetadataFileReference(typeof(Uri).Assembly.Location),
+                _roslynAbstraction.NewMetadataFileReference(typeof(DynamicAttribute).Assembly.Location),
+                _roslynAbstraction.NewMetadataFileReference(typeof(Binder).Assembly.Location)
+            };
         }
 
         public ProcessingResult Process(string code) {
@@ -28,8 +32,8 @@ namespace TryRoslyn.Core {
             
             var stream = new MemoryStream();
             var emitResult = CSharpCompilation.Create("Test")
-                .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-                .AddReferences(References)
+                .WithOptions(_roslynAbstraction.NewCSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
+                .AddReferences(_references)
                 .AddSyntaxTrees(syntaxTree)
                 .Emit(stream);
 

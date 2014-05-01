@@ -35,6 +35,7 @@
       <HintPath>..\#packages\AshMind.Extensions.1.3.2\lib\net45\AshMind.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -49,12 +50,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CompilationServiceTests.cs" />
+    <Compile Include="BranchCodeProcessorTests.cs" />
+    <Compile Include="LocalCodeProcessorTests.cs" />
     <EmbeddedResource Include="TestCode\PrimaryConstructor.ArgumentAssignedToField.cstest" />
     <Compile Include="Support\EmbeddedResourceDataAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
     <EmbeddedResource Include="TestCode\Constructor.BaseCall.cstest" />
   </ItemGroup>

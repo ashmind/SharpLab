@@ -8,3 +8,4 @@ _ReSharper.*
 *.sln.ide/
 /!roslyn-binaries
 /!roslyn-sources
+/Web/App_Data/AppDomains
