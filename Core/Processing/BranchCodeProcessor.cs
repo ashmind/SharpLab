@@ -27,6 +27,8 @@ namespace TryRoslyn.Core.Processing {
 
         private AppDomain CreateAppDomain() {
             var coreAssembly = Assembly.GetExecutingAssembly();
+            var coreAssemblyLocation = Uri.UnescapeDataString(new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath);
+
             var tempDirectory = new DirectoryInfo(Path.Combine(
                 Path.GetDirectoryName(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile),
                 @"App_Data\AppDomains",
@@ -38,10 +40,10 @@ namespace TryRoslyn.Core.Processing {
             tempDirectory.Create();
 
             var branchDirectory = _branchProvider.GetDirectory(_branchName);
-            var originalDirectoryPath = Path.GetDirectoryName(coreAssembly.Location);
+            var originalDirectoryPath = Path.GetDirectoryName(coreAssemblyLocation);
 
             CopyFiles(branchDirectory.FullName, tempDirectory.FullName);
-            CopyAndPrepareCoreAssembly(coreAssembly.Location, tempDirectory);
+            CopyAndPrepareCoreAssembly(coreAssemblyLocation, tempDirectory);
             CopyFiles(originalDirectoryPath, tempDirectory.FullName);
 
             var domain = AppDomain.CreateDomain("Branch:" + _branchName, null, new AppDomainSetup {

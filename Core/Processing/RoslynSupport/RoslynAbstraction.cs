@@ -11,7 +11,8 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
     // this provides a way to manage Roslyn API changes between branches
     public class RoslynAbstraction : IRoslynAbstraction {
         private static class Cached<TDelegate> {
-            public static readonly TDelegate Factory = BuildFactory<TDelegate>();
+            private static readonly Expression<TDelegate> FactoryExpression = BuildFactory<TDelegate>();
+            public static readonly TDelegate Factory = FactoryExpression.Compile();
         }
 
         public MetadataFileReference NewMetadataFileReference(string path) {
@@ -21,8 +22,8 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
         public CSharpCompilationOptions NewCSharpCompilationOptions(OutputKind outputKind) {
             return Cached<Func<OutputKind, CSharpCompilationOptions>>.Factory(outputKind);
         }
-        
-        private static TDelegate BuildFactory<TDelegate>() {
+
+        private static Expression<TDelegate> BuildFactory<TDelegate>() {
             if (typeof(TDelegate).FullName.SubstringBefore("`") != "System.Func")
                 throw new NotSupportedException("Only Func<..> delegates are supported.");
 
@@ -38,18 +39,19 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
 
             return Expression.Lambda<TDelegate>(
                 Expression.New(resolved.Item1, resolved.Item2), lambdaParameters
-            ).Compile();
+            );
         }
 
         private static Tuple<TMethod, Expression[]> ResolveMethod<TMethod>(IEnumerable<TMethod> methods, ParameterExpression[] lambdaParameters)
             where TMethod : MethodBase
         {
             foreach (var method in methods) {
+                var unusedLambdaParameters = lambdaParameters.ToDictionary(p => p.Type);
                 var parameters = method.GetParameters();
                 var arguments = new Expression[parameters.Length];
                 var failed = false;
                 for (var i = 0; i < parameters.Length; i++) {
-                    var argument = ResolveArgument(parameters[i], lambdaParameters);
+                    var argument = ResolveArgument(parameters[i], unusedLambdaParameters);
                     if (argument == null) {
                         failed = true;
                         break;
@@ -65,10 +67,12 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             return null;
         }
 
-        private static Expression ResolveArgument(ParameterInfo parameter, ParameterExpression[] lambdaParameters) {
-            var lambdaParameter = lambdaParameters.SingleOrDefault(p => p.Type == parameter.ParameterType);
-            if (lambdaParameter != null)
+        private static Expression ResolveArgument(ParameterInfo parameter, IDictionary<Type, ParameterExpression> unusedLambdaParameters) {
+            var lambdaParameter = unusedLambdaParameters.GetValueOrDefault(parameter.ParameterType);
+            if (lambdaParameter != null) {
+                unusedLambdaParameters.Remove(parameter.ParameterType);
                 return lambdaParameter;
+            }
 
             if (parameter.HasDefaultValue) {
                 var value = parameter.DefaultValue;

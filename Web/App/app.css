@@ -64,9 +64,22 @@ section header {
   position: relative;
   padding: 5px;
   padding-left: 7px;
-  font-family: 'Roboto Condensed', sans-serif;
   color: #fff; 
   background-color: #4684ee;
+}
+
+section header h1 {
+  font-family: 'Roboto Condensed', sans-serif;
+}
+
+section header select {
+  background: transparent;
+  border: 1px solid #fff;
+  outline: none;
+}
+
+section header option {
+  color: #000;
 }
 
 section header a {
@@ -136,6 +149,12 @@ section.collapsible.expanded header::after {
   display: flex;
   -webkit-flex-direction: column;
   flex-direction: column; 
+}
+
+.branches {
+  position: absolute;
+  right: 5px;
+  margin-top: -2px;
 }
 
 .code {

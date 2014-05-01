@@ -5,9 +5,19 @@
         });
     };
 
-    this.process = function (code) {
+    this.getBranchNames = function() {
+        return $http.get('api/branches').then(function(response) {
+            return response.data;
+        });
+    }
+
+    this.process = function (code, branchName) {
+        var url = 'api/compilation';
+        if (branchName)
+            url += '?branch=' + branchName;
+
         return $http({
-            url:    'api/compilation',
+            url:    url,
             method: 'POST',
             data:   code,
             headers: {

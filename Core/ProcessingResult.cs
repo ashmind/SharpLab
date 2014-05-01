@@ -1,28 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
 namespace TryRoslyn.Core {
     [Serializable]
     public class ProcessingResult {
-        //public SyntaxTree SyntaxTree { get; private set; }
         public string Decompiled { get; private set; }
-        //public ImmutableArray<Diagnostic> Diagnostics { get; private set; }
+        public IList<SerializableDiagnostic> Diagnostics { get; private set; }
 
         public bool IsSuccess {
             get { return this.Decompiled != null; }
         }
 
-        public ProcessingResult(SyntaxTree syntaxTree, string decompiled, IImmutableList<Diagnostic> diagnostics) {
-            //SyntaxTree = syntaxTree;
+        public ProcessingResult(string decompiled, IEnumerable<SerializableDiagnostic> diagnostics) {
             this.Decompiled = decompiled;
-            //this.Diagnostics = diagnostics;
+            this.Diagnostics = diagnostics.ToArray(); // can't use immutables here, as they are non-serializable
         }
 
-        //public IEnumerable<Diagnostic> GetDiagnostics(DiagnosticSeverity severity) {
-        //    return this.Diagnostics.Where(d => d.Severity == severity);
-        //}
+        public IEnumerable<SerializableDiagnostic> GetDiagnostics(DiagnosticSeverity severity) {
+            return this.Diagnostics.Where(d => d.Severity == severity);
+        }
     }
 }

@@ -33,6 +33,11 @@
         <section class="code">
           <header>
             <h1>Code</h1>
+            <select class="branches"
+                    data-ng-model="branchName"
+                    data-ng-options="name as name for name in branchNames">
+              <option value="">Release (NuGet)</option>
+            </select>
           </header>
           <div class="content">
             <app-codemirror value="code" mode="text/x-csharp" linenumbers></app-codemirror>
@@ -50,14 +55,14 @@
           </div>
         </section>
         
-        <section class="syntax-tree collapsible" data-ng-class="{expanded: syntaxTreeExpanded}">
+        <!--<section class="syntax-tree collapsible" data-ng-class="{expanded: syntaxTreeExpanded}">
           <header data-ng-click="toggleSyntaxTree()">
             <h1>AST</h1>
           </header>
           <div class="content">
             <app-syntaxtree data-ng-if="result" root="result.syntaxTree"></app-syntaxtree>
           </div>
-        </section>
+        </section>-->
       </div>
       
       <div class="section-group results">

@@ -38,16 +38,15 @@ namespace TryRoslyn.Core.Processing {
                 .Emit(stream);
 
             if (!emitResult.Success)
-                return new ProcessingResult(syntaxTree, null, emitResult.Diagnostics);
+                return new ProcessingResult(null, emitResult.Diagnostics.Select(d => new SerializableDiagnostic(d)));
 
             stream.Seek(0, SeekOrigin.Begin);
 
             var resultWriter = new StringWriter();
             _decompiler.Decompile(stream, resultWriter);
             return new ProcessingResult(
-                syntaxTree,
                 resultWriter.ToString(),
-                emitResult.Diagnostics
+                emitResult.Diagnostics.Select(d => new SerializableDiagnostic(d))
             );
         }
     }
