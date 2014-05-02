@@ -62,6 +62,8 @@ section > * {
 
 section header {
   position: relative;
+  display: -webkit-flex;
+  display: flex;
   padding: 5px;
   padding-left: 7px;
   color: #fff; 
@@ -260,10 +262,6 @@ textarea, .CodeMirror {
 .CodeMirror-linenumber {
   color: #eee;
 }*/
-.decompiled header {
-  display: -webkit-flex;
-  display: flex;
-}
 
 .decompiled header h1 {
   -webkit-flex: 0 0 auto;
