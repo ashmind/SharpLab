@@ -80,6 +80,8 @@
         <section class="errors" data-ng-show="result.errors.length > 0">
           <header>
             <h1>Errors</h1>
+            <span class="loader-container" data-ng-show="loading" data-ng-include="'loader/loader.html'">
+            </span>
           </header>
           <ul class="content">
             <li data-ng-repeat="error in result.errors">{{error}}</li>
