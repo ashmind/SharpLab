@@ -57,6 +57,12 @@
         compilationService.process($scope.code, $scope.branchName).then(function (data) {
             $scope.loading = false;
             $scope.result = data;
+        }, function(response) {
+            $scope.loading = false;
+            $scope.result = {
+                success: false,
+                errors: [ response.data.message ]
+            };
         });
     }
 }]);

@@ -46,8 +46,7 @@ namespace TryRoslyn.Core.Processing {
             CopyFiles(originalDirectoryPath, tempDirectory.FullName);
 
             var domain = AppDomain.CreateDomain("Branch:" + _branchName, null, new AppDomainSetup {
-                ApplicationBase = tempDirectory.FullName,
-                ShadowCopyFiles = "true"
+                ApplicationBase = tempDirectory.FullName
             });
             
             return domain;
