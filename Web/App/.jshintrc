@@ -2,6 +2,9 @@
   "browser":   true,
   "devel":     true,
   "jquery":    true,
+  "globals": {
+      "moment": false
+  },
   
   "camelcase": true,
   "eqeqeq":    true,

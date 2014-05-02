@@ -23,7 +23,7 @@ namespace TryRoslyn.Core {
             builder.Register<ICodeProcessorManager>(c => new CodeProcessorManager(
                 c.Resolve<ICodeProcessor>(),
                 c.Resolve<Func<string, BranchCodeProcessor>>()
-            ));
+            )).SingleInstance();
 
             builder.RegisterType<Decompiler>().As<IDecompiler>();
         }

@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace TryRoslyn.Core {
     public interface IBranchProvider {
-        [NotNull] IImmutableList<string> GetBranchNames();
+        [NotNull] IImmutableList<BranchInfo> GetBranches();
         [NotNull] DirectoryInfo GetDirectory([NotNull] string branchName);
     }
 }

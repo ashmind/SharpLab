@@ -13,8 +13,10 @@ namespace TryRoslyn.Core {
             _root = root;
         }
 
-        public IImmutableList<string> GetBranchNames() {
-            return _root.GetDirectories().Select(d => d.Name).ToImmutableList();
+        public IImmutableList<BranchInfo> GetBranches() {
+            return _root.GetDirectories()
+                        .Select(d => new BranchInfo(d.Name, d.LastWriteTimeUtc))
+                        .ToImmutableList();
         }
 
         public DirectoryInfo GetDirectory(string branchName) {

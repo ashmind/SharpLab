@@ -18,8 +18,8 @@ namespace TryRoslyn.Web.Controllers {
 
         [HttpGet]
         [Route("api/branches")]
-        public IEnumerable<string> Branches() {
-            return _branchProvider.GetBranchNames();
+        public IEnumerable<BranchInfo> Branches() {
+            return _branchProvider.GetBranches();
         }
         
         [HttpPost]

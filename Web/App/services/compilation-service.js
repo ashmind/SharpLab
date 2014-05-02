@@ -1,5 +1,5 @@
 ﻿angular.module('app').service('CompilationService', ['$http', function ($http) {
-    this.getBranchNames = function() {
+    this.getBranches = function() {
         return $http.get('api/branches').then(function(response) {
             return response.data;
         });

@@ -15,6 +15,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/mode/clike/clike.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-throttle-debounce/1.1/jquery.ba-throttle-debounce.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-hashchange/v1.3/jquery.ba-hashchange.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.6.0/moment.min.js"></script>
     <script src="external/lz-string-1.3.3-min.js"></script>
 
     <script src="app.js"></script>
@@ -34,7 +35,7 @@
             <h1>Code</h1>
             <select class="branches"
                     data-ng-model="branchName"
-                    data-ng-options="name as name for name in branchNames">
+                    data-ng-options="branch.name as branch.text for branch in branches">
               <option value="">Release (NuGet)</option>
             </select>
           </header>

@@ -26,12 +26,11 @@ namespace TryRoslyn.Core.Processing {
         }
 
         private AppDomain CreateAppDomain() {
-            var coreAssembly = Assembly.GetExecutingAssembly();
             var coreAssemblyLocation = Uri.UnescapeDataString(new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath);
 
             var tempDirectory = new DirectoryInfo(Path.Combine(
                 Path.GetDirectoryName(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile),
-                @"App_Data\AppDomains",
+                @"App_Data\AppDomains", // ugly hack, just to save time
                 _branchName
             ));
             if (tempDirectory.Exists)
@@ -50,10 +49,6 @@ namespace TryRoslyn.Core.Processing {
                 ApplicationBase = tempDirectory.FullName
             });
             
-            //domain.SetData("CoreAssemblyName", coreAssembly.FullName);
-            //domain.SetData("CoreAssemblyLocation", coreAssembly.Location);
-            //domain.AssemblyResolve += AppDomain_AssemblyResolve;
-
             return domain;
         }
 
@@ -92,18 +87,7 @@ namespace TryRoslyn.Core.Processing {
             // this is naive, but I do not think there is a reason to overcomplicae it
             return new FileInfo(Path.Combine(directoryPath, name.Name + ".dll"));
         }
-
-        private static Assembly AppDomain_AssemblyResolve(object sender, ResolveEventArgs args) {
-            var currentDomain = AppDomain.CurrentDomain;
-            var name = new AssemblyName(args.Name);
-            var potentialPath = Path.Combine(currentDomain.SetupInformation.ApplicationBase, name.Name + ".dll");
-
-            if (File.Exists(potentialPath))
-                return Assembly.LoadFrom(potentialPath);
-
-            return null;
-        }
-
+        
         private ICodeProcessor CreateRemoteProcessor() {
             return (ICodeProcessor)_branchAppDomain.Value.CreateInstanceAndUnwrap(
                 GetType().Assembly.FullName,

@@ -2,8 +2,10 @@
     'use strict';
 
     $scope.branchName = null;
-    compilationService.getBranchNames().then(function(value) {
-        $scope.branchNames = value;
+    compilationService.getBranches().then(function(value) {
+        $scope.branches = value.map(function(b) {
+            return { name: b.name, text: b.name + " (" + moment(b.timestamp).format("DMMM") + ")" };
+        });
     });
 
     setup();
