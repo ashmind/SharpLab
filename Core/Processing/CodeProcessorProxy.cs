@@ -14,5 +14,9 @@ namespace TryRoslyn.Core.Processing {
         public ProcessingResult Process(string code) {
             return _processor.Process(code);
         }
+
+        public override object InitializeLifetimeService() {
+            return null;
+        }
     }
 }
