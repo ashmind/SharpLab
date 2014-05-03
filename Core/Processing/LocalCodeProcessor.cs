@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CSharp.RuntimeBinder;
 using TryRoslyn.Core.Processing.RoslynSupport;
 
 namespace TryRoslyn.Core.Processing {
+    [ThreadSafe]
     public class LocalCodeProcessor : ICodeProcessor {
         private readonly IDecompiler _decompiler;
         private readonly IRoslynAbstraction _roslynAbstraction;
@@ -49,5 +51,12 @@ namespace TryRoslyn.Core.Processing {
                 emitResult.Diagnostics.Select(d => new SerializableDiagnostic(d))
             );
         }
+
+        #region IDisposable Members
+
+        void IDisposable.Dispose() {
+        }
+
+        #endregion
     }
 }

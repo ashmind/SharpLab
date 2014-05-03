@@ -73,6 +73,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AgentHeisenbug.Annotations.cs" />
     <Compile Include="BranchInfo.cs" />
     <Compile Include="ProcessingResultMessage.cs" />
     <Compile Include="Processing\BranchCodeProcessor.cs" />

@@ -1,5 +1,9 @@
+using System;
+using JetBrains.Annotations;
+
 namespace TryRoslyn.Core {
-    public interface ICodeProcessor {
+    [ThreadSafe]
+    public interface ICodeProcessor : IDisposable {
         ProcessingResult Process(string code);
     }
 }

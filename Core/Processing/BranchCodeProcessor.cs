@@ -3,14 +3,20 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 using Mono.Cecil;
 using AssemblyDefinition = Mono.Cecil.AssemblyDefinition;
 
 namespace TryRoslyn.Core.Processing {
-    public class BranchCodeProcessor : ICodeProcessor, IDisposable {
+    [ThreadSafe]
+    public class BranchCodeProcessor : ICodeProcessor {
         private readonly string _branchName;
         private readonly IBranchProvider _branchProvider;
 
+        // ReSharper disable once AgentHeisenbug.MutableFieldInThreadSafeType
+        private bool _disposed;
+
+        // ReSharper disable once AgentHeisenbug.FieldOfNonThreadSafeTypeInThreadSafeType
         private readonly Lazy<AppDomain> _branchAppDomain;
         private readonly Lazy<ICodeProcessor> _remoteProcessor;
 
@@ -83,11 +89,13 @@ namespace TryRoslyn.Core.Processing {
             newAssembly.Write(newLocation);
         }
 
+        [Pure]
         private static FileInfo GetAssemblyFile(string directoryPath, AssemblyNameReference name) {
             // this is naive, but I do not think there is a reason to overcomplicae it
             return new FileInfo(Path.Combine(directoryPath, name.Name + ".dll"));
         }
         
+        [Pure]
         private ICodeProcessor CreateRemoteProcessor() {
             return (ICodeProcessor)_branchAppDomain.Value.CreateInstanceAndUnwrap(
                 GetType().Assembly.FullName,
@@ -96,6 +104,10 @@ namespace TryRoslyn.Core.Processing {
         }
 
         public void Dispose() {
+            if (_disposed)
+                return;
+
+            _disposed = true;
             if (!_branchAppDomain.IsValueCreated)
                 return;
 

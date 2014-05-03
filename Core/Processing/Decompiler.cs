@@ -6,12 +6,15 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler.Ast.Transforms;
 using ICSharpCode.NRefactory.CSharp;
+using JetBrains.Annotations;
 using Mono.Cecil;
 using TryRoslyn.Core.Processing.DecompilationSupport;
 
 namespace TryRoslyn.Core.Processing {
+    [ThreadSafe]
     public class Decompiler : IDecompiler {
         public void Decompile(Stream assemblyStream, TextWriter resultWriter) {
+            // ReSharper disable once AgentHeisenbug.CallToNonThreadSafeStaticMethodInThreadSafeType
             var module = ModuleDefinition.ReadModule(assemblyStream);
             var context = new DecompilerContext(module) {
                 Settings = {

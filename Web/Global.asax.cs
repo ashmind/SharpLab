@@ -8,5 +8,9 @@ namespace TryRoslyn.Web {
         protected void Application_Start() {
             GlobalConfiguration.Configure(WebApiConfig.Register);
         }
+
+        protected void Application_End() {
+            GlobalConfiguration.Configuration.Dispose();
+        }
     }
 }
