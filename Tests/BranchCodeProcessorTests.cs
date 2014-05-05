@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using AshMind.IO.Abstractions.Adapters;
 using TryRoslyn.Core;
 using TryRoslyn.Core.Processing;
 using Xunit;
@@ -24,7 +25,7 @@ namespace TryRoslyn.Tests {
         }
 
         private BranchProvider CreateBranchProvider() {
-            return new BranchProvider(new DirectoryInfo(ConfigurationManager.AppSettings["BinariesRoot"]));
+            return new BranchProvider(new DirectoryInfoAdapter(new DirectoryInfo(ConfigurationManager.AppSettings["BinariesRoot"])));
         }
     }
 }

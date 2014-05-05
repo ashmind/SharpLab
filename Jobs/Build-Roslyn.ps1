@@ -8,14 +8,18 @@ $MSBuild = ${env:ProgramFiles(x86)} + '\MSBuild\12.0\bin\MSBuild.exe'
 function Sync-Branch($directory, $branch) {
     Write-Output "Syncing $directory"
     if (Test-Path $directory) {
-        Push-Location $directory 
-        git pull origin $branch
-        Pop-Location
+        Push-Location $directory
+        git pull origin $branch        
     }
     else {
         New-Item -ItemType directory -Path $directory | Out-Null
         git clone -b $branch $repositoryUrl $directory
+        Push-Location $directory
     }
+
+    $directoryName = [IO.Path]::GetFileName($directory)    
+    git log -n 1 --pretty=format:"%H %cd %aN%n%B" --date=short > "..\$directoryName.lastcommit.txt"
+    Pop-Location
 }
 
 function Build-Branch($directory) {
@@ -43,7 +47,8 @@ function Build-Branch($directory) {
     }
   
     $binariesDirectory = "$binariesRoot\" + $fsName
-    robocopy  "$directory\Binaries\Debug" $binariesDirectory /MIR
+    robocopy "$directory\Binaries\Debug" $binariesDirectory /MIR /XF "LastCommit.txt"
+    Copy-Item "$sourcesRoot\$fsName.lastcommit.txt" -Destination "$binariesDirectory\LastCommit.txt"
     Remove-Item "$directory\NuGet.config"
     
     Write-Output "  Build completed"
@@ -51,13 +56,18 @@ function Build-Branch($directory) {
 
 # Code ------
 try {
+    $Host.UI.RawUI.WindowTitle = "Build Roslyn" # prevents title > 1024 char errors
+
     Write-Output "Environment:"
     Write-Output "Current path: $(Get-Location)"
     Write-Output "WEBROOT_PATH: ${env:WEBROOT_PATH}"
-    Write-Output "   $(Resolve-Path $env:WEBROOT_PATH)"
-
-    $sourcesRoot = "${env:WEBROOT_PATH}\..\!roslyn-sources"
-    $binariesRoot = "${env:WEBROOT_PATH}\App_Data\RoslynBranches"
+    
+    $webRoot = Resolve-Path $env:WEBROOT_PATH
+    Write-Output "   $webRoot"
+    
+    $webRoot = Resolve-Path $env:WEBROOT_PATH
+    $sourcesRoot = "$webRoot\..\!roslyn-sources"
+    $binariesRoot = "$webRoot\App_Data\RoslynBranches"
     $repositoryUrl = 'https://git01.codeplex.com/roslyn'
 
     if (-not (Test-Path $sourcesRoot)) {
@@ -72,7 +82,7 @@ try {
     $binariesRoot =  Resolve-Path $binariesRoot
     Write-Output "Binaries Root: $binariesRoot"
 
-    ${env:$HOME} = "${env:WEBROOT_PATH}\.."
+    ${env:$HOME} = "$webRoot\.."
     git --version
 
     # Hack to make sure git does not traverse up
@@ -92,6 +102,7 @@ try {
     }
     
     Remove-Item .git -Force -Recurse
+    [IO.File]::SetLastWriteTime("$webRoot\web.config", [DateTime]::Now)
 }
 catch {
     $ErrorActionPreference = 'Continue'

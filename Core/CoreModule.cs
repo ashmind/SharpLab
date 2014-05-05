@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using AshMind.IO.Abstractions.Adapters;
 using Autofac;
 using TryRoslyn.Core.Processing;
 using TryRoslyn.Core.Processing.RoslynSupport;
@@ -13,7 +14,7 @@ namespace TryRoslyn.Core {
             var configurationPath = Path.GetDirectoryName(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
             var binariesRoot = Path.Combine(configurationPath, ConfigurationManager.AppSettings["BinariesRoot"]);
 
-            builder.Register(c => new BranchProvider(new DirectoryInfo(binariesRoot)))
+            builder.Register(c => new BranchProvider(new DirectoryInfoAdapter(new DirectoryInfo(binariesRoot))))
                    .As<IBranchProvider>()
                    .SingleInstance();
 

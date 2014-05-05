@@ -15,7 +15,6 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/mode/clike/clike.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-throttle-debounce/1.1/jquery.ba-throttle-debounce.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-hashchange/v1.3/jquery.ba-hashchange.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.6.0/moment.min.js"></script>
     <script src="external/lz-string-1.3.3-min.js"></script>
 
     <script src="app.js"></script>
@@ -34,8 +33,8 @@
           <header>
             <h1>Code</h1>
             <select class="branches"
-                    data-ng-model="branchName"
-                    data-ng-options="branch.name as branch.text for branch in branches">
+                    data-ng-model="branch"
+                    data-ng-options="branch as displayBranch(branch) for branch in branches track by branch.name">
               <option value="">Release (NuGet)</option>
             </select>
           </header>
@@ -52,6 +51,20 @@
                   }
               }
             </script>
+          </div>
+        </section>
+        
+        <section data-ng-if="branch" class="info-only non-code">
+          <header>
+            <h1>Branch {{branch.name}}, last commit</h1>
+          </header>
+          <div class="content">
+            <div>
+              <a href="https://roslyn.codeplex.com/SourceControl/changeset/{{branch.lastCommitHash}}" target="_blank">{{branch.lastCommitHash}}</a> 
+              at {{branch.lastCommitDate | date:'dd MMM yyyy'}}
+              by <a href="https://www.codeplex.com/site/users/view/{{branch.lastCommitAuthor}}" target="_blank">{{branch.lastCommitAuthor}}</a> 
+            </div>
+            <div class="commit-message">{{branch.lastCommitMessage | trim}}</div>
           </div>
         </section>
         

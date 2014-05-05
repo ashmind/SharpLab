@@ -34,7 +34,21 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\#packages\AshMind.Extensions.1.3.2\lib\net45\AshMind.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="AshMind.IO.Abstractions, Version=0.7.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\#packages\AshMind.IO.Abstractions.Mocks.0.7.2-pre3\lib\net35\AshMind.IO.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="AshMind.IO.Abstractions.Mocks, Version=0.7.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\#packages\AshMind.IO.Abstractions.Mocks.0.7.2-pre3\lib\net35\AshMind.IO.Abstractions.Mocks.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\#packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\#packages\Microsoft.Bcl.Immutable.1.1.20-beta\lib\portable-net45+win8\System.Collections.Immutable.dll</HintPath>
+    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -51,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BranchCodeProcessorTests.cs" />
+    <Compile Include="BranchProviderTests.cs" />
     <Compile Include="LocalCodeProcessorTests.cs" />
     <EmbeddedResource Include="TestCode\PrimaryConstructor.ArgumentAssignedToField.cstest" />
     <Compile Include="Support\EmbeddedResourceDataAttribute.cs" />

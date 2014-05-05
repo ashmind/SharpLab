@@ -9,6 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{E2B74C8D-AA27-4FDD-8DBB-C4E8495A2E7E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Jobs", "Jobs", "{51EB5F2B-D84E-43B2-B4A8-ECC6B1D2E89D}"
+	ProjectSection(SolutionItems) = preProject
+		Jobs\Build-Roslyn.ps1 = Jobs\Build-Roslyn.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

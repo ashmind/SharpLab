@@ -19,6 +19,15 @@ body {
   flex-direction: column;
 }
 
+a {
+  color: #2E8BCC;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 main {
   display: -webkit-flex;
   display: flex;
@@ -111,6 +120,14 @@ section .content {
   position: relative;
 }
 
+section.info-only header {
+  background-color: #bbb;
+}
+
+section.info-only .content {
+  font-size: 90%;
+}
+
 section.collapsible:not(.expanded) header {
   background-color: #aaa;
 }
@@ -146,6 +163,14 @@ section.collapsible.expanded header::after {
   -webkit-transform: rotate(90deg);
 }
 
+.non-code .content {
+  padding: 10px;
+}
+
+.collapsible:not(.expanded) .content {
+  padding: 0;
+}
+
 .section-group {
   display: -webkit-flex;
   display: flex;
@@ -162,6 +187,10 @@ section.collapsible.expanded header::after {
 .code {
   -webkit-flex: 1 0 auto;
   flex: 1 0 auto;
+}
+
+.commit-message {
+  white-space: pre-line;
 }
 
 /* Syntax Tree ------ */

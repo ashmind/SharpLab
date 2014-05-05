@@ -1,23 +1,34 @@
-﻿angular.module('app').controller('AppController', ['$scope', 'UrlService', 'CompilationService', function ($scope, urlService, compilationService) {
+﻿angular.module('app').controller('AppController', ['$scope', '$filter', 'UrlService', 'CompilationService', function ($scope, $filter, urlService, compilationService) {
     'use strict';
 
-    $scope.branchName = null;
-    compilationService.getBranches().then(function(value) {
-        $scope.branches = value.map(function(b) {
-            return { name: b.name, text: b.name + " (" + moment(b.timestamp).format("DMMM") + ")" };
+    $scope.branch = null;
+    var branchesPromise = compilationService.getBranches().then(function(value) {
+        $scope.branches = value;
+        $scope.branches.forEach(function(b) {
+            b.lastCommitDate = new Date(b.lastCommitDate);
         });
     });
+    $scope.displayBranch = function(branch) {
+        return branch.name + " (" + $filter('date')(branch.lastCommitDate, "d MMM") + ")";
+    };
 
     setup();
-    $scope.toggleSyntaxTree = function() {
-        $scope.syntaxTreeExpanded = !$scope.syntaxTreeExpanded;
+    $scope.expanded = {};
+    $scope.expanded = function(name) {
+        $scope.expanded[name] = true;
+    }
+    $scope.toggle = function(name) {
+        $scope.expanded[name] = !$scope.expanded[name];
     };
+
 
     function setup() {
         var urlData = urlService.loadFromUrl();
         if (urlData) {
             $scope.code = urlData.code;
-            $scope.branchName = urlData.branch;
+            branchesPromise.then(function() {
+                $scope.branch = $scope.branches.filter(function(b) { return b.name === urlData.branch; })[0] || null;
+            });
         }
 
         var unwatchDefault = $scope.$watch('defaultCode', function () {
@@ -32,7 +43,7 @@
             updateFromServerThrottled();
         });
 
-        $scope.$watch('branchName', function() {
+        $scope.$watch('branch', function() {
             saveScopeToUrl();
             updateFromServer();
         });
@@ -41,7 +52,7 @@
     function saveScopeToUrl() {
         urlService.saveToUrl({
             code: $scope.code,
-            branch: $scope.branchName
+            branch: ($scope.branch || {}).name
         });
     }
 
@@ -54,7 +65,7 @@
             return;
 
         $scope.loading = true;
-        compilationService.process($scope.code, $scope.branchName).then(function (data) {
+        compilationService.process($scope.code, ($scope.branch || {}).name).then(function (data) {
             $scope.loading = false;
             $scope.result = data;
         }, function(response) {
