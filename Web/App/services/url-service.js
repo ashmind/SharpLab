@@ -29,7 +29,7 @@
             return null;
 
         lastHash = hash;
-        var match = /(?:b:([^\/]+)\/)(.+)/.exec(hash);
+        var match = /(?:b:([^\/]+)\/)?(.+)/.exec(hash);
         if (match == null)
             return null;
 
