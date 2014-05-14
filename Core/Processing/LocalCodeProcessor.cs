@@ -30,7 +30,9 @@ namespace TryRoslyn.Core.Processing {
         }
 
         public ProcessingResult Process(string code) {
-            var syntaxTree = CSharpSyntaxTree.ParseText(code);
+            var syntaxTree = CSharpSyntaxTree.ParseText(
+                code, options: new CSharpParseOptions(_roslynAbstraction.GetMaxLanguageVersion())
+            );
             
             var stream = new MemoryStream();
             var emitResult = CSharpCompilation.Create("Test")

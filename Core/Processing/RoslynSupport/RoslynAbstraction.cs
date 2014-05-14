@@ -4,16 +4,23 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using AshMind.Extensions;
+using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace TryRoslyn.Core.Processing.RoslynSupport {
     // this provides a way to manage Roslyn API changes between branches
+    [ThreadSafe]
     public class RoslynAbstraction : IRoslynAbstraction {
-        private static class Cached<TDelegate> {
+        [ThreadSafe]
+        private static class Cached<[ThreadSafe] TDelegate> {
             private static readonly Expression<TDelegate> FactoryExpression = BuildFactory<TDelegate>();
             public static readonly TDelegate Factory = FactoryExpression.Compile();
         }
+
+        private readonly Lazy<LanguageVersion> _maxLanguageVersion = new Lazy<LanguageVersion>(
+            () => Enum.GetValues(typeof(LanguageVersion)).Cast<LanguageVersion>().Max()
+        );
 
         public MetadataFileReference NewMetadataFileReference(string path) {
             return Cached<Func<string, MetadataFileReference>>.Factory(path);
@@ -21,6 +28,10 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
 
         public CSharpCompilationOptions NewCSharpCompilationOptions(OutputKind outputKind) {
             return Cached<Func<OutputKind, CSharpCompilationOptions>>.Factory(outputKind);
+        }
+
+        public LanguageVersion GetMaxLanguageVersion() {
+            return _maxLanguageVersion.Value;
         }
 
         private static Expression<TDelegate> BuildFactory<TDelegate>() {
