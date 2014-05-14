@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using AshMind.IO.Abstractions;
 using JetBrains.Annotations;
 using Mono.Cecil;
 using AssemblyDefinition = Mono.Cecil.AssemblyDefinition;
@@ -12,6 +13,8 @@ namespace TryRoslyn.Core.Processing {
     public class BranchCodeProcessor : ICodeProcessor {
         private readonly string _branchName;
         private readonly IBranchProvider _branchProvider;
+        // ReSharper disable once AgentHeisenbug.FieldOfNonThreadSafeTypeInThreadSafeType
+        private readonly IFileSystem _fileSystem;
 
         // ReSharper disable once AgentHeisenbug.MutableFieldInThreadSafeType
         private bool _disposed;
@@ -20,11 +23,12 @@ namespace TryRoslyn.Core.Processing {
         private readonly Lazy<AppDomain> _branchAppDomain;
         private readonly Lazy<ICodeProcessor> _remoteProcessor;
 
-        public BranchCodeProcessor(string branchName, IBranchProvider branchProvider) {
+        public BranchCodeProcessor(string branchName, IBranchProvider branchProvider, IFileSystem fileSystem) {
             _branchAppDomain = new Lazy<AppDomain>(CreateAppDomain);
             _remoteProcessor = new Lazy<ICodeProcessor>(CreateRemoteProcessor);
             _branchName = branchName;
             _branchProvider = branchProvider;
+            _fileSystem = fileSystem;
         }
 
         public ProcessingResult Process(string code) {
@@ -32,9 +36,11 @@ namespace TryRoslyn.Core.Processing {
         }
 
         private AppDomain CreateAppDomain() {
-            var coreAssemblyLocation = Uri.UnescapeDataString(new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath);
+            var coreAssemblyFile = _fileSystem.GetFile(
+                Uri.UnescapeDataString(new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath)
+            );
 
-            var tempDirectory = new DirectoryInfo(Path.Combine(
+            var tempDirectory = _fileSystem.GetDirectory(Path.Combine(
                 Path.GetDirectoryName(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile),
                 @"App_Data\AppDomains", // ugly hack, just to save time
                 _branchName
@@ -45,11 +51,11 @@ namespace TryRoslyn.Core.Processing {
             tempDirectory.Create();
 
             var branchDirectory = _branchProvider.GetDirectory(_branchName);
-            var originalDirectoryPath = Path.GetDirectoryName(coreAssemblyLocation);
+            var originalDirectory = coreAssemblyFile.Directory;
 
-            CopyFiles(branchDirectory.FullName, tempDirectory.FullName);
-            CopyAndPrepareCoreAssembly(coreAssemblyLocation, tempDirectory);
-            CopyFiles(originalDirectoryPath, tempDirectory.FullName);
+            CopyFiles(branchDirectory, tempDirectory);
+            CopyAndPrepareCoreAssembly(coreAssemblyFile, tempDirectory);
+            CopyFiles(originalDirectory, tempDirectory);
 
             var domain = AppDomain.CreateDomain("Branch:" + _branchName, null, new AppDomainSetup {
                 ApplicationBase = tempDirectory.FullName
@@ -58,23 +64,26 @@ namespace TryRoslyn.Core.Processing {
             return domain;
         }
 
-        private static void CopyFiles(string sourceDirectoryPath, string targetDirectoryPath) {
-            foreach (var filePath in Directory.EnumerateFiles(sourceDirectoryPath)) {
-                var targetPath = Path.Combine(targetDirectoryPath, Path.GetFileName(filePath));
-                if (File.Exists(targetPath))
+        private static void CopyFiles(IDirectory sourceDirectory, IDirectory targetDirectory) {
+            foreach (var sourceFile in sourceDirectory.EnumerateFiles()) {
+                var targetFile = targetDirectory.GetFile(sourceFile.Name);
+                if (targetFile.Exists)
                     continue;
 
-                File.Copy(filePath, targetPath);
+                sourceFile.CopyTo(targetFile.FullName);
             }
         }
 
-        private static void CopyAndPrepareCoreAssembly(string originalLocation, DirectoryInfo tempDirectory) {
-            var newLocation = Path.Combine(tempDirectory.FullName, Path.GetFileName(originalLocation));
-            File.Copy(originalLocation, newLocation);
+        private void CopyAndPrepareCoreAssembly(IFile originalAssemblyFile, IDirectory tempDirectory) {
+            var newLocation = tempDirectory.GetFile(originalAssemblyFile.Name);
+            originalAssemblyFile.CopyTo(newLocation.FullName);
 
-            var newAssembly = AssemblyDefinition.ReadAssembly(newLocation);
+            AssemblyDefinition newAssembly;
+            using (var stream = newLocation.OpenRead()) {
+                newAssembly = AssemblyDefinition.ReadAssembly(stream);
+            }
             foreach (var reference in newAssembly.MainModule.AssemblyReferences) {
-                var fileInTemp = GetAssemblyFile(tempDirectory.FullName, reference);
+                var fileInTemp = GetAssemblyFile(tempDirectory, reference);
                 if (!fileInTemp.Exists)
                     continue;
 
@@ -86,13 +95,15 @@ namespace TryRoslyn.Core.Processing {
                 reference.PublicKeyToken = null;
                 reference.HasPublicKey = false;
             }
-            newAssembly.Write(newLocation);
+            using (var stream = newLocation.Open(FileMode.Create)) {
+                newAssembly.Write(stream);
+            }
         }
 
         [Pure]
-        private static FileInfo GetAssemblyFile(string directoryPath, AssemblyNameReference name) {
-            // this is naive, but I do not think there is a reason to overcomplicae it
-            return new FileInfo(Path.Combine(directoryPath, name.Name + ".dll"));
+        private IFile GetAssemblyFile(IDirectory directory, AssemblyNameReference name) {
+            // this is naive, but I do not think there is a reason to overcomplicate it
+            return directory.GetFile(name.Name + ".dll");
         }
         
         [Pure]
