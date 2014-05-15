@@ -21,7 +21,7 @@ namespace TryRoslyn.Core.Processing.DecompilationSupport {
             WriteToken(Roles.Semicolon);
             if (_currentStatementIsNotValidCSharp) {
                 Space();
-                VisitComment(new Comment(" This is not valid C#, but it represents the IL correctly. ", CommentType.MultiLine));
+                VisitComment(new Comment(" This is not valid C#, but it represents the IL correctly."));
 
                 _currentStatementIsNotValidCSharp = false;
             }

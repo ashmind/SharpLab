@@ -209,6 +209,12 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Target Name="CopyJob" AfterTargets="pipelinePreDeployCopyAllFilesToOneFolder">
+    <ItemGroup>
+      <_JobFiles Include="$(SolutionDir)Jobs\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_JobFiles)" DestinationFolder="$(_PackageTempDir)\App_Data\jobs\triggered\%(RecursiveDir)" />
+  </Target>
   <Target Name="Chew" AfterTargets="pipelinePreDeployCopyAllFilesToOneFolder">
     <Exec Command="&quot;$(SolutionDir)#tools\chew.exe&quot; &quot;$(_PackageTempDir)\App&quot;" />
   </Target>

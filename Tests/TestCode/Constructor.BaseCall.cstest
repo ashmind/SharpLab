@@ -16,6 +16,6 @@ public class MyClass
     public MyClass(string name)
     {
         this.name2 = name;
-        base(); /* This is not valid C#, but it represents the IL correctly. */
+        base(); // This is not valid C#, but it represents the IL correctly.
     }
 }
