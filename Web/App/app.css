@@ -84,9 +84,25 @@ section header h1 {
 }
 
 section header select {
+  font-family: 'Roboto Condensed', sans-serif;
   background: transparent;
-  border: 1px solid #fff;
   outline: none;
+  border: none;
+  -webkit-appearance:none;
+  padding-right: 10px;
+}
+
+section header .select-wrapper {
+  position: absolute;
+  margin-top: -2px;
+  border: 1px solid #fff;
+}
+
+section header .select-wrapper::after {
+  content: '▾';
+  position: absolute;
+  right: 2px;
+  top: 0;
 }
 
 section header option {
@@ -178,10 +194,12 @@ section.collapsible.expanded header::after {
   flex-direction: column; 
 }
 
+.modes {
+  margin-left: 5px;
+}
+
 .branches {
-  position: absolute;
   right: 5px;
-  margin-top: -2px;
 }
 
 .code {

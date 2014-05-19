@@ -8,10 +8,10 @@ using Xunit.Extensions;
 
 namespace TryRoslyn.Tests.Support {
     public class EmbeddedResourceDataAttribute : DataAttribute {
-        private readonly Regex resourceNameRegex;
+        private readonly Regex _resourceNameRegex;
 
         public EmbeddedResourceDataAttribute(string resourceNameRegex) {
-            this.resourceNameRegex = new Regex(resourceNameRegex);
+            _resourceNameRegex = new Regex(resourceNameRegex);
         }
 
         public override IEnumerable<object[]> GetData(MethodInfo methodUnderTest, Type[] parameterTypes) {
@@ -19,7 +19,7 @@ namespace TryRoslyn.Tests.Support {
             var allResourceNames = assembly.GetManifestResourceNames();
 
             return from name in allResourceNames
-                   where this.resourceNameRegex.IsMatch(name)
+                   where _resourceNameRegex.IsMatch(name)
                    select new object[] { ReadResource(assembly, name) };
         }
 

@@ -1,7 +1,10 @@
-﻿angular.module('app').service('UrlService', ['$location', '$rootScope', function ($location, $rootScope) {
+﻿angular.module('app').service('UrlService', ['$location', '$rootScope', 'Modes', function ($location, $rootScope, modes) {
     var lastHash;
     this.saveToUrl = function(data) {
         var hash = LZString.compressToBase64(data.code);
+        if (data.mode === modes.script)
+            hash = 's/' + hash;
+
         if (data.branch)
             hash = "b:" + data.branch + "/" + hash;
 
@@ -29,14 +32,15 @@
             return null;
 
         lastHash = hash;
-        var match = /(?:b:([^\/]+)\/)?(.+)/.exec(hash);
+        var match = /(?:b:([^\/]+)\/)?(s\/)?(.+)/.exec(hash);
         if (match == null)
             return null;
 
         try {
             return {
                 branch: match[1],
-                code: LZString.decompressFromBase64(match[2])
+                mode: match[2] ? modes.script : modes.regular,
+                code: LZString.decompressFromBase64(match[3])
             };
         }
         catch (e) {

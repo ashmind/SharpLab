@@ -1,4 +1,4 @@
-﻿angular.module('app').controller('AppController', ['$scope', '$filter', 'UrlService', 'CompilationService', function ($scope, $filter, urlService, compilationService) {
+﻿angular.module('app').controller('AppController', ['$scope', '$filter', 'UrlService', 'CompilationService', 'Modes', function ($scope, $filter, urlService, compilationService, modes) {
     'use strict';
 
     $scope.branch = null;
@@ -26,9 +26,13 @@
         var urlData = urlService.loadFromUrl();
         if (urlData) {
             $scope.code = urlData.code;
+            $scope.mode = urlData.mode;
             branchesPromise.then(function() {
                 $scope.branch = $scope.branches.filter(function(b) { return b.name === urlData.branch; })[0] || null;
             });
+        }
+        else {
+            $scope.mode = modes.regular;
         }
 
         var unwatchDefault = $scope.$watch('defaultCode', function () {
@@ -37,27 +41,30 @@
         });
 
         var saveScopeToUrlThrottled = $.debounce(100, saveScopeToUrl);
-        var updateFromServerThrottled = $.debounce(600, updateFromServer);
+        var updateFromServerThrottled = $.debounce(600, processOnServer);
         $scope.$watch('code', function() {
             saveScopeToUrlThrottled();
             updateFromServerThrottled();
         });
 
-        $scope.$watch('branch', function() {
+        var updateImmediate = function() {
             saveScopeToUrl();
-            updateFromServer();
-        });
+            processOnServer();
+        };
+        $scope.$watch('branch', updateImmediate);
+        $scope.$watch('mode', updateImmediate);
     }
 
     function saveScopeToUrl() {
         urlService.saveToUrl({
             code: $scope.code,
+            mode: $scope.mode,
             branch: ($scope.branch || {}).name
         });
     }
 
     $scope.loading = false;
-    function updateFromServer() {
+    function processOnServer() {
         if ($scope.code == undefined || $scope.code === '')
             return;
 
@@ -65,7 +72,7 @@
             return;
 
         $scope.loading = true;
-        compilationService.process($scope.code, ($scope.branch || {}).name).then(function (data) {
+        compilationService.process($scope.code, $scope.mode, ($scope.branch || {}).name).then(function (data) {
             $scope.loading = false;
             $scope.result = data;
         }, function(response) {

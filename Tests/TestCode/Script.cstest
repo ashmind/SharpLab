@@ -1,0 +1,23 @@
+﻿// script mode
+using System;
+
+var x = 5;
+Console.WriteLine(x);
+
+// =>
+
+using System;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+[assembly: AssemblyVersion("0.0.0.0")]
+[assembly: CompilationRelaxations(8)]
+[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+internal sealed class Script
+{
+    private int x;
+    public Script()
+    {
+        this.x = 5;
+        Console.WriteLine(this.x);
+    }
+}

@@ -81,6 +81,7 @@
     <Compile Include="ProcessingResultMessage.cs" />
     <Compile Include="Processing\BranchCodeProcessor.cs" />
     <Compile Include="BranchProvider.cs" />
+    <Compile Include="Processing\CodeKind.cs" />
     <Compile Include="Processing\CodeProcessorProxy.cs" />
     <Compile Include="Processing\LocalCodeProcessor.cs" />
     <Compile Include="Processing\CodeProcessorManager.cs" />

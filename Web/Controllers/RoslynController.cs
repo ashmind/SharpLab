@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using Microsoft.CodeAnalysis;
 using TryRoslyn.Core;
+using TryRoslyn.Web.Models;
 
 namespace TryRoslyn.Web.Controllers {
     // routes are a mess at the moment
@@ -24,12 +25,12 @@ namespace TryRoslyn.Web.Controllers {
         
         [HttpPost]
         [Route("api/compilation")]
-        public object Compilation([FromBody] string code, string branch = null) {
-            var processor = branch != null 
-                          ? _processorManager.GetBranchProcessor(branch)
+        public object Compilation([FromBody] CompilationArguments arguments) {
+            var processor = arguments.Branch != null
+                          ? _processorManager.GetBranchProcessor(arguments.Branch)
                           : _processorManager.DefaultProcessor;
 
-            var result = processor.Process(code);
+            var result = processor.Process(arguments.Code, arguments.Mode == CompilationMode.Script);
             return new {
                 success = result.IsSuccess,
                 //result.SyntaxTree,

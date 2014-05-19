@@ -21,6 +21,7 @@
     <script src="directives/codemirror.js"></script>
     <script src="directives/cleanread.js"></script>
     <script src="directives/syntaxtree.js"></script>
+    <script src="services/modes.js"></script>
     <script src="services/compilation-service.js"></script>
     <script src="services/url-service.js"></script>
     <script src="services/location-service.js"></script>
@@ -32,11 +33,19 @@
         <section class="code">
           <header>
             <h1>Code</h1>
-            <select class="branches"
-                    data-ng-model="branch"
-                    data-ng-options="branch as displayBranch(branch) for branch in branches track by branch.name">
-              <option value="">Release (NuGet)</option>
-            </select>
+            <div class="select-wrapper modes">
+              <select data-ng-model="mode">
+                <option value="regular">Standard</option>
+                <option value="script">Script</option>
+              </select>
+            </div>
+            
+            <div class="select-wrapper branches">
+              <select data-ng-model="branch"
+                      data-ng-options="branch as displayBranch(branch) for branch in branches track by branch.name">
+                <option value="">Release (NuGet)</option>
+              </select>
+            </div>
           </header>
           <div class="content">
             <app-codemirror value="code" mode="text/x-csharp" linenumbers></app-codemirror>

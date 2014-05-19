@@ -5,17 +5,18 @@
         });
     }
 
-    this.process = function (code, branchName) {
+    this.process = function (code, mode, branchName) {
         var url = 'api/compilation';
-        if (branchName)
-            url += '?branch=' + branchName;
-
         return $http({
             url:    url,
             method: 'POST',
-            data:   code,
+            data: {
+                code:   code,
+                mode:   mode,
+                branch: branchName
+            },
             headers: {
-                'Content-Type': 'text/x-csharp',
+                'Content-Type': 'application/json',
                 'Accepts':      'application/json'
             }
         }).then(function (response) {

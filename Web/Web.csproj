@@ -48,8 +48,17 @@
     <Reference Include="Autofac.Integration.WebApi">
       <HintPath>..\#packages\Autofac.WebApi2.3.2.1\lib\net45\Autofac.Integration.WebApi.dll</HintPath>
     </Reference>
+    <Reference Include="Castle.Core">
+      <HintPath>..\#packages\Castle.Core.1.1.0\lib\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.DynamicProxy2">
+      <HintPath>..\#packages\Castle.DynamicProxy.2.1.0\lib\Castle.DynamicProxy2.dll</HintPath>
+    </Reference>
     <Reference Include="JetBrains.Annotations">
       <HintPath>..\#packages\JetBrains.Annotations.7.0\lib\net45\JetBrains.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\#packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=0.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -144,6 +153,7 @@
     <Content Include="App\loader\loader.css" />
     <Content Include="App\loader\loader.html" />
     <Content Include="App\services\location-service.js" />
+    <Content Include="App\services\modes.js" />
     <Content Include="Global.asax" />
     <Content Include="App\controllers\app-controller.js" />
     <Content Include="App\app.css" />
@@ -159,9 +169,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Models\CompilationArguments.cs" />
+    <Compile Include="Models\CompilationMode.cs" />
     <Compile Include="Controllers\RoslynController.cs" />
     <Compile Include="Formatting\SyntaxTreeConverter.cs" />
-    <Compile Include="Formatting\TextMediaTypeFormatter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

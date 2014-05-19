@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,11 +30,12 @@ namespace TryRoslyn.Core.Processing {
             };
         }
 
-        public ProcessingResult Process(string code) {
+        public ProcessingResult Process(string code, bool scriptMode) {
+            var kind = scriptMode ? SourceCodeKind.Script : SourceCodeKind.Regular;
             var syntaxTree = CSharpSyntaxTree.ParseText(
-                code, options: new CSharpParseOptions(_roslynAbstraction.GetMaxLanguageVersion())
+                code, options: new CSharpParseOptions(_roslynAbstraction.GetMaxLanguageVersion(), kind: kind)
             );
-            
+
             var stream = new MemoryStream();
             var emitResult = CSharpCompilation.Create("Test")
                 .WithOptions(_roslynAbstraction.NewCSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
