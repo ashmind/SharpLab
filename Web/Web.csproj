@@ -148,6 +148,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App\directives\boolean-model.js" />
     <Content Include="App\directives\cleanread.js" />
     <Content Include="App\directives\syntaxtree.js" />
     <Content Include="App\loader\loader.css" />

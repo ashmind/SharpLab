@@ -35,7 +35,6 @@
             mode: modes.regular,
             optimizations: false
         }, $scope.options);
-        fixBooleansForAngular($scope.options);
 
         var unwatchDefault = $scope.$watch('defaultCode', function () {
             $scope.code = $scope.code || $scope.defaultCode;
@@ -61,20 +60,7 @@
             $scope.$watch('options.' + key, updateImmediate);
         }
     }
-
-    function fixBooleansForAngular(object) {
-        Object.keys(object).forEach(function(key) {
-            if (typeof object[key] !== 'boolean')
-                return;
-
-            Object.defineProperty(object, key + '$string', {
-                enumerable: true,
-                get: function() { return object[key].toString(); },
-                set: function(value) { object[key] = (value === 'true'); }
-            });
-        });
-    }
-
+    
     function saveScopeToUrl() {
         urlService.saveToUrl({
             code: $scope.code,

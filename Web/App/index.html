@@ -21,6 +21,7 @@
     <script src="directives/codemirror.js"></script>
     <script src="directives/cleanread.js"></script>
     <script src="directives/syntaxtree.js"></script>
+    <script src="directives/boolean-model.js"></script>
     <script src="services/modes.js"></script>
     <script src="services/compilation-service.js"></script>
     <script src="services/url-service.js"></script>
@@ -92,7 +93,7 @@
             </span>
 
             <div class="select-wrapper optimizations">
-              <select data-ng-model="options.optimizations$string">
+              <select data-ng-model="options.optimizations" data-app-boolean-model>
                 <option value="false">Debug</option>
                 <option value="true">Release</option>
               </select>
