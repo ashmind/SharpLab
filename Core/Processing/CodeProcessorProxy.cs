@@ -13,8 +13,8 @@ namespace TryRoslyn.Core.Processing {
             _processor = new LocalCodeProcessor(new Decompiler(), new RoslynAbstraction());
         }
 
-        public ProcessingResult Process(string code, bool scriptMode) {
-            return _processor.Process(code, scriptMode);
+        public ProcessingResult Process(string code, bool scriptMode, bool optimizations) {
+            return _processor.Process(code, scriptMode, optimizations);
         }
 
         public override object InitializeLifetimeService() {

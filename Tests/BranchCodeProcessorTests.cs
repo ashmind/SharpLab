@@ -14,7 +14,7 @@ namespace TryRoslyn.Tests {
         public void Process_CanExecuteSimpleCode_InOtherBranch() {
             EnsureBranchExists("master");
             var processor = new BranchCodeProcessor("master", CreateBranchProvider(), new FileSystem());
-            var result = processor.Process("public class X { public void M() {} }", false);
+            var result = processor.Process("public class X { public void M() {} }", false, false);
 
             Assert.NotNull(result);
         }

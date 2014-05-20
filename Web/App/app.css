@@ -202,6 +202,10 @@ section.collapsible.expanded header::after {
   right: 5px;
 }
 
+.optimization {
+  right: 5px;
+}
+
 .code {
   -webkit-flex: 1 0 auto;
   flex: 1 0 auto;

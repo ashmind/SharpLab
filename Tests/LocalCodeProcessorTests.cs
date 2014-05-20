@@ -20,7 +20,7 @@ namespace TryRoslyn.Tests {
             var expected = parts[1].Trim();
 
             var service = new LocalCodeProcessor(new Decompiler(), new RoslynAbstraction());
-            var result = service.Process(code, scriptMode);
+            var result = service.Process(code, scriptMode, false);
 
             var errors = string.Join(Environment.NewLine, result.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
             Assert.Equal("", errors);

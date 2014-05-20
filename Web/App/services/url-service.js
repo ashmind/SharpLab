@@ -2,6 +2,9 @@
     var lastHash;
     this.saveToUrl = function(data) {
         var hash = LZString.compressToBase64(data.code);
+        if (data.optimizations)
+            hash = "opt/" + hash;
+
         if (data.mode === modes.script)
             hash = 's/' + hash;
 
@@ -32,7 +35,7 @@
             return null;
 
         lastHash = hash;
-        var match = /(?:b:([^\/]+)\/)?(s\/)?(.+)/.exec(hash);
+        var match = /(?:b:([^\/]+)\/)?(s\/)?(opt\/)?(.+)/.exec(hash);
         if (match == null)
             return null;
 
@@ -40,6 +43,7 @@
             return {
                 branch: match[1],
                 mode: match[2] ? modes.script : modes.regular,
+                optimizations: match[3] ? true : false,
                 code: LZString.decompressFromBase64(match[3])
             };
         }

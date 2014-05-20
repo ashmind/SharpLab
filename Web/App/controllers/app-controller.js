@@ -27,6 +27,7 @@
         if (urlData) {
             $scope.code = urlData.code;
             $scope.mode = urlData.mode;
+            $scope.optimizations = urlData.optimizations;
             branchesPromise.then(function() {
                 $scope.branch = $scope.branches.filter(function(b) { return b.name === urlData.branch; })[0] || null;
             });
@@ -53,12 +54,14 @@
         };
         $scope.$watch('branch', updateImmediate);
         $scope.$watch('mode', updateImmediate);
+        $scope.$watch('optimizations', updateImmediate);
     }
 
     function saveScopeToUrl() {
         urlService.saveToUrl({
             code: $scope.code,
             mode: $scope.mode,
+            optimizations: $scope.optimizations,
             branch: ($scope.branch || {}).name
         });
     }
@@ -72,7 +75,7 @@
             return;
 
         $scope.loading = true;
-        compilationService.process($scope.code, $scope.mode, ($scope.branch || {}).name).then(function (data) {
+        compilationService.process($scope.code, $scope.mode, $scope.optimizations, ($scope.branch || {}).name).then(function (data) {
             $scope.loading = false;
             $scope.result = data;
         }, function(response) {

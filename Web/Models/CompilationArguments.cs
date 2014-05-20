@@ -5,6 +5,7 @@ namespace TryRoslyn.Web.Models {
     public class CompilationArguments {
         public string Code { get; set; }
         public CompilationMode Mode { get; set; }
+        public bool Optimizations { get; set; }
         public string Branch { get; set; }
     }
 }

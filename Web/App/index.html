@@ -90,6 +90,13 @@
             <h1>Decompiled</h1>
             <span class="loader-container" data-ng-show="loading" data-ng-include="'loader/loader.html'">
             </span>
+
+            <div class="select-wrapper optimization">
+              <select data-ng-model="optimizations">
+                <option value="true">Release</option>
+                <option value="false">Debug</option>
+              </select>
+            </div>
           </header>
           <div class="content">
             <app-codemirror value="result.decompiled" mode="text/x-csharp" readonly></app-codemirror>
