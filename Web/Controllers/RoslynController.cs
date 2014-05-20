@@ -31,6 +31,7 @@ namespace TryRoslyn.Web.Controllers {
                           : _processorManager.DefaultProcessor;
 
             var result = processor.Process(arguments.Code, new ProcessingOptions {
+                Language = arguments.Language,
                 ScriptMode = arguments.Mode == CompilationMode.Script,
                 OptimizationsEnabled = arguments.OptimizationsEnabled
             });

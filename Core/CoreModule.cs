@@ -24,6 +24,8 @@ namespace TryRoslyn.Core {
                    .SingleInstance();
 
             builder.RegisterType<RoslynAbstraction>().As<IRoslynAbstraction>().SingleInstance();
+            builder.RegisterType<CSharpLanguage>().As<IRoslynLanguage>().SingleInstance();
+            builder.RegisterType<VBNetLanguage>().As<IRoslynLanguage>().SingleInstance();
             builder.RegisterType<LocalCodeProcessor>().As<ICodeProcessor>().SingleInstance();
             builder.RegisterType<BranchCodeProcessor>().AsSelf().InstancePerDependency();
             builder.Register<ICodeProcessorManager>(c => new CodeProcessorManager(

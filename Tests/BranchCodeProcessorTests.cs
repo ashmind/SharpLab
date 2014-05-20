@@ -13,9 +13,20 @@ namespace TryRoslyn.Tests {
     public class BranchCodeProcessorTests {
         [Theory]
         [PropertyData("Branches")]
-        public void Process_CanExecuteSimpleCode_InBranch(string branchName) {
+        public void Process_CanExecuteSimpleCSharpCode_InBranch(string branchName) {
             var processor = new BranchCodeProcessor(branchName, CreateBranchProvider(), new FileSystem());
             var result = processor.Process("public class X { public void M() {} }");
+
+            Assert.NotNull(result);
+        }
+
+        [Theory]
+        [PropertyData("Branches")]
+        public void Process_CanExecuteSimpleVBNetCode_InBranch(string branchName) {
+            var processor = new BranchCodeProcessor(branchName, CreateBranchProvider(), new FileSystem());
+            var result = processor.Process("Public Class C\r\nEnd Class", new ProcessingOptions {
+                Language = LanguageIdentifier.VBNet
+            });
 
             Assert.NotNull(result);
         }

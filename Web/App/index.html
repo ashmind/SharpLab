@@ -22,7 +22,7 @@
     <script src="directives/cleanread.js"></script>
     <script src="directives/syntaxtree.js"></script>
     <script src="directives/boolean-model.js"></script>
-    <script src="services/modes.js"></script>
+    <script src="services/default-code-service.js"></script>
     <script src="services/compilation-service.js"></script>
     <script src="services/url-service.js"></script>
     <script src="services/location-service.js"></script>
@@ -34,11 +34,20 @@
         <section class="code">
           <header>
             <h1>Code</h1>
-            <div class="select-wrapper modes">
-              <select data-ng-model="options.mode">
-                <option value="regular">Standard</option>
-                <option value="script">Script</option>
-              </select>
+            <div class="languages-and-modes">
+              <div class="select-wrapper languages">
+                <select data-ng-model="options.language">
+                  <option value="csharp">C#</option>
+                  <option value="vbnet">VB.NET</option>
+                </select>
+              </div>
+
+              <div class="select-wrapper modes">
+                <select data-ng-model="options.mode">
+                  <option value="regular">Standard</option>
+                  <option value="script">Script</option>
+                </select>
+              </div>
             </div>
             
             <div class="select-wrapper branches">
@@ -50,14 +59,6 @@
           </header>
           <div class="content">
             <app-codemirror value="code" mode="text/x-csharp" linenumbers></app-codemirror>
-            <script type="text/x-csharp" data-app-cleanread="defaultCode">
-              using System;
-
-              public class C(int x) {
-                  public void M() {
-                  }
-              }
-            </script>
           </div>
         </section>
         

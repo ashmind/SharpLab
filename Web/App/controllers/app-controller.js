@@ -1,4 +1,4 @@
-﻿angular.module('app').controller('AppController', ['$scope', '$filter', 'UrlService', 'CompilationService', 'Modes', function ($scope, $filter, urlService, compilationService, modes) {
+﻿angular.module('app').controller('AppController', ['$scope', '$filter', 'DefaultCodeService', 'UrlService', 'CompilationService', function ($scope, $filter, defaultCodeService, urlService, compilationService) {
     'use strict';
 
     $scope.branch = null;
@@ -30,16 +30,13 @@
                 $scope.branch = $scope.branches.filter(function(b) { return b.name === urlData.branch; })[0] || null;
             });
         }
-
+        
         $scope.options = angular.extend({
-            mode: modes.regular,
+            language: 'csharp',
+            mode: 'regular',
             optimizations: false
         }, $scope.options);
-
-        var unwatchDefault = $scope.$watch('defaultCode', function () {
-            $scope.code = $scope.code || $scope.defaultCode;
-            unwatchDefault();
-        });
+        defaultCodeService.attach($scope);
 
         var saveScopeToUrlThrottled = $.debounce(100, saveScopeToUrl);
         var updateFromServerThrottled = $.debounce(600, processOnServer);

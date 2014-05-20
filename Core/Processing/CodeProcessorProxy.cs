@@ -10,7 +10,12 @@ namespace TryRoslyn.Core.Processing {
         private readonly ICodeProcessor _processor;
 
         public CodeProcessorProxy() {
-            _processor = new LocalCodeProcessor(new Decompiler(), new RoslynAbstraction());
+            var abstraction = new RoslynAbstraction();
+            _processor = new LocalCodeProcessor(
+                new Decompiler(), abstraction,
+                new CSharpLanguage(abstraction),
+                new VBNetLanguage(abstraction)
+            );
         }
 
         public ProcessingResult Process(string code, ProcessingOptions options) {

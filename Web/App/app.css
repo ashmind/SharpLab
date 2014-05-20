@@ -93,8 +93,7 @@ section header select {
 }
 
 section header .select-wrapper {
-  position: absolute;
-  margin-top: -2px;
+  position: relative;
   border: 1px solid #fff;
 }
 
@@ -103,6 +102,11 @@ section header .select-wrapper::after {
   position: absolute;
   right: 2px;
   top: 0;
+}
+
+section header > .select-wrapper {
+  position: absolute;
+  margin-top: -2px;
 }
 
 section header option {
@@ -192,6 +196,17 @@ section.collapsible.expanded header::after {
   display: flex;
   -webkit-flex-direction: column;
   flex-direction: column; 
+}
+
+.languages-and-modes {
+  position: absolute;
+  margin-top: -2px;
+  white-space: nowrap;
+  margin-left: 10px;
+}
+
+.languages-and-modes > * {
+  display: inline-block;
 }
 
 .modes {

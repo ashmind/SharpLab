@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CSharp.RuntimeBinder;
 using TryRoslyn.Core.Processing.RoslynSupport;
 
@@ -13,38 +12,34 @@ namespace TryRoslyn.Core.Processing {
     [ThreadSafe]
     public class LocalCodeProcessor : ICodeProcessor {
         private readonly IDecompiler _decompiler;
-        private readonly IRoslynAbstraction _roslynAbstraction;
+        private readonly IRoslynLanguage[] _languages;
 
         private readonly MetadataReference[] _references;
-        
-        public LocalCodeProcessor(IDecompiler decompiler, IRoslynAbstraction roslynAbstraction) {
+
+        public LocalCodeProcessor(IDecompiler decompiler, IRoslynAbstraction roslynAbstraction, params IRoslynLanguage[] languages) {
             _decompiler = decompiler;
-            _roslynAbstraction = roslynAbstraction;
+            _languages = languages;
 
             _references = new MetadataReference[] {
-                _roslynAbstraction.NewMetadataFileReference(typeof(object).Assembly.Location),
-                _roslynAbstraction.NewMetadataFileReference(typeof(Uri).Assembly.Location),
-                _roslynAbstraction.NewMetadataFileReference(typeof(DynamicAttribute).Assembly.Location),
-                _roslynAbstraction.NewMetadataFileReference(typeof(Binder).Assembly.Location)
+                roslynAbstraction.NewMetadataFileReference(typeof(object).Assembly.Location),
+                roslynAbstraction.NewMetadataFileReference(typeof(Uri).Assembly.Location),
+                roslynAbstraction.NewMetadataFileReference(typeof(DynamicAttribute).Assembly.Location),
+                roslynAbstraction.NewMetadataFileReference(typeof(Binder).Assembly.Location)
             };
         }
 
         public ProcessingResult Process(string code, ProcessingOptions options) {
             options = options ?? new ProcessingOptions();
             var kind = options.ScriptMode ? SourceCodeKind.Script : SourceCodeKind.Regular;
-            var syntaxTree = CSharpSyntaxTree.ParseText(
-                code, options: new CSharpParseOptions(_roslynAbstraction.GetMaxLanguageVersion(), kind: kind)
-            );
+            var language = _languages.Single(l => l.Identifier == options.Language);
+
+            var syntaxTree = language.ParseText(code, kind);
 
             var stream = new MemoryStream();
-            var emitResult = CSharpCompilation.Create("Test")
-                .WithOptions(_roslynAbstraction
-                    .NewCSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-                    .WithAllowUnsafe(enabled: true)
-                    .WithOptimizations(options.OptimizationsEnabled))
-                .AddReferences(_references)
-                .AddSyntaxTrees(syntaxTree)
-                .Emit(stream);
+            var emitResult = language.CreateUnsafeLibraryCompilation("Test", options.OptimizationsEnabled)
+                                     .AddReferences(_references)
+                                     .AddSyntaxTrees(syntaxTree)
+                                     .Emit(stream);
 
             if (!emitResult.Success)
                 return new ProcessingResult(null, emitResult.Diagnostics.Select(d => new SerializableDiagnostic(d)));

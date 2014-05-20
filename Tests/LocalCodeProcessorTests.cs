@@ -14,20 +14,33 @@ namespace TryRoslyn.Tests {
     public class LocalCodeProcessorTests {
         [Theory]
         [EmbeddedResourceData("TestCode")]
-        public void Process_ReturnsExpectedCode(string content) {
-            var scriptMode = content.StartsWith("// script mode");
-            var parts = content.Split("// =>");
+        public void Process_ReturnsExpectedCode(string resourceName, string content) {
+            var scriptMode = content.StartsWith("// script mode") || content.StartsWith("' Script Mode");
+            var language = resourceName.EndsWith(".cstest") ? LanguageIdentifier.CSharp : LanguageIdentifier.VBNet;
+
+            var parts = content.Split(new [] { "// =>", "' =>" });
             var code = parts[0].Trim();
             var expected = parts[1].Trim();
 
-            var service = new LocalCodeProcessor(new Decompiler(), new RoslynAbstraction());
+            var service = CreateService();
             var result = service.Process(code, new ProcessingOptions {
+                Language = language,
                 ScriptMode = scriptMode
             });
 
             var errors = string.Join(Environment.NewLine, result.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
             Assert.Equal("", errors);
             AssertGold.Equal(expected, result.Decompiled.Trim());
+        }
+
+        private static LocalCodeProcessor CreateService() {
+            var abstraction = new RoslynAbstraction();
+            var service = new LocalCodeProcessor(
+                new Decompiler(), abstraction,
+                new CSharpLanguage(abstraction),
+                new VBNetLanguage(abstraction)
+                );
+            return service;
         }
     }
 }

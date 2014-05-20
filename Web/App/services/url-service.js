@@ -1,4 +1,4 @@
-﻿angular.module('app').service('UrlService', ['$location', '$rootScope', 'Modes', function ($location, $rootScope, modes) {
+﻿angular.module('app').service('UrlService', ['$location', '$rootScope', function ($location, $rootScope) {
     'use strict';
     
     var lastHash;
@@ -6,10 +6,10 @@
         var hash = LZString.compressToBase64(data.code);
         var flags = stringifyOptions(data.options);
         if (flags)
-            hash = flags + "/" + hash;
+            hash = 'f:' + flags + '/' + hash;
 
         if (data.branch)
-            hash = "b:" + data.branch + "/" + hash;
+            hash = 'b:' + data.branch + '/' + hash;
 
         lastHash = hash;
         $location.hash(hash);
@@ -35,7 +35,7 @@
             return null;
 
         lastHash = hash;
-        var match = /(?:b:([^\/]+)\/)?(?:(s?r?)\/)?(.+)/.exec(hash);
+        var match = /(?:b:([^\/]+)\/)?(?:f:([^\/]+)\/)?(.+)/.exec(hash);
         if (match == null)
             return null;
 
@@ -53,7 +53,8 @@
 
     function stringifyOptions(options) {
         return [
-            options.mode === modes.script ? 's' : '',
+            options.language === 'vbnet' ? 'vb' : '',
+            options.mode === 'script' ? 's' : '',
             options.optimizations ? 'r' : ''
         ].join('');
     }
@@ -63,7 +64,8 @@
             return {};
 
         return {
-            mode:          flags.indexOf("s") > -1 ? modes.script : modes.regular,
+            language:      flags.indexOf("vb") > -1 ? 'vbnet'  : 'csharp',
+            mode:          flags.indexOf("s") > -1  ? 'script' : 'regular',
             optimizations: flags.indexOf("r") > -1
         };
     }

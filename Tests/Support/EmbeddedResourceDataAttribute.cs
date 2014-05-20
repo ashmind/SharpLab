@@ -20,7 +20,7 @@ namespace TryRoslyn.Tests.Support {
 
             return from name in allResourceNames
                    where _resourceNameRegex.IsMatch(name)
-                   select new object[] { ReadResource(assembly, name) };
+                   select new object[] { name, ReadResource(assembly, name) };
         }
 
         private string ReadResource(Assembly assembly, string name) {

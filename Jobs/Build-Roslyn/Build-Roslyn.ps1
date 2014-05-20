@@ -34,11 +34,35 @@ function Build-Branch($directory) {
         Write-Output "  [WARNING] Build failed, see $buildLogPath"
         return
     }      
-    
+        
     &$MSBuild "$directory\Src\Compilers\CSharp\Source\CSharpCodeAnalysis.csproj" `
         /p:RestorePackages=false `
         /p:DelaySign=false `
         /p:SignAssembly=false `
+        >> "$buildLogPath"
+
+    if ($LastExitCode -ne 0) {
+        Write-Output "  [WARNING] Build failed, see $buildLogPath"
+        return
+    }
+    
+    &$MSBuild "$directory\Src\Tools\Source\CompilerGeneratorTools\Source\VisualBasicSyntaxGenerator\VisualBasicSyntaxGenerator.vbproj" `
+        /p:RestorePackages=false `
+        /p:DelaySign=false `
+        /p:SignAssembly=false `
+        /p:Configuration=Debug `
+        >> "$buildLogPath"
+        
+    if ($LastExitCode -ne 0) {
+        Write-Output "  [WARNING] Build failed, see $buildLogPath"
+        return
+    }
+    
+    &$MSBuild "$directory\Src\Compilers\VisualBasic\Source\BasicCodeAnalysis.vbproj" `
+        /p:RestorePackages=false `
+        /p:DelaySign=false `
+        /p:SignAssembly=false `
+        /p:Configuration=Debug `
         >> "$buildLogPath"
 
     if ($LastExitCode -ne 0) {
@@ -97,7 +121,7 @@ try {
         Write-Output ''
         Write-Output "*** $_"
         $directory = "$sourcesRoot\" + $_.Replace('/', '-')
-        Sync-Branch $directory $_
+        #Sync-Branch $directory $_
         Build-Branch $directory
     }
     

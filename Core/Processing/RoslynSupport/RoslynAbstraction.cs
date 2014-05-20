@@ -18,22 +18,23 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             public static readonly TDelegate Factory = FactoryExpression.Compile();
         }
 
-        private readonly Lazy<LanguageVersion> _maxLanguageVersion = new Lazy<LanguageVersion>(
-            () => Enum.GetValues(typeof(LanguageVersion)).Cast<LanguageVersion>().Max()
-        );
-
+        [ThreadSafe]
+        private static class CachedEnum<[ThreadSafe] TEnum> {
+            public static readonly TEnum MaxValue = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().Max();
+        }
+        
         public MetadataFileReference NewMetadataFileReference(string path) {
             return Cached<Func<string, MetadataFileReference>>.Factory(path);
         }
 
-        public CSharpCompilationOptions NewCSharpCompilationOptions(OutputKind outputKind) {
-            return Cached<Func<OutputKind, CSharpCompilationOptions>>.Factory(outputKind);
+        public TCompilationOptions NewCompilationOptions<TCompilationOptions>(OutputKind outputKind) {
+            return Cached<Func<OutputKind, TCompilationOptions>>.Factory(outputKind);
         }
 
-        public LanguageVersion GetMaxLanguageVersion() {
-            return _maxLanguageVersion.Value;
+        public TLanguageVersion GetMaxValue<TLanguageVersion>() {
+            return CachedEnum<TLanguageVersion>.MaxValue;
         }
-
+        
         private static Expression<TDelegate> BuildFactory<TDelegate>() {
             if (typeof(TDelegate).FullName.SubstringBefore("`") != "System.Func")
                 throw new NotSupportedException("Only Func<..> delegates are supported.");
