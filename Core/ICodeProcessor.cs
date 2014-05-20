@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 namespace TryRoslyn.Core {
     [ThreadSafe]
     public interface ICodeProcessor : IDisposable {
-        ProcessingResult Process(string code, bool scriptMode = false, bool optimizations = false);
+        [NotNull]
+        ProcessingResult Process([NotNull] string code, [CanBeNull] ProcessingOptions options = null);
     }
 }

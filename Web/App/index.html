@@ -34,7 +34,7 @@
           <header>
             <h1>Code</h1>
             <div class="select-wrapper modes">
-              <select data-ng-model="mode">
+              <select data-ng-model="options.mode">
                 <option value="regular">Standard</option>
                 <option value="script">Script</option>
               </select>
@@ -91,10 +91,10 @@
             <span class="loader-container" data-ng-show="loading" data-ng-include="'loader/loader.html'">
             </span>
 
-            <div class="select-wrapper optimization">
-              <select data-ng-model="optimizations">
-                <option value="true">Release</option>
+            <div class="select-wrapper optimizations">
+              <select data-ng-model="options.optimizations$string">
                 <option value="false">Debug</option>
+                <option value="true">Release</option>
               </select>
             </div>
           </header>

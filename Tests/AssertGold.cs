@@ -15,26 +15,20 @@ namespace TryRoslyn.Tests {
                 Assert.Equal(expected, actual);
             }
             catch (AssertException ex) {
-                var test = GetCurrentTestMethod();
+                var testId = Guid.NewGuid();
                 var message = string.Join(
                     Environment.NewLine,
                     ex.Message,
                     "The following allows R# DiffGold plugin to be used:",
-                    ReportTempFile("GoldFile", expected, test),
-                    ReportTempFile("TempFile", actual, test)
+                    ReportTempFile("GoldFile", expected, testId),
+                    ReportTempFile("TempFile", actual, testId)
                 );
                 throw new AssertException(message);
             }
         }
-
-        private static MethodBase GetCurrentTestMethod() {
-            var stackFrames = new StackTrace().GetFrames();
-            return stackFrames.Select(f => f.GetMethod()).First(m => m.GetCustomAttributes(false).Any(a => a is FactAttribute));
-        }
-
-        private static string ReportTempFile(string type, string content, MethodBase currentTest) {
-            var safeTestName = Regex.Replace(currentTest.Name, @"[^A-Za-z\.]", "_");
-            var fileName = string.Format("{0}-{1}.tmp", safeTestName, type);
+        
+        private static string ReportTempFile(string type, string content, Guid testId) {
+            var fileName = string.Format("{0:D}-{1}.tmp", testId, type);
             File.WriteAllText(fileName, content);
             var fullPath = Path.GetFullPath(fileName);
 

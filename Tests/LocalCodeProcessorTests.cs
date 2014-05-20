@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AshMind.Extensions;
 using Microsoft.CodeAnalysis;
+using TryRoslyn.Core;
 using TryRoslyn.Core.Processing;
 using TryRoslyn.Core.Processing.RoslynSupport;
 using TryRoslyn.Tests.Support;
@@ -20,7 +21,9 @@ namespace TryRoslyn.Tests {
             var expected = parts[1].Trim();
 
             var service = new LocalCodeProcessor(new Decompiler(), new RoslynAbstraction());
-            var result = service.Process(code, scriptMode, false);
+            var result = service.Process(code, new ProcessingOptions {
+                ScriptMode = scriptMode
+            });
 
             var errors = string.Join(Environment.NewLine, result.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
             Assert.Equal("", errors);

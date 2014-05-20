@@ -7,24 +7,28 @@ using AshMind.IO.Abstractions.Adapters;
 using TryRoslyn.Core;
 using TryRoslyn.Core.Processing;
 using Xunit;
+using Xunit.Extensions;
 
 namespace TryRoslyn.Tests {
     public class BranchCodeProcessorTests {
-        [Fact]
-        public void Process_CanExecuteSimpleCode_InOtherBranch() {
-            EnsureBranchExists("master");
-            var processor = new BranchCodeProcessor("master", CreateBranchProvider(), new FileSystem());
-            var result = processor.Process("public class X { public void M() {} }", false, false);
+        [Theory]
+        [PropertyData("Branches")]
+        public void Process_CanExecuteSimpleCode_InBranch(string branchName) {
+            var processor = new BranchCodeProcessor(branchName, CreateBranchProvider(), new FileSystem());
+            var result = processor.Process("public class X { public void M() {} }");
 
             Assert.NotNull(result);
         }
 
-        private void EnsureBranchExists(string branchName) {
-            var branch = CreateBranchProvider().GetDirectory(branchName);
-            Assert.True(branch.Exists, "Branch " + branch.FullName + " does not exist: please run BuildRoslyn.ps1 before this test.");
+        public static IEnumerable<object[]> Branches {
+            get {
+                var names = CreateBranchProvider().GetBranches().Select(b => b.Name).ToArray();
+                Assert.True(names.Contains("master"), "Branch 'master' does not exist: please run BuildRoslyn.ps1 before this test.");
+                return names.Select(n => new object[] { n });
+            }
         }
-
-        private BranchProvider CreateBranchProvider() {
+        
+        private static BranchProvider CreateBranchProvider() {
             return new BranchProvider(new DirectoryInfoAdapter(new DirectoryInfo(ConfigurationManager.AppSettings["BinariesRoot"])));
         }
     }

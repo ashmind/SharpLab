@@ -5,17 +5,18 @@
         });
     }
 
-    this.process = function (code, mode, optimizations, branchName) {
+    this.process = function (code, options, branchName) {
         var url = 'api/compilation';
+        var data = {
+            code:   code,
+            branch: branchName
+        };
+        angular.extend(data, options);
+
         return $http({
             url:    url,
             method: 'POST',
-            data: {
-                code:          code,
-                mode:          mode,
-                optimizations: optimizations,
-                branch:        branchName
-            },
+            data:   data,
             headers: {
                 'Content-Type': 'application/json',
                 'Accepts':      'application/json'

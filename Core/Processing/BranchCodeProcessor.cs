@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -31,8 +32,8 @@ namespace TryRoslyn.Core.Processing {
             _fileSystem = fileSystem;
         }
 
-        public ProcessingResult Process(string code, bool scriptMode, bool optimizations) {
-            return _remoteProcessor.Value.Process(code, scriptMode, optimizations);
+        public ProcessingResult Process(string code, ProcessingOptions options = null) {
+            return _remoteProcessor.Value.Process(code, options);
         }
 
         private AppDomain CreateAppDomain() {
