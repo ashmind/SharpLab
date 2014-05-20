@@ -5,15 +5,16 @@
         });
     }
 
-    this.process = function (code, mode, branchName) {
+    this.process = function (code, mode, optimizations, branchName) {
         var url = 'api/compilation';
         return $http({
             url:    url,
             method: 'POST',
             data: {
-                code:   code,
-                mode:   mode,
-                branch: branchName
+                code:          code,
+                mode:          mode,
+                optimizations: optimizations,
+                branch:        branchName
             },
             headers: {
                 'Content-Type': 'application/json',

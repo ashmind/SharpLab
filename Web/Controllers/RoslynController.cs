@@ -30,7 +30,9 @@ namespace TryRoslyn.Web.Controllers {
                           ? _processorManager.GetBranchProcessor(arguments.Branch)
                           : _processorManager.DefaultProcessor;
 
-            var result = processor.Process(arguments.Code, arguments.Mode == CompilationMode.Script);
+            var result = processor.Process(
+              arguments.Code, arguments.Mode == CompilationMode.Script, arguments.Optimizations);
+
             return new {
                 success = result.IsSuccess,
                 //result.SyntaxTree,

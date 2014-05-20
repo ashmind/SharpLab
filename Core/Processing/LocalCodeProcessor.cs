@@ -30,7 +30,7 @@ namespace TryRoslyn.Core.Processing {
             };
         }
 
-        public ProcessingResult Process(string code, bool scriptMode) {
+        public ProcessingResult Process(string code, bool scriptMode, bool optimizations) {
             var kind = scriptMode ? SourceCodeKind.Script : SourceCodeKind.Regular;
             var syntaxTree = CSharpSyntaxTree.ParseText(
                 code, options: new CSharpParseOptions(_roslynAbstraction.GetMaxLanguageVersion(), kind: kind)
@@ -38,7 +38,10 @@ namespace TryRoslyn.Core.Processing {
 
             var stream = new MemoryStream();
             var emitResult = CSharpCompilation.Create("Test")
-                .WithOptions(_roslynAbstraction.NewCSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
+                .WithOptions(_roslynAbstraction
+                    .NewCSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+                    .WithAllowUnsafe(enabled: true)
+                    .WithOptimizations(optimizations))
                 .AddReferences(_references)
                 .AddSyntaxTrees(syntaxTree)
                 .Emit(stream);

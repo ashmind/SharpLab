@@ -31,8 +31,8 @@ namespace TryRoslyn.Core.Processing {
             _fileSystem = fileSystem;
         }
 
-        public ProcessingResult Process(string code, bool scriptMode) {
-            return _remoteProcessor.Value.Process(code, scriptMode);
+        public ProcessingResult Process(string code, bool scriptMode, bool optimizations) {
+            return _remoteProcessor.Value.Process(code, scriptMode, optimizations);
         }
 
         private AppDomain CreateAppDomain() {
