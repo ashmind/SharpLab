@@ -121,7 +121,7 @@ try {
         Write-Output ''
         Write-Output "*** $_"
         $directory = "$sourcesRoot\" + $_.Replace('/', '-')
-        #Sync-Branch $directory $_
+        Sync-Branch $directory $_
         Build-Branch $directory
     }
     
