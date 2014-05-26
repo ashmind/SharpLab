@@ -19,8 +19,8 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
         }
 
         public SyntaxTree ParseText(string code, SourceCodeKind kind) {
-            return VisualBasicSyntaxTree.ParseText(
-                code, options: new VisualBasicParseOptions(_roslynAbstraction.GetMaxValue<LanguageVersion>(), kind: kind)
+            return _roslynAbstraction.ParseText<VisualBasicSyntaxTree>(
+                code, new VisualBasicParseOptions(_roslynAbstraction.GetMaxValue<LanguageVersion>(), kind: kind)
             );
         }
 
