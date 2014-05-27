@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
@@ -19,7 +20,8 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
         }
 
         public SyntaxTree ParseText(string code, SourceCodeKind kind) {
-            return _roslynAbstraction.ParseText<CSharpSyntaxTree>(
+            return _roslynAbstraction.ParseText(
+                typeof(CSharpSyntaxTree),
                 code, new CSharpParseOptions(_roslynAbstraction.GetMaxValue<LanguageVersion>(), kind: kind)
             );
         }

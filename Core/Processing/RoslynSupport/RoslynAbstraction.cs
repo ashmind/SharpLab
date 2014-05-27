@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
 using AshMind.Extensions;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
@@ -20,8 +22,10 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             public static readonly TEnum MaxValue = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().Max();
         }
 
-        public SyntaxTree ParseText<TSyntaxTree>(string code, ParseOptions options) {
-            return GetDelegate<Func<string, ParseOptions, SyntaxTree>>(typeof(TSyntaxTree), "ParseText")
+        public SyntaxTree ParseText<TParseOptions>(Type syntaxTreeType, string code, TParseOptions options)
+            where TParseOptions: ParseOptions
+        {
+            return GetDelegate<Func<string, TParseOptions, SyntaxTree>>(syntaxTreeType, "ParseText")
                         .Invoke(code, options);
         }
 
@@ -52,10 +56,8 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
 
             var methods = type.GetMethods(BindingFlags.Static | BindingFlags.Public)
                               .Where(m => m.Name == methodName);
-            var resolved = ResolveMethod(methods, parameters);
-            if (resolved == null)
-                throw new Exception("Failed to find matching method on " + type + ".");
-
+            var resolved = ResolveMethod(type, methods, parameters);
+            
             return Expression.Lambda<TDelegate>(Expression.Call(resolved.Item1, resolved.Item2), parameters)
                              .Compile();
         }
@@ -66,9 +68,7 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             var returnType = signature.Item2;
 
             var constructors = signature.Item2.GetConstructors();
-            var resolved = ResolveMethod(constructors, parameters);
-            if (resolved == null)
-                throw new Exception("Failed to find matching constructor on " + returnType + ".");
+            var resolved = ResolveMethod(returnType, constructors, parameters);
 
             return Expression.Lambda<TDelegate>(Expression.New(resolved.Item1, resolved.Item2), parameters)
                              .Compile();
@@ -81,39 +81,51 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             var argumentTypes = typeof(TDelegate).GetGenericArguments().ToList();
             var returnType = argumentTypes.Last();
             argumentTypes.RemoveAt(argumentTypes.Count - 1);
-            var lambdaParameters = argumentTypes.Select(Expression.Parameter).ToArray();
+            var lambdaParameters = argumentTypes.Select((t, i) => Expression.Parameter(t, "p" + (i+1))).ToArray();
             return Tuple.Create(lambdaParameters, returnType);
         }
 
-        private Tuple<TMethod, Expression[]> ResolveMethod<TMethod>(IEnumerable<TMethod> methods, ParameterExpression[] lambdaParameters)
+        [NotNull]
+        private Tuple<TMethod, Expression[]> ResolveMethod<TMethod>(Type declaringType, IEnumerable<TMethod> methods, ParameterExpression[] lambdaParameters)
             where TMethod : MethodBase
         {
+            var report = new StringWriter();
             foreach (var method in methods) {
-                var unusedLambdaParameters = lambdaParameters.ToDictionary(p => p.Type);
+                report.WriteLine();
+                report.WriteLine("Method: {0}", method);
+
+                var unusedLambdaParameters = lambdaParameters.ToSet();
                 var parameters = method.GetParameters();
                 var arguments = new Expression[parameters.Length];
                 var failed = false;
                 for (var i = 0; i < parameters.Length; i++) {
                     var argument = ResolveArgument(parameters[i], unusedLambdaParameters);
                     if (argument == null) {
+                        report.WriteLine("    {0}: could not resolve", parameters[i]);
                         failed = true;
                         break;
                     }
 
                     arguments[i] = argument;
+                    report.WriteLine("    {0}: {1}", parameters[i], argument);
+                }
+
+                if (unusedLambdaParameters.Count > 0) {
+                    report.WriteLine("    unused: {0}.", string.Join(", ", unusedLambdaParameters));
+                    continue;
                 }
 
                 if (!failed)
                     return Tuple.Create(method, arguments);
             }
 
-            return null;
+            throw new Exception("Failed to find matching method on " + declaringType + ":" + Environment.NewLine + report);
         }
 
-        private static Expression ResolveArgument(ParameterInfo parameter, IDictionary<Type, ParameterExpression> unusedLambdaParameters) {
-            var lambdaParameter = unusedLambdaParameters.GetValueOrDefault(parameter.ParameterType);
+        private static Expression ResolveArgument(ParameterInfo parameter, ISet<ParameterExpression> unusedLambdaParameters) {
+            var lambdaParameter = unusedLambdaParameters.SingleOrDefault(p => parameter.ParameterType.IsAssignableFrom(p.Type));
             if (lambdaParameter != null) {
-                unusedLambdaParameters.Remove(parameter.ParameterType);
+                unusedLambdaParameters.Remove(lambdaParameter);
                 return lambdaParameter;
             }
 
