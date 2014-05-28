@@ -54,6 +54,7 @@
     function stringifyOptions(options) {
         return [
             options.language === 'vbnet' ? 'vb' : '',
+            options.target === 'vbnet' ? '>vb' : '',
             options.mode === 'script' ? 's' : '',
             options.optimizations ? 'r' : ''
         ].join('');
@@ -64,8 +65,9 @@
             return {};
 
         return {
-            language:      flags.indexOf("vb") > -1 ? 'vbnet'  : 'csharp',
-            mode:          flags.indexOf("s") > -1  ? 'script' : 'regular',
+            language:      /(^|[a-z])vb/.test(flags) ? 'vbnet'  : 'csharp',
+            target:        />vb/.test(flags)         ? 'vbnet'  : 'csharp',
+            mode:          flags.indexOf("s") > -1   ? 'script' : 'regular',
             optimizations: flags.indexOf("r") > -1
         };
     }

@@ -5,15 +5,13 @@ End Class
 
 ' =>
 
-using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-[assembly: AssemblyVersion("0.0.0.0")]
-[assembly: CompilationRelaxations(8)]
-[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
-public class C
-{
-    public void M()
-    {
-    }
-}
+Imports System
+Imports System.Reflection
+Imports System.Runtime.CompilerServices
+<Assembly: AssemblyVersion("0.0.0.0")>
+<Assembly: CompilationRelaxations(8)>
+<Assembly: RuntimeCompatibility(WrapNonExceptionThrows = True)>
+Public Class C
+    Public Sub M()
+    End Sub
+End Class

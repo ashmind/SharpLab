@@ -875,7 +875,7 @@ namespace TryRoslyn.Core.Processing.DecompilationSupport {
 
         public void VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression) {
             StartNode(namedArgumentExpression);
-            namedArgumentExpression.IdentifierToken.AcceptVisitor(this);
+            namedArgumentExpression.NameToken.AcceptVisitor(this);
             WriteToken(Roles.Colon);
             Space();
             namedArgumentExpression.Expression.AcceptVisitor(this);
@@ -884,7 +884,7 @@ namespace TryRoslyn.Core.Processing.DecompilationSupport {
 
         public void VisitNamedExpression(NamedExpression namedExpression) {
             StartNode(namedExpression);
-            namedExpression.IdentifierToken.AcceptVisitor(this);
+            namedExpression.NameToken.AcceptVisitor(this);
             Space();
             WriteToken(Roles.Assign);
             Space();
@@ -2207,9 +2207,9 @@ namespace TryRoslyn.Core.Processing.DecompilationSupport {
             EndNode(variableInitializer);
         }
 
-        public void VisitCompilationUnit(CompilationUnit compilationUnit) {
+        public void VisitSyntaxTree(SyntaxTree syntaxTree) {
             // don't do node tracking as we visit all children directly
-            foreach (AstNode node in compilationUnit.Children) {
+            foreach (AstNode node in syntaxTree.Children) {
                 node.AcceptVisitor(this);
             }
         }

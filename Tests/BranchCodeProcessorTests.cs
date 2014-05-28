@@ -36,7 +36,7 @@ namespace TryRoslyn.Tests {
         public void Process_CanHandleSimpleVBNetCode_InBranch(string branchName) {
             var processor = new BranchCodeProcessor(branchName, CreateBranchProvider(), new FileSystem());
             var result = processor.Process("Public Class C\r\nEnd Class", new ProcessingOptions {
-                Language = LanguageIdentifier.VBNet
+                SourceLanguage = LanguageIdentifier.VBNet
             });
 
             Assert.NotNull(result);

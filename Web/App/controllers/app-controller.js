@@ -1,6 +1,11 @@
 ﻿angular.module('app').controller('AppController', ['$scope', '$filter', 'DefaultCodeService', 'UrlService', 'CompilationService', function ($scope, $filter, defaultCodeService, urlService, compilationService) {
     'use strict';
 
+    $scope.languages = Object.freeze([
+        { language: 'csharp', displayName: 'C#' },
+        { language: 'vbnet',  displayName: 'VB.NET' }
+    ]);
+
     $scope.codeMirrorModes = Object.freeze({
         csharp: 'text/x-csharp',
         vbnet:  'text/x-vb'
@@ -38,7 +43,8 @@
         
         $scope.options = angular.extend({
             language: 'csharp',
-            mode: 'regular',
+            target:   'csharp',
+            mode:     'regular',
             optimizations: false
         }, $scope.options);
         defaultCodeService.attach($scope);

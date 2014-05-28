@@ -102,6 +102,7 @@ section header .select-wrapper::after {
   position: absolute;
   right: 2px;
   top: 0;
+  pointer-events: none;
 }
 
 section header > .select-wrapper {
@@ -209,15 +210,19 @@ section.collapsible.expanded header::after {
   display: inline-block;
 }
 
-.modes {
+.option-mode {
   margin-left: 5px;
 }
 
-.branches {
+.option-branch {
   right: 5px;
 }
 
-.optimizations {
+.option-target-language {
+  margin-left: 8px;
+}
+
+.option-optimizations {
   right: 5px;
 }
 
@@ -329,15 +334,11 @@ textarea, .CodeMirror {
   color: #eee;
 }*/
 
-.decompiled header h1 {
-  -webkit-flex: 0 0 auto;
-  flex: 0 0 auto;
-}
-
 .loader-container {
-  -webkit-flex: 1 0 auto;
-  flex: 1 0 auto;
-  position: relative;
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  margin-left: 80px;
 }
 
 .loader {

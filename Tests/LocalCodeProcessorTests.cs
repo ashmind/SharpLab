@@ -24,7 +24,8 @@ namespace TryRoslyn.Tests {
 
             var service = CreateService();
             var result = service.Process(code, new ProcessingOptions {
-                Language = language,
+                SourceLanguage = language,
+                TargetLanguage = language,
                 ScriptMode = scriptMode
             });
 

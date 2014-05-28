@@ -35,14 +35,12 @@
           <header>
             <h1>Code</h1>
             <div class="languages-and-modes">
-              <div class="select-wrapper languages">
-                <select data-ng-model="options.language">
-                  <option value="csharp">C#</option>
-                  <option value="vbnet">VB.NET</option>
-                </select>
+              <div class="select-wrapper option-language">
+                <select data-ng-model="options.language"
+                        data-ng-options="x.language as x.displayName for x in languages"></select>
               </div>
 
-              <div class="select-wrapper modes">
+              <div class="select-wrapper option-mode">
                 <select data-ng-model="options.mode">
                   <option value="regular">Standard</option>
                   <option value="script">Script</option>
@@ -50,7 +48,7 @@
               </div>
             </div>
             
-            <div class="select-wrapper branches">
+            <div class="select-wrapper option-branch">
               <select data-ng-model="branch"
                       data-ng-options="branch as displayBranch(branch) for branch in branches track by branch.name">
                 <option value="">Release (NuGet)</option>
@@ -92,8 +90,13 @@
             <h1>Decompiled</h1>
             <span class="loader-container" data-ng-show="loading" data-ng-include="'loader/loader.html'">
             </span>
+            
+            <div class="select-wrapper option-target-language">
+              <select data-ng-model="options.target"
+                      data-ng-options="x.language as x.displayName for x in languages"></select>
+            </div>
 
-            <div class="select-wrapper optimizations">
+            <div class="select-wrapper option-optimizations">
               <select data-ng-model="options.optimizations" data-app-boolean-model>
                 <option value="false">Debug</option>
                 <option value="true">Release</option>
@@ -101,7 +104,7 @@
             </div>
           </header>
           <div class="content">
-            <app-codemirror value="result.decompiled" mode="text/x-csharp" readonly></app-codemirror>
+            <app-codemirror value="result.decompiled" mode="codeMirrorModes[options.target]" readonly></app-codemirror>
           </div>
         </section>
 

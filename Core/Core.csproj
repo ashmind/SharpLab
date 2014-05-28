@@ -48,6 +48,12 @@
     <Reference Include="ICSharpCode.NRefactory.CSharp">
       <HintPath>..\#libraries\ICSharpCode.NRefactory.CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.NRefactory.VB">
+      <HintPath>..\#libraries\ICSharpCode.NRefactory.VB.dll</HintPath>
+    </Reference>
+    <Reference Include="ILSpy">
+      <HintPath>..\#libraries\ILSpy.exe</HintPath>
+    </Reference>
     <Reference Include="JetBrains.Annotations">
       <HintPath>..\#packages\JetBrains.Annotations.7.0\lib\net45\JetBrains.Annotations.dll</HintPath>
     </Reference>
@@ -87,6 +93,7 @@
     <Compile Include="Processing\BranchCodeProcessor.cs" />
     <Compile Include="BranchProvider.cs" />
     <Compile Include="Processing\CodeProcessorProxy.cs" />
+    <Compile Include="Processing\DecompilationSupport\CustomizableIndentPlainTextOutput.cs" />
     <Compile Include="Processing\RoslynSupport\VBNetLanguage.cs" />
     <Compile Include="Processing\RoslynSupport\IRoslynLanguage.cs" />
     <Compile Include="Processing\LocalCodeProcessor.cs" />

@@ -31,15 +31,16 @@ namespace TryRoslyn.Core.Processing {
         public ProcessingResult Process(string code, ProcessingOptions options) {
             options = options ?? new ProcessingOptions();
             var kind = options.ScriptMode ? SourceCodeKind.Script : SourceCodeKind.Regular;
-            var language = _languages.Single(l => l.Identifier == options.Language);
+            var sourceLanguage = _languages.Single(l => l.Identifier == options.SourceLanguage);
 
-            var syntaxTree = language.ParseText(code, kind);
+            var syntaxTree = sourceLanguage.ParseText(code, kind);
 
             var stream = new MemoryStream();
-            var emitResult = language.CreateUnsafeLibraryCompilation("Test", options.OptimizationsEnabled)
-                                     .AddReferences(_references)
-                                     .AddSyntaxTrees(syntaxTree)
-                                     .Emit(stream);
+            var emitResult = sourceLanguage
+                .CreateUnsafeLibraryCompilation("Test", options.OptimizationsEnabled)
+                .AddReferences(_references)
+                .AddSyntaxTrees(syntaxTree)
+                .Emit(stream);
 
             if (!emitResult.Success)
                 return new ProcessingResult(null, emitResult.Diagnostics.Select(d => new SerializableDiagnostic(d)));
@@ -47,7 +48,7 @@ namespace TryRoslyn.Core.Processing {
             stream.Seek(0, SeekOrigin.Begin);
 
             var resultWriter = new StringWriter();
-            _decompiler.Decompile(stream, resultWriter);
+            _decompiler.Decompile(stream, resultWriter, options.TargetLanguage);
             return new ProcessingResult(
                 resultWriter.ToString(),
                 emitResult.Diagnostics.Select(d => new SerializableDiagnostic(d))
