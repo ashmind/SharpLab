@@ -91,9 +91,14 @@
             $scope.result = data;
         }, function(response) {
             $scope.loading = false;
+            var error = response.data;
+            var report = error.exceptionMessage || error.message;
+            if (error.stackTrace)
+                report += "\r\n" + error.stackTrace;
+
             $scope.result = {
                 success: false,
-                errors: [ response.data.message ]
+                errors: [ report ]
             };
         });
     }

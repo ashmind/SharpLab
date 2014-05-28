@@ -309,6 +309,7 @@ section.collapsible.expanded header::after {
 .errors li, .warnings li {
   list-style-type: none;
   padding: 5px 10px;
+  white-space: pre-wrap;
 }
 
 textarea, .CodeMirror {
