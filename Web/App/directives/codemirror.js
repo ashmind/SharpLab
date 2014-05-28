@@ -9,6 +9,10 @@
             indentUnit:  4
         });
 
+        scope.$watch('mode', function(value) {
+            instance.setOption("mode", value);
+        });
+
         var settingValue = false;
         scope.$watch('value', function (value) {
             value = value != undefined ? value : '';
@@ -40,7 +44,7 @@
         template: '<textarea></textarea>',
         scope: {
             value: '=value',
-            mode:  '@mode'
+            mode:  '=mode'
         },
         link: link
     };

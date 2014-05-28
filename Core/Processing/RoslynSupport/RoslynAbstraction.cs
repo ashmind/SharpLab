@@ -25,28 +25,27 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
         public SyntaxTree ParseText<TParseOptions>(Type syntaxTreeType, string code, TParseOptions options)
             where TParseOptions: ParseOptions
         {
-            return GetDelegate<Func<string, TParseOptions, SyntaxTree>>(syntaxTreeType, "ParseText")
+            return GetDelegate<Func<string, TParseOptions, SyntaxTree>>(syntaxTreeType.Name + ".ParseText", syntaxTreeType, "ParseText")
                         .Invoke(code, options);
         }
 
         public MetadataFileReference NewMetadataFileReference(string path) {
-            return GetFactory<Func<string, MetadataFileReference>>().Invoke(path);
+            return GetFactory<Func<string, MetadataFileReference>>("MetadataFileReference.new").Invoke(path);
         }
 
         public TCompilationOptions NewCompilationOptions<TCompilationOptions>(OutputKind outputKind) {
-            return GetFactory<Func<OutputKind, TCompilationOptions>>().Invoke(outputKind);
+            return GetFactory<Func<OutputKind, TCompilationOptions>>(typeof(TCompilationOptions).Name + ".new").Invoke(outputKind);
         }
 
         public TLanguageVersion GetMaxValue<TLanguageVersion>() {
             return CachedEnum<TLanguageVersion>.MaxValue;
         }
         
-        private TDelegate GetFactory<TDelegate>([CallerMemberName, NotNull] string key = null) {
-            // ReSharper disable once AssignNullToNotNullAttribute
+        private TDelegate GetFactory<TDelegate>(string key) {
             return (TDelegate)(object)_delegateCache.GetOrAdd(key, _ => (Delegate)(object)BuildFactory<TDelegate>());
         }
 
-        private TDelegate GetDelegate<TDelegate>(Type type, string methodName, [CallerMemberName, NotNull] string key = null) {
+        private TDelegate GetDelegate<TDelegate>(string key, Type type, string methodName) {
             return (TDelegate)(object)_delegateCache.GetOrAdd(key, _ => (Delegate)(object)BuildDelegate<TDelegate>(type, methodName));
         }
 

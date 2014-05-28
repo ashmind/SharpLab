@@ -1,6 +1,11 @@
 ﻿angular.module('app').controller('AppController', ['$scope', '$filter', 'DefaultCodeService', 'UrlService', 'CompilationService', function ($scope, $filter, defaultCodeService, urlService, compilationService) {
     'use strict';
 
+    $scope.codeMirrorModes = Object.freeze({
+        csharp: 'text/x-csharp',
+        vbnet:  'text/x-vb'
+    });
+
     $scope.branch = null;
     var branchesPromise = compilationService.getBranches().then(function(value) {
         $scope.branches = value;

@@ -13,6 +13,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/codemirror.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/mode/clike/clike.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/mode/vb/vb.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-throttle-debounce/1.1/jquery.ba-throttle-debounce.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-hashchange/v1.3/jquery.ba-hashchange.min.js"></script>
     <script src="external/lz-string-1.3.3-min.js"></script>
@@ -57,7 +58,7 @@
             </div>
           </header>
           <div class="content">
-            <app-codemirror value="code" mode="text/x-csharp" linenumbers></app-codemirror>
+            <app-codemirror value="code" mode="codeMirrorModes[options.language]" linenumbers></app-codemirror>
           </div>
         </section>
         
