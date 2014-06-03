@@ -7,10 +7,9 @@ using AshMind.IO.Abstractions;
 using AshMind.IO.Abstractions.Adapters;
 using Autofac;
 using TryRoslyn.Core.Processing;
-using TryRoslyn.Core.Processing.RoslynSupport;
 
-namespace TryRoslyn.Core {
-    public class CoreModule : Module {
+namespace TryRoslyn.Core.Modules {
+    public class BranchSupportModule : Module {
         protected override void Load(ContainerBuilder builder) {
             var configurationPath = Path.GetDirectoryName(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
             var binariesRoot = Path.Combine(configurationPath, ConfigurationManager.AppSettings["BinariesRoot"]);
@@ -23,17 +22,11 @@ namespace TryRoslyn.Core {
                    .As<IBranchProvider>()
                    .SingleInstance();
 
-            builder.RegisterType<RoslynAbstraction>().As<IRoslynAbstraction>().SingleInstance();
-            builder.RegisterType<CSharpLanguage>().As<IRoslynLanguage>().SingleInstance();
-            builder.RegisterType<VBNetLanguage>().As<IRoslynLanguage>().SingleInstance();
-            builder.RegisterType<LocalCodeProcessor>().As<ICodeProcessor>().SingleInstance();
             builder.RegisterType<BranchCodeProcessor>().AsSelf().InstancePerDependency();
             builder.Register<ICodeProcessorManager>(c => new CodeProcessorManager(
                 c.Resolve<ICodeProcessor>(),
                 c.Resolve<Func<string, BranchCodeProcessor>>()
             )).SingleInstance();
-
-            builder.RegisterType<Decompiler>().As<IDecompiler>();
         }
     }
 }

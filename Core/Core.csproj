@@ -36,8 +36,9 @@
     <Reference Include="AshMind.IO.Abstractions">
       <HintPath>..\#packages\AshMind.IO.Abstractions.0.7.2\lib\net40\AshMind.IO.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Autofac">
-      <HintPath>..\#packages\Autofac.3.3.1\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=3.4.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\#packages\Autofac.3.4.1\lib\net40\Autofac.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.Decompiler">
       <HintPath>..\#libraries\ICSharpCode.Decompiler.dll</HintPath>
@@ -89,30 +90,33 @@
     <Compile Include="AgentHeisenbug.Annotations.cs" />
     <Compile Include="BranchInfo.cs" />
     <Compile Include="LanguageIdentifier.cs" />
+    <Compile Include="Modules\LocalProcessingModule.cs" />
     <Compile Include="ProcessingOptions.cs" />
     <Compile Include="ProcessingResultMessage.cs" />
     <Compile Include="Processing\BranchCodeProcessor.cs" />
     <Compile Include="BranchProvider.cs" />
     <Compile Include="Processing\CodeProcessorProxy.cs" />
-    <Compile Include="Processing\DecompilationSupport\CustomizableIndentPlainTextOutput.cs" />
+    <Compile Include="Processing\Decompilation\VBNetDecompiler.cs" />
+    <Compile Include="Processing\Decompilation\CSharpDecompiler.cs" />
+    <Compile Include="Processing\Decompilation\Support\CustomizableIndentPlainTextOutput.cs" />
     <Compile Include="Processing\RoslynSupport\VBNetLanguage.cs" />
     <Compile Include="Processing\RoslynSupport\IRoslynLanguage.cs" />
     <Compile Include="Processing\LocalCodeProcessor.cs" />
     <Compile Include="Processing\CodeProcessorManager.cs" />
-    <Compile Include="Processing\DecompilationSupport\DecompiledPseudoCSharpOutputVisitor.cs" />
-    <Compile Include="Processing\DecompilationSupport\OverridableCSharpOutputVisitor.cs" />
-    <Compile Include="Processing\DecompilationSupport\RoslynFriendlyConvertConstructorCallIntoInitializer.cs" />
-    <Compile Include="Processing\Decompiler.cs" />
+    <Compile Include="Processing\Decompilation\Support\DecompiledPseudoCSharpOutputVisitor.cs" />
+    <Compile Include="Processing\Decompilation\Support\OverridableCSharpOutputVisitor.cs" />
+    <Compile Include="Processing\Decompilation\Support\RoslynFriendlyConvertConstructorCallIntoInitializer.cs" />
+    <Compile Include="Processing\Decompilation\AstDecompiler.cs" />
     <Compile Include="IBranchProvider.cs" />
     <Compile Include="ICodeProcessor.cs" />
-    <Compile Include="Processing\IDecompiler.cs" />
+    <Compile Include="Processing\Decompilation\IDecompiler.cs" />
     <Compile Include="ICodeProcessorManager.cs" />
     <Compile Include="ProcessingResult.cs" />
     <Compile Include="Processing\RoslynSupport\IRoslynAbstraction.cs" />
     <Compile Include="Processing\RoslynSupport\CSharpLanguage.cs" />
     <Compile Include="Processing\RoslynSupport\RoslynAbstraction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CoreModule.cs" />
+    <Compile Include="Modules\BranchSupportModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

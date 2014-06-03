@@ -5,20 +5,15 @@ using System.Linq;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler.Ast.Transforms;
-using ICSharpCode.ILSpy.VB;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.VB;
-using ICSharpCode.NRefactory.VB.Visitors;
 using JetBrains.Annotations;
 using Mono.Cecil;
-using TryRoslyn.Core.Processing.DecompilationSupport;
+using TryRoslyn.Core.Processing.Decompilation.Support;
 using AstNode = ICSharpCode.NRefactory.CSharp.AstNode;
-using TextWriterOutputFormatter = ICSharpCode.NRefactory.CSharp.TextWriterOutputFormatter;
 
-namespace TryRoslyn.Core.Processing {
+namespace TryRoslyn.Core.Processing.Decompilation {
     [ThreadSafe]
-    public class Decompiler : IDecompiler {
-        public void Decompile(Stream assemblyStream, TextWriter resultWriter, LanguageIdentifier language) {
+    public abstract class AstDecompiler : IDecompiler {
+        public void Decompile(Stream assemblyStream, TextWriter resultWriter) {
             // ReSharper disable once AgentHeisenbug.CallToNonThreadSafeStaticMethodInThreadSafeType
             var module = ModuleDefinition.ReadModule(assemblyStream);
             var context = new DecompilerContext(module) {
@@ -38,46 +33,10 @@ namespace TryRoslyn.Core.Processing {
 
             // I cannot use GenerateCode as it re-runs all the transforms
             var userCode = GetUserCode(ast);
-
-            // somewhat primitive but not worth classes yet
-            if (language == LanguageIdentifier.CSharp) {
-                ProcessCSharp(userCode, resultWriter, context);
-            }
-            else if (language == LanguageIdentifier.VBNet) {
-                ProcessVBNet(userCode, resultWriter, context);
-            }
-            else {
-                throw new ArgumentOutOfRangeException("language");
-            }
+            WriteResult(resultWriter, userCode, context);
         }
 
-        private static void ProcessCSharp(IEnumerable<AstNode> ast, TextWriter writer, DecompilerContext context) {
-            var visitor = new DecompiledPseudoCSharpOutputVisitor(
-                new TextWriterOutputFormatter(writer) {
-                    IndentationString = "    "
-                },
-                context.Settings.CSharpFormattingOptions
-            );
-
-            foreach (var node in ast) {
-                node.AcceptVisitor(visitor);
-            }
-        }
-
-        private static void ProcessVBNet(IEnumerable<AstNode> ast, TextWriter writer, DecompilerContext context) {
-            var converter = new CSharpToVBConverterVisitor(new ILSpyEnvironmentProvider());
-            var visitor = new OutputVisitor(
-                new VBTextOutputFormatter(new CustomizableIndentPlainTextOutput(writer) {
-                    IndentationString = "    "
-                }),
-                new VBFormattingOptions()
-            );
-            foreach (var node in ast) {
-                node.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
-                var converted = node.AcceptVisitor(converter, null);
-                converted.AcceptVisitor(visitor, null);
-            }
-        }
+        protected abstract void WriteResult(TextWriter writer,  IEnumerable<AstNode> ast, DecompilerContext context);
 
         private IEnumerable<AstNode> GetUserCode(AstBuilder ast) {
             //if (!scriptMode)
@@ -109,5 +68,7 @@ namespace TryRoslyn.Core.Processing {
                 transform.Run(ast.SyntaxTree);
             }
         }
+
+        public abstract LanguageIdentifier Language { get; }
     }
 }

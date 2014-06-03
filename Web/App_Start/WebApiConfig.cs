@@ -8,6 +8,7 @@ using Autofac.Integration.WebApi;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using TryRoslyn.Core;
+using TryRoslyn.Core.Modules;
 using TryRoslyn.Web.Formatting;
 
 namespace TryRoslyn.Web {
@@ -28,7 +29,7 @@ namespace TryRoslyn.Web {
             var webAssembly = Assembly.GetExecutingAssembly();
 
             builder.RegisterApiControllers(webAssembly);
-            builder.RegisterAssemblyModules(typeof(CoreModule).Assembly);
+            builder.RegisterAssemblyModules(typeof(ICodeProcessor).Assembly);
             builder.RegisterAssemblyModules(webAssembly);
 
             var container = builder.Build();

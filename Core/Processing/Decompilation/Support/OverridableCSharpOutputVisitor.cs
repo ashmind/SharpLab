@@ -32,7 +32,7 @@ using Attribute = ICSharpCode.NRefactory.CSharp.Attribute;
 // this is a slightly modified copy of CSharpOutputVisitor from NRefactory,
 // so any code issues in this file will be ignored.
 
-namespace TryRoslyn.Core.Processing.DecompilationSupport {
+namespace TryRoslyn.Core.Processing.Decompilation.Support {
     /// <summary>
     /// Outputs the AST.
     /// </summary>

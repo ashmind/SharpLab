@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Autofac;
 using JetBrains.Annotations;
-using TryRoslyn.Core.Processing.RoslynSupport;
+using TryRoslyn.Core.Modules;
 
 namespace TryRoslyn.Core.Processing {
     [ThreadSafe]
@@ -10,12 +11,11 @@ namespace TryRoslyn.Core.Processing {
         private readonly ICodeProcessor _processor;
 
         public CodeProcessorProxy() {
-            var abstraction = new RoslynAbstraction();
-            _processor = new LocalCodeProcessor(
-                new Decompiler(), abstraction,
-                new CSharpLanguage(abstraction),
-                new VBNetLanguage(abstraction)
-            );
+            var builder = new ContainerBuilder();
+            builder.RegisterModule<LocalProcessingModule>();
+            var container = builder.Build();
+
+            _processor = container.Resolve<ICodeProcessor>();
         }
 
         public ProcessingResult Process(string code, ProcessingOptions options) {

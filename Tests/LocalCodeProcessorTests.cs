@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using AshMind.Extensions;
+using Autofac;
 using Microsoft.CodeAnalysis;
 using TryRoslyn.Core;
+using TryRoslyn.Core.Modules;
 using TryRoslyn.Core.Processing;
-using TryRoslyn.Core.Processing.RoslynSupport;
 using TryRoslyn.Tests.Support;
 using Xunit;
 using Xunit.Extensions;
@@ -35,13 +36,12 @@ namespace TryRoslyn.Tests {
         }
 
         private static LocalCodeProcessor CreateService() {
-            var abstraction = new RoslynAbstraction();
-            var service = new LocalCodeProcessor(
-                new Decompiler(), abstraction,
-                new CSharpLanguage(abstraction),
-                new VBNetLanguage(abstraction)
-                );
-            return service;
+            var builder = new ContainerBuilder();
+            builder.RegisterModule<LocalProcessingModule>();
+            builder.RegisterType<LocalCodeProcessor>().AsSelf();
+            var container = builder.Build();
+
+            return container.Resolve<LocalCodeProcessor>();
         }
     }
 }

@@ -42,6 +42,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\#packages\AshMind.IO.Abstractions.Mocks.0.7.2-pre3\lib\net35\AshMind.IO.Abstractions.Mocks.dll</HintPath>
     </Reference>
+    <Reference Include="Autofac, Version=3.4.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\#packages\Autofac.3.4.1\lib\net40\Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=0.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\#packages\Microsoft.CodeAnalysis.Common.0.6.4033103-beta\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>

@@ -5,19 +5,24 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
+using TryRoslyn.Core.Processing.Decompilation;
 using TryRoslyn.Core.Processing.RoslynSupport;
 
 namespace TryRoslyn.Core.Processing {
     [ThreadSafe]
     public class LocalCodeProcessor : ICodeProcessor {
-        private readonly IDecompiler _decompiler;
-        private readonly IRoslynLanguage[] _languages;
-
+        // ReSharper disable once AgentHeisenbug.FieldOfNonThreadSafeTypeInThreadSafeType
         private readonly MetadataReference[] _references;
-
-        public LocalCodeProcessor(IDecompiler decompiler, IRoslynAbstraction roslynAbstraction, params IRoslynLanguage[] languages) {
-            _decompiler = decompiler;
+        private readonly IReadOnlyCollection<IDecompiler> _decompilers;
+        private readonly IReadOnlyCollection<IRoslynLanguage> _languages;
+        
+        public LocalCodeProcessor(
+            IRoslynAbstraction roslynAbstraction,
+            IReadOnlyCollection<IRoslynLanguage> languages,
+            IReadOnlyCollection<IDecompiler> decompilers
+        ) {
             _languages = languages;
+            _decompilers = decompilers;
 
             _references = new MetadataReference[] {
                 roslynAbstraction.NewMetadataFileReference(typeof(object).Assembly.Location),
@@ -46,7 +51,8 @@ namespace TryRoslyn.Core.Processing {
             stream.Seek(0, SeekOrigin.Begin);
 
             var resultWriter = new StringWriter();
-            _decompiler.Decompile(stream, resultWriter, options.TargetLanguage);
+            var decompiler = _decompilers.Single(d => d.Language == options.TargetLanguage);
+            decompiler.Decompile(stream, resultWriter);
             return new ProcessingResult(
                 resultWriter.ToString(),
                 emitResult.Diagnostics.Select(d => new SerializableDiagnostic(d))
