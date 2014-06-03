@@ -51,10 +51,19 @@
         return result;
     }
 
+    var targetMap = { csharp: '', vbnet: '>vb', il: '>il' };
+    var targetMapReverse = (function() {
+        var result = {};
+        for (var key in targetMap) {
+            result[targetMap[key]] = key;
+        }
+        return result;
+    })();
+
     function stringifyOptions(options) {
         return [
             options.language === 'vbnet' ? 'vb' : '',
-            options.target === 'vbnet' ? '>vb' : '',
+            targetMap[options.target],
             options.mode === 'script' ? 's' : '',
             options.optimizations ? 'r' : ''
         ].join('');
@@ -64,9 +73,18 @@
         if (!flags)
             return {};
 
+        var target = targetMapReverse[''];
+        for (var key in targetMapReverse) {
+            if (key === '')
+                continue;
+
+            if (flags.indexOf(key) > -1)
+                target = targetMapReverse[key];
+        }
+        
         return {
             language:      /(^|[a-z])vb/.test(flags) ? 'vbnet'  : 'csharp',
-            target:        />vb/.test(flags)         ? 'vbnet'  : 'csharp',
+            target:        target,
             mode:          flags.indexOf("s") > -1   ? 'script' : 'regular',
             optimizations: flags.indexOf("r") > -1
         };

@@ -1,0 +1,26 @@
+﻿public class Simple {
+}
+
+?=>
+
+.class private auto ansi '<Module>'
+{
+} // end of class <Module>
+
+.class public auto ansi beforefieldinit Simple
+    extends [mscorlib]System.Object
+{
+    // Methods
+    .method public hidebysig specialname rtspecialname 
+        instance void .ctor () cil managed 
+    {
+        // Method begins at RVA 0x2050
+        // Code size 7 (0x7)
+        .maxstack 8
+
+        IL_0000: ldarg.0
+        IL_0001: call instance void [mscorlib]System.Object::.ctor()
+        IL_0006: ret
+    } // end of method Simple::.ctor
+
+} // end of class Simple

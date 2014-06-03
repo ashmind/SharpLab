@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
-using TryRoslyn.Core.Processing.Decompilation;
+using TryRoslyn.Core.Decompilation;
 using TryRoslyn.Core.Processing.RoslynSupport;
 
 namespace TryRoslyn.Core.Processing {

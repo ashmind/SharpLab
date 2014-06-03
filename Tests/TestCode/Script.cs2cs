@@ -1,8 +1,10 @@
-﻿public class MyClass (string name) {
-    private string name2 = name;
-}
+﻿// script mode
+using System;
 
-// =>
+var x = 5;
+Console.WriteLine(x);
+
+?=>
 
 using System;
 using System.Reflection;
@@ -14,13 +16,12 @@ using System.Security.Permissions;
 [assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 [module: UnverifiableCode]
-public class MyClass
+internal sealed class Script
 {
-    private string name2;
-    public MyClass(string name)
+    private int x;
+    public Script()
     {
-        this.name2 = name;
-        base(); // This is not valid C#, but it represents the IL correctly.
-
+        this.x = 5;
+        Console.WriteLine(this.x);
     }
 }

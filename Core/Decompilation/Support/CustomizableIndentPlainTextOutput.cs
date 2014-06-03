@@ -24,7 +24,7 @@ using ICSharpCode.NRefactory;
 // this is a slightly modified copy of CSharpOutputVisitor from NRefactory,
 // so any code issues in this file will be ignored.
 
-namespace TryRoslyn.Core.Processing.Decompilation.Support {
+namespace TryRoslyn.Core.Decompilation.Support {
     public sealed class CustomizableIndentPlainTextOutput : ITextOutput {
         readonly TextWriter writer;
         int indent;

@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using JetBrains.Annotations;
 
-namespace TryRoslyn.Core.Processing.Decompilation {
+namespace TryRoslyn.Core.Decompilation {
     [ThreadSafe]
     public interface IDecompiler {
         LanguageIdentifier Language { get; }

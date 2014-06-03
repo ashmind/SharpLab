@@ -5,9 +5,9 @@ using System.Linq;
 using ICSharpCode.Decompiler;
 using ICSharpCode.NRefactory.CSharp;
 using JetBrains.Annotations;
-using TryRoslyn.Core.Processing.Decompilation.Support;
+using TryRoslyn.Core.Decompilation.Support;
 
-namespace TryRoslyn.Core.Processing.Decompilation {
+namespace TryRoslyn.Core.Decompilation {
     [ThreadSafe]
     public class CSharpDecompiler : AstDecompiler {
         protected override void WriteResult(TextWriter writer, IEnumerable<AstNode> ast, DecompilerContext context) {

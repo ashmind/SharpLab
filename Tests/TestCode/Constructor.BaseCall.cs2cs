@@ -1,15 +1,8 @@
-﻿public class MyBase {
-    public MyBase(string name) {
-    }
+﻿public class MyClass (string name) {
+    private string name2 = name;
 }
 
-
-public class MyClass : MyBase {
-    public MyClass(string name) : base(name) {
-    }
-}
-
-// =>
+?=>
 
 using System;
 using System.Reflection;
@@ -21,15 +14,13 @@ using System.Security.Permissions;
 [assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 [module: UnverifiableCode]
-public class MyBase
+public class MyClass
 {
-    public MyBase(string name)
+    private string name2;
+    public MyClass(string name)
     {
-    }
-}
-public class MyClass : MyBase
-{
-    public MyClass(string name) : base(name)
-    {
+        this.name2 = name;
+        base(); // This is not valid C#, but it represents the IL correctly.
+
     }
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
 using JetBrains.Annotations;
 
-namespace TryRoslyn.Core.Processing.Decompilation.Support {
+namespace TryRoslyn.Core.Decompilation.Support {
     public class DecompiledPseudoCSharpOutputVisitor : OverridableCSharpOutputVisitor {
         private bool _currentStatementIsNotValidCSharp = false;
 

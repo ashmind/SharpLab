@@ -5,12 +5,12 @@ using System.Linq;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler.Ast.Transforms;
+using ICSharpCode.NRefactory.CSharp;
 using JetBrains.Annotations;
 using Mono.Cecil;
-using TryRoslyn.Core.Processing.Decompilation.Support;
-using AstNode = ICSharpCode.NRefactory.CSharp.AstNode;
+using TryRoslyn.Core.Decompilation.Support;
 
-namespace TryRoslyn.Core.Processing.Decompilation {
+namespace TryRoslyn.Core.Decompilation {
     [ThreadSafe]
     public abstract class AstDecompiler : IDecompiler {
         public void Decompile(Stream assemblyStream, TextWriter resultWriter) {

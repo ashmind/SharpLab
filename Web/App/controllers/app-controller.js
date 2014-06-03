@@ -1,15 +1,20 @@
-﻿angular.module('app').controller('AppController', ['$scope', '$filter', 'DefaultCodeService', 'UrlService', 'CompilationService', function ($scope, $filter, defaultCodeService, urlService, compilationService) {
+﻿angular.module('app').controller('AppController', ['$scope', '$filter', '$timeout', 'DefaultCodeService', 'UrlService', 'CompilationService', function ($scope, $filter, $timeout, defaultCodeService, urlService, compilationService) {
     'use strict';
 
-    $scope.languages = Object.freeze([
-        { language: 'csharp', displayName: 'C#' },
-        { language: 'vbnet',  displayName: 'VB.NET' }
-    ]);
+    (function setupLanguages() {
+        var csharp = { language: 'csharp', displayName: 'C#' };
+        var vbnet  = { language: 'vbnet',  displayName: 'VB.NET' };
+        var il     = { language: 'il',     displayName: 'IL' };
 
-    $scope.codeMirrorModes = Object.freeze({
-        csharp: 'text/x-csharp',
-        vbnet:  'text/x-vb'
-    });
+        $scope.languages = Object.freeze([csharp, vbnet]);
+        $scope.targets = Object.freeze([csharp, vbnet, il]);
+
+        $scope.codeMirrorModes = Object.freeze({
+            csharp: 'text/x-csharp',
+            vbnet:  'text/x-vb',
+            il:     ''
+        });
+    })();
 
     $scope.branch = null;
     var branchesPromise = compilationService.getBranches().then(function(value) {
@@ -38,6 +43,11 @@
             $scope.options = urlData.options;
             branchesPromise.then(function() {
                 $scope.branch = $scope.branches.filter(function(b) { return b.name === urlData.branch; })[0] || null;
+            });
+        }
+        else {
+            $timeout(function() {
+                processOnServer();
             });
         }
         

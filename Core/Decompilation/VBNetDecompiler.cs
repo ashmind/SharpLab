@@ -8,10 +8,10 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.VB;
 using ICSharpCode.NRefactory.VB.Visitors;
 using JetBrains.Annotations;
-using TryRoslyn.Core.Processing.Decompilation.Support;
+using TryRoslyn.Core.Decompilation.Support;
 using AstNode = ICSharpCode.NRefactory.CSharp.AstNode;
 
-namespace TryRoslyn.Core.Processing.Decompilation {
+namespace TryRoslyn.Core.Decompilation {
     [ThreadSafe]
     public class VBNetDecompiler : AstDecompiler {
         protected override void WriteResult(TextWriter writer, IEnumerable<AstNode> ast, DecompilerContext context) {

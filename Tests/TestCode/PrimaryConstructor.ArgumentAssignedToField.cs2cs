@@ -1,10 +1,15 @@
-﻿// script mode
-using System;
+﻿public class MyBase {
+    public MyBase(string name) {
+    }
+}
 
-var x = 5;
-Console.WriteLine(x);
 
-// =>
+public class MyClass : MyBase {
+    public MyClass(string name) : base(name) {
+    }
+}
+
+?=>
 
 using System;
 using System.Reflection;
@@ -16,12 +21,15 @@ using System.Security.Permissions;
 [assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 [module: UnverifiableCode]
-internal sealed class Script
+public class MyBase
 {
-    private int x;
-    public Script()
+    public MyBase(string name)
     {
-        this.x = 5;
-        Console.WriteLine(this.x);
+    }
+}
+public class MyClass : MyBase
+{
+    public MyClass(string name) : base(name)
+    {
     }
 }
