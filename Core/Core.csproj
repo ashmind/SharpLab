@@ -66,6 +66,7 @@
     <Reference Include="Microsoft.CodeAnalysis.VisualBasic">
       <HintPath>..\#packages\Microsoft.CodeAnalysis.VisualBasic.0.6.4033103-beta\lib\net45\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Mono.Cecil">
       <HintPath>..\#libraries\Mono.Cecil.dll</HintPath>
     </Reference>

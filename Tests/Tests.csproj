@@ -86,6 +86,7 @@
     <EmbeddedResource Include="TestCode\Constructor.BaseCall.cstest" />
     <EmbeddedResource Include="TestCode\Script.cstest" />
     <EmbeddedResource Include="TestCode\Simple.vbtest" />
+    <EmbeddedResource Include="TestCode\Module.vbtest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">

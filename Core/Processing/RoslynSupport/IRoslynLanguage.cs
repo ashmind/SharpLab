@@ -6,6 +6,6 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
     public interface IRoslynLanguage {
         LanguageIdentifier Identifier { get; }
         SyntaxTree ParseText(string code, SourceCodeKind kind);
-        Compilation CreateUnsafeLibraryCompilation(string assemblyName, bool optimizationsEnabled);
+        Compilation CreateLibraryCompilation(string assemblyName, bool optimizationsEnabled);
     }
 }

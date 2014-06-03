@@ -4,14 +4,18 @@ using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace TryRoslyn.Core.Processing.RoslynSupport {
     [ThreadSafe]
     public class VBNetLanguage : IRoslynLanguage {
         private readonly IRoslynAbstraction _roslynAbstraction;
+        // ReSharper disable once AgentHeisenbug.FieldOfNonThreadSafeTypeInThreadSafeType
+        private readonly MetadataFileReference _microsoftVisualBasicReference;
 
         public VBNetLanguage(IRoslynAbstraction roslynAbstraction) {
             _roslynAbstraction = roslynAbstraction;
+            _microsoftVisualBasicReference = _roslynAbstraction.NewMetadataFileReference(typeof(StandardModuleAttribute).Assembly.Location);
         }
 
         public LanguageIdentifier Identifier {
@@ -25,11 +29,13 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             );
         }
 
-        public Compilation CreateUnsafeLibraryCompilation(string assemblyName, bool optimizationsEnabled) {
-            return VisualBasicCompilation.Create(assemblyName).WithOptions(
-                _roslynAbstraction.NewCompilationOptions<VisualBasicCompilationOptions>(OutputKind.DynamicallyLinkedLibrary)
-                                  .WithOptimizations(optimizationsEnabled)
-            );
+        public Compilation CreateLibraryCompilation(string assemblyName, bool optimizationsEnabled) {
+            var options = _roslynAbstraction.NewCompilationOptions<VisualBasicCompilationOptions>(OutputKind.DynamicallyLinkedLibrary)
+                                            .WithOptimizations(optimizationsEnabled);
+
+            return VisualBasicCompilation.Create(assemblyName)
+                                         .WithOptions(options)
+                                         .AddReferences(_microsoftVisualBasicReference);
         }
     }
 }

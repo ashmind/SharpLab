@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
-using Microsoft.CSharp.RuntimeBinder;
 using TryRoslyn.Core.Processing.RoslynSupport;
 
 namespace TryRoslyn.Core.Processing {
@@ -23,8 +22,7 @@ namespace TryRoslyn.Core.Processing {
             _references = new MetadataReference[] {
                 roslynAbstraction.NewMetadataFileReference(typeof(object).Assembly.Location),
                 roslynAbstraction.NewMetadataFileReference(typeof(Uri).Assembly.Location),
-                roslynAbstraction.NewMetadataFileReference(typeof(DynamicAttribute).Assembly.Location),
-                roslynAbstraction.NewMetadataFileReference(typeof(Binder).Assembly.Location)
+                roslynAbstraction.NewMetadataFileReference(typeof(DynamicAttribute).Assembly.Location)
             };
         }
 
@@ -37,7 +35,7 @@ namespace TryRoslyn.Core.Processing {
 
             var stream = new MemoryStream();
             var emitResult = sourceLanguage
-                .CreateUnsafeLibraryCompilation("Test", options.OptimizationsEnabled)
+                .CreateLibraryCompilation("Test", options.OptimizationsEnabled)
                 .AddReferences(_references)
                 .AddSyntaxTrees(syntaxTree)
                 .Emit(stream);
