@@ -1,0 +1,354 @@
+﻿@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed);
+
+// Use WebEssentials extension to compile this.
+
+.display-flex() {
+  display: -webkit-flex;
+  display: flex;
+}
+
+.flex(@args) {
+  flex: @args;
+  -webkit-flex: @args;
+}
+
+.flex-direction(@args) {
+  flex-direction: @args;
+  -webkit-flex-direction: @args;
+}
+
+* {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: 'Open Sans', sans-serif;
+}
+
+body {
+  .display-flex();
+  .flex-direction(column);
+}
+
+a {
+  color: #2E8BCC;
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+main {
+  .display-flex();
+  .flex (1 0 auto);
+  width: 100%;
+  
+  > * {
+    .flex (1 0 auto);
+  }
+
+  @media (orientation: portrait) {
+    .flex-direction(column);
+  }
+}
+
+main + footer {
+  .flex (0 0 auto);
+  padding: 5px;
+  padding-left: 7px;
+  
+  font-family: 'Roboto Condensed', sans-serif;
+  background-color: #eee;
+
+  font-size: 90%;
+  text-align: right;
+
+  a {
+    color: inherit;
+  }
+}
+
+section {
+  .display-flex();
+  .flex-direction(column);
+
+  > * {
+    width: 100%;
+  }
+}
+
+section header {
+  position: relative;
+  .display-flex();
+  padding: 5px;
+  padding-left: 7px;
+  color: #fff; 
+  background-color: #4684ee;
+
+  h1 {
+    font-family: 'Roboto Condensed', sans-serif;
+  }
+
+  select {
+    font-family: 'Roboto Condensed', sans-serif;
+    background: transparent;
+    outline: none;
+    border: none;
+    -webkit-appearance:none;
+    padding-right: 10px;
+  }
+
+  .select-wrapper {
+    position: relative;
+    border: 1px solid #fff;
+
+    &::after {
+      content: '▾';
+      position: absolute;
+      right: 2px;
+      top: 0;
+      pointer-events: none;
+    }
+  }
+
+  > .select-wrapper {
+    position: absolute;
+    margin-top: -2px;
+  }
+
+  option {
+    color: #000;
+  }
+
+  a {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
+}
+
+section h1 {
+  display: inline;
+  margin: 0;
+  
+  font-size: 100%;
+  font-weight: normal;  
+}
+
+section header,
+section footer {
+  .flex (0 0 auto);
+}
+
+section .content {
+  .flex (1 0 auto);
+  position: relative;
+}
+
+section.info-only header {
+  background-color: #bbb;
+}
+
+section.info-only .content {
+  font-size: 90%;
+}
+
+section.collapsible:not(.expanded) header {
+  background-color: #aaa;
+}
+
+section.collapsible.expanded .content {
+  overflow: auto;
+  max-height: 800px;
+  transition: max-height 0.5s;
+}
+
+section.collapsible:not(.expanded) .content {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.5s;
+}
+
+section.collapsible header {
+  cursor: pointer;
+}
+
+section.collapsible header::after {
+  content: '>';
+  font-family:  Consolas, Menlo, Monaco, monospace;
+  position: absolute;
+  right: 5px;
+  vertical-align: middle;
+
+  -webkit-transform: rotate(-90deg);
+  transition: 0.2s all linear;
+}
+
+section.collapsible.expanded header::after {
+  -webkit-transform: rotate(90deg);
+}
+
+.non-code .content {
+  padding: 10px;
+}
+
+.collapsible:not(.expanded) .content {
+  padding: 0;
+}
+
+.section-group {
+  .display-flex();
+  .flex-direction(column);
+}
+
+.languages-and-modes {
+  position: absolute;
+  margin-top: -2px;
+  white-space: nowrap;
+  margin-left: 10px;
+
+  > * {
+    display: inline-block;
+  }
+}
+
+.option-mode {
+  margin-left: 5px;
+}
+
+.option-branch {
+  right: 5px;
+}
+
+.option-target-language {
+  margin-left: 8px;
+}
+
+.option-optimizations {
+  right: 5px;
+}
+
+.code {
+  .flex (1 0 auto);
+}
+
+.commit-message {
+  white-space: pre-line;
+}
+
+/* Syntax Tree ------ */
+.syntax-tree {
+  .flex (0 1 auto);
+}
+
+.syntax-tree .content {
+  font-size: 80%;
+}
+
+.syntax-tree ol {
+  padding-left: 1em;
+}
+
+.syntax-tree li {
+  list-style-type: none;
+}
+
+.syntax-tree li::before {
+  content: '\00a0';
+  font-family: Consolas, Menlo, Monaco, monospace;
+  margin-right: 5px;
+}
+
+.syntax-tree li.with-children::before {
+  content: '>';
+}
+/* ------------------ */
+
+.results section header {
+  border-left: 1px solid #fff;
+}
+
+.results section .content {
+  border-left: 1px solid #aaa;
+}
+
+.results .decompiled {
+  .flex (1 0 auto);
+}
+
+.results .errors {
+  .flex (1 1 auto);
+}
+
+.results .warnings {
+  .flex (0 1 auto);
+}
+
+.results .errors header,
+.failed .code header {
+  background-color: #dc3912;
+}
+
+.results .warnings header {
+  background-color: #ff9900;
+}
+
+textarea, .CodeMirror,
+.errors .content ul,
+.warnings .content ul {
+  position: absolute;
+  left: 0;
+  right: 5px;
+  height: 100%;
+  
+  font-family: Consolas, Menlo, Monaco, monospace; 
+  line-height: 1.2;
+}
+
+.results .CodeMirror {
+  left: 5px;
+}
+
+.errors ul, .warnings ul {
+  margin: 0;
+  padding: 0;
+}
+
+.errors li, .warnings li {
+  list-style-type: none;
+  padding: 5px 10px;
+  white-space: pre-wrap;
+}
+
+/*.CodeMirror-gutters {
+  background-color: transparent;
+  border: 0;
+}
+
+.CodeMirror-linenumber {
+  color: #eee;
+}*/
+
+.loader-container {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  margin-left: 80px;
+}
+
+.loader {
+  position: absolute;
+  height: calc(100% - 6px);
+  width: calc(100% - 10px);
+  margin-left: 10px;
+  top: 3px;
+  bottom: 3px;
+  left: 0;
+  right: 0;
+}

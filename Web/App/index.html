@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Try Roslyn</title>
     
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=0.7">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/codemirror.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.0/normalize.min.css" />
     <link rel="stylesheet" href="app.css" />
@@ -114,18 +116,22 @@
             <span class="loader-container" data-ng-show="loading" data-ng-include="'loader/loader.html'">
             </span>
           </header>
-          <ul class="content">
-            <li data-ng-repeat="error in result.errors">{{error}}</li>
-          </ul>
+          <div class="content">
+            <ul>
+              <li data-ng-repeat="error in result.errors">{{error}}</li>
+            </ul>
+          </div>
         </section>
 
         <section class="warnings" data-ng-show="result.success && result.warnings.length > 0">
           <header>
             <h1>Warnings</h1>
           </header>
-          <ul class="content">
-            <li data-ng-repeat="warning in result.warnings">{{warning}}</li>
-          </ul>
+          <div class="content">
+            <ul class="content">
+              <li data-ng-repeat="warning in result.warnings">{{warning}}</li>
+            </ul>
+          </div>
         </section>
       </div>
     </main>

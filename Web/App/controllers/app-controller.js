@@ -45,11 +45,7 @@
                 $scope.branch = $scope.branches.filter(function(b) { return b.name === urlData.branch; })[0] || null;
             });
         }
-        else {
-            $timeout(function() {
-                processOnServer();
-            });
-        }
+
         
         $scope.options = angular.extend({
             language: 'csharp',
@@ -77,6 +73,10 @@
 
             $scope.$watch('options.' + key, updateImmediate);
         }
+
+        $timeout(function() {
+            processOnServer();
+        });
     }
 
     function ifChanged(f) {
