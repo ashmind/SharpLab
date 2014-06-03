@@ -51,21 +51,30 @@
 
         var saveScopeToUrlThrottled = $.debounce(100, saveScopeToUrl);
         var updateFromServerThrottled = $.debounce(600, processOnServer);
-        $scope.$watch('code', function() {
+        $scope.$watch('code', ifChanged(function() {
             saveScopeToUrlThrottled();
             updateFromServerThrottled();
-        });
+        }));
 
-        var updateImmediate = function() {
+        var updateImmediate = ifChanged(function() {
             saveScopeToUrl();
             processOnServer();
-        };
+        });
         $scope.$watch('branch', updateImmediate);
         for (var key in $scope.options) {
             if (key.indexOf('$') > -1)
                 continue;
 
             $scope.$watch('options.' + key, updateImmediate);
+        }
+    }
+
+    function ifChanged(f) {
+        return function(newValue, oldValue) {
+            if (oldValue === newValue) // initial angular call?
+                return;
+
+            return f(newValue, oldValue);
         }
     }
     
