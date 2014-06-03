@@ -45,8 +45,7 @@
                 $scope.branch = $scope.branches.filter(function(b) { return b.name === urlData.branch; })[0] || null;
             });
         }
-
-        
+    
         $scope.options = angular.extend({
             language: 'csharp',
             target:   'csharp',
@@ -74,9 +73,11 @@
             $scope.$watch('options.' + key, updateImmediate);
         }
 
-        $timeout(function() {
-            processOnServer();
-        });
+        if (!$scope.branch /* otherwise would be called automatically when branches are loaded */) {
+            $timeout(function() {
+                processOnServer();
+            });
+        }
     }
 
     function ifChanged(f) {
