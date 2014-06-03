@@ -73,7 +73,7 @@
             $scope.$watch('options.' + key, updateImmediate);
         }
 
-        if (!$scope.branch /* otherwise would be called automatically when branches are loaded */) {
+        if (!urlData || !urlData.branch /* otherwise this would be called automatically when branches are loaded */) {
             $timeout(function() {
                 processOnServer();
             });
