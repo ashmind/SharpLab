@@ -49,11 +49,15 @@ main {
   width: 100%;
   
   > * {
-    .flex (1 0 auto);
+    .flex (0 0 50%);
   }
 
   @media (orientation: portrait) {
     .flex-direction(column);
+
+    > * {
+      .flex (1 0 auto);
+    }
   }
 }
 
@@ -344,8 +348,8 @@ textarea, .CodeMirror,
 
 .loader {
   position: absolute;
-  height: calc(100% - 6px);
-  width: calc(100% - 10px);
+  height: calc(~"100% - 6px");
+  width: calc(~"100% - 10px");
   margin-left: 10px;
   top: 3px;
   bottom: 3px;

@@ -31,13 +31,17 @@ main {
   width: 100%;
 }
 main > * {
-  flex: 1 0 auto;
-  -webkit-flex: 1 0 auto;
+  flex: 0 0 50%;
+  -webkit-flex: 0 0 50%;
 }
 @media (orientation: portrait) {
   main {
     flex-direction: column;
     -webkit-flex-direction: column;
+  }
+  main > * {
+    flex: 1 0 auto;
+    -webkit-flex: 1 0 auto;
   }
 }
 main + footer {
@@ -285,8 +289,8 @@ textarea,
 }
 .loader {
   position: absolute;
-  height: calc(94%);
-  width: calc(90%);
+  height: calc(100% - 6px);
+  width: calc(100% - 10px);
   margin-left: 10px;
   top: 3px;
   bottom: 3px;
