@@ -14,6 +14,7 @@ namespace TryRoslyn.Core.Processing {
         // ReSharper disable once AgentHeisenbug.FieldOfNonThreadSafeTypeInThreadSafeType
         private readonly MetadataReference[] _references;
         private readonly IReadOnlyCollection<IDecompiler> _decompilers;
+        private readonly IRoslynAbstraction _roslynAbstraction;
         private readonly IReadOnlyCollection<IRoslynLanguage> _languages;
         
         public LocalCodeProcessor(
@@ -21,6 +22,7 @@ namespace TryRoslyn.Core.Processing {
             IReadOnlyCollection<IRoslynLanguage> languages,
             IReadOnlyCollection<IDecompiler> decompilers
         ) {
+            _roslynAbstraction = roslynAbstraction;
             _languages = languages;
             _decompilers = decompilers;
 
@@ -39,11 +41,12 @@ namespace TryRoslyn.Core.Processing {
             var syntaxTree = sourceLanguage.ParseText(code, kind);
 
             var stream = new MemoryStream();
-            var emitResult = sourceLanguage
+            var compilation = sourceLanguage
                 .CreateLibraryCompilation("Test", options.OptimizationsEnabled)
                 .AddReferences(_references)
-                .AddSyntaxTrees(syntaxTree)
-                .Emit(stream);
+                .AddSyntaxTrees(syntaxTree);
+
+            var emitResult = _roslynAbstraction.Emit(compilation, stream);
 
             if (!emitResult.Success)
                 return new ProcessingResult(null, emitResult.Diagnostics.Select(d => new SerializableDiagnostic(d)));

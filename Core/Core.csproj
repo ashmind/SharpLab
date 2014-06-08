@@ -30,8 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AshMind.Extensions">
-      <HintPath>..\#packages\AshMind.Extensions.1.3.2\lib\net45\AshMind.Extensions.dll</HintPath>
+    <Reference Include="AshMind.Extensions, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\#packages\AshMind.Extensions.1.4.1\lib\net45\AshMind.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="AshMind.IO.Abstractions">
       <HintPath>..\#packages\AshMind.IO.Abstractions.0.7.2\lib\net40\AshMind.IO.Abstractions.dll</HintPath>
