@@ -74,6 +74,7 @@ function Build-Branch($directory, $branch) {
     ) | ? { Test-Path "$directory\$_" })[0];
     Write-Output "  $vbProjectPath"
     &$MSBuild "$directory\$vbProjectPath" `
+        /p:IldasmPath="$toolsRoot\ildasm.exe" `
         /p:RestorePackages=false `
         /p:DelaySign=false `
         /p:SignAssembly=false `
@@ -97,6 +98,9 @@ function Build-Branch($directory, $branch) {
 try {
     $Host.UI.RawUI.WindowTitle = "Build Roslyn" # prevents title > 1024 char errors
 
+    #Write-Output "Killing VBCSCompiler instances"
+    #taskkill /IM VBCSCompiler.exe /F
+
     Write-Output "Environment:"
     Write-Output "Current path: $(Get-Location)"
     Write-Output "WEBROOT_PATH: ${env:WEBROOT_PATH}"
@@ -106,6 +110,7 @@ try {
     
     $webRoot = Resolve-Path $env:WEBROOT_PATH
     $sourcesRoot = "$webRoot\..\!roslyn-sources"
+    $toolsRoot = "$webRoot\..\!roslyn-build-tools"
     $binariesRoot = "$webRoot\App_Data\RoslynBranches"
     $repositoryUrl = 'https://git01.codeplex.com/roslyn'
 
@@ -114,6 +119,12 @@ try {
     }
     $sourcesRoot = Resolve-Path $sourcesRoot
     Write-Output "Sources Root: $sourcesRoot"
+    
+    if (-not (Test-Path $toolsRoot)) {
+        Throw "Path not found: $toolsRoot"
+    }
+    $toolsRoot =  Resolve-Path $toolsRoot
+    Write-Output "Tools Root: $toolsRoot"
 
     if (-not (Test-Path $binariesRoot)) {
         New-Item -ItemType directory -Path $binariesRoot | Out-Null    
@@ -142,6 +153,9 @@ try {
     
     Remove-Item .git -Force -Recurse
     [IO.File]::SetLastWriteTime("$webRoot\web.config", [DateTime]::Now)
+    
+    #Write-Output "Killing VBCSCompiler instances"
+    #taskkill /IM VBCSCompiler.exe /F
 }
 catch {
     $ErrorActionPreference = 'Continue'
