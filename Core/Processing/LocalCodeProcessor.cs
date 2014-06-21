@@ -26,10 +26,10 @@ namespace TryRoslyn.Core.Processing {
             _languages = languages;
             _decompilers = decompilers;
 
-            _references = new MetadataReference[] {
-                roslynAbstraction.NewMetadataFileReference(typeof(object).Assembly.Location),
-                roslynAbstraction.NewMetadataFileReference(typeof(Uri).Assembly.Location),
-                roslynAbstraction.NewMetadataFileReference(typeof(DynamicAttribute).Assembly.Location)
+            _references = new[] {
+                roslynAbstraction.MetadataReferenceFromPath(typeof(object).Assembly.Location),
+                roslynAbstraction.MetadataReferenceFromPath(typeof(Uri).Assembly.Location),
+                roslynAbstraction.MetadataReferenceFromPath(typeof(DynamicAttribute).Assembly.Location)
             };
         }
 

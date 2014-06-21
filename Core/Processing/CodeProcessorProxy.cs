@@ -11,11 +11,16 @@ namespace TryRoslyn.Core.Processing {
         private readonly ICodeProcessor _processor;
 
         public CodeProcessorProxy() {
-            var builder = new ContainerBuilder();
-            builder.RegisterModule<LocalProcessingModule>();
-            var container = builder.Build();
+            try {
+                var builder = new ContainerBuilder();
+                builder.RegisterModule<LocalProcessingModule>();
+                var container = builder.Build();
 
-            _processor = container.Resolve<ICodeProcessor>();
+                _processor = container.Resolve<ICodeProcessor>();
+            }
+            catch (Exception ex) {
+                throw new Exception(ex.ToString());
+            }
         }
 
         public ProcessingResult Process(string code, ProcessingOptions options) {
@@ -25,7 +30,7 @@ namespace TryRoslyn.Core.Processing {
         public override object InitializeLifetimeService() {
             return null;
         }
-        
+
         public void Dispose() {
             _processor.Dispose();
             // should I force-expire it?

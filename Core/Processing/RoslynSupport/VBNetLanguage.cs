@@ -11,11 +11,11 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
     public class VBNetLanguage : IRoslynLanguage {
         private readonly IRoslynAbstraction _roslynAbstraction;
         // ReSharper disable once AgentHeisenbug.FieldOfNonThreadSafeTypeInThreadSafeType
-        private readonly MetadataFileReference _microsoftVisualBasicReference;
+        private readonly MetadataReference _microsoftVisualBasicReference;
 
         public VBNetLanguage(IRoslynAbstraction roslynAbstraction) {
             _roslynAbstraction = roslynAbstraction;
-            _microsoftVisualBasicReference = _roslynAbstraction.NewMetadataFileReference(typeof(StandardModuleAttribute).Assembly.Location);
+            _microsoftVisualBasicReference = _roslynAbstraction.MetadataReferenceFromPath(typeof(StandardModuleAttribute).Assembly.Location);
         }
 
         public LanguageIdentifier Identifier {
@@ -23,10 +23,10 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
         }
 
         public SyntaxTree ParseText(string code, SourceCodeKind kind) {
-            return _roslynAbstraction.ParseText(
-                typeof(VisualBasicSyntaxTree),
-                code, new VisualBasicParseOptions(_roslynAbstraction.GetMaxValue<LanguageVersion>(), kind: kind)
+            var options = _roslynAbstraction.NewParseOptions<LanguageVersion, VisualBasicParseOptions>(
+                _roslynAbstraction.GetMaxValue<LanguageVersion>(), kind
             );
+            return _roslynAbstraction.ParseText(typeof(VisualBasicSyntaxTree), code, options);
         }
 
         public Compilation CreateLibraryCompilation(string assemblyName, bool optimizationsEnabled) {

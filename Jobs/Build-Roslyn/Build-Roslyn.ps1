@@ -22,20 +22,28 @@ function Sync-Branch($directory, $branch) {
     Pop-Location
 }
 
-function Build-Branch($directory) {
+function Build-Branch($directory, $branch) {
     $fsName = [IO.Path]::GetFileName($directory)
 
     Write-Output "Building $directory"
 
     $buildLogPath = "$sourcesRoot\$fsName.build.log"
     Copy-Item NuGet.Roslyn.config "$directory\NuGet.config" -Force
+    
+    Write-Output "  BuildAndTest.proj"
     &$MSBuild "$directory\BuildAndTest.proj" /target:RestorePackages > "$buildLogPath"
     if ($LastExitCode -ne 0) {
         Write-Output "  [WARNING] Build failed, see $buildLogPath"
         return
-    }      
+    }
+    
+    $csProjectPath = @(@(
+      "Src\Compilers\CSharp\Source\CSharpCodeAnalysis.csproj";
+      "Src\Compilers\CSharp\Desktop\CSharpCodeAnalysis.Desktop.csproj"
+    ) | ? { Test-Path "$directory\$_" })[0];
         
-    &$MSBuild "$directory\Src\Compilers\CSharp\Source\CSharpCodeAnalysis.csproj" `
+    Write-Output "  $csProjectPath"
+    &$MSBuild "$directory\$csProjectPath" `
         /p:RestorePackages=false `
         /p:DelaySign=false `
         /p:SignAssembly=false `
@@ -46,7 +54,9 @@ function Build-Branch($directory) {
         return
     }
     
-    &$MSBuild "$directory\Src\Tools\Source\CompilerGeneratorTools\Source\VisualBasicSyntaxGenerator\VisualBasicSyntaxGenerator.vbproj" `
+    $vbSyntaxGeneratorProjectPath = "Src\Tools\Source\CompilerGeneratorTools\Source\VisualBasicSyntaxGenerator\VisualBasicSyntaxGenerator.vbproj"
+    Write-Output "  $vbSyntaxGeneratorProjectPath"
+    &$MSBuild "$directory\$vbSyntaxGeneratorProjectPath" `
         /p:RestorePackages=false `
         /p:DelaySign=false `
         /p:SignAssembly=false `
@@ -58,7 +68,12 @@ function Build-Branch($directory) {
         return
     }
     
-    &$MSBuild "$directory\Src\Compilers\VisualBasic\Source\BasicCodeAnalysis.vbproj" `
+    $vbProjectPath = @(@(
+      "Src\Compilers\VisualBasic\Source\BasicCodeAnalysis.vbproj";
+      "Src\Compilers\VisualBasic\Desktop\BasicCodeAnalysis.Desktop.vbproj"
+    ) | ? { Test-Path "$directory\$_" })[0];
+    Write-Output "  $vbProjectPath"
+    &$MSBuild "$directory\$vbProjectPath" `
         /p:RestorePackages=false `
         /p:DelaySign=false `
         /p:SignAssembly=false `
@@ -122,7 +137,7 @@ try {
         Write-Output "*** $_"
         $directory = "$sourcesRoot\" + $_.Replace('/', '-')
         Sync-Branch $directory $_
-        Build-Branch $directory
+        Build-Branch $directory $_
     }
     
     Remove-Item .git -Force -Recurse

@@ -8,7 +8,10 @@ using System.Reflection;
 using AshMind.Extensions;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
+using Delegate = System.Delegate;
+using Expression = System.Linq.Expressions.Expression;
 
 namespace TryRoslyn.Core.Processing.RoslynSupport {
     // this provides a way to manage Roslyn API changes between branches
@@ -36,7 +39,7 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
         
         [ThreadSafe]
         private static class CachedEnum<[ThreadSafe] TEnum> {
-            public static readonly TEnum MaxValue = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().Max();
+            public static readonly TEnum MaxValue = Enumerable.Cast<TEnum>(Enum.GetValues(typeof(TEnum))).Max();
         }
 
         public SyntaxTree ParseText<TParseOptions>(Type syntaxTreeType, string code, TParseOptions options)
@@ -50,8 +53,30 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             return GetDelegate<Func<Compilation, Stream, EmitResult>>("Compilation.Emit", typeof(Compilation), "Emit").Invoke(compilation, stream);
         }
 
-        public MetadataFileReference NewMetadataFileReference(string path) {
-            return GetFactory<Func<string, MetadataFileReference>>("MetadataFileReference.new").Invoke(path);
+        public MetadataReference MetadataReferenceFromPath(string path) {
+            var factory = (Func<string, MetadataReference>)_delegateCache.GetOrAdd("MetadataReferenceFromPath", _ => BuildMetadataReferenceFromPath());
+            return factory(path);
+        }
+
+        private Func<string, MetadataReference> BuildMetadataReferenceFromPath() {
+            // latest master
+            var imageReferenceType = typeof(MetadataReference).Assembly.GetType("Microsoft.CodeAnalysis.MetadataImageReference", false);
+            if (imageReferenceType != null) {
+                var imageReferenceFactory = BuildFactory<Func<Stream, MetadataReference>>(imageReferenceType);
+                return path => {
+                    using (var stream = File.OpenRead(path)) {
+                        return imageReferenceFactory(stream);
+                    }
+                };
+            }
+
+            // older APIs
+            var fileReferenceType = typeof(MetadataReference).Assembly.GetType("Microsoft.CodeAnalysis.MetadataFileReference", true);
+            return BuildFactory<Func<string, MetadataReference>>(fileReferenceType);
+        }
+
+        public TParseOptions NewParseOptions<TLanguageVersion, TParseOptions>(TLanguageVersion languageVersion, SourceCodeKind kind) {
+            return GetFactory<Func<TLanguageVersion, SourceCodeKind, TParseOptions>>(typeof(TParseOptions).Name + ".new").Invoke(languageVersion, kind);
         }
 
         public TCompilationOptions NewCompilationOptions<TCompilationOptions>(OutputKind outputKind) {
@@ -74,7 +99,8 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             var signature = GetParametersAndReturnType<TDelegate>();
             var parameters = signature.Item1;
 
-            var methods = type.GetMethods(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public)
+            var methods = type.GetMethods()
+                              .Where(m => m.IsPublic)
                               .Where(m => m.Name == methodName);
             var resolved = ResolveMethod(type, methods, parameters);
             
@@ -82,12 +108,13 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
                              .Compile();
         }
 
-        private TDelegate BuildFactory<TDelegate>() {
+        private TDelegate BuildFactory<TDelegate>(Type type = null) {
             var signature = GetParametersAndReturnType<TDelegate>();
             var parameters = signature.Item1;
             var returnType = signature.Item2;
+            var constructedType = type ?? returnType;
 
-            var constructors = signature.Item2.GetConstructors();
+            var constructors = constructedType.GetConstructors().Where(c => c.IsPublic);
             var resolved = ResolveMethod(returnType, constructors, parameters);
 
             return Expression.Lambda<TDelegate>(Expression.New(resolved.Method, resolved.Arguments), parameters)

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 
 namespace TryRoslyn.Core.Processing.RoslynSupport {
@@ -17,7 +18,10 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
         EmitResult Emit(Compilation compilation, Stream stream);
 
         [Pure]
-        MetadataFileReference NewMetadataFileReference(string path);
+        MetadataReference MetadataReferenceFromPath(string path);
+
+        [Pure]
+        TParseOptions NewParseOptions<TLanguageVersion, TParseOptions>(TLanguageVersion languageVersion, SourceCodeKind kind);
 
         [Pure]
         TCompilationOptions NewCompilationOptions<TCompilationOptions>(OutputKind outputKind);

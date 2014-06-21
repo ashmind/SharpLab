@@ -15,7 +15,7 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
 
         public CSharpLanguage(IRoslynAbstraction roslynAbstraction) {
             _roslynAbstraction = roslynAbstraction;
-            _microsoftCSharpReference = _roslynAbstraction.NewMetadataFileReference(typeof(Binder).Assembly.Location);
+            _microsoftCSharpReference = _roslynAbstraction.MetadataReferenceFromPath(typeof(Binder).Assembly.Location);
         }
 
         public LanguageIdentifier Identifier {
@@ -23,10 +23,10 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
         }
 
         public SyntaxTree ParseText(string code, SourceCodeKind kind) {
-            return _roslynAbstraction.ParseText(
-                typeof(CSharpSyntaxTree),
-                code, new CSharpParseOptions(_roslynAbstraction.GetMaxValue<LanguageVersion>(), kind: kind)
+            var options = _roslynAbstraction.NewParseOptions<LanguageVersion, CSharpParseOptions>(
+                _roslynAbstraction.GetMaxValue<LanguageVersion>(), kind
             );
+            return _roslynAbstraction.ParseText(typeof(CSharpSyntaxTree), code, options);
         }
 
         public Compilation CreateLibraryCompilation(string assemblyName, bool optimizationsEnabled) {
