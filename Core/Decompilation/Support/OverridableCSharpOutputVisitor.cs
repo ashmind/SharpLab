@@ -301,7 +301,7 @@ namespace TryRoslyn.Core.Decompilation.Support {
                     lastWritten = LastWritten.KeywordOrIdentifier;
                 }*/
 
-        void WriteIdentifier(string identifier, Role<Identifier> identifierRole = null) {
+        protected void WriteIdentifier(string identifier, Role<Identifier> identifierRole = null) {
             WriteSpecialsUpToRole(identifierRole ?? Roles.Identifier);
             if (IsKeyword(identifier, containerStack.Peek())) {
                 if (lastWritten == LastWritten.KeywordOrIdentifier) {
@@ -358,11 +358,11 @@ namespace TryRoslyn.Core.Decompilation.Support {
             }
         }
 
-        void LPar() {
+        protected void LPar() {
             WriteToken(Roles.LPar);
         }
 
-        void RPar() {
+        protected void RPar() {
             WriteToken(Roles.RPar);
         }
 
@@ -454,7 +454,8 @@ namespace TryRoslyn.Core.Decompilation.Support {
         #endregion
 
         #region Write constructs
-        void WriteTypeArguments(IEnumerable<AstType> typeArguments) {
+
+        protected void WriteTypeArguments(IEnumerable<AstType> typeArguments) {
             if (typeArguments.Any()) {
                 WriteToken(Roles.LChevron);
                 WriteCommaSeparatedList(typeArguments);
@@ -864,7 +865,7 @@ namespace TryRoslyn.Core.Decompilation.Support {
             return !(p.Type.IsNull && p.ParameterModifier == ParameterModifier.None);
         }
 
-        public void VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression) {
+        public virtual void VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression) {
             StartNode(memberReferenceExpression);
             memberReferenceExpression.Target.AcceptVisitor(this);
             WriteToken(Roles.Dot);

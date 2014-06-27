@@ -15,6 +15,30 @@ namespace TryRoslyn.Core.Decompilation.Support {
         public DecompiledPseudoCSharpOutputVisitor(IOutputFormatter formatter, CSharpFormattingOptions formattingPolicy) : base(formatter, formattingPolicy) {
         }
 
+        // fixes bug https://github.com/ashmind/TryRoslyn/issues/7
+        // todo: report this to the decompiler guys -- but does not seem like they are reading their queue
+        public override void VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression) {
+            StartNode(memberReferenceExpression);
+            
+            var useParentheses = RequiresParenthesesWhenTargetOfMemberReference(memberReferenceExpression.Target);
+            if (useParentheses)
+                LPar();
+            memberReferenceExpression.Target.AcceptVisitor(this);
+            if (useParentheses)
+                RPar();
+
+            WriteToken(Roles.Dot);
+            WriteIdentifier(memberReferenceExpression.MemberName);
+            WriteTypeArguments(memberReferenceExpression.TypeArguments);
+            EndNode(memberReferenceExpression);
+        }
+
+        private bool RequiresParenthesesWhenTargetOfMemberReference(Expression expression) {
+            return (expression is ConditionalExpression)
+                || (expression is BinaryOperatorExpression)
+                || (expression is UnaryOperatorExpression);
+        }
+
         public override void VisitExpressionStatement(ExpressionStatement expressionStatement) {
             StartNode(expressionStatement);
             expressionStatement.Expression.AcceptVisitor(this);

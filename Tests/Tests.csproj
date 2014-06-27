@@ -80,8 +80,7 @@
     <Compile Include="BranchCodeProcessorTests.cs" />
     <Compile Include="BranchProviderTests.cs" />
     <Compile Include="LocalCodeProcessorTests.cs" />
-    <EmbeddedResource Include="TestCode\PrimaryConstructor.ArgumentAssignedToField.cs2cs" />
-    <Compile Include="Support\EmbeddedResourceDataAttribute.cs" />
+    <EmbeddedResource Include="TestCode\Constructor.ArgumentAssignedToField.cs2cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +91,7 @@
     <EmbeddedResource Include="TestCode\Simple.vb2vb" />
     <EmbeddedResource Include="TestCode\Module.vb2vb" />
     <EmbeddedResource Include="TestCode\Simple.cs2il" />
+    <EmbeddedResource Include="TestCode\NullPropagation.ToTernary.cs2cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">

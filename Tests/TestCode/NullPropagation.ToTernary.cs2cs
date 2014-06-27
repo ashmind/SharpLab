@@ -1,0 +1,41 @@
+﻿public class Point {
+    public int X { get; set; }
+    public int M(Point p) {
+        return (p?.X).GetValueOrDefault();
+    }
+}
+
+?=>
+
+using System;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Security;
+using System.Security.Permissions;
+[assembly: AssemblyVersion("0.0.0.0")]
+[assembly: CompilationRelaxations(8)]
+[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
+[module: UnverifiableCode]
+public class Point
+{
+    [CompilerGenerated]
+    private int <X>k__BackingField;
+    public int X
+    {
+        [CompilerGenerated]
+        get
+        {
+            return this.<X>k__BackingField;
+        }
+        [CompilerGenerated]
+        set
+        {
+            this.<X>k__BackingField = value;
+        }
+    }
+    public int M(Point p)
+    {
+        return (p != null ? new int?(p.X) : null).GetValueOrDefault();
+    }
+}
