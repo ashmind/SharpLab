@@ -159,6 +159,7 @@
     <Content Include="App\loader\loader.html" />
     <Content Include="App\services\defaults.js" />
     <Content Include="App\services\location.js" />
+    <Content Include="App\services\remember.js" />
     <Content Include="Global.asax" />
     <Content Include="App\controllers\app-controller.js" />
     <Content Include="App\app.css.map">
