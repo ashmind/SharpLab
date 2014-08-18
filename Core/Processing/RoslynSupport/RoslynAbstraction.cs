@@ -8,10 +8,7 @@ using System.Reflection;
 using AshMind.Extensions;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using Delegate = System.Delegate;
-using Expression = System.Linq.Expressions.Expression;
 
 namespace TryRoslyn.Core.Processing.RoslynSupport {
     // this provides a way to manage Roslyn API changes between branches
@@ -83,6 +80,35 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             return GetFactory<Func<OutputKind, TCompilationOptions>>(typeof(TCompilationOptions).Name + ".new").Invoke(outputKind);
         }
 
+        public TCompilationOptions WithOptimizationLevel<TCompilationOptions>(TCompilationOptions compilationOptions, OptimizationLevelAbstraction value) {
+            // latest master
+            var optimizationLevelType = typeof(CompilationOptions).Assembly.GetType("Microsoft.CodeAnalysis.OptimizationLevel", false);
+            if (optimizationLevelType != null) {
+                return GetDelegate(typeof(TCompilationOptions).Name + ".WithOptimizationLevel", BuildWithOptimizationLevel<TCompilationOptions>)
+                        .Invoke(compilationOptions, value);
+            }
+
+            return GetDelegate<Func<TCompilationOptions, bool, TCompilationOptions>>(typeof(TCompilationOptions).Name + ".WithOptimizations", typeof(TCompilationOptions), "WithOptimizations")
+                        .Invoke(compilationOptions, value == OptimizationLevelAbstraction.Release);
+        }
+
+        private Expression<Func<TCompilationOptions, OptimizationLevelAbstraction, TCompilationOptions>> BuildWithOptimizationLevel<TCompilationOptions>() {
+            var optionsType = typeof(TCompilationOptions);
+            var options = Expression.Parameter(optionsType);
+            var levelAbstraction = Expression.Parameter(typeof(OptimizationLevelAbstraction));
+
+            var levelType = typeof(CompilationOptions).Assembly.GetType("Microsoft.CodeAnalysis.OptimizationLevel", true);
+            var level = Expression.Condition(
+                Expression.Equal(levelAbstraction, Expression.Constant(OptimizationLevelAbstraction.Release)),
+                Expression.Field(null, levelType, "Release"),
+                Expression.Field(null, levelType, "Debug")
+            );
+            var resolved = ResolveMethod(optionsType, optionsType.GetMethods().Where(m => m.Name == "WithOptimizationLevel"), new Expression[] { options, level });
+            var call = Expression.Call(resolved.Instance, resolved.Method, resolved.Arguments);
+
+            return Expression.Lambda<Func<TCompilationOptions, OptimizationLevelAbstraction, TCompilationOptions>>(call, options, levelAbstraction);
+        }
+
         public TLanguageVersion GetMaxValue<TLanguageVersion>() {
             return CachedEnum<TLanguageVersion>.MaxValue;
         }
@@ -93,6 +119,10 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
 
         private TDelegate GetDelegate<TDelegate>(string key, Type type, string methodName) {
             return (TDelegate)(object)_delegateCache.GetOrAdd(key, _ => (Delegate)(object)BuildDelegate<TDelegate>(type, methodName));
+        }
+
+        private TDelegate GetDelegate<TDelegate>(string key, Func<Expression<TDelegate>> build) {
+            return (TDelegate)(object)_delegateCache.GetOrAdd(key, _ => (Delegate)(object)build().Compile());
         }
 
         private TDelegate BuildDelegate<TDelegate>(Type type, string methodName) {
@@ -133,7 +163,7 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
         }
 
         [NotNull]
-        private ResolutionResult<TMethod> ResolveMethod<TMethod>(Type declaringType, IEnumerable<TMethod> methods, ParameterExpression[] lambdaParameters)
+        private ResolutionResult<TMethod> ResolveMethod<TMethod>(Type declaringType, IEnumerable<TMethod> methods, Expression[] potentialArguments)
             where TMethod : MethodBase
         {
             var report = new StringWriter();
@@ -142,19 +172,19 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
                 report.WriteLine("Method: {0}", method);
 
                 var instance = (Expression)null;
-                var lambdaParametersExceptInstance = lambdaParameters.AsEnumerable();
+                var potentialArgumentsExceptInstance = potentialArguments.AsEnumerable();
                 if (!method.IsStatic && !method.IsConstructor) {
-                    instance = lambdaParameters[0];
-                    lambdaParametersExceptInstance = lambdaParameters.Skip(1);
+                    instance = potentialArguments[0];
+                    potentialArgumentsExceptInstance = potentialArguments.Skip(1);
                 }
 
-                var unusedLambdaParameters = lambdaParametersExceptInstance.ToSet();
+                var unusedPotentialArguments = potentialArgumentsExceptInstance.ToSet();
 
                 var parameters = method.GetParameters();
                 var arguments = new Expression[parameters.Length];
                 var failed = false;
                 for (var i = 0; i < parameters.Length; i++) {
-                    var argument = ResolveArgument(parameters[i], unusedLambdaParameters);
+                    var argument = ResolveArgument(parameters[i], unusedPotentialArguments);
                     if (argument == null) {
                         report.WriteLine("    {0}: could not resolve", parameters[i]);
                         failed = true;
@@ -165,8 +195,8 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
                     report.WriteLine("    {0}: {1}", parameters[i], argument);
                 }
 
-                if (unusedLambdaParameters.Count > 0) {
-                    report.WriteLine("    unused: {0}.", string.Join(", ", unusedLambdaParameters));
+                if (unusedPotentialArguments.Count > 0) {
+                    report.WriteLine("    unused: {0}.", string.Join(", ", unusedPotentialArguments));
                     continue;
                 }
 
@@ -177,11 +207,11 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             throw new Exception("Failed to find matching method on " + declaringType + ":" + Environment.NewLine + report);
         }
 
-        private static Expression ResolveArgument(ParameterInfo parameter, ISet<ParameterExpression> unusedLambdaParameters) {
-            var lambdaParameter = unusedLambdaParameters.SingleOrDefault(p => parameter.ParameterType.IsAssignableFrom(p.Type));
-            if (lambdaParameter != null) {
-                unusedLambdaParameters.Remove(lambdaParameter);
-                return lambdaParameter;
+        private static Expression ResolveArgument(ParameterInfo parameter, ISet<Expression> unusedPotentialArguments) {
+            var argument = unusedPotentialArguments.SingleOrDefault(p => parameter.ParameterType.IsAssignableFrom(p.Type));
+            if (argument != null) {
+                unusedPotentialArguments.Remove(argument);
+                return argument;
             }
 
             if (parameter.HasDefaultValue) {

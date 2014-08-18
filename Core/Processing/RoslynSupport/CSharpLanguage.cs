@@ -31,8 +31,10 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
 
         public Compilation CreateLibraryCompilation(string assemblyName, bool optimizationsEnabled) {
             var options = _roslynAbstraction.NewCompilationOptions<CSharpCompilationOptions>(OutputKind.DynamicallyLinkedLibrary)
-                                            .WithAllowUnsafe(true)
-                                            .WithOptimizations(optimizationsEnabled);
+                                            .WithAllowUnsafe(true);
+            options = _roslynAbstraction.WithOptimizationLevel(
+                options, optimizationsEnabled ? OptimizationLevelAbstraction.Release : OptimizationLevelAbstraction.Debug
+            );
 
             return CSharpCompilation.Create(assemblyName)
                                     .WithOptions(options)

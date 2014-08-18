@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 
 namespace TryRoslyn.Core.Processing.RoslynSupport {
@@ -25,6 +24,9 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
 
         [Pure]
         TCompilationOptions NewCompilationOptions<TCompilationOptions>(OutputKind outputKind);
+
+        [Pure]
+        TCompilationOptions WithOptimizationLevel<TCompilationOptions>(TCompilationOptions options, OptimizationLevelAbstraction value);
 
         [Pure]
         TLanguageVersion GetMaxValue<TLanguageVersion>();

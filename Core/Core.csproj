@@ -105,6 +105,7 @@
     <Compile Include="Decompilation\VBNetDecompiler.cs" />
     <Compile Include="Decompilation\CSharpDecompiler.cs" />
     <Compile Include="Decompilation\Support\CustomizableIndentPlainTextOutput.cs" />
+    <Compile Include="Processing\RoslynSupport\OptimizationLevelAbstraction.cs" />
     <Compile Include="Processing\RoslynSupport\VBNetLanguage.cs" />
     <Compile Include="Processing\RoslynSupport\IRoslynLanguage.cs" />
     <Compile Include="Processing\LocalCodeProcessor.cs" />
