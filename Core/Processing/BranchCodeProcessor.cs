@@ -45,8 +45,14 @@ namespace TryRoslyn.Core.Processing {
                 @"App_Data\AppDomains", // ugly hack, just to save time
                 _branchName
             ));
-            if (tempDirectory.Exists)
-                tempDirectory.Delete(true);
+            if (tempDirectory.Exists) {
+                try {
+                    tempDirectory.Delete(true);
+                }
+                catch (UnauthorizedAccessException) {
+                    throw;
+                }
+            }
 
             tempDirectory.Create();
 
