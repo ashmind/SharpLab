@@ -1,19 +1,21 @@
-﻿angular.module('app').service('UrlService', ['$location', '$rootScope', function ($location, $rootScope) {
+/* globals LZString:false */
+
+angular.module('app').service('urlService', ['$location', '$rootScope', function ($location, $rootScope) {
     'use strict';
-    
+
     var lastHash;
-    this.saveToUrl = function(data) {
-        var hash = LZString.compressToBase64(data.code);
-        var flags = stringifyOptions(data.options);
+    this.saveToUrl = function(code, options) {
+        var hash = LZString.compressToBase64(code);
+        var flags = stringifyFlags(options);
         if (flags)
             hash = 'f:' + flags + '/' + hash;
 
-        if (data.branch)
-            hash = 'b:' + data.branch + '/' + hash;
+        if (options.branch)
+            hash = 'b:' + options.branch + '/' + hash;
 
         lastHash = hash;
         $location.hash(hash);
-    }
+    };
 
     this.loadFromUrl = load.bind(this, false);
 
@@ -23,7 +25,7 @@
             if (loaded !== null)
                 callback(loaded);
         });
-    }
+    };
 
     function load(onlyIfChanged) {
         var hash = $location.hash();
@@ -36,10 +38,13 @@
 
         lastHash = hash;
         var match = /(?:b:([^\/]+)\/)?(?:f:([^\/]+)\/)?(.+)/.exec(hash);
-        if (match == null)
+        if (match === null)
             return null;
 
-        var result = { branch: match[1] };
+        var result = {
+            options: angular.extend({ branch: match[1] }, parseFlags(match[2]))
+        };
+
         try {
             result.code = LZString.decompressFromBase64(match[3]);
         }
@@ -47,7 +52,6 @@
             return null;
         }
 
-        result.options = parseOptions(match[2]);
         return result;
     }
 
@@ -60,7 +64,7 @@
         return result;
     })();
 
-    function stringifyOptions(options) {
+    function stringifyFlags(options) {
         return [
             options.language === 'vbnet' ? 'vb' : '',
             targetMap[options.target],
@@ -69,7 +73,7 @@
         ].join('');
     }
 
-    function parseOptions(flags) {
+    function parseFlags(flags) {
         if (!flags)
             return {};
 
@@ -81,12 +85,12 @@
             if (flags.indexOf(key) > -1)
                 target = targetMapReverse[key];
         }
-        
+
         return {
             language:      /(^|[a-z])vb/.test(flags) ? 'vbnet'  : 'csharp',
             target:        target,
-            mode:          flags.indexOf("s") > -1   ? 'script' : 'regular',
-            optimizations: flags.indexOf("r") > -1
+            mode:          flags.indexOf('s') > -1   ? 'script' : 'regular',
+            optimizations: flags.indexOf('r') > -1
         };
     }
 }]);

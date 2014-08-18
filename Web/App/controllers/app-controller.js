@@ -1,4 +1,4 @@
-﻿angular.module('app').controller('AppController', ['$scope', '$filter', '$timeout', 'DefaultCodeService', 'UrlService', 'CompilationService', function ($scope, $filter, $timeout, defaultCodeService, urlService, compilationService) {
+angular.module('app').controller('AppController', ['$scope', '$filter', '$timeout', 'defaultsService', 'rememberService', 'urlService', 'compilationService', function ($scope, $filter, $timeout, defaultsService, rememberService, urlService, compilationService) {
     'use strict';
 
     (function setupLanguages() {
@@ -16,69 +16,69 @@
         });
     })();
 
-    $scope.branch = null;
-    var branchesPromise = compilationService.getBranches().then(function(value) {
-        $scope.branches = value;
-        $scope.branches.forEach(function(b) {
-            b.lastCommitDate = new Date(b.lastCommitDate);
-        });
-    });
-    $scope.displayBranch = function(branch) {
-        return branch.name + " (" + $filter('date')(branch.lastCommitDate, "d MMM") + ")";
-    };
+    var branchesPromise;
 
-    setup();
-    $scope.expanded = {};
-    $scope.expanded = function(name) {
-        $scope.expanded[name] = true;
-    }
-    $scope.toggle = function(name) {
-        $scope.expanded[name] = !$scope.expanded[name];
-    };
-
-    function setup() {
-        var urlData = urlService.loadFromUrl();
-        if (urlData) {
-            $scope.code = urlData.code;
-            $scope.options = urlData.options;
-            branchesPromise.then(function() {
-                $scope.branch = $scope.branches.filter(function(b) { return b.name === urlData.branch; })[0] || null;
+    (function setupBranches() {
+        $scope.branch = null;
+        branchesPromise = compilationService.getBranches().then(function(value) {
+            $scope.branches = value;
+            $scope.branches.forEach(function(b) {
+                b.lastCommitDate = new Date(b.lastCommitDate);
             });
-        }
-    
-        $scope.options = angular.extend({
-            language: 'csharp',
-            target:   'csharp',
-            mode:     'regular',
-            optimizations: false
-        }, $scope.options);
-        defaultCodeService.attach($scope);
+        });
+        $scope.displayBranch = function(branch) {
+            return branch.name + ' (' + $filter('date')(branch.lastCommitDate, 'd MMM') + ')';
+        };
+    })();
 
+    (function loadOptions() {
+        var urlData = urlService.loadFromUrl() || {};
+        var options = urlData.options || rememberService.load();
+
+        var defaults = defaultsService.getOptions();
+        options = angular.extend({}, defaults, options);
+
+        $scope.options = options;
+        $scope.code = urlData.code || defaultsService.getCode(options.language);
+
+        if (!options.branch)
+            return;
+
+        branchesPromise.then(function() {
+            $scope.branch = $scope.branches.filter(function(b) {
+                return b.name === options.branch;
+            })[0] || null;
+        });
+    })();
+
+    (function watchCode() {
         var saveScopeToUrlThrottled = $.debounce(100, saveScopeToUrl);
         var updateFromServerThrottled = $.debounce(600, processOnServer);
         $scope.$watch('code', ifChanged(function() {
             saveScopeToUrlThrottled();
             updateFromServerThrottled();
         }));
+    })();
 
+    (function watchOptions() {
         var updateImmediate = ifChanged(function() {
             saveScopeToUrl();
+            rememberService.save($scope.options);
             processOnServer();
         });
-        $scope.$watch('branch', updateImmediate);
+        $scope.$watch('branch', ifChanged(function(branch) {
+            $scope.options.branch = branch ? branch.name : null;
+        }));
         for (var key in $scope.options) {
             if (key.indexOf('$') > -1)
                 continue;
 
             $scope.$watch('options.' + key, updateImmediate);
         }
+    })();
 
-        if (!urlData || !urlData.branch /* otherwise this would be called automatically when branches are loaded */) {
-            $timeout(function() {
-                processOnServer();
-            });
-        }
-    }
+    $timeout(function() { processOnServer(); });
+    $scope.loading = false;
 
     function ifChanged(f) {
         return function(newValue, oldValue) {
@@ -86,27 +86,22 @@
                 return;
 
             return f(newValue, oldValue);
-        }
-    }
-    
-    function saveScopeToUrl() {
-        urlService.saveToUrl({
-            code: $scope.code,
-            options: $scope.options,
-            branch: ($scope.branch || {}).name
-        });
+        };
     }
 
-    $scope.loading = false;
+    function saveScopeToUrl() {
+        urlService.saveToUrl($scope.code, $scope.options);
+    }
+
     function processOnServer() {
-        if ($scope.code == undefined || $scope.code === '')
+        if ($scope.code === undefined || $scope.code === '')
             return;
 
         if ($scope.loading)
             return;
 
         $scope.loading = true;
-        compilationService.process($scope.code, $scope.options, ($scope.branch || {}).name).then(function (data) {
+        compilationService.process($scope.code, $scope.options, $scope.options.branch).then(function (data) {
             $scope.loading = false;
             $scope.result = data;
         }, function(response) {
@@ -114,7 +109,7 @@
             var error = response.data;
             var report = error.exceptionMessage || error.message;
             if (error.stackTrace)
-                report += "\r\n" + error.stackTrace;
+                report += '\r\n' + error.stackTrace;
 
             $scope.result = {
                 success: false,

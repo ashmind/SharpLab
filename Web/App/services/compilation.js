@@ -1,9 +1,11 @@
-﻿angular.module('app').service('CompilationService', ['$http', function ($http) {
+angular.module('app').service('compilationService', ['$http', function ($http) {
+    'use strict';
+
     this.getBranches = function() {
         return $http.get('api/branches').then(function(response) {
             return response.data;
         });
-    }
+    };
 
     this.process = function (code, options, branchName) {
         var url = 'api/compilation';

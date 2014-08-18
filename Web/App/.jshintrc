@@ -3,9 +3,10 @@
   "devel":     true,
   "jquery":    true,
   "globals": {
-      "moment": false
+      "moment":  false,
+      "angular": false
   },
-  
+
   "camelcase": true,
   "eqeqeq":    true,
   "indent":    2,

@@ -1,16 +1,16 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8">
     <title>Try Roslyn</title>
-    
+
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=0.7">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/codemirror.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.0/normalize.min.css" />
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="loader/loader.css" />
-    
+
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/codemirror.js"></script>
@@ -24,10 +24,11 @@
     <script src="directives/codemirror.js"></script>
     <script src="directives/syntaxtree.js"></script>
     <script src="directives/boolean-model.js"></script>
-    <script src="services/default-code-service.js"></script>
-    <script src="services/compilation-service.js"></script>
-    <script src="services/url-service.js"></script>
-    <script src="services/location-service.js"></script>
+    <script src="services/defaults.js"></script>
+    <script src="services/compilation.js"></script>
+    <script src="services/remember.js"></script>
+    <script src="services/url.js"></script>
+    <script src="services/location.js"></script>
     <script src="controllers/app-controller.js"></script>
   </head>
   <body data-ng-app="app" data-ng-controller="AppController">
@@ -49,7 +50,7 @@
                 </select>
               </div>
             </div>
-            
+
             <div class="select-wrapper option-branch">
               <select data-ng-model="branch"
                       data-ng-options="branch as displayBranch(branch) for branch in branches track by branch.name">
@@ -61,21 +62,21 @@
             <app-codemirror value="code" mode="codeMirrorModes[options.language]" linenumbers></app-codemirror>
           </div>
         </section>
-        
+
         <section data-ng-if="branch" class="info-only non-code">
           <header>
             <h1>Branch {{branch.name}}, last commit</h1>
           </header>
           <div class="content">
             <div>
-              <a href="https://roslyn.codeplex.com/SourceControl/changeset/{{branch.lastCommitHash}}" target="_blank">{{branch.lastCommitHash}}</a> 
+              <a href="https://roslyn.codeplex.com/SourceControl/changeset/{{branch.lastCommitHash}}" target="_blank">{{branch.lastCommitHash}}</a>
               at {{branch.lastCommitDate | date:'dd MMM yyyy'}}
-              by <a href="https://www.codeplex.com/site/users/view/{{branch.lastCommitAuthor}}" target="_blank">{{branch.lastCommitAuthor}}</a> 
+              by <a href="https://www.codeplex.com/site/users/view/{{branch.lastCommitAuthor}}" target="_blank">{{branch.lastCommitAuthor}}</a>
             </div>
             <div class="commit-message">{{branch.lastCommitMessage | trim}}</div>
           </div>
         </section>
-        
+
         <!--<section class="syntax-tree collapsible" data-ng-class="{expanded: syntaxTreeExpanded}">
           <header data-ng-click="toggleSyntaxTree()">
             <h1>AST</h1>
@@ -85,14 +86,14 @@
           </div>
         </section>-->
       </div>
-      
+
       <div class="section-group results">
         <section data-ng-show="!result || result.success" class="decompiled">
           <header>
             <h1>Decompiled</h1>
             <span class="loader-container" data-ng-show="loading" data-ng-include="'loader/loader.html'">
             </span>
-            
+
             <div class="select-wrapper option-target-language">
               <select data-ng-model="options.target"
                       data-ng-options="x.language as x.displayName for x in targets"></select>
@@ -138,7 +139,7 @@
     <footer>
       Built by Andrey Shchekin (<a href="http://twitter.com/ashmind">@ashmind</a>). See <a href="http://github.com/ashmind/TryRoslyn">TryRoslyn</a> on GitHub.
     </footer>
-    
+
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
