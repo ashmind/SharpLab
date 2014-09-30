@@ -29,31 +29,32 @@ function Build-Branch($directory, $branch) {
 
     $buildLogPath = "$sourcesRoot\$fsName.build.log"
     Copy-Item NuGet.Roslyn.config "$directory\NuGet.config" -Force
-    
+
     Write-Output "  BuildAndTest.proj"
     &$MSBuild "$directory\BuildAndTest.proj" /target:RestorePackages > "$buildLogPath"
     if ($LastExitCode -ne 0) {
         Write-Output "  [WARNING] Build failed, see $buildLogPath"
         return
     }
-    
+
     $csProjectPath = @(@(
       "Src\Compilers\CSharp\Source\CSharpCodeAnalysis.csproj";
       "Src\Compilers\CSharp\Desktop\CSharpCodeAnalysis.Desktop.csproj"
     ) | ? { Test-Path "$directory\$_" })[0];
-        
+
     Write-Output "  $csProjectPath"
     &$MSBuild "$directory\$csProjectPath" `
         /p:RestorePackages=false `
         /p:DelaySign=false `
         /p:SignAssembly=false `
+        /p:SolutionDir="$directory\Src" `
         >> "$buildLogPath"
 
     if ($LastExitCode -ne 0) {
         Write-Output "  [WARNING] Build failed, see $buildLogPath"
         return
     }
-    
+
     $vbSyntaxGeneratorProjectPath = "Src\Tools\Source\CompilerGeneratorTools\Source\VisualBasicSyntaxGenerator\VisualBasicSyntaxGenerator.vbproj"
     Write-Output "  $vbSyntaxGeneratorProjectPath"
     &$MSBuild "$directory\$vbSyntaxGeneratorProjectPath" `
@@ -61,13 +62,14 @@ function Build-Branch($directory, $branch) {
         /p:DelaySign=false `
         /p:SignAssembly=false `
         /p:Configuration=Debug `
+        /p:SolutionDir="$directory\Src" `
         >> "$buildLogPath"
-        
+
     if ($LastExitCode -ne 0) {
         Write-Output "  [WARNING] Build failed, see $buildLogPath"
         return
     }
-    
+
     $vbProjectPath = @(@(
       "Src\Compilers\VisualBasic\Source\BasicCodeAnalysis.vbproj";
       "Src\Compilers\VisualBasic\Desktop\BasicCodeAnalysis.Desktop.vbproj"
@@ -79,18 +81,19 @@ function Build-Branch($directory, $branch) {
         /p:DelaySign=false `
         /p:SignAssembly=false `
         /p:Configuration=Debug `
+        /p:SolutionDir="$directory\Src" `
         >> "$buildLogPath"
 
     if ($LastExitCode -ne 0) {
         Write-Output "  [WARNING] Build failed, see $buildLogPath"
         return
     }
-  
+
     $binariesDirectory = "$binariesRoot\" + $fsName
     robocopy "$directory\Binaries\Debug" $binariesDirectory /MIR /XF "LastCommit.txt"
     Copy-Item "$sourcesRoot\$fsName.lastcommit.txt" -Destination "$binariesDirectory\LastCommit.txt"
     Remove-Item "$directory\NuGet.config"
-    
+
     Write-Output "  Build completed"
 }
 
@@ -104,10 +107,10 @@ try {
     Write-Output "Environment:"
     Write-Output "Current path: $(Get-Location)"
     Write-Output "WEBROOT_PATH: ${env:WEBROOT_PATH}"
-    
+
     $webRoot = Resolve-Path $env:WEBROOT_PATH
     Write-Output "   $webRoot"
-    
+
     $webRoot = Resolve-Path $env:WEBROOT_PATH
     $sourcesRoot = "$webRoot\..\!roslyn-sources"
     $toolsRoot = "$webRoot\..\!roslyn-build-tools"
@@ -119,7 +122,7 @@ try {
     }
     $sourcesRoot = Resolve-Path $sourcesRoot
     Write-Output "Sources Root: $sourcesRoot"
-    
+
     if (-not (Test-Path $toolsRoot)) {
         Throw "Path not found: $toolsRoot"
     }
@@ -150,10 +153,10 @@ try {
         Sync-Branch $directory $_
         Build-Branch $directory $_
     }
-    
+
     Remove-Item .git -Force -Recurse
     [IO.File]::SetLastWriteTime("$webRoot\web.config", [DateTime]::Now)
-    
+
     #Write-Output "Killing VBCSCompiler instances"
     #taskkill /IM VBCSCompiler.exe /F
 }
