@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -56,9 +57,22 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
         }
 
         private Func<string, MetadataReference> BuildMetadataReferenceFromPath() {
-            // latest master
-            var imageReferenceType = typeof(MetadataReference).Assembly.GetType("Microsoft.CodeAnalysis.MetadataImageReference", false);
+            var assembly = typeof(MetadataReference).Assembly;
+
+            // after-CTP4 master
+            var metadataReferenceType = assembly.GetType("Microsoft.CodeAnalysis.MetadataReference", false);
+            if (metadataReferenceType != null) {
+                const string methodName = "CreateFromFile";
+                if (metadataReferenceType.GetMethods().Any(x => x.Name == methodName)) {
+                    return BuildDelegate<Func<string, MetadataReference>>(metadataReferenceType, methodName);
+                }
+            }
+
+            // pre-CTP4 master
+            var imageReferenceType = assembly.GetType("Microsoft.CodeAnalysis.MetadataImageReference", false);
             if (imageReferenceType != null) {
+                Debugger.Break();
+
                 var imageReferenceFactory = BuildFactory<Func<Stream, MetadataReference>>(imageReferenceType);
                 return path => {
                     using (var stream = File.OpenRead(path)) {
@@ -68,7 +82,7 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             }
 
             // older APIs
-            var fileReferenceType = typeof(MetadataReference).Assembly.GetType("Microsoft.CodeAnalysis.MetadataFileReference", true);
+            var fileReferenceType = assembly.GetType("Microsoft.CodeAnalysis.MetadataFileReference", true);
             return BuildFactory<Func<string, MetadataReference>>(fileReferenceType);
         }
 
