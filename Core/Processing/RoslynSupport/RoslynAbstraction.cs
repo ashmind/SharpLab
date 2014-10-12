@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -71,8 +70,6 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             // pre-CTP4 master
             var imageReferenceType = assembly.GetType("Microsoft.CodeAnalysis.MetadataImageReference", false);
             if (imageReferenceType != null) {
-                Debugger.Break();
-
                 var imageReferenceFactory = BuildFactory<Func<Stream, MetadataReference>>(imageReferenceType);
                 return path => {
                     using (var stream = File.OpenRead(path)) {
