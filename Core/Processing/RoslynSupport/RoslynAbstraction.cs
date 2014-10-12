@@ -56,15 +56,13 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
         }
 
         private Func<string, MetadataReference> BuildMetadataReferenceFromPath() {
-            var assembly = typeof(MetadataReference).Assembly;
+            var metadataReferenceType = typeof(MetadataReference);
+            var assembly = metadataReferenceType.Assembly;
 
             // after-CTP4 master
-            var metadataReferenceType = assembly.GetType("Microsoft.CodeAnalysis.MetadataReference", false);
-            if (metadataReferenceType != null) {
-                const string methodName = "CreateFromFile";
-                if (metadataReferenceType.GetMethods().Any(x => x.Name == methodName)) {
-                    return BuildDelegate<Func<string, MetadataReference>>(metadataReferenceType, methodName);
-                }
+            var factoryMethodName = "CreateFromFile";
+            if (metadataReferenceType.GetMethods().Any(x => x.Name == factoryMethodName)) {
+                return BuildDelegate<Func<string, MetadataReference>>(metadataReferenceType, factoryMethodName);
             }
 
             // pre-CTP4 master

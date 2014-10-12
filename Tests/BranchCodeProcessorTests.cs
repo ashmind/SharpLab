@@ -23,14 +23,6 @@ namespace TryRoslyn.Tests {
             Assert.NotNull(result);
         }
 
-        [Fact]
-        public void Process_CanHandlePrimaryConstructors_InMaster() {
-            var processor = CreateProcessor("master");
-            var result = processor.Process("public class X(int v) {}");
-
-            Assert.True(result.IsSuccess, GetErrorString(result));
-        }
-
         [Theory]
         [PropertyData("Branches")]
         public void Process_CanHandleSimpleVBNetCode_InBranch(string branchName) {
