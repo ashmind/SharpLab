@@ -45,14 +45,8 @@ namespace TryRoslyn.Core.Processing {
                 @"App_Data\AppDomains", // ugly hack, just to save time
                 _branchName
             ));
-            if (tempDirectory.Exists) {
-                try {
-                    tempDirectory.Delete(true);
-                }
-                catch (UnauthorizedAccessException) {
-                    throw;
-                }
-            }
+            if (tempDirectory.Exists)
+                tempDirectory.Delete(true);
 
             tempDirectory.Create();
 
@@ -94,8 +88,13 @@ namespace TryRoslyn.Core.Processing {
                     continue;
 
                 var assemblyName = AssemblyName.GetAssemblyName(fileInTemp.FullName);
-                if (assemblyName.GetPublicKey() != null)
+                if (assemblyName.GetPublicKey() != null) {
+                    // ReSharper disable once RedundantCheckBeforeAssignment (in case of change tracking)
+                    if (reference.Version != assemblyName.Version)
+                        reference.Version = assemblyName.Version;
+
                     continue;
+                }
 
                 reference.PublicKey = null;
                 reference.PublicKeyToken = null;
