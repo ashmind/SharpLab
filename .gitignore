@@ -8,4 +8,5 @@ _ReSharper.*
 *.sln.ide/
 /!roslyn-binaries
 /!roslyn-sources
+/!roslyn-build-tools
 /Web/App_Data
