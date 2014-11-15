@@ -77,7 +77,7 @@ function Build-Branch($directory, $branch) {
             
     if (!(Build-Project BuildAndTest.proj "/target:RestorePackages")) { return }
     
-    $standardArgs = "/p:RestorePackages=false /p:Configuration=Debug /p:DelaySign=false /p:SignAssembly=false /p:SolutionDir=`"$directory\Src`""
+    $standardArgs = "/p:RestorePackages=false /p:Configuration=Debug /p:DelaySign=false /p:SignAssembly=false /p:NeedsFakeSign=false /p:SolutionDir=`"$directory\Src`""
     $csCandidates = @("Src\Compilers\CSharp\Source\CSharpCodeAnalysis.csproj", "Src\Compilers\CSharp\Desktop\CSharpCodeAnalysis.Desktop.csproj");
     if (!(Build-Project $csCandidates $standardArgs)) { return }
     
