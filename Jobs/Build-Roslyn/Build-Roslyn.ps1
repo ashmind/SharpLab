@@ -114,7 +114,7 @@ try {
     $sourcesRoot = "$webRoot\..\!roslyn-sources"
     $toolsRoot = "$webRoot\..\!roslyn-build-tools"
     $binariesRoot = "$webRoot\App_Data\RoslynBranches"
-    $repositoryUrl = 'https://git01.codeplex.com/roslyn'
+    $repositoryUrl = 'https://github.com/dotnet/roslyn.git'
 
     if (-not (Test-Path $sourcesRoot)) {
         New-Item -ItemType directory -Path $sourcesRoot | Out-Null    
