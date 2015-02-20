@@ -29,7 +29,8 @@ namespace TryRoslyn.Core.Processing {
             _references = new[] {
                 roslynAbstraction.MetadataReferenceFromPath(typeof(object).Assembly.Location),
                 roslynAbstraction.MetadataReferenceFromPath(typeof(Uri).Assembly.Location),
-                roslynAbstraction.MetadataReferenceFromPath(typeof(DynamicAttribute).Assembly.Location)
+                roslynAbstraction.MetadataReferenceFromPath(typeof(DynamicAttribute).Assembly.Location),
+                roslynAbstraction.MetadataReferenceFromPath(typeof(FormattableStringFactory).Assembly.Location)
             };
         }
 

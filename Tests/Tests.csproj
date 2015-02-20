@@ -92,6 +92,7 @@
     <EmbeddedResource Include="TestCode\Module.vb2vb" />
     <EmbeddedResource Include="TestCode\Simple.cs2il" />
     <EmbeddedResource Include="TestCode\NullPropagation.ToTernary.cs2cs" />
+    <EmbeddedResource Include="TestCode\Lambda.CallInArray.cs2cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">

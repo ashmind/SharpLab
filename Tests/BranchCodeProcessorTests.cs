@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using AshMind.Extensions;
 using AshMind.IO.Abstractions.Adapters;
+using Microsoft.CodeAnalysis;
 using TryRoslyn.Core;
 using TryRoslyn.Core.Processing;
 using Xunit;
@@ -32,6 +33,17 @@ namespace TryRoslyn.Tests {
             });
 
             Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void Process_CanHandleFormattableString_InMaster() {
+            var processor = CreateProcessor("master");
+            var result = processor.Process("using System; public class C { public void M() { IFormattable f = $\"{42}\"; } }", new ProcessingOptions {
+                SourceLanguage = LanguageIdentifier.CSharp
+            });
+
+            Assert.NotNull(result);
+            Assert.True(result.IsSuccess, GetErrorString(result));
         }
 
         private static string GetErrorString(ProcessingResult result) {
