@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler.Ast.Transforms;
@@ -16,6 +17,10 @@ namespace TryRoslyn.Core.Decompilation {
         public void Decompile(Stream assemblyStream, TextWriter resultWriter) {
             // ReSharper disable once AgentHeisenbug.CallToNonThreadSafeStaticMethodInThreadSafeType
             var module = ModuleDefinition.ReadModule(assemblyStream);
+            ((BaseAssemblyResolver)module.AssemblyResolver).AddSearchDirectory(
+                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+            );
+
             var context = new DecompilerContext(module) {
                 Settings = {
                     AnonymousMethods = false,
