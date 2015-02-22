@@ -135,7 +135,7 @@
           </header>
           <div class="content">
             <ul>
-              <li data-ng-repeat="error in result.errors">{{error}}</li>
+              <li data-ng-repeat="error in result.errors track by $index">{{error}}</li>
             </ul>
           </div>
         </section>
@@ -145,8 +145,8 @@
             <h1>Warnings</h1>
           </header>
           <div class="content">
-            <ul class="content">
-              <li data-ng-repeat="warning in result.warnings">{{warning}}</li>
+            <ul>
+              <li data-ng-repeat="warning in result.warnings track by $index">{{warning}}</li>
             </ul>
           </div>
         </section>
