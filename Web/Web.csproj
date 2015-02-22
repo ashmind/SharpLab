@@ -159,7 +159,10 @@
       <DependentUpon>app.less</DependentUpon>
     </Content>
     <Content Include="App\directives\boolean-model.js" />
+    <Content Include="App\directives\mobile-codemirror-focus.js" />
+    <Content Include="App\directives\mobile-shelf.js" />
     <Content Include="App\directives\syntaxtree.js" />
+    <Content Include="App\gulpfile.js" />
     <Content Include="App\loader\loader.css" />
     <Content Include="App\loader\loader.html" />
     <Content Include="App\services\defaults.js" />
@@ -167,9 +170,6 @@
     <Content Include="App\services\remember.js" />
     <Content Include="Global.asax" />
     <Content Include="App\controllers\app-controller.js" />
-    <Content Include="App\app.css.map">
-      <DependentUpon>app.css</DependentUpon>
-    </Content>
     <None Include="App\app.less" />
     <Content Include="App\app.js" />
     <Content Include="App\directives\codemirror.js" />
@@ -195,6 +195,8 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <Content Include="App\.jshintrc" />
+    <Content Include="App\styles\mobile.less" />
+    <Content Include="App\styles\common.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

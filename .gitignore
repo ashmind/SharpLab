@@ -10,3 +10,4 @@ _ReSharper.*
 /!roslyn-sources
 /!roslyn-build-tools
 /Web/App_Data
+node_modules/

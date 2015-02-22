@@ -1,4 +1,4 @@
-﻿@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
 @import url(http://fonts.googleapis.com/css?family=Roboto+Condensed);
 * {
   box-sizing: border-box;
@@ -33,16 +33,6 @@ main {
 main > * {
   flex: 0 0 50%;
   -webkit-flex: 0 0 50%;
-}
-@media (orientation: portrait) {
-  main {
-    flex-direction: column;
-    -webkit-flex-direction: column;
-  }
-  main > * {
-    flex: 1 0 auto;
-    -webkit-flex: 1 0 auto;
-  }
 }
 main + footer {
   flex: 0 0 auto;
@@ -297,4 +287,102 @@ textarea,
   left: 0;
   right: 0;
 }
-/*# sourceMappingURL=app.css.map */
+.mobile-menu-button,
+.mobile-menu {
+  display: none;
+}
+@media screen and (orientation: portrait) {
+  main {
+    flex-direction: column;
+    -webkit-flex-direction: column;
+  }
+  main > * {
+    flex: 1 0 auto;
+    -webkit-flex: 1 0 auto;
+  }
+  .results section header {
+    border-left: none;
+  }
+  .info-only {
+    display: none;
+  }
+  .mobile-menu-button {
+    display: inline-block;
+    vertical-align: middle;
+    width: 1.1em;
+    height: 1.1em;
+    margin-right: 5px;
+    background: linear-gradient(to bottom, white, white 20%, transparent 20%, transparent 40%, white 40%, white 60%, transparent 60%, transparent 80%, white 80%, white 100%);
+    appearance: none;
+    border: none;
+  }
+  section {
+    position: relative;
+  }
+  section header {
+    z-index: 10;
+    position: static;
+  }
+  section header .option {
+    display: none;
+  }
+  .languages-and-modes {
+    position: static;
+  }
+  .mobile-menu-open .mobile-menu {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 40%;
+    background-color: #4684ee;
+    z-index: 5;
+  }
+  .mobile-menu-open .content {
+    padding-left: 40%;
+  }
+  .mobile-menu-open .CodeMirror {
+    padding-left: calc(40% + 25px + 28px);
+  }
+  .mobile-menu-open header .option {
+    display: block;
+    position: absolute;
+    left: 8px;
+    width: calc(40% - 16px);
+    margin-left: 0;
+    z-index: 15;
+  }
+  .mobile-menu-open .select-wrapper select {
+    width: 100%;
+  }
+  .mobile-menu-open .option-language,
+  .mobile-menu-open .option-target-language {
+    top: 2.2em;
+  }
+  .mobile-menu-open .option-mode,
+  .mobile-menu-open .option-optimizations {
+    top: 4.2em;
+  }
+  .mobile-menu-open .option-branch {
+    top: 6.4em;
+  }
+  main + footer {
+    font-size: 70%;
+  }
+}
+@media screen and (orientation: landscape) and (max-device-width: 600px) {
+  body.mobile-editor-focus section.mobile-editor-focus {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
+  body.mobile-editor-focus section:not(.mobile-editor-focus) {
+    display: none;
+  }
+  body.mobile-editor-focus section header .option {
+    display: none;
+  }
+}

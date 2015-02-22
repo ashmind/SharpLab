@@ -1,22 +1,9 @@
 ﻿@import url(http://fonts.googleapis.com/css?family=Open+Sans);
 @import url(http://fonts.googleapis.com/css?family=Roboto+Condensed);
 
+@import 'styles/common.less';
+
 // Use WebEssentials extension to compile this.
-
-.display-flex() {
-  display: -webkit-flex;
-  display: flex;
-}
-
-.flex(@args) {
-  flex: @args;
-  -webkit-flex: @args;
-}
-
-.flex-direction(@args) {
-  flex-direction: @args;
-  -webkit-flex-direction: @args;
-}
 
 * {
   box-sizing: border-box;
@@ -51,14 +38,6 @@ main {
   > * {
     .flex (0 0 50%);
   }
-
-  @media (orientation: portrait) {
-    .flex-direction(column);
-
-    > * {
-      .flex (1 0 auto);
-    }
-  }
 }
 
 main + footer {
@@ -92,7 +71,7 @@ section header {
   padding: 5px;
   padding-left: 7px;
   color: #fff; 
-  background-color: #4684ee;
+  background-color: @normal-background-color;
 
   h1 {
     font-family: 'Roboto Condensed', sans-serif;
@@ -356,3 +335,5 @@ textarea, .CodeMirror,
   left: 0;
   right: 0;
 }
+
+@import 'styles/mobile.less';
