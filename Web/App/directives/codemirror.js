@@ -2,12 +2,15 @@
     'use strict';
 
     function link(scope, $element, attrs) {
-        var instance = CodeMirror.fromTextArea($element[0], {
-            mode:        scope.mode,
-            lineNumbers: attrs.linenumbers != undefined,
-            readOnly:    attrs.readonly != undefined,
-            indentUnit:  4
-        });
+        var $textarea = $element[0];
+        $textarea.value = scope.value;
+        var options = angular.extend(
+            {},
+            scope.$parent.$eval(attrs.options),
+            scope.mode !== undefined ? { mode: scope.mode } : {}
+        );
+
+        var instance = CodeMirror.fromTextArea($textarea, options);
 
         scope.$watch('mode', function(value) {
             instance.setOption("mode", value);
@@ -24,18 +27,20 @@
             settingValue = false;
         });
 
-        instance.on('change', function () {
-            if (settingValue)
-                return;
+        if (!attrs.valueOneWay) {
+            instance.on('change', function() {
+                if (settingValue)
+                    return;
 
-            var value = instance.getValue();
-            if (value === scope.value)
-                return;
-            
-            scope.$apply(function() {
-                scope.value = value;
+                var value = instance.getValue();
+                if (value === scope.value)
+                    return;
+
+                scope.$apply(function() {
+                    scope.value = value;
+                });
             });
-        });
+        }
     };
 
     return {

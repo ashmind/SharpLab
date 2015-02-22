@@ -112,7 +112,7 @@
     <Compile Include="LanguageIdentifier.cs" />
     <Compile Include="Modules\LocalProcessingModule.cs" />
     <Compile Include="ProcessingOptions.cs" />
-    <Compile Include="ProcessingResultMessage.cs" />
+    <Compile Include="ProcessingResultDiagnostic.cs" />
     <Compile Include="Processing\BranchCodeProcessor.cs" />
     <Compile Include="BranchProvider.cs" />
     <Compile Include="Processing\CodeProcessorProxy.cs" />
@@ -138,6 +138,7 @@
     <Compile Include="Processing\RoslynSupport\RoslynAbstraction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Modules\BranchSupportModule.cs" />
+    <Compile Include="ProcessingResultDiagnosticLocation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

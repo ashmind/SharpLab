@@ -160,6 +160,7 @@
     </Content>
     <Content Include="App\directives\boolean-model.js" />
     <Content Include="App\directives\mobile-codemirror-focus.js" />
+    <Content Include="App\directives\diagnostic.js" />
     <Content Include="App\directives\mobile-shelf.js" />
     <Content Include="App\directives\syntaxtree.js" />
     <Content Include="App\gulpfile.js" />

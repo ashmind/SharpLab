@@ -279,7 +279,6 @@ textarea,
 .warnings li {
   list-style-type: none;
   padding: 5px 10px;
-  white-space: pre-wrap;
 }
 /*.CodeMirror-gutters {
   background-color: transparent;
@@ -289,6 +288,9 @@ textarea,
 .CodeMirror-linenumber {
   color: #eee;
 }*/
+.CodeMirror-linenumber {
+  padding-left: 0;
+}
 .loader-container {
   position: absolute;
   top: 4px;

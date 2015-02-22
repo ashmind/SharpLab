@@ -41,8 +41,8 @@ namespace TryRoslyn.Web.Controllers {
                 success = result.IsSuccess,
                 //result.SyntaxTree,
                 result.Decompiled,
-                errors   = result.GetDiagnostics(DiagnosticSeverity.Error).Select(d => d.ToString()),
-                warnings = result.GetDiagnostics(DiagnosticSeverity.Warning).Select(d => d.ToString())
+                errors   = result.GetDiagnostics(DiagnosticSeverity.Error),
+                warnings = result.GetDiagnostics(DiagnosticSeverity.Warning)
             };
         }
     }

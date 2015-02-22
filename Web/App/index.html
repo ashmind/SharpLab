@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
     <meta name="theme-color" content="#4684ee">
 
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/codemirror.min.css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/codemirror.min.css"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3//addon/lint/lint.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.0/normalize.min.css" />
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="loader/loader.css"/>
@@ -17,12 +18,15 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/codemirror.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/mode/clike/clike.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/mode/vb/vb.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/addon/lint/lint.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-throttle-debounce/1.1/jquery.ba-throttle-debounce.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-hashchange/v1.3/jquery.ba-hashchange.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.4/hammer.min.js"></script>
     <script src="external/lz-string-1.3.3-min.js"></script>
 
+    <!-- TODO: Bundle/minify -->
     <script src="app.js"></script>
+    <script src="directives/diagnostic.js"></script>
     <script src="directives/codemirror.js"></script>
     <script src="directives/syntaxtree.js"></script>
     <script src="directives/boolean-model.js"></script>
@@ -69,7 +73,15 @@
                openClass: 'mobile-menu-open'
           }"></div>
           <div class="content">
-            <app-codemirror value="code" mode="codeMirrorModes[options.language]" linenumbers></app-codemirror>
+            <app-codemirror value="code"
+                            value-one-way
+                            mode="codeMirrorModes[options.language]"
+                            options="{
+                              lineNumbers: true,
+                              indentUnit: 4,
+                              lint: { async: true, getAnnotations: process },
+                              gutters: ['CodeMirror-linenumbers','CodeMirror-lint-markers']
+                            }"></app-codemirror>
           </div>
         </section>
 
@@ -123,7 +135,9 @@
             openClass: 'mobile-menu-open'
           }"></div>
           <div class="content">
-            <app-codemirror value="result.decompiled" mode="codeMirrorModes[options.target]" readonly></app-codemirror>
+            <app-codemirror value="result.decompiled"
+                            mode="codeMirrorModes[options.target]"
+                            options="{ readOnly: true, indentUnit: 4 }"></app-codemirror>
           </div>
         </section>
 
@@ -135,7 +149,9 @@
           </header>
           <div class="content">
             <ul>
-              <li data-ng-repeat="error in result.errors track by $index">{{error}}</li>
+              <li data-ng-repeat="error in result.errors track by $index">
+                <app-diagnostic bind="error"></app-diagnostic>
+              </li>
             </ul>
           </div>
         </section>
@@ -146,7 +162,9 @@
           </header>
           <div class="content">
             <ul>
-              <li data-ng-repeat="warning in result.warnings track by $index">{{warning}}</li>
+              <li data-ng-repeat="warning in result.warnings track by $index">
+                <app-diagnostic bind="warning"></app-diagnostic>
+              </li>
             </ul>
           </div>
         </section>

@@ -51,15 +51,6 @@ angular.module('app').controller('AppController', ['$scope', '$filter', '$timeou
         });
     })();
 
-    (function watchCode() {
-        var saveScopeToUrlThrottled = $.debounce(100, saveScopeToUrl);
-        var updateFromServerThrottled = $.debounce(600, processOnServer);
-        $scope.$watch('code', ifChanged(function() {
-            saveScopeToUrlThrottled();
-            updateFromServerThrottled();
-        }));
-    })();
-
     (function watchOptions() {
         var updateImmediate = ifChanged(function() {
             saveScopeToUrl();
@@ -76,9 +67,34 @@ angular.module('app').controller('AppController', ['$scope', '$filter', '$timeou
             $scope.$watch('options.' + key, updateImmediate);
         }
     })();
+    
+    $scope.process = function (cm, updateLinting) {
+        $scope.code = cm.getValue();
+        saveScopeToUrl();
+        processOnServer(function (result) {
+            updateLinting(cm, convertToAnnotations(result.errors, result.warnings));
+        });
+    };
 
-    $timeout(function() { processOnServer(); });
-    $scope.loading = false;
+    function convertToAnnotations(errors, warnings) {
+        var annotations = [];
+        var pushAnnotations = function (array) {
+            if (!array)
+                return;
+
+            array.forEach(function(item) {
+                annotations.push({
+                    severity: item.severity.toLowerCase(),
+                    message: item.message,
+                    from: CodeMirror.Pos(item.start.line, item.start.column),
+                    to: CodeMirror.Pos(item.end.line, item.end.column)
+                });
+            });
+        }
+        pushAnnotations(errors);
+        pushAnnotations(warnings);
+        return annotations;
+    }
 
     function ifChanged(f) {
         return function(newValue, oldValue) {
@@ -93,17 +109,20 @@ angular.module('app').controller('AppController', ['$scope', '$filter', '$timeou
         urlService.saveToUrl($scope.code, $scope.options);
     }
 
-    function processOnServer() {
+    function processOnServer(callback) {
         if ($scope.code === undefined || $scope.code === '')
             return;
 
         if ($scope.loading)
             return;
 
+        callback = callback || function() {};
+
         $scope.loading = true;
         compilationService.process($scope.code, $scope.options, $scope.options.branch).then(function (data) {
             $scope.loading = false;
             $scope.result = data;
+            callback(data);
         }, function(response) {
             $scope.loading = false;
             var error = response.data;
@@ -115,6 +134,7 @@ angular.module('app').controller('AppController', ['$scope', '$filter', '$timeou
                 success: false,
                 errors: [ report ]
             };
+            callback($scope.result);
         });
     }
 }]);

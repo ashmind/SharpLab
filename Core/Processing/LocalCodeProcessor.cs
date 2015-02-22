@@ -50,7 +50,7 @@ namespace TryRoslyn.Core.Processing {
             var emitResult = _roslynAbstraction.Emit(compilation, stream);
 
             if (!emitResult.Success)
-                return new ProcessingResult(null, emitResult.Diagnostics.Select(d => new SerializableDiagnostic(d)));
+                return new ProcessingResult(null, emitResult.Diagnostics.Select(d => new ProcessingResultDiagnostic(d)));
 
             stream.Seek(0, SeekOrigin.Begin);
 
@@ -59,7 +59,7 @@ namespace TryRoslyn.Core.Processing {
             decompiler.Decompile(stream, resultWriter);
             return new ProcessingResult(
                 resultWriter.ToString(),
-                emitResult.Diagnostics.Select(d => new SerializableDiagnostic(d))
+                emitResult.Diagnostics.Select(d => new ProcessingResultDiagnostic(d))
             );
         }
 
