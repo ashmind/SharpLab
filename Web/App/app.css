@@ -13,8 +13,8 @@ body {
 body {
   display: -webkit-flex;
   display: flex;
-  flex-direction: column;
   -webkit-flex-direction: column;
+  flex-direction: column;
 }
 a {
   color: #2E8BCC;
@@ -26,17 +26,18 @@ a:hover {
 main {
   display: -webkit-flex;
   display: flex;
-  flex: 1 0 auto;
   -webkit-flex: 1 0 auto;
+  flex: 1 0 auto;
   width: 100%;
+  height: 0;
 }
 main > * {
-  flex: 0 0 50%;
   -webkit-flex: 0 0 50%;
+  flex: 0 0 50%;
 }
 main + footer {
-  flex: 0 0 auto;
   -webkit-flex: 0 0 auto;
+  flex: 0 0 auto;
   padding: 5px;
   padding-left: 7px;
   font-family: 'Roboto Condensed', sans-serif;
@@ -50,8 +51,8 @@ main + footer a {
 section {
   display: -webkit-flex;
   display: flex;
-  flex-direction: column;
   -webkit-flex-direction: column;
+  flex-direction: column;
 }
 section > * {
   width: 100%;
@@ -108,12 +109,12 @@ section h1 {
 }
 section header,
 section footer {
-  flex: 0 0 auto;
   -webkit-flex: 0 0 auto;
+  flex: 0 0 auto;
 }
 section .content {
-  flex: 1 0 auto;
   -webkit-flex: 1 0 auto;
+  flex: 1 0 auto;
   position: relative;
 }
 section.info-only header {
@@ -150,6 +151,14 @@ section.collapsible header::after {
 section.collapsible.expanded header::after {
   -webkit-transform: rotate(90deg);
 }
+section.code {
+  -webkit-flex: 4 0 auto;
+  flex: 4 0 auto;
+}
+section.non-code {
+  -webkit-flex: 0 1 auto;
+  flex: 0 1 auto;
+}
 .non-code .content {
   padding: 10px;
 }
@@ -159,8 +168,8 @@ section.collapsible.expanded header::after {
 .section-group {
   display: -webkit-flex;
   display: flex;
-  flex-direction: column;
   -webkit-flex-direction: column;
+  flex-direction: column;
 }
 .languages-and-modes {
   position: absolute;
@@ -184,16 +193,18 @@ section.collapsible.expanded header::after {
   right: 5px;
 }
 .code {
-  flex: 1 0 auto;
   -webkit-flex: 1 0 auto;
+  flex: 1 0 auto;
 }
 .commit-message {
   white-space: pre-line;
+  overflow-y: auto;
+  max-height: 15vh;
 }
 /* Syntax Tree ------ */
 .syntax-tree {
-  flex: 0 1 auto;
   -webkit-flex: 0 1 auto;
+  flex: 0 1 auto;
 }
 .syntax-tree .content {
   font-size: 80%;
@@ -220,16 +231,16 @@ section.collapsible.expanded header::after {
   border-left: 1px solid #aaa;
 }
 .results .decompiled {
-  flex: 1 0 auto;
   -webkit-flex: 1 0 auto;
+  flex: 1 0 auto;
 }
 .results .errors {
-  flex: 1 1 auto;
   -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
 }
 .results .warnings {
-  flex: 0 1 auto;
   -webkit-flex: 0 1 auto;
+  flex: 0 1 auto;
 }
 .results .errors header,
 .failed .code header {
@@ -291,14 +302,14 @@ textarea,
 .mobile-menu {
   display: none;
 }
-@media screen and (orientation: portrait) {
+@media screen and (orientation: portrait) and (max-device-width: 1200px), screen and (orientation: portrait) and (max-width: 1200px) {
   main {
-    flex-direction: column;
     -webkit-flex-direction: column;
+    flex-direction: column;
   }
   main > * {
-    flex: 1 0 auto;
     -webkit-flex: 1 0 auto;
+    flex: 1 0 auto;
   }
   .results section header {
     border-left: none;
@@ -306,6 +317,8 @@ textarea,
   .info-only {
     display: none;
   }
+}
+@media screen and (orientation: portrait) and (max-device-width: 600px), screen and (orientation: portrait) and (max-width: 600px) {
   .mobile-menu-button {
     display: inline-block;
     vertical-align: middle;

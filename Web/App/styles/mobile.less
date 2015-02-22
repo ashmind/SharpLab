@@ -4,7 +4,8 @@
   display: none;
 }
 
-@media screen and (orientation: portrait) {
+@media screen and (orientation: portrait) and (max-device-width: 1200px),
+       screen and (orientation: portrait) and (max-width: 1200px) {
   main {    
     .flex-direction(column);
 
@@ -20,7 +21,10 @@
   .info-only {
     display: none;
   }
-  
+}
+
+@media screen and (orientation: portrait) and (max-device-width: 600px),
+       screen and (orientation: portrait) and (max-width: 600px) {  
   .mobile-menu-button {
     display: inline-block;
     vertical-align: middle;

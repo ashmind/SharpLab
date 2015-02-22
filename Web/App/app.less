@@ -34,6 +34,7 @@ main {
   .display-flex();
   .flex (1 0 auto);
   width: 100%;
+  height: 0;
   
   > * {
     .flex (0 0 50%);
@@ -177,6 +178,16 @@ section.collapsible.expanded header::after {
   -webkit-transform: rotate(90deg);
 }
 
+section {
+  &.code {
+    .flex(4 0 auto);
+  }
+
+  &.non-code {
+    .flex(0 1 auto);    
+  }
+}
+
 .non-code .content {
   padding: 10px;
 }
@@ -223,6 +234,8 @@ section.collapsible.expanded header::after {
 
 .commit-message {
   white-space: pre-line;
+  overflow-y: auto;
+  max-height: 15vh;
 }
 
 /* Syntax Tree ------ */
