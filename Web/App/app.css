@@ -152,8 +152,8 @@ section.collapsible.expanded header::after {
   -webkit-transform: rotate(90deg);
 }
 section.code {
-  -webkit-flex: 4 0 auto;
-  flex: 4 0 auto;
+  -webkit-flex: 1 0 auto;
+  flex: 1 0 auto;
 }
 section.non-code {
   -webkit-flex: 0 1 auto;
@@ -253,12 +253,19 @@ textarea,
 .CodeMirror,
 .errors .content ul,
 .warnings .content ul {
+  font-family: Consolas, Menlo, Monaco, monospace;
+  line-height: 1.2;
+}
+.warnings .content ul {
+  max-height: 15vh;
+  overflow-y: auto;
+}
+textarea,
+.CodeMirror {
   position: absolute;
   left: 0;
   right: 5px;
   height: 100%;
-  font-family: Consolas, Menlo, Monaco, monospace;
-  line-height: 1.2;
 }
 .results .CodeMirror {
   left: 5px;
