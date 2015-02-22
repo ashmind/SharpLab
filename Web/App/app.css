@@ -337,6 +337,7 @@ textarea,
     background: linear-gradient(to bottom, white, white 20%, transparent 20%, transparent 40%, white 40%, white 60%, transparent 60%, transparent 80%, white 80%, white 100%);
     padding: 0;
     border: none;
+    border-radius: 0;
   }
   input[type=button].mobile-menu-button {
     -webkit-appearance: none;
