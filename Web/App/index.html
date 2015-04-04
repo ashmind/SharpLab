@@ -93,7 +93,7 @@
             <div>
 				<a href="https://github.com/dotnet/roslyn/commit/{{branch.lastCommitHash}}" target="_blank">{{branch.lastCommitHash}}</a>
               at {{branch.lastCommitDate | date:'dd MMM yyyy'}}
-              by <a href="https://www.codeplex.com/site/users/view/{{branch.lastCommitAuthor}}" target="_blank">{{branch.lastCommitAuthor}}</a>
+              by {{branch.lastCommitAuthor}}
             </div>
             <div class="commit-message">{{branch.lastCommitMessage | trim}}</div>
           </div>
