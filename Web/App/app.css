@@ -75,6 +75,7 @@ section header select {
   outline: none;
   border: none;
   -webkit-appearance: none;
+  -moz-appearance: none;
   padding-right: 10px;
 }
 section header .select-wrapper {
@@ -94,6 +95,7 @@ section header > .select-wrapper {
 }
 section header option {
   color: #000;
+  background-color: #fff;
 }
 section header a {
   position: absolute;
