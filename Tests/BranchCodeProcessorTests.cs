@@ -16,7 +16,7 @@ using Xunit.Extensions;
 namespace TryRoslyn.Tests {
     public class BranchCodeProcessorTests : IDisposable {
         [Theory]
-        [PropertyData("Branches")]
+        [MemberData("Branches")]
         public void Process_CanHandleSimpleCSharpCode_InBranch(string branchName) {
             var processor = CreateProcessor(branchName);
             var result = processor.Process("public class X { public void M() {} }");
@@ -25,7 +25,7 @@ namespace TryRoslyn.Tests {
         }
 
         [Theory]
-        [PropertyData("Branches")]
+        [MemberData("Branches")]
         public void Process_CanHandleSimpleVBNetCode_InBranch(string branchName) {
             var processor = CreateProcessor(branchName);
             var result = processor.Process("Public Class C\r\nEnd Class", new ProcessingOptions {

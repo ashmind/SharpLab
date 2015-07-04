@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AshMind.Extensions;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
 
 namespace TryRoslyn.Web.Formatting {
@@ -26,7 +27,7 @@ namespace TryRoslyn.Web.Formatting {
         private void WriteJsonRecursive(JsonWriter writer, SyntaxNode node) {
             writer.WriteStartObject();
             writer.WritePropertyName("kind");
-            writer.WriteValue(node.CSharpKind().ToString());
+            writer.WriteValue(node.Kind().ToString());
             writer.WritePropertyName("nodes");
             writer.WriteStartArray();
             foreach (var child in node.ChildNodes()) {

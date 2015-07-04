@@ -11,7 +11,7 @@ namespace TryRoslyn.Tests {
             try {
                 Assert.Equal(expected, actual);
             }
-            catch (AssertException ex) {
+            catch (EqualException ex) {
                 var testId = Guid.NewGuid();
                 var message = string.Join(
                     Environment.NewLine,
@@ -20,7 +20,7 @@ namespace TryRoslyn.Tests {
                     ReportTempFile("GoldFile", expected, testId),
                     ReportTempFile("TempFile", actual, testId)
                 );
-                throw new AssertException(message);
+                throw new AssertActualExpectedException(expected, actual, message);
             }
         }
         

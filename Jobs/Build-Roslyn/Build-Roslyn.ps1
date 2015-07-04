@@ -55,9 +55,7 @@ function Build-Branch($directory, $branch) {
     if (Test-Path $buildLogPath) {
         Remove-Item $buildLogPath
     }
-    
-    Copy-Item NuGet.Roslyn.config "$directory\NuGet.config" -Force
-    
+        
     function Build-Project(
         [Parameter(Mandatory=$true)][string[]] $candidateProjectPaths,
         [string] $msbuildArgs
@@ -72,25 +70,39 @@ function Build-Branch($directory, $branch) {
             Send-Notification -Title "'$branch' build failed" -Message "See attached log for details" -LogPath $buildLogPath
             return $false
         }
-        return $true    
+        return $true
     }
-            
-    if (!(Build-Project BuildAndTest.proj "/target:RestorePackages")) { return }
-    
+
+    if (Test-Path "$directory\BuildAndTest.proj") {
+        Copy-Item NuGet.Roslyn.config "$directory\NuGet.config" -Force
+        if (!(Build-Project BuildAndTest.proj "/target:RestorePackages")) { return }
+    }
+        
     $standardArgs = "/p:RestorePackages=false /p:Configuration=Debug /p:DelaySign=false /p:SignAssembly=false /p:NeedsFakeSign=false /p:SolutionDir=`"$directory\Src`""
-    $csCandidates = @("Src\Compilers\CSharp\Source\CSharpCodeAnalysis.csproj", "Src\Compilers\CSharp\Desktop\CSharpCodeAnalysis.Desktop.csproj");
+    $csCandidates = @(
+        "Src\Compilers\CSharp\Portable\CSharpCodeAnalysis.csproj",
+        "Src\Compilers\CSharp\Source\CSharpCodeAnalysis.csproj",
+        "Src\Compilers\CSharp\Desktop\CSharpCodeAnalysis.Desktop.csproj"
+    );
     if (!(Build-Project $csCandidates $standardArgs)) { return }
     
     $vbSyntaxGenerator = "Src\Tools\Source\CompilerGeneratorTools\Source\VisualBasicSyntaxGenerator\VisualBasicSyntaxGenerator.vbproj";
     if (!(Build-Project $vbSyntaxGenerator $standardArgs)) { return }
     
-    $vbCandidates = @("Src\Compilers\VisualBasic\Source\BasicCodeAnalysis.vbproj", "Src\Compilers\VisualBasic\Desktop\BasicCodeAnalysis.Desktop.vbproj");
+    $vbCandidates = @(
+        "Src\Compilers\VisualBasic\Portable\BasicCodeAnalysis.vbproj",
+        "Src\Compilers\VisualBasic\Source\BasicCodeAnalysis.vbproj",
+        "Src\Compilers\VisualBasic\Desktop\BasicCodeAnalysis.Desktop.vbproj"
+    );
     if (!(Build-Project $vbCandidates "$standardArgs /p:IldasmPath=`"$toolsRoot\ildasm.exe`"")) { return }
+    
+    if (Test-Path "$directory\NuGet.config") {
+        Remove-Item "$directory\NuGet.config"
+    }
 
     $binariesDirectory = "$binariesRoot\" + $fsName
     robocopy "$directory\Binaries\Debug" $binariesDirectory /MIR /XF "LastCommit.txt"
     Copy-Item "$sourcesRoot\$fsName.lastcommit.txt" -Destination "$binariesDirectory\LastCommit.txt"
-    Remove-Item "$directory\NuGet.config"
     
     Write-Output "  Build completed"
 }
