@@ -1,5 +1,6 @@
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
+$ProgressPreference = "SilentlyContinue" # https://www.amido.com/powershell-win32-error-handle-invalid-0x6/
 
 # Note: Write-Host, Write-Error and Write-Warning do not function properly in Azure
 $MSBuild = ${env:ProgramFiles(x86)} + '\MSBuild\12.0\bin\MSBuild.exe'
@@ -16,10 +17,22 @@ function Send-Notification(
     }
    
     "Sending notification to webhook at $WebHookUrl" | Out-Default
+    $log = if ($logPath) {
+       if (Test-Path $logPath) {
+          [IO.File]::ReadAllText($logPath)
+       }
+       else {
+          "Log file '$logPath' was not found."
+       }
+    }
+    else {
+        $null
+    }
+    
     $json = @{
-      title="Build-Roslyn.ps1: $title";
-      message=$message;
-      log=[IO.File]::ReadAllText($logPath);
+      title   = "Build-Roslyn.ps1: $title"
+      message = $message
+      log     = $log
     } | ConvertTo-Json
     
     Invoke-RestMethod $WebHookUrl `
