@@ -33,6 +33,8 @@ function Sync-Branch($directory, $branch) {
     Write-Output "Syncing $directory"
     if (Test-Path $directory) {
         Push-Location $directory
+        git config user.email "tryroslyn@github.test"
+        git config user.name "TryRoslyn"
         git pull origin $branch        
     }
     else {
