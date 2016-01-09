@@ -1,8 +1,9 @@
 param (
-    [Parameter(Mandatory=$true)] [string] $profileFileName,
     [Parameter(Mandatory=$true)] [string] $resourceGroupName,
     [Parameter(Mandatory=$true)] [string] $webAppName,
-    [Parameter(Mandatory=$true)] [string] $sourceRoot
+    [Parameter(Mandatory=$true)] [string] $sourcePath,    
+    [Parameter(Mandatory=$true)] [string] $targetPath,
+    [switch] $canCreateWebApp = $false
 )
 
 Set-StrictMode -Version 2
@@ -23,11 +24,12 @@ catch {
 Import-Module AzureRM.Resources
 Import-Module AzureRM.WebSites
 
-Write-Host "  Loading profile from $profileFileName"
-Select-AzureRmProfile $profileFileName | Out-Null
-
 $webApp = ((Get-AzureRmWebApp -ResourceGroupName $resourceGroupName) | ? { $_.Name -eq $webAppName })
 if (!$webApp) {
+    if (!$canCreateWebApp) {
+        throw "Web app $webAppName was not found, and CanCreateWebApp was not set."
+    }
+
     Write-Output "  Creating web app $webAppName"
     $location = (Get-AzureRMResourceGroup -Name $resourceGroupName).Location
     $webApp = (New-AzureRmWebApp `
@@ -52,14 +54,20 @@ Write-Output "    Server: $($ftpUrl.Authority)"
 Write-Output "    Path:   $($ftpUrl.LocalPath)"
 Write-Output "    User:   $ftpUserName"
 
-Set-Content "!_scpscript.txt" "open ftp://$($ftpUserName):$($ftpPassword)@$($ftpUrl.Authority)
+$script = @"
+open ftp://$($ftpUserName):$($ftpPassword)@$($ftpUrl.Authority)
 binary
 cd $($ftpUrl.LocalPath)
-option batch continue
-mkdir bin
-option batch abort
-synchronize remote `"$sourceRoot\!build\bin\Debug`" bin -delete
-exit"
+$(if ((Get-Item $sourcePath) -is [IO.DirectoryInfo]) {
+    "synchronize remote `"$sourcePath`" `"$targetPath`" -delete"
+} else {
+    "put `"$sourcePath`" `"$targetPath`" -neweronly"
+})
+exit
+"@
+
+$script = $script.Trim()
+Set-Content '!_scpscript.txt' $script
 
 Write-Output "  Transfer:"
 winscp.com /script="$(Resolve-Path "!_scpscript.txt")"
