@@ -99,7 +99,9 @@ try {
 
     Write-Output "Getting branches..."
     $branchesRaw = @(Invoke-Git $roslynSourceRoot branch --remote)
-    $branches = $branchesRaw | % { ($_ -match 'origin/(.+)$') | Out-Null; $matches[1] }
+    $branches = $branchesRaw |
+        ? { $_ -notmatch '^\s+origin/HEAD' } |
+        % { ($_ -match 'origin/(.+)$') | Out-Null; $matches[1] }
 
     Write-Output "  $branches"
     $branches | % {
