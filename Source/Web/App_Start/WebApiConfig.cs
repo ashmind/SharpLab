@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using Autofac;
 using Autofac.Integration.WebApi;
 using Newtonsoft.Json.Converters;
@@ -15,6 +16,7 @@ namespace TryRoslyn.Web {
     public static class WebApiConfig {
         public static void Register(HttpConfiguration config) {
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
+            config.EnableCors(new EnableCorsAttribute("*", "*", "*"));
 
             RegisterContainer(config);
             RegisterFormatters(config);

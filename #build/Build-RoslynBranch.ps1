@@ -9,11 +9,11 @@ $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue" # https://www.amido.com/powershell-win32-error-handle-invalid-0x6/
 
 # Note: Write-Host, Write-Error and Write-Warning do not function properly in Azure
-&"$PSScriptRoot\Setup-Common.ps1"
+&"$PSScriptRoot\Setup-Build.ps1"
 
 $branchFsName = $_ -replace '[/\\:]', '-'
 
-$hashMarkerPath = "$outputRoot\.Hash"
+$hashMarkerPath = "$outputRoot\!Hash"
 $hashMarkerPathFull = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($hashMarkerPath)
 
 Push-Location $sourceRoot # for git
@@ -41,11 +41,7 @@ Pop-Location
 
 Write-Output "Building '$branchName'..."
 
-Push-Location $sourceRoot # for git
-git log -n 1 --pretty=format:"%H %cd %aN%n%B" --date=short > "..\$branchFsName.lastcommit.txt"
-Pop-Location
-
-$buildLogPath = "$sourceRoot\$branchFsName.build.log"
+$buildLogPath = "$sourceRoot\..\$branchFsName.build.log"
 if (Test-Path $buildLogPath) {
     Remove-Item $buildLogPath
 }
@@ -121,8 +117,7 @@ if (Test-Path "$sourceRoot\NuGet.config") {
     Remove-Item "$sourceRoot\NuGet.config"
 }
 
-robocopy "$sourceRoot\Binaries\Debug" $outputRoot /MIR /XF "LastCommit.txt"
-Copy-Item "$branchFsName.lastcommit.txt" -Destination "$outputRoot\LastCommit.txt"
+robocopy "$sourceRoot\Binaries\Debug" $outputRoot /MIR
 [IO.File]::WriteAllText($hashMarkerPathFull, $newHash)
     
 Write-Output "  Build completed"

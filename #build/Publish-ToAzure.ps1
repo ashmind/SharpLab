@@ -54,14 +54,17 @@ Write-Output "    Server: $($ftpUrl.Authority)"
 Write-Output "    Path:   $($ftpUrl.LocalPath)"
 Write-Output "    User:   $ftpUserName"
 
+$isDirectory = ((Get-Item $sourcePath) -is [IO.DirectoryInfo])
+
 $script = @"
 open ftp://$($ftpUserName):$($ftpPassword)@$($ftpUrl.Authority)
 binary
 cd $($ftpUrl.LocalPath)
-$(if ((Get-Item $sourcePath) -is [IO.DirectoryInfo]) {
-    "synchronize remote `"$sourcePath`" `"$targetPath`" -delete"
+$(if ($isDirectory) {
+"synchronize remote `"$sourcePath`" `"$targetPath`" -delete"
 } else {
-    "put `"$sourcePath`" `"$targetPath`" -neweronly"
+"cd $([IO.Path]::GetDirectoryName($targetPath))
+put `"$sourcePath`" `"$([IO.Path]::GetFileName($targetPath))`" -neweronly"
 })
 exit
 "@

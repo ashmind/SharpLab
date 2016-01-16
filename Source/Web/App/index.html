@@ -26,6 +26,7 @@
 
     <!-- TODO: Bundle/minify -->
     <script src="app.js"></script>
+    <script src="!branches.js"></script>
     <script src="directives/diagnostic.js"></script>
     <script src="directives/codemirror.js"></script>
     <script src="directives/syntaxtree.js"></script>
@@ -62,7 +63,7 @@
 
             <div class="select-wrapper option-branch option">
               <select data-ng-model="branch"
-                      data-ng-options="branch as displayBranch(branch) for branch in branches track by branch.name">
+                      data-ng-options="branch as displayBranch(branch) for branch in branches track by branch.id">
                 <option value="">Release (NuGet)</option>
               </select>
             </div>
@@ -91,11 +92,11 @@
           </header>
           <div class="content">
             <div>
-				<a href="https://github.com/dotnet/roslyn/commit/{{branch.lastCommitHash}}" target="_blank">{{branch.lastCommitHash}}</a>
-              at {{branch.lastCommitDate | date:'dd MMM yyyy'}}
-              by {{branch.lastCommitAuthor}}
+              <a href="https://github.com/dotnet/roslyn/commit/{{branch.commits[0].hash}}" target="_blank">{{branch.commits[0].hash}}</a>
+              at {{branch.commits[0].date | date:'dd MMM yyyy'}}
+              by {{branch.commits[0].author}}
             </div>
-            <div class="commit-message">{{branch.lastCommitMessage | trim}}</div>
+            <div class="commit-message">{{branch.commits[0].message | trim}}</div>
           </div>
         </section>
 

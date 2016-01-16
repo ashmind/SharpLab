@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using Microsoft.CodeAnalysis;
 using TryRoslyn.Core;
 using TryRoslyn.Web.Models;
@@ -9,28 +10,16 @@ using TryRoslyn.Web.Models;
 namespace TryRoslyn.Web.Controllers {
     // routes are a mess at the moment
     public class RoslynController : ApiController {
-        private readonly ICodeProcessorManager _processorManager;
-        private readonly IBranchProvider _branchProvider;
+        private readonly ICodeProcessor _processor;
 
-        public RoslynController(ICodeProcessorManager processorManager, IBranchProvider branchProvider) {
-            _processorManager = processorManager;
-            _branchProvider = branchProvider;
+        public RoslynController(ICodeProcessor processor) {
+            _processor = processor;
         }
 
-        [HttpGet]
-        [Route("api/branches")]
-        public IEnumerable<BranchInfo> Branches() {
-            return _branchProvider.GetBranches();
-        }
-        
         [HttpPost]
         [Route("api/compilation")]
         public object Compilation([FromBody] CompilationArguments arguments) {
-            var processor = arguments.Branch != null
-                          ? _processorManager.GetBranchProcessor(arguments.Branch)
-                          : _processorManager.DefaultProcessor;
-
-            var result = processor.Process(arguments.Code, new ProcessingOptions {
+            var result = _processor.Process(arguments.Code, new ProcessingOptions {
                 SourceLanguage = arguments.SourceLanguage,
                 TargetLanguage = arguments.TargetLanguage,
                 ScriptMode = arguments.Mode == CompilationMode.Script,

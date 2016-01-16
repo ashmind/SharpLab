@@ -18,7 +18,7 @@ namespace TryRoslyn.Tests {
             { "vb", LanguageIdentifier.VBNet },
             { "il", LanguageIdentifier.IL }
         };
-            
+
         [Theory]
         [InlineData("Constructor.BaseCall.cs2cs")]
         [InlineData("Constructor.ArgumentAssignedToField.cs2cs")]
@@ -40,7 +40,7 @@ namespace TryRoslyn.Tests {
         }
 
         [Fact]
-        public void Process_CanHandleFormattableString_InMaster() {
+        public void Process_CanHandleFormattableString() {
             var result = CreateProcessor().Process("using System; public class C { public void M() { IFormattable f = $\"{42}\"; } }", new ProcessingOptions {
                 SourceLanguage = LanguageIdentifier.CSharp
             });

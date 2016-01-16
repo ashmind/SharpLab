@@ -6,7 +6,6 @@ namespace TryRoslyn.Web.Models {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public class CompilationArguments {
         public string Code { get; set; }
-        public string Branch { get; set; }
         public CompilationMode Mode { get; set; }
         [JsonProperty("language")]
         public LanguageIdentifier SourceLanguage { get; set; }

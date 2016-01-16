@@ -1,4 +1,4 @@
-angular.module('app').controller('AppController', ['$scope', '$filter', '$timeout', 'defaultsService', 'rememberService', 'urlService', 'compilationService', function ($scope, $filter, $timeout, defaultsService, rememberService, urlService, compilationService) {
+angular.module('app').controller('AppController', ['$scope', '$filter', '$timeout', 'defaultsService', 'rememberService', 'urlService', 'compilationService', 'branches', function ($scope, $filter, $timeout, defaultsService, rememberService, urlService, compilationService, branches) {
     'use strict';
 
     (function setupLanguages() {
@@ -16,18 +16,17 @@ angular.module('app').controller('AppController', ['$scope', '$filter', '$timeou
         });
     })();
 
-    var branchesPromise;
-
     (function setupBranches() {
         $scope.branch = null;
-        branchesPromise = compilationService.getBranches().then(function(value) {
-            $scope.branches = value;
-            $scope.branches.forEach(function(b) {
-                b.lastCommitDate = new Date(b.lastCommitDate);
+        $scope.branches = branches;
+        $scope.branches.forEach(function (b) {
+            b.id = b.name.replace('/', '-');
+            b.commits.forEach(function (c) {
+                c.date = new Date(c.date);
             });
         });
         $scope.displayBranch = function(branch) {
-            return branch.name + ' (' + $filter('date')(branch.lastCommitDate, 'd MMM') + ')';
+            return branch.name + ' (' + $filter('date')(branch.commits[0].date, 'd MMM') + ')';
         };
     })();
 
@@ -44,11 +43,13 @@ angular.module('app').controller('AppController', ['$scope', '$filter', '$timeou
         if (!options.branch)
             return;
 
-        branchesPromise.then(function() {
-            $scope.branch = $scope.branches.filter(function(b) {
-                return b.name === options.branch;
-            })[0] || null;
-        });
+        $scope.branch = $scope.branches.filter(function(b) {
+            return b.id === options.branch;
+        })[0] || null;
+        if (!$scope.branch && options.branch) {
+            options.branch = null;
+            saveScopeToUrl();
+        }
     })();
 
     (function watchOptions() {
@@ -58,7 +59,7 @@ angular.module('app').controller('AppController', ['$scope', '$filter', '$timeou
             processOnServer();
         });
         $scope.$watch('branch', ifChanged(function(branch) {
-            $scope.options.branch = branch ? branch.name : null;
+            $scope.options.branch = branch ? branch.id : null;
         }));
         for (var key in $scope.options) {
             if (key.indexOf('$') > -1)
@@ -119,7 +120,9 @@ angular.module('app').controller('AppController', ['$scope', '$filter', '$timeou
         callback = callback || function() {};
 
         $scope.loading = true;
-        compilationService.process($scope.code, $scope.options, $scope.options.branch).then(function (data) {
+        var branchUrl = $scope.branch ? $scope.branch.url : null;
+
+        compilationService.process($scope.code, $scope.options, branchUrl).then(function (data) {
             $scope.loading = false;
             $scope.result = data;
             callback(data);

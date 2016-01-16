@@ -17,11 +17,7 @@ namespace TryRoslyn.Core.Modules {
             builder.RegisterType<FileSystem>()
                    .As<IFileSystem>()
                    .SingleInstance();
-
-            builder.Register(c => new BranchProvider(new DirectoryInfoAdapter(new DirectoryInfo(binariesRoot))))
-                   .As<IBranchProvider>()
-                   .SingleInstance();
-
+            
             builder.RegisterType<CodeProcessor>()
                    .As<ICodeProcessor>()
                    .SingleInstance();
