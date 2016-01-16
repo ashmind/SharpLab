@@ -74,7 +74,7 @@ try {
     $root = Resolve-Path "$PSScriptRoot\.."
     Write-Output "  Root:               $root"
 
-    $sourceRoot = Resolve-Path "$root\Source"
+    $sourceRoot = Resolve-Path "$root\source"
     Write-Output "  Source Root:        $sourceRoot"
 
     $roslynBuildRoot = Ensure-ResolvedPath "$root\!roslyn"
@@ -89,14 +89,17 @@ try {
     $roslynRepositoryUrl = 'https://github.com/dotnet/roslyn.git'
 
     ${env:$HOME} = $PSScriptRoot
-    Invoke-Git . --version
+    Invoke-Git . --version  
+
+    Write-Output "Restoring TryRoslyn packages..."
+    &"$PSScriptRoot\#tools\nuget" restore "$sourceRoot\TryRoslyn.sln"
 
     Write-Output "Updating..."
     Update-RoslynSource -DirectoryPath $roslynSourceRoot -RepositoryUrl $roslynRepositoryUrl
 
     Write-Output "Getting branches..."
     $branchesRaw = @(Invoke-Git $roslynSourceRoot branch --remote)
-    $branches = $branchesRaw | % { ($_ -match '[^/]+$') | Out-Null; $matches[0] }
+    $branches = $branchesRaw | % { ($_ -match 'origin/(.+)$') | Out-Null; $matches[1] }
 
     Write-Output "  $branches"
     $branches | % {
@@ -113,7 +116,7 @@ try {
         try {
             Write-Output "  Copying $sourceRoot => $siteBuildRoot"
             robocopy $sourceRoot $siteBuildRoot /njh /njs /ndl /np /ns /xo /e /purge `
-                /xd "$roslynBinaryRoot" "$siteCopyRoot" "$siteBuildTempRoot"
+                /xd "$roslynBinaryRoot" "$siteCopyRoot" "$siteBuildTempRoot" "$siteBuildRoot"
             Write-Output ""
 
             Push-Location $roslynBuildRoot
