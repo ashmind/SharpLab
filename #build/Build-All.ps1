@@ -9,7 +9,7 @@ $BuildRoslynBranch = Resolve-Path "$PSScriptRoot\Build-RoslynBranch.ps1"
 
 function Update-RoslynSource($directoryPath, $repositoryUrl) {
     Write-Output "Updating $directoryPath"
-    if (Test-Path $directoryPath) {
+    if (Test-Path "$directoryPath\.git") {
         Push-Location $directoryPath
         git config user.email "tryroslyn@github.test"
         git config user.name "TryRoslyn"
@@ -17,7 +17,6 @@ function Update-RoslynSource($directoryPath, $repositoryUrl) {
         Pop-Location
     }
     else {
-        New-Item -ItemType Directory -Path $directoryPath | Out-Null
         git clone $repositoryUrl $directoryPath
     }
 }
