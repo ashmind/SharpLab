@@ -148,9 +148,9 @@ try {
                 Write-Output "Rewriting *.csproj files..."
                 Get-ChildItem *.csproj -Recurse | % {
                     Rewrite-ProjectReferences $_ @{
-                        'Microsoft.CodeAnalysis'             = '$roslynBinaryRoot\Microsoft.CodeAnalysis.dll'
-                        'Microsoft.CodeAnalysis.CSharp'      = '$roslynBinaryRoot\Microsoft.CodeAnalysis.CSharp.dll'
-                        'Microsoft.CodeAnalysis.VisualBasic' = '$roslynBinaryRoot\Microsoft.CodeAnalysis.VisualBasic.dll'
+                        'Microsoft.CodeAnalysis'             = "$roslynBinaryRoot\Microsoft.CodeAnalysis.dll"
+                        'Microsoft.CodeAnalysis.CSharp'      = "$roslynBinaryRoot\Microsoft.CodeAnalysis.CSharp.dll"
+                        'Microsoft.CodeAnalysis.VisualBasic' = "$roslynBinaryRoot\Microsoft.CodeAnalysis.VisualBasic.dll"
                     }
                     Write-Output "  $($_.Name)"
                 }
