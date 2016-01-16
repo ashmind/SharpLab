@@ -9,16 +9,14 @@ $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue" # https://www.amido.com/powershell-win32-error-handle-invalid-0x6/
 
 # Note: Write-Host, Write-Error and Write-Warning do not function properly in Azure
-&"$PSScriptRoot\Setup-Build.ps1"
+."$PSScriptRoot\Setup-Build.ps1"
 
 $branchFsName = $_ -replace '[/\\:]', '-'
 
 $hashMarkerPath = "$outputRoot\!Hash"
 $hashMarkerPathFull = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($hashMarkerPath)
 
-Push-Location $sourceRoot # for git
-$newHash = git log "origin/$branchName" -n 1 --pretty=format:"%H"
-Pop-Location
+$newHash = (Invoke-Git $sourceRoot log "origin/$branchName" -n 1 --pretty=format:"%H")
     
 if (Test-Path $hashMarkerPath) {
     $oldHash = [IO.File]::ReadAllText($hashMarkerPath)
@@ -30,14 +28,12 @@ if (Test-Path $hashMarkerPath) {
 
 Write-Output "Resetting '$branchName'..."
 
-Push-Location $sourceRoot
-git checkout $branchName --force
-git reset --hard origin/$branchName
-#git clean --force
+Invoke-Git $sourceRoot checkout $branchName --force
+Invoke-Git $sourceRoot reset --hard origin/$branchName
+#Invoke-Git $sourceRoot clean --force
 if (Test-Path Binaries) {
     Remove-Item Binaries -Recurse -Force
 }
-Pop-Location
 
 Write-Output "Building '$branchName'..."
 

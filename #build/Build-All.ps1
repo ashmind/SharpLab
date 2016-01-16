@@ -5,19 +5,17 @@ $ProgressPreference = "SilentlyContinue" # https://www.amido.com/powershell-win3
 # Write-Host, Write-Error and Write-Warning do not function properly in Azure
 # So this mostly uses Write-Output for now
 $BuildRoslynBranch = Resolve-Path "$PSScriptRoot\Build-RoslynBranch.ps1"
-&"$PSScriptRoot\Setup-Build.ps1"
+."$PSScriptRoot\Setup-Build.ps1"
 
 function Update-RoslynSource($directoryPath, $repositoryUrl) {
     Write-Output "Updating $directoryPath"
     if (Test-Path "$directoryPath\.git") {
-        Push-Location $directoryPath
-        git config user.email "tryroslyn@github.test"
-        git config user.name "TryRoslyn"
-        git fetch origin
-        Pop-Location
+        Invoke-Git $directoryPath config user.email "tryroslyn@github.test"
+        Invoke-Git $directoryPath config user.name "TryRoslyn"
+        Invoke-Git $directoryPath fetch origin
     }
     else {
-        git clone $repositoryUrl $directoryPath
+        Invoke-Git . clone $repositoryUrl $directoryPath
     }
 }
 
@@ -91,19 +89,13 @@ try {
     $roslynRepositoryUrl = 'https://github.com/dotnet/roslyn.git'
 
     ${env:$HOME} = $PSScriptRoot
-    git --version
+    Invoke-Git . --version
 
     Write-Output "Updating..."
     Update-RoslynSource -DirectoryPath $roslynSourceRoot -RepositoryUrl $roslynRepositoryUrl
 
     Write-Output "Getting branches..."
-    Push-Location $roslynSourceRoot # for git
-    try {
-        $branchesRaw = (git branch)
-    }
-    finally {
-        Pop-Location
-    }
+    $branchesRaw = @(Invoke-Git $roslynSourceRoot branch)
     $branches = $branchesRaw | % { ($_ -match '\S+$') | Out-Null; $matches[0] }
 
     Write-Output "  $branches"
@@ -132,22 +124,17 @@ try {
                 Pop-Location
             }
 
-            Push-Location $roslynSourceRoot # for git
-            try {
-                $branchInfo = @{
-                    name    = $_
-                    commits = @(@{
-                        hash    =  (git log "$_" -n 1 --pretty=format:"%H" )
-                        date    =  (git log "$_" -n 1 --pretty=format:"%aI")
-                        author  =  (git log "$_" -n 1 --pretty=format:"%aN")
-                        message = @(git log "$_" -n 1 --pretty=format:"%B" ) -join "`r`n"
-                    })
-                }
-                Set-Content "$roslynBinaryRoot\!BranchInfo.json" (ConvertTo-Json $branchInfo -Depth 100)
+            Write-Output "Getting branch info..."
+            $branchInfo = @{
+                name    = $_
+                commits = @(@{
+                    hash    =  (Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%H" )
+                    date    =  (Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%aI")
+                    author  =  (Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%aN")
+                    message = @(Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%B" ) -join "`r`n"
+                })
             }
-            finally {
-                Pop-Location
-            }
+            Set-Content "$roslynBinaryRoot\!BranchInfo.json" (ConvertTo-Json $branchInfo -Depth 100)
 
             Push-Location $siteBuildRoot
             try {
