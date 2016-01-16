@@ -95,8 +95,8 @@ try {
     Update-RoslynSource -DirectoryPath $roslynSourceRoot -RepositoryUrl $roslynRepositoryUrl
 
     Write-Output "Getting branches..."
-    $branchesRaw = @(Invoke-Git $roslynSourceRoot branch)
-    $branches = $branchesRaw | % { ($_ -match '\S+$') | Out-Null; $matches[0] }
+    $branchesRaw = @(Invoke-Git $roslynSourceRoot branch --remote)
+    $branches = $branchesRaw | % { ($_ -match '[^/]+$') | Out-Null; $matches[0] }
 
     Write-Output "  $branches"
     $branches | % {

@@ -113,7 +113,7 @@ if (Test-Path "$sourceRoot\NuGet.config") {
     Remove-Item "$sourceRoot\NuGet.config"
 }
 
-robocopy "$sourceRoot\Binaries\Debug" $outputRoot /MIR
+robocopy "$sourceRoot\Binaries\Debug" $outputRoot /MIR /np
 [IO.File]::WriteAllText($hashMarkerPathFull, $newHash)
     
 Write-Output "  Build completed"
