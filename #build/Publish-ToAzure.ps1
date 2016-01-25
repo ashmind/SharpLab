@@ -3,7 +3,8 @@ param (
     [Parameter(Mandatory=$true)] [string] $webAppName,
     [Parameter(Mandatory=$true)] [string] $sourcePath,    
     [Parameter(Mandatory=$true)] [string] $targetPath,
-    [switch] $canCreateWebApp = $false
+    [switch] $canCreateWebApp = $false,
+    [switch] $canStopWebApp = $false
 )
 
 Set-StrictMode -Version 2
@@ -40,8 +41,11 @@ if (!$webApp) {
 else {
     Write-Output "  Found web app $($webApp.Name)"
 }
-Write-Output "  Stopping $($webApp.Name)..."
-Stop-AzureRmWebApp -Webapp $webApp
+
+if ($canStopWebApp) {
+    Write-Output "  Stopping $($webApp.Name)..."
+    Stop-AzureRmWebApp -Webapp $webApp | Out-Null
+}
 
 $publishProfileXml = [xml](Get-AzureRMWebAppPublishingProfile -WebApp $($webApp) -OutputFile "$PSScriptRoot\!_profile.xml")
 Remove-Item "$PSScriptRoot\!_profile.xml"
@@ -78,5 +82,7 @@ Set-Content '!_scpscript.txt' $script
 Write-Output "  Transfer:"
 winscp.com /script="$(Resolve-Path "!_scpscript.txt")"
 
-Write-Output "  Starting $($webApp.Name)..."
-Start-AzureRmWebApp -Webapp $webApp
+if ($canStopWebApp) {
+    Write-Output "  Starting $($webApp.Name)..."
+    Start-AzureRmWebApp -Webapp $webApp | Out-Null
+}

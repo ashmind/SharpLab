@@ -73,6 +73,7 @@ try {
                 -ResourceGroupName $($azureConfig.ResourceGroupName) `
                 -WebAppName $webAppName `
                 -CanCreateWebApp `
+                -CanStopWebApp `
                 -SourcePath $siteMainRoot `
                 -TargetPath "."
             $url = "http://$($webAppName).azurewebsites.net"
