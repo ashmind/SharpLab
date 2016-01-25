@@ -31,7 +31,7 @@ if (!$webApp) {
     }
 
     Write-Output "  Creating web app $webAppName"
-    $location = (Get-AzureRMResourceGroup -Name $resourceGroupName).Location
+    $location = (Get-AzureRmResourceGroup -Name $resourceGroupName).Location
     $webApp = (New-AzureRmWebApp `
         -ResourceGroupName $resourceGroupName `
         -Location $location `

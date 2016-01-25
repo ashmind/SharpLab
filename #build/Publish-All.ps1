@@ -1,7 +1,5 @@
 param (
-    [switch] [boolean] $azure,
-    [string] $azureResourceGroupName = $(if ($azure) { throw "-AzureResourceGroupName must be specified is -Azure is specified." }),
-    [string] $azureProfilePath = $(if ($azure) { throw "-AzureProfilePath must be specified is -Azure is specified." })
+    [switch] [boolean] $azure
 )
 
 Set-StrictMode -Version 2.0
@@ -12,6 +10,18 @@ $ProgressPreference = "SilentlyContinue" # https://www.amido.com/powershell-win3
 # So this mostly uses Write-Output for now
 $PublishToIIS = Resolve-Path "$PSScriptRoot\Publish-ToIIS.ps1"
 $PublishToAzure = Resolve-Path "$PSScriptRoot\Publish-ToAzure.ps1"
+
+function Login-ToAzure($azureConfig) {
+    $passwordKey = $env:TR_AZURE_PASSWORD_KEY
+    if (!$passwordKey) {
+        throw "Azure credentials require TR_AZURE_PASSWORD_KEY to be set."
+    }
+    $passwordKey = [Convert]::FromBase64String($passwordKey)
+    $password = $azureConfig.Password | ConvertTo-SecureString -Key $passwordKey        
+    $credential = New-Object Management.Automation.PSCredential($azureConfig.UserName, $password)
+    "Logging to Azure as $($azureConfig.UserName)..." | Out-Default
+    Login-AzureRmAccount -Credential $credential | Out-Null
+}
 
 # Code ------
 try {
@@ -28,9 +38,12 @@ try {
     Write-Output "  Sites Build Root:   $sitesBuildRoot"
         
     if ($azure) {
-        $azureProfilePath = (Resolve-Path $azureProfilePath)
-        Write-Host "Loading Azure profile from $azureProfilePath"
-        Select-AzureRmProfile $azureProfilePath | Out-Null
+        $azureConfigPath = ".\!azureconfig.json"
+        if (!(Test-Path $azureConfigPath)) {
+            throw "Path '$azureConfigPath' was not found."
+        }
+        $azureConfig = ConvertFrom-Json (Get-Content $azureConfigPath -Raw)
+        Login-ToAzure $azureConfig
     }  
 
     $branchesJson = @()
@@ -57,7 +70,7 @@ try {
         
         if ($azure) {
             &$PublishToAzure `
-                -ResourceGroupName $azureResourceGroupName `
+                -ResourceGroupName $($azureConfig.ResourceGroupName) `
                 -WebAppName $webAppName `
                 -CanCreateWebApp `
                 -SourcePath $siteMainRoot `
@@ -79,7 +92,7 @@ try {
     
     if ($azure) {
         &$PublishToAzure `
-            -ResourceGroupName $azureResourceGroupName `
+            -ResourceGroupName $($azureConfig.ResourceGroupName) `
             -WebAppName "tryroslyn" `
             -SourcePath "$sitesBuildRoot\!branches.js" `
             -TargetPath "App\!branches.js"
