@@ -1,0 +1,46 @@
+﻿using System;
+public class C {
+	public void M() {
+		Func<int, int> getInt = s => s;
+		var list = new [] { 1, 2, 3, getInt(1) };
+		Console.WriteLine(list[3]);
+	}
+}
+
+?=>
+
+using System;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Security;
+using System.Security.Permissions;
+[assembly: AssemblyVersion("0.0.0.0")]
+[assembly: CompilationRelaxations(8)]
+[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
+[module: UnverifiableCode]
+public class C
+{
+    [CompilerGenerated]
+    private static Func<int, int> CS$<>9__CachedAnonymousMethodDelegate1;
+    public void M()
+    {
+        Func<int, int> arg_1B_0;
+        if (arg_1B_0 = C.CS$<>9__CachedAnonymousMethodDelegate1 == null)
+        {
+            C.CS$<>9__CachedAnonymousMethodDelegate1 = new Func<int, int>(C.<M>b__0);
+        }
+        int[] array = new int[] {
+            1,
+            2,
+            3,
+            0
+        };
+        Console.WriteLine(array[3]);
+    }
+    [CompilerGenerated]
+    private static int <M>b__0(int s)
+    {
+        return s;
+    }
+}

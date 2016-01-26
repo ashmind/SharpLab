@@ -1,13 +1,8 @@
 
+\#packages/
+*.user
+\!*
+.vs/
+node_modules/
 bin/
 obj/
-\#packages/
-*.suo
-*.user
-_ReSharper.*
-*.sln.ide/
-/!roslyn-binaries
-/!roslyn-sources
-/!roslyn-build-tools
-/Web/App_Data
-node_modules/
