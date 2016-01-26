@@ -172,29 +172,26 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App\app.css">
-      <DependentUpon>app.less</DependentUpon>
-    </Content>
-    <Content Include="App\directives\boolean-model.js" />
-    <Content Include="App\directives\mobile-codemirror-focus.js" />
-    <Content Include="App\directives\diagnostic.js" />
-    <Content Include="App\directives\mobile-shelf.js" />
-    <Content Include="App\directives\syntaxtree.js" />
-    <Content Include="App\gulpfile.js" />
-    <Content Include="App\loader\loader.css" />
-    <Content Include="App\loader\loader.html" />
-    <Content Include="App\services\defaults.js" />
-    <Content Include="App\services\location.js" />
-    <Content Include="App\services\remember.js" />
+    <None Include="legacy\directives\boolean-model.js" />
+    <None Include="legacy\directives\mobile-codemirror-focus.js" />
+    <None Include="legacy\directives\diagnostic.js" />
+    <None Include="legacy\directives\mobile-shelf.js" />
+    <None Include="legacy\directives\syntaxtree.js" />
+    <None Include="gulpfile.js" />
+    <None Include="legacy\loader\loader.css" />
+    <None Include="legacy\loader\loader.html" />
+    <None Include="legacy\services\defaults.js" />
+    <None Include="legacy\services\location.js" />
+    <None Include="legacy\services\remember.js" />
     <Content Include="Global.asax" />
-    <Content Include="App\controllers\app-controller.js" />
-    <None Include="App\app.less" />
-    <Content Include="App\app.js" />
-    <Content Include="App\directives\codemirror.js" />
-    <Content Include="App\services\compilation.js" />
-    <Content Include="App\services\url.js" />
-    <Content Include="App\index.html" />
-    <Content Include="App\external\lz-string-1.3.3-min.js" />
+    <None Include="legacy\controllers\app-controller.js" />
+    <None Include="legacy\app.less" />
+    <None Include="legacy\app.js" />
+    <None Include="legacy\directives\codemirror.js" />
+    <None Include="legacy\services\compilation.js" />
+    <None Include="legacy\services\url.js" />
+    <None Include="legacy\index.html" />
+    <None Include="legacy\external\lz-string-1.3.3-min.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -211,10 +208,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
-    <Content Include="App\.jshintrc" />
-    <Content Include="App\styles\mobile.less" />
-    <Content Include="App\styles\common.less" />
+    <None Include="packages.config" />
+    <None Include=".jshintrc" />
+    <None Include="legacy\styles\mobile.less" />
+    <None Include="legacy\styles\common.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -257,14 +254,11 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <Target Name="CopyJob" AfterTargets="pipelinePreDeployCopyAllFilesToOneFolder">
+  <Target Name="Gulp" AfterTargets="Build">
+    <Exec Command="gulp" />
     <ItemGroup>
-      <_JobFiles Include="$(SolutionDir)Jobs\**\*.*" />
+      <Content Include="wwwroot\*.*" />
     </ItemGroup>
-    <Copy SourceFiles="@(_JobFiles)" DestinationFolder="$(_PackageTempDir)\App_Data\jobs\triggered\%(RecursiveDir)" />
-  </Target>
-  <Target Name="Chew" AfterTargets="pipelinePreDeployCopyAllFilesToOneFolder">
-    <Exec Command="&quot;$(SolutionDir)#tools\chew.exe&quot; &quot;$(_PackageTempDir)\App&quot;" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

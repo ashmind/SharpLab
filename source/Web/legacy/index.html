@@ -10,9 +10,10 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/codemirror.min.css"/>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3//addon/lint/lint.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.0/normalize.min.css" />
+    <!-- build:css -->
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="loader/loader.css"/>
-
+    <!-- endbuild -->
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/codemirror.js"></script>
@@ -24,9 +25,8 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.4/hammer.min.js"></script>
     <script src="external/lz-string-1.3.3-min.js"></script>
 
-    <!-- TODO: Bundle/minify -->
+    <!-- build:js -->
     <script src="app.js"></script>
-    <script src="!branches.js"></script>
     <script src="directives/diagnostic.js"></script>
     <script src="directives/codemirror.js"></script>
     <script src="directives/syntaxtree.js"></script>
@@ -39,6 +39,8 @@
     <script src="services/url.js"></script>
     <script src="services/location.js"></script>
     <script src="controllers/app-controller.js"></script>
+    <!-- endbuild -->    
+    <script src="!branches.js"></script>
   </head>
   <body data-ng-app="app" data-ng-controller="AppController" data-app-mobile-codemirror-focus="mobile-editor-focus">
     <main data-ng-class="{failed: result && !result.success}">

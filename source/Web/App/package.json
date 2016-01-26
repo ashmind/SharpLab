@@ -1,7 +1,0 @@
-{
-  "devDependencies": {
-    "gulp": "^3.8.11",
-    "gulp-less": "^3.0.0",
-    "gulp-plumber": "^0.6.6"
-  }
-}
