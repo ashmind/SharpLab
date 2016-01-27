@@ -14,7 +14,7 @@ gulp.task('less', function () {
 
 gulp.task('js', function () {
   return gulp
-    .src(['./legacy/app.js', './legacy/**/*.js'])
+    .src(['./legacy/external/**/*.js', './legacy/app.js', './legacy/**/*.js'])
     .pipe(concat('app.js'))
     .pipe(uglify())
     .pipe(gulp.dest('wwwroot'));
