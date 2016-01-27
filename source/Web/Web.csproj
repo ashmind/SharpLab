@@ -254,6 +254,9 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Target Name="Npm" BeforeTargets="Gulp" Condition="!Exists('node_modules')">
+    <Exec Command="npm install" />
+  </Target>
   <Target Name="Gulp" AfterTargets="Build">
     <Exec Command="gulp" />
     <ItemGroup>
