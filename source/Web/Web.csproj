@@ -258,7 +258,7 @@
     <Exec Command="npm install" />
   </Target>
   <Target Name="Gulp" AfterTargets="Build">
-    <Exec Command="gulp" />
+    <Exec Command="node_modules\.bin\gulp.cmd" />
     <ItemGroup>
       <Content Include="wwwroot\*.*" />
     </ItemGroup>
