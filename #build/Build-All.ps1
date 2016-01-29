@@ -118,7 +118,7 @@ try {
         try {
             Write-Output "  Copying $sourceRoot => $siteBuildRoot"
             robocopy $sourceRoot $siteBuildRoot /njh /njs /ndl /np /ns /xo /e /purge `
-                /xd "$roslynBinaryRoot" "$siteCopyRoot" "$siteBuildTempRoot" "$siteBuildRoot"
+                /xd "$roslynBinaryRoot" "$siteCopyRoot" "$siteBuildTempRoot" "$siteBuildRoot\Web\node_modules"
             Write-Output ""
 
             Push-Location $roslynBuildRoot
