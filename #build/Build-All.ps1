@@ -146,7 +146,7 @@ try {
                 $buildLogPath = "$siteBuildRoot\!build.log"
 
                 Write-Output "Rewriting *.csproj files..."
-                Get-ChildItem *.csproj -Recurse | % {
+                Get-ChildItem *.csproj -Recurse -ErrorAction SilentlyContinue | % {
                     Rewrite-ProjectReferences $_ @{
                         'Microsoft.CodeAnalysis'             = "$roslynBinaryRoot\Microsoft.CodeAnalysis.dll"
                         'Microsoft.CodeAnalysis.CSharp'      = "$roslynBinaryRoot\Microsoft.CodeAnalysis.CSharp.dll"
