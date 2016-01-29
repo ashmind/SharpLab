@@ -87,7 +87,7 @@ try {
         }
     }
     
-    Write-Output "Updating branches.json..."
+    Write-Output "Updating !branches.js..."
     Set-Content "$sitesBuildRoot\!branches.js" "angular.module('app').constant('branches', $(ConvertTo-Json $branchesJson -Depth 100));"
     Copy-Item "$sitesBuildRoot\!branches.js" "$sourceRoot\Web\wwwroot\js\!branches.js"
     
