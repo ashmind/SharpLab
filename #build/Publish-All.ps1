@@ -89,8 +89,13 @@ try {
     
     Write-Output "Updating !branches.js..."
     Set-Content "$sitesBuildRoot\!branches.js" "angular.module('app').constant('branches', $(ConvertTo-Json $branchesJson -Depth 100));"
-    Copy-Item "$sitesBuildRoot\!branches.js" "$sourceRoot\Web\wwwroot\!branches.js"
-    
+
+    $brachesJsLocalRoot = "$sourceRoot\Web\wwwroot"
+    if (!(Test-Path $brachesJsLocalRoot)) {
+        New-Item -ItemType Directory -Path $brachesJsLocalRoot | Out-Null    
+    }    
+    Copy-Item "$sitesBuildRoot\!branches.js" "$brachesJsLocalRoot\!branches.js"
+
     if ($azure) {
         &$PublishToAzure `
             -ResourceGroupName $($azureConfig.ResourceGroupName) `
