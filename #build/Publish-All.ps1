@@ -89,14 +89,14 @@ try {
     
     Write-Output "Updating !branches.js..."
     Set-Content "$sitesBuildRoot\!branches.js" "angular.module('app').constant('branches', $(ConvertTo-Json $branchesJson -Depth 100));"
-    Copy-Item "$sitesBuildRoot\!branches.js" "$sourceRoot\Web\wwwroot\js\!branches.js"
+    Copy-Item "$sitesBuildRoot\!branches.js" "$sourceRoot\Web\wwwroot\!branches.js"
     
     if ($azure) {
         &$PublishToAzure `
             -ResourceGroupName $($azureConfig.ResourceGroupName) `
             -WebAppName "tryroslyn" `
             -SourcePath "$sitesBuildRoot\!branches.js" `
-            -TargetPath "wwwroot\js\!branches.js"
+            -TargetPath "wwwroot\!branches.js"
     }
 }
 catch {    
