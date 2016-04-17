@@ -1,15 +1,17 @@
 var gulp = require('gulp');
 var plumber = require('gulp-plumber');
 var uglify = require('gulp-uglify');
-var less = require('gulp-less');
+var g = require('gulp-load-plugins')();
 var htmlreplace = require('gulp-html-replace');
 var webpack = require('webpack-stream');
 var assign = require('object-assign');
 
 gulp.task('less', function () {
     return gulp
-        .src('./legacy/app.less')
-        .pipe(less())
+        .src('./less/app.less')
+        .pipe(g.sourcemaps.init())
+        .pipe(g.less())
+        .pipe(g.sourcemaps.write('.'))
         .pipe(gulp.dest('wwwroot'));
 });
 
@@ -32,7 +34,7 @@ gulp.task('html', function () {
 });
 
 gulp.task('watch', ['default'], function () {
-    gulp.watch('legacy/**/*.less', ['less']);
+    gulp.watch('less/**/*.less', ['less']);
     gulp.watch('js/**/*.js', ['js']);
     gulp.watch('index.html', ['html']);
 });

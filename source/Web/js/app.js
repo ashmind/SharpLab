@@ -4,6 +4,7 @@ import getBranchesAsync from './server/get-branches-async.js';
 import sendCodeAsync from './server/send-code-async.js';
 import uiAsync from './ui/main.js';
 
+import defaults from './state/default.js';
 import urlState from './state/url.js';
 
 let pendingRequest;
@@ -69,6 +70,15 @@ function convertToAnnotations(errors, warnings) {
     return annotations;
 }
 
+function loadState() {
+    const fromUrl = urlState.load() || {};
+    
+    let options = fromUrl.options || defaults.getOptions();
+    let code = fromUrl.code || defaults.getCode(options.language);
+    
+    return { options, code };
+}
+
 (async function init() {
     const application = Object.assign({  
         codeMirrorModes: {
@@ -82,17 +92,11 @@ function convertToAnnotations(errors, warnings) {
         
         result: {
             success: true,
-            decompiled: ''
+            decompiled: '',
+            errors: [],
+            warnings: []
         }
-    }, urlState.load() || {
-        options: {
-            language: 'csharp',
-            mode: 'regular',
-            target: 'csharp',
-            optimizations: null
-        },
-        code: ''
-    });
+    }, loadState());
  
     application.processCodeAsync = processCodeAsync.bind(application);
     await uiAsync(application);

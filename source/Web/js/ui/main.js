@@ -2,6 +2,7 @@ import Vue from 'vue';
 import $ from 'jquery';
 
 import './app-codemirror.js';
+import './app-diagnostic.js';
 
 export default function(model) {    
     return new Promise(function(resolve, reject) {

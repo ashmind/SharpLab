@@ -7,8 +7,6 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
     <meta name="theme-color" content="#4684ee">
 
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3/codemirror.min.css"/>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.0.3//addon/lint/lint.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.0/normalize.min.css" />
     <!-- build:css -->
     <link rel="stylesheet" href="app.css" />
@@ -112,7 +110,7 @@
           </div>
         </section>
 
-        <section class="errors" v-show="result.errors">
+        <section class="errors" v-show="result.errors.length > 0">
           <header>
             <h1>Errors</h1>
             <!--span class="loader-container" data-ng-show="loading" data-ng-include="'loader/loader.html'">
@@ -120,21 +118,21 @@
           </header>
           <div class="content">
             <ul>
-              <li data-rv-each-error="result.errors">
-                <app-diagnostic bind="error"></app-diagnostic>
+              <li v-for="error in result.errors">
+                <app-diagnostic v-bind:model="error"></app-diagnostic>
               </li>
             </ul>
           </div>
         </section>
 
-        <section class="warnings" v-show="warningsVisible">
+        <section class="warnings" v-show="result.success && result.warnings.length > 0">
           <header>
             <h1>Warnings</h1>
           </header>
           <div class="content">
             <ul>
-              <li data-rv-each-warning="result.warnings">
-                <app-diagnostic bind="warning"></app-diagnostic>
+              <li v-for="warning in result.warnings">
+                <app-diagnostic v-bind:model="warning"></app-diagnostic>
               </li>
             </ul>
           </div>
