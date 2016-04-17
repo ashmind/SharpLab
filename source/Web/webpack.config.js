@@ -8,6 +8,9 @@ module.exports = {
     devtool: 'source-map',    
     plugins: [
         //new webpack.optimize.UglifyJsPlugin()
+        /*new webpack.SourceMapDevToolPlugin({
+            filename: 'app.min.js.map'
+        })*/
     ],
     entry: [
         'regenerator/runtime',
@@ -23,5 +26,8 @@ module.exports = {
                 plugins: ['syntax-async-functions', 'transform-regenerator']
             }
         }]
+    },
+    output: {
+        devtoolModuleFilenameTemplate: '[resource-path]'
     }
 };

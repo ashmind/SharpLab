@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import $ from 'jquery';
 
+import './filters/app-date.js';
+import './filters/app-trim.js';
 import './app-codemirror.js';
 import './app-diagnostic.js';
 

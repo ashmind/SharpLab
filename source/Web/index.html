@@ -37,9 +37,9 @@
             </div>
 
             <div class="select-wrapper option-branch option">
-              <select data-v-model="branch">
-                <option value="">Release (NuGet)</option>
-                <option v-for="branch in branches" value="{{branch.id}}">{{branch.displayText}}</option>
+              <select v-model="branch">
+                <option v-bind:value="null">Release (NuGet)</option>
+                <option v-for="branch in branches" v-bind:value="branch">{{branch.name}} ({{branch.commits[0].date | app-date 'd mmm'}})</option>
               </select>
             </div>
           </header>
@@ -67,10 +67,10 @@
           <div class="content">
             <div>
               <a href="https://github.com/dotnet/roslyn/commit/{{branch.commits[0].hash}}" target="_blank">{{branch.commits[0].hash}}</a>
-              at {{branch.commits[0].date | date:'dd MMM yyyy'}}
+              at {{branch.commits[0].date | app-date 'dd mmm yyyy'}}
               by {{branch.commits[0].author}}
             </div>
-            <div class="commit-message">{{branch.commits[0].message | trim}}</div>
+            <div class="commit-message">{{branch.commits[0].message | app-trim}}</div>
           </div>
         </section>
       </div>
