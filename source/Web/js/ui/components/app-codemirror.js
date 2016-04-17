@@ -6,8 +6,8 @@ import 'codemirror/mode/vb/vb';
 
 
 function buildGetAnnotations(data) {
-    return async (cm, updateLinting) => {
-        updateLinting(await data.lint(data.value));
+    return (cm, updateLinting) => {
+        data.lint(data.value, updateLinting);
     };
 }
 
@@ -20,7 +20,7 @@ Vue.component('app-codemirror', {
     },
     ready: function() {
         const textarea = this.$el;
-        textarea.value = this.value;
+        textarea.value = this.value;                
         const options = Object.assign(
             {},
             this.options,

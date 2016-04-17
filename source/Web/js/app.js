@@ -1,19 +1,19 @@
 import CodeMirror from 'codemirror';
 
-import getBranchesAsync from './server/get-branches-async.js';
-import sendCodeAsync from './server/send-code-async.js';
-import uiAsync from './ui/main.js';
+import getBranchesAsync from './server/get-branches-async';
+import sendCodeAsync from './server/send-code-async';
+import uiAsync from './ui';
 
-import defaults from './state/default.js';
-import urlState from './state/url.js';
+import defaults from './state/default';
+import urlState from './state/url';
 
 let pendingRequest;
-async function processCodeAsync(code) {
-    this.code = code;    
-    if (code === undefined || code === '')
+let savedApplyAnnotations;
+async function processCodeAsync(code, applyAnnotations) {
+    saveState(this.code, this.options);
+    if (this.code === undefined || this.code === '')
         return [];
     
-    urlState.save(this.code, this.options);
     if (pendingRequest) {
         pendingRequest.abort();
         pendingRequest = null;
@@ -22,14 +22,13 @@ async function processCodeAsync(code) {
     const branchUrl = this.branch ? this.branch.url : null;
     
     this.loading = true;
-    const resultPromise = sendCodeAsync(code, this.options, branchUrl);
+    const resultPromise = sendCodeAsync(this.code, this.options, branchUrl);
     pendingRequest = resultPromise;
 
     try {
         this.result = await resultPromise;
     }
     catch (ex) {
-        console.log(ex);
         const error = ex.response.data;
         let report = error.exceptionMessage || error.message;
         if (error.stackTrace)
@@ -37,22 +36,30 @@ async function processCodeAsync(code) {
 
         this.result = {
             success: false,
-            errors: [ report ]
+            errors: [
+                { message: report, start: {}, end: {}, severity: 'error' }
+            ]
         };
     }
     
     if (pendingRequest === resultPromise)
         pendingRequest = null;
     this.loading = false;
-    return convertToAnnotations(
-        this.result.errors,
-        this.result.warnings
-    );
+    this.updateAnnotations();
 }
 
-function convertToAnnotations(errors, warnings) {
+function lintCodeAsync(code, applyAnnotations) {
+    savedApplyAnnotations = applyAnnotations;
+    this.code = code;
+    return this.processCodeAsync();
+}
+
+function updateAnnotations() {
+    if (!savedApplyAnnotations)
+        return;
+    
     const annotations = [];
-    const pushAnnotations = array => {
+    const push = array => {
         if (!array)
             return;
 
@@ -65,9 +72,10 @@ function convertToAnnotations(errors, warnings) {
             });
         }
     }
-    pushAnnotations(errors);
-    pushAnnotations(warnings);
-    return annotations;
+    push(this.result.errors);
+    push(this.result.warnings);
+
+    savedApplyAnnotations(annotations);
 }
 
 function loadState() {
@@ -82,6 +90,10 @@ function loadState() {
     const code = fromUrl.code || defaults.getCode(options.language);
     
     return { options, code };
+}
+
+function saveState(code, options) {
+    urlState.save(code, options);
 }
 
 async function createApplicationAsync() {
@@ -104,9 +116,17 @@ async function createApplicationAsync() {
     }, loadState());
  
     application.processCodeAsync = processCodeAsync.bind(application);
+    application.updateAnnotations = updateAnnotations.bind(application);
+    application.lintCodeAsync = lintCodeAsync.bind(application);
     return application;
 }
 
 (async function runAsync() {
-    await uiAsync(await createApplicationAsync());
+    const application = await createApplicationAsync();
+    const ui = await uiAsync(application);
+    
+    ui.watch('options', () => {
+        saveState(application.code, application.options);
+        application.processCodeAsync();
+    }, { deep: true });
 })();

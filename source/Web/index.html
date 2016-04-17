@@ -50,7 +50,7 @@
           <div class="content">            
             <app-codemirror v-bind:value="code"
                             v-bind:mode="codeMirrorModes[options.language]"
-                            v-bind:lint="processCodeAsync"
+                            v-bind:lint="lintCodeAsync"
                             v-bind:options="{
                               lineNumbers: true,
                               indentUnit: 4,

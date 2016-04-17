@@ -9,6 +9,14 @@ import './components/app-diagnostic';
 import './components/app-mobile-shelf';
 import './hooks/app-mobile-codemirror-fullscreen';
 
+function wrap(vue) {
+    return {
+        watch: (name, callback, options) => {
+            vue.$watch(name, callback, options);
+        }
+    };
+}
+
 export default function(model) {    
     return new Promise(function(resolve, reject) {
         $(function() {
@@ -21,14 +29,14 @@ export default function(model) {
                         for (let hook of hooks.ready) {
                             hook(this);
                         }
+                        const ui = wrap(this);
+                        resolve(ui);
                     }
                 });
             }
             catch (e) {
                 reject(e);
-                return;
             }
-            resolve();
         });
     });
 }
