@@ -20,6 +20,7 @@
   "dependencies": {
     "codemirror": "^5.13.4",
     "dateformat": "^1.0.12",
+    "hammerjs": "^2.0.6",
     "lz-string": "^1.4.4",
     "regenerator": "^0.8.42",
     "vue": "^1.0.21"

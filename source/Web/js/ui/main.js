@@ -6,6 +6,7 @@ import './filters/app-date';
 import './filters/app-trim';
 import './components/app-codemirror';
 import './components/app-diagnostic';
+import './components/app-mobile-shelf';
 import './hooks/app-mobile-codemirror-fullscreen';
 
 export default function(model) {    

@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="loader/loader.css"/>
     <!-- endbuild -->
   </head>
-  <body data-codemirror-fullscreen-class="mobile-editor-focus">
+  <body data-mobile-codemirror-fullscreen-class="mobile-editor-focus">
     <main v-bind:class="{failed: !result.success}">
       <div class="section-group">
         <section class="code">
@@ -43,11 +43,10 @@
               </select>
             </div>
           </header>
-          <div class="mobile-menu" data-app-mobile-shelf="{
-               toggle: '.code .mobile-menu-button',
-               container: '.code',
-               openClass: 'mobile-menu-open'
-          }"></div>
+          <app-mobile-shelf class="mobile-menu"
+                            toggle=".code .mobile-menu-button"
+                            container=".code"
+                            open-class="mobile-menu-open"></app-mobile-shelf>
           <div class="content">            
             <app-codemirror v-bind:value="code"
                             v-bind:mode="codeMirrorModes[options.language]"
@@ -98,12 +97,12 @@
               </select>
             </div>
           </header>
-          <div class="mobile-menu" data-app-mobile-shelf="{
-            toggle: '.decompiled .mobile-menu-button',
-            container: '.decompiled',
-            openClass: 'mobile-menu-open'
-          }"></div>
-          <div class="content">
+          <app-mobile-shelf class="mobile-menu"
+                            toggle=".decompiled .mobile-menu-button"
+                            container=".decompiled"
+                            open-class="mobile-menu-open"></app-mobile-shelf>
+
+            <div class="content">
             <app-codemirror v-bind:value="result.decompiled"
                             v-bind:mode="codeMirrorModes[options.target]"
                             v-bind:options="{ readOnly: true, indentUnit: 4 }"></app-codemirror>
@@ -144,9 +143,6 @@
     </footer>  
 
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-throttle-debounce/1.1/jquery.ba-throttle-debounce.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.4/hammer.min.js"></script>
-
     <!-- build:js -->
     <!-- endbuild -->
 

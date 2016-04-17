@@ -4,7 +4,7 @@ import registry from './registry';
 
 registry.ready.push(function(vue) {
     const $root = $(vue.$el);
-    const className = $root.data('codemirror-fullscreen-class');
+    const className = $root.data('mobile-codemirror-fullscreen-class');
     $root.find('.CodeMirror').each(function() {
         const cm = this.CodeMirror;
         const $ancestors = $(this).parents();
