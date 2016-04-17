@@ -73,13 +73,18 @@ function convertToAnnotations(errors, warnings) {
 function loadState() {
     const fromUrl = urlState.load() || {};
     
-    let options = fromUrl.options || defaults.getOptions();
-    let code = fromUrl.code || defaults.getCode(options.language);
+    const options = fromUrl.options || {};
+    const defaultOptions = defaults.getOptions();
+    for (let key of Object.keys(defaultOptions)) {
+        if (options[key] == null)
+            options[key] = defaultOptions[key];
+    }
+    const code = fromUrl.code || defaults.getCode(options.language);
     
     return { options, code };
 }
 
-(async function init() {
+async function createApplicationAsync() {
     const application = Object.assign({  
         codeMirrorModes: {
             csharp: 'text/x-csharp',
@@ -99,5 +104,9 @@ function loadState() {
     }, loadState());
  
     application.processCodeAsync = processCodeAsync.bind(application);
-    await uiAsync(application);
+    return application;
+}
+
+(async function runAsync() {
+    await uiAsync(await createApplicationAsync());
 })();
