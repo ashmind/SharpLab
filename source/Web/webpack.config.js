@@ -1,17 +1,17 @@
-/* globals module:false, require:false */
+/* globals module:false, require:false, process:false */
 const webpack = require('webpack');
+
+const plugins = [];
+if (process.env.NODE_ENV === 'production') {
+    plugins.push(new webpack.optimize.UglifyJsPlugin());
+}
 
 module.exports = {
     externals: {
         jquery: 'jQuery'
     },
     devtool: 'source-map',    
-    plugins: [
-        //new webpack.optimize.UglifyJsPlugin()
-        /*new webpack.SourceMapDevToolPlugin({
-            filename: 'app.min.js.map'
-        })*/
-    ],
+    plugins: plugins,
     entry: [
         'regenerator/runtime',
         './js/app.js'
