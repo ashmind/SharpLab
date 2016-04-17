@@ -13,10 +13,10 @@
     <link rel="stylesheet" href="loader/loader.css"/>
     <!-- endbuild -->
   </head>
-  <body data-app-mobile-codemirror-focus="mobile-editor-focus">
+  <body data-codemirror-fullscreen-class="mobile-editor-focus">
     <main v-bind:class="{failed: !result.success}">
       <div class="section-group">
-        <section class="code" data-app-mobile-codemirror-focus="mobile-editor-focus">
+        <section class="code">
           <header>
             <input class="mobile-menu-button" type="button" />
             <h1>Code</h1>
@@ -76,7 +76,7 @@
       </div>
 
       <div class="section-group results">
-        <section v-show="result.success" class="decompiled"  data-app-mobile-codemirror-focus="mobile-editor-focus">
+        <section v-show="result.success" class="decompiled">
           <header>
             <input class="mobile-menu-button" type="button"/>
             <h1>Decompiled</h1>
@@ -141,8 +141,8 @@
     </main>
     <footer>
       Built by Andrey Shchekin (<a href="http://twitter.com/ashmind">@ashmind</a>). See <a href="http://github.com/ashmind/TryRoslyn">TryRoslyn</a> on GitHub.
-    </footer>
-    
+    </footer>  
+
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-throttle-debounce/1.1/jquery.ba-throttle-debounce.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.4/hammer.min.js"></script>
