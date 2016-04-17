@@ -107,6 +107,10 @@ try {
     $branches | % {
         Write-Output ''
         Write-Output "*** $_"
+        if ($_ -match '^revert|hotfix') {
+            Write-Output "Matches exclusion rule, skipped."
+        }
+
         $Host.UI.RawUI.WindowTitle = "TryRoslyn Build: $_"
         $branchFsName = $_ -replace '[/\\:]', '-'
         
