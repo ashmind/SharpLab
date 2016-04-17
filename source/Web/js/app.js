@@ -2,15 +2,14 @@ import CodeMirror from 'codemirror';
 
 import getBranchesAsync from './server/get-branches-async';
 import sendCodeAsync from './server/send-code-async';
-import uiAsync from './ui';
 
-import defaults from './state/default';
-import urlState from './state/url';
+import state from './state';
+import uiAsync from './ui';
 
 let pendingRequest;
 let savedApplyAnnotations;
-async function processCodeAsync(code, applyAnnotations) {
-    saveState(this.code, this.options);
+async function processChangeAsync(code, applyAnnotations) {
+    state.save(this);
     if (this.code === undefined || this.code === '')
         return [];
     
@@ -51,7 +50,7 @@ async function processCodeAsync(code, applyAnnotations) {
 function lintCodeAsync(code, applyAnnotations) {
     savedApplyAnnotations = applyAnnotations;
     this.code = code;
-    return this.processCodeAsync();
+    return this.processChangeAsync();
 }
 
 function updateAnnotations() {
@@ -78,24 +77,6 @@ function updateAnnotations() {
     savedApplyAnnotations(annotations);
 }
 
-function loadState() {
-    const fromUrl = urlState.load() || {};
-    
-    const options = fromUrl.options || {};
-    const defaultOptions = defaults.getOptions();
-    for (let key of Object.keys(defaultOptions)) {
-        if (options[key] == null)
-            options[key] = defaultOptions[key];
-    }
-    const code = fromUrl.code || defaults.getCode(options.language);
-    
-    return { options, code };
-}
-
-function saveState(code, options) {
-    urlState.save(code, options);
-}
-
 async function createApplicationAsync() {
     const application = Object.assign({  
         codeMirrorModes: {
@@ -113,9 +94,10 @@ async function createApplicationAsync() {
             errors: [],
             warnings: []
         }
-    }, loadState());
+    });
+    state.load(application);
  
-    application.processCodeAsync = processCodeAsync.bind(application);
+    application.processChangeAsync = processChangeAsync.bind(application);
     application.updateAnnotations = updateAnnotations.bind(application);
     application.lintCodeAsync = lintCodeAsync.bind(application);
     return application;
@@ -125,8 +107,5 @@ async function createApplicationAsync() {
     const application = await createApplicationAsync();
     const ui = await uiAsync(application);
     
-    ui.watch('options', () => {
-        saveState(application.code, application.options);
-        application.processCodeAsync();
-    }, { deep: true });
+    ui.watch('options', () => application.processChangeAsync(), { deep: true });
 })();
