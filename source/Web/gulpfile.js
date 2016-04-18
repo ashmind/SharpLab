@@ -1,3 +1,5 @@
+/* global require:false */
+
 "use strict";
 const gulp = require('gulp');
 const plumber = require('gulp-plumber');

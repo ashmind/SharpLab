@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using AshMind.Extensions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
 
 namespace TryRoslyn.Web.Formatting {
