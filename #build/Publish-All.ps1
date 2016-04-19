@@ -80,28 +80,30 @@ try {
         }
         
         # Success!
-        $branchesJson += @{
+        $branchesJson += [ordered]@{
+            id = $branchInfo.name -replace '/','-'
             name = $branchInfo.name
             url = $url
             commits = $branchInfo.commits
         }
     }
     
-    Write-Output "Updating !branches.js..."
-    Set-Content "$sitesBuildRoot\!branches.js" "angular.module('app').constant('branches', $(ConvertTo-Json $branchesJson -Depth 100));"
+    $branchesFileName = "!branches.json"
+    Write-Output "Updating $branchesFileName..."
+    Set-Content "$sitesBuildRoot\$branchesFileName" $(ConvertTo-Json $branchesJson -Depth 100)
 
     $brachesJsLocalRoot = "$sourceRoot\Web\wwwroot"
     if (!(Test-Path $brachesJsLocalRoot)) {
         New-Item -ItemType Directory -Path $brachesJsLocalRoot | Out-Null    
     }    
-    Copy-Item "$sitesBuildRoot\!branches.js" "$brachesJsLocalRoot\!branches.js"
+    Copy-Item "$sitesBuildRoot\$branchesFileName" "$brachesJsLocalRoot\$branchesFileName"
 
     if ($azure) {
         &$PublishToAzure `
             -ResourceGroupName $($azureConfig.ResourceGroupName) `
             -WebAppName "tryroslyn" `
-            -SourcePath "$sitesBuildRoot\!branches.js" `
-            -TargetPath "wwwroot\!branches.js"
+            -SourcePath "$sitesBuildRoot\$branchesFileName" `
+            -TargetPath "wwwroot\$branchesFileName"
     }
 }
 catch {    

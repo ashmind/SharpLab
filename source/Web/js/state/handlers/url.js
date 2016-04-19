@@ -8,8 +8,8 @@ function save(code, options) {
     if (flags)
         hash = 'f:' + flags + '/' + hash;
 
-    if (options.branch)
-        hash = 'b:' + options.branch + '/' + hash;
+    if (options.branchId)
+        hash = 'b:' + options.branchId + '/' + hash;
 
     lastHash = hash;
     window.location.hash = hash;
@@ -30,7 +30,7 @@ function loadInternal(onlyIfChanged) {
         return null;
 
     const result = {
-        options: Object.assign({ branch: match[1] }, parseFlags(match[2]))
+        options: Object.assign({ branchId: match[1] }, parseFlags(match[2]))
     };
 
     try {

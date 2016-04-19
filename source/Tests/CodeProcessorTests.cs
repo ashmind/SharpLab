@@ -7,7 +7,6 @@ using System.Text;
 using AshMind.Extensions;
 using Autofac;
 using TryRoslyn.Core;
-using TryRoslyn.Core.Modules;
 using TryRoslyn.Core.Processing;
 using Xunit;
 
@@ -81,7 +80,7 @@ namespace TryRoslyn.Tests {
 
         private static CodeProcessor CreateProcessor() {
             var builder = new ContainerBuilder();
-            builder.RegisterModule<LocalProcessingModule>();
+            builder.RegisterModule<CoreModule>();
             builder.RegisterType<CodeProcessor>().AsSelf();
             var container = builder.Build();
 

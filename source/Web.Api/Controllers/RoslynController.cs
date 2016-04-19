@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
-using System.Web.Http.Cors;
+﻿using System.Web.Http;
 using Microsoft.CodeAnalysis;
 using TryRoslyn.Core;
-using TryRoslyn.Web.Models;
+using TryRoslyn.Web.Api.Models;
 
-namespace TryRoslyn.Web.Controllers {
+namespace TryRoslyn.Web.Api.Controllers {
     // routes are a mess at the moment
     public class RoslynController : ApiController {
         private readonly ICodeProcessor _processor;

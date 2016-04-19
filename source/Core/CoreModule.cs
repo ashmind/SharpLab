@@ -6,8 +6,8 @@ using TryRoslyn.Core.Decompilation;
 using TryRoslyn.Core.Processing;
 using TryRoslyn.Core.Processing.RoslynSupport;
 
-namespace TryRoslyn.Core.Modules {
-    public class LocalProcessingModule : Module {
+namespace TryRoslyn.Core {
+    public class CoreModule : Module {
         protected override void Load(ContainerBuilder builder) {
             builder.RegisterType<RoslynAbstraction>().As<IRoslynAbstraction>().SingleInstance();
             builder.RegisterType<CSharpLanguage>().As<IRoslynLanguage>().SingleInstance();

@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace TryRoslyn.Web.Models {
+namespace TryRoslyn.Web.Api.Models {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public enum CompilationMode {
         Regular,

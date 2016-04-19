@@ -107,8 +107,9 @@ try {
     $branches | % {
         Write-Output ''
         Write-Output "*** $_"
-        if ($_ -match '^revert|hotfix') {
+        if ($_ -match '^revert|hotfix|\bmerge\b') {
             Write-Output "Matches exclusion rule, skipped."
+            return
         }
 
         $Host.UI.RawUI.WindowTitle = "TryRoslyn Build: $_"
@@ -122,11 +123,11 @@ try {
         try {
             Write-Output "  Copying $sourceRoot => $siteBuildRoot"
             robocopy $sourceRoot $siteBuildRoot /njh /njs /ndl /np /ns /xo /e /purge `
-                /xd "$roslynBinaryRoot" "$siteCopyRoot" "$siteBuildTempRoot" "$siteBuildRoot\Web\node_modules"
+                /xd "$roslynBinaryRoot" "$siteCopyRoot" "$siteBuildTempRoot" "$sourceRoot\Web"
             Write-Output ""
 
             Push-Location $roslynBuildRoot
-            try {            
+            try {
                 &$BuildRoslynBranch -SourceRoot $roslynSourceRoot -BranchName $_ -OutputRoot $roslynBinaryRoot
             }
             finally {
@@ -159,8 +160,8 @@ try {
                     Write-Output "  $($_.Name)"
                 }
 
-                Write-Output "Building Web.csproj..."
-                &$MSBuild Web\Web.csproj > $buildLogPath `
+                Write-Output "Building Web.Api.csproj..."
+                &$MSBuild Web.Api\Web.Api.csproj > $buildLogPath `
                     /p:OutputPath="""$siteCopyRoot\bin\\""" `
                     /p:IntermediateOutputPath="""$siteBuildTempRoot\\""" `
                     /p:AllowedReferenceRelatedFileExtensions=.pdb
@@ -169,8 +170,8 @@ try {
                     throw New-Object BranchBuildException("Build failed, see $buildLogPath", $buildLogPath)
                 }
 
-                Copy-Item "Web\Global.asax" "$siteCopyRoot\Global.asax" -Force
-                Copy-Item "Web\Web.config" "$siteCopyRoot\Web.config" -Force
+                Copy-Item "Web.Api\Global.asax" "$siteCopyRoot\Global.asax" -Force
+                Copy-Item "Web.Api\Web.config" "$siteCopyRoot\Web.config" -Force
                 Write-Output "TryRoslyn build done."
             }
             finally {

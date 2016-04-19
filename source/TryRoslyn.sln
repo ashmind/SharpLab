@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web\Web.csproj", "{8C5359F9-5A55-4078-AFB6-E524321DA6C3}"
 EndProject
@@ -9,11 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{E2B74C8D-AA27-4FDD-8DBB-C4E8495A2E7E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Jobs", "Jobs", "{51EB5F2B-D84E-43B2-B4A8-ECC6B1D2E89D}"
-	ProjectSection(SolutionItems) = preProject
-		Build-Roslyn-Local.bat = Build-Roslyn-Local.bat
-		Jobs\Build-Roslyn\Build-Roslyn.ps1 = Jobs\Build-Roslyn\Build-Roslyn.ps1
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.Api", "Web.Api\Web.Api.csproj", "{9BF5DBE2-0B1C-4D38-91DD-37B7E59C62D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +29,10 @@ Global
 		{E2B74C8D-AA27-4FDD-8DBB-C4E8495A2E7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E2B74C8D-AA27-4FDD-8DBB-C4E8495A2E7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E2B74C8D-AA27-4FDD-8DBB-C4E8495A2E7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BF5DBE2-0B1C-4D38-91DD-37B7E59C62D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BF5DBE2-0B1C-4D38-91DD-37B7E59C62D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BF5DBE2-0B1C-4D38-91DD-37B7E59C62D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BF5DBE2-0B1C-4D38-91DD-37B7E59C62D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

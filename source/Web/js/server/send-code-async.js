@@ -16,7 +16,15 @@ export default function sendCodeAsync(code, options, branchUrl) {
     const promise = xhr.then(
         data => data,
         response => {
-            const error = new Error('Request failed.');
+            let error;
+            if (response.statusText === 'abort') {
+                error = Error('Request aborted.');
+                error.reason = 'abort';
+                return error;
+            }                
+            
+            error = Error('Request failed.');
+            error.reason = 'response';
             error.response = {
                 data: JSON.parse(response.responseText)
             };

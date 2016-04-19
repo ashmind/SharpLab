@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using Autofac;
@@ -9,10 +6,8 @@ using Autofac.Integration.WebApi;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using TryRoslyn.Core;
-using TryRoslyn.Core.Modules;
-using TryRoslyn.Web.Formatting;
 
-namespace TryRoslyn.Web {
+namespace TryRoslyn.Web.Api {
     public static class WebApiConfig {
         public static void Register(HttpConfiguration config) {
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
@@ -28,11 +23,11 @@ namespace TryRoslyn.Web {
 
         private static void RegisterContainer(HttpConfiguration config) {
             var builder = new ContainerBuilder();
-            var webAssembly = Assembly.GetExecutingAssembly();
+            var webApiAssembly = Assembly.GetExecutingAssembly();
 
-            builder.RegisterApiControllers(webAssembly);
+            builder.RegisterApiControllers(webApiAssembly);
             builder.RegisterAssemblyModules(typeof(ICodeProcessor).Assembly);
-            builder.RegisterAssemblyModules(webAssembly);
+            builder.RegisterAssemblyModules(webApiAssembly);
 
             var container = builder.Build();
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);

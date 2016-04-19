@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AshMind.Extensions;
-using Microsoft.CodeAnalysis;
-using Newtonsoft.Json;
-
-namespace TryRoslyn.Web.Formatting {
+﻿namespace TryRoslyn.Web.Api.Formatting {
     /*public class SyntaxTreeConverter : JsonConverter {
         public override bool CanConvert(Type objectType) {
             return objectType.IsSubclassOf<SyntaxTree>();

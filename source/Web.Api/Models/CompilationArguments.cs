@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using TryRoslyn.Core;
 
-namespace TryRoslyn.Web.Models {
+namespace TryRoslyn.Web.Api.Models {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public class CompilationArguments {
         public string Code { get; set; }

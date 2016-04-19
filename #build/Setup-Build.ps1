@@ -14,8 +14,9 @@ Add-Type @"
 
 function Invoke-Git(
     [string] $path,
-    [Parameter(ValueFromRemainingArguments=$true)] [string] $command
+    [Parameter(ValueFromRemainingArguments=$true)] [string[]] $args
 ) {
+    $command = ($args | % { "`"$_`"" }) -join ' '
     Push-Location $path
     try {
         Invoke-Expression "git $command"

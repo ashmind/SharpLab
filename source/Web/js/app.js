@@ -9,17 +9,18 @@ import uiAsync from './ui';
 let pendingRequest;
 let savedApplyAnnotations;
 async function processChangeAsync(code, applyAnnotations) {
+    this.options.branchId = this.branch ? this.branch.id : null;
     state.save(this);
     if (this.code === undefined || this.code === '')
         return [];
-    
+
     if (pendingRequest) {
         pendingRequest.abort();
         pendingRequest = null;
     }
-    
+
     const branchUrl = this.branch ? this.branch.url : null;
-    
+
     this.loading = true;
     const resultPromise = sendCodeAsync(this.code, this.options, branchUrl);
     pendingRequest = resultPromise;
@@ -28,6 +29,9 @@ async function processChangeAsync(code, applyAnnotations) {
         this.result = await resultPromise;
     }
     catch (ex) {
+        if (ex.reason === 'abort')
+            return;
+
         const error = ex.response.data;
         let report = error.exceptionMessage || error.message;
         if (error.stackTrace)
@@ -40,7 +44,7 @@ async function processChangeAsync(code, applyAnnotations) {
             ]
         };
     }
-    
+
     if (pendingRequest === resultPromise)
         pendingRequest = null;
     this.loading = false;
@@ -56,7 +60,7 @@ function lintCodeAsync(code, applyAnnotations) {
 function updateAnnotations() {
     if (!savedApplyAnnotations)
         return;
-    
+
     const annotations = [];
     const push = array => {
         if (!array)
@@ -77,17 +81,17 @@ function updateAnnotations() {
     savedApplyAnnotations(annotations);
 }
 
-async function createApplicationAsync() {
-    const application = Object.assign({  
+async function createAppAsync() {
+    const app = Object.assign({
         codeMirrorModes: {
             csharp: 'text/x-csharp',
             vbnet:  'text/x-vb',
             il:     ''
         },
 
-        branches: (await getBranchesAsync()),
+        branches: null,
         branch: null,
-        
+
         result: {
             success: true,
             decompiled: '',
@@ -95,17 +99,28 @@ async function createApplicationAsync() {
             warnings: []
         }
     });
-    state.load(application);
- 
-    application.processChangeAsync = processChangeAsync.bind(application);
-    application.updateAnnotations = updateAnnotations.bind(application);
-    application.lintCodeAsync = lintCodeAsync.bind(application);
-    return application;
+    state.load(app);
+
+    let branchesPromise = (async () => {
+        app.branches = await getBranchesAsync();
+    })();
+
+    if (app.options.branchId) {
+        await branchesPromise;
+        app.branch = app.branches.filter(b => b.id === app.options.branchId)[0];
+    }
+
+    app.processChangeAsync = processChangeAsync.bind(app);
+    app.updateAnnotations = updateAnnotations.bind(app);
+    app.lintCodeAsync = lintCodeAsync.bind(app);
+    return app;
 }
 
 (async function runAsync() {
-    const application = await createApplicationAsync();
-    const ui = await uiAsync(application);
-    
-    ui.watch('options', () => application.processChangeAsync(), { deep: true });
+    const app = await createAppAsync();
+    const ui = await uiAsync(app);
+
+    for (let name of ['options', 'branch']) {
+        ui.watch(name,  () => app.processChangeAsync(), { deep: true });
+    }
 })();
