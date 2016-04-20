@@ -6,6 +6,7 @@ import './filters/app-date';
 import './filters/app-trim';
 import './components/app-codemirror';
 import './components/app-diagnostic';
+import './components/app-loader';
 import './components/app-mobile-shelf';
 import './hooks/app-mobile-codemirror-fullscreen';
 
@@ -17,7 +18,7 @@ function wrap(vue) {
     };
 }
 
-export default function(model) {    
+export default function(model) {
     return new Promise(function(resolve, reject) {
         $(function() {
             try {

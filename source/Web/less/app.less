@@ -2,3 +2,8 @@
 @import (inline) '../node_modules/codemirror/addon/lint/lint.css';
 
 @import '../legacy/app.less';
+@import 'imports/loader.less';
+
+.loading .content > :not(.loader) {
+    opacity: 0.5;
+}

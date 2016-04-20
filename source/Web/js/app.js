@@ -92,6 +92,8 @@ async function createAppAsync() {
         branches: null,
         branch: null,
 
+        loading: false,
+
         result: {
             success: true,
             decompiled: '',

@@ -46,26 +46,10 @@
   <ItemGroup>
     <Content Include="webpack.config.js" />
     <Content Include=".brackets.json" />
-    <None Include="legacy\directives\boolean-model.js" />
-    <None Include="legacy\directives\mobile-codemirror-focus.js" />
-    <None Include="legacy\directives\diagnostic.js" />
-    <None Include="legacy\directives\mobile-shelf.js" />
     <None Include="legacy\directives\syntaxtree.js" />
     <None Include="gulpfile.js" />
-    <None Include="legacy\loader\loader.css" />
-    <None Include="legacy\loader\loader.html" />
-    <None Include="legacy\services\defaults.js" />
-    <None Include="legacy\services\location.js" />
-    <None Include="legacy\services\remember.js" />
     <Content Include="Global.asax" />
-    <None Include="legacy\controllers\app-controller.js" />
     <None Include="legacy\app.less" />
-    <None Include="legacy\app.js" />
-    <None Include="legacy\directives\codemirror.js" />
-    <None Include="legacy\services\compilation.js" />
-    <None Include="legacy\services\url.js" />
-    <None Include="legacy\index.html" />
-    <None Include="legacy\external\lz-string-1.3.3-min.js" />
     <Content Include="index.html" />
     <Content Include="js\app.js" />
     <Content Include="js\server\get-branches-async.js" />
@@ -98,12 +82,6 @@
     <None Include=".jshintrc" />
     <None Include="legacy\styles\mobile.less" />
     <None Include="legacy\styles\common.less" />
-    <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\#packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />

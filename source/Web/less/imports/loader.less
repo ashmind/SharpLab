@@ -1,0 +1,44 @@
+@import 'common.less';
+@loader-size: 25px;
+
+.loader {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    top: 10px;
+    right: 10px;
+
+    font-family: Consolas, Menlo, Monaco, monospace;
+    font-weight: bold;
+    font-size: @loader-size;
+    color: @primary-color;
+
+    &::before, &::after {
+        display: inline-block;
+        animation: pulse 0.4s alternate infinite ease-in-out;
+    }
+
+    &::before {
+        content: '[';
+    }
+
+    &::after {
+        content: ']';
+        animation-delay: 0.4s;
+    }
+
+    .loading & {
+        display: block;
+    }
+
+    .errors & {
+        color: @error-color;
+    }
+}
+
+@keyframes pulse {
+    to {
+        transform: scale(0.7);
+        opacity: 0.5;
+    }
+}

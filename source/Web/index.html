@@ -9,8 +9,6 @@
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.0/normalize.min.css" />
     <!-- build:css -->
-    <link rel="stylesheet" href="app.css" />
-    <link rel="stylesheet" href="loader/loader.css"/>
     <!-- endbuild -->
   </head>
   <body data-mobile-codemirror-fullscreen-class="mobile-editor-focus">
@@ -47,7 +45,7 @@
                             toggle=".code .mobile-menu-button"
                             container=".code"
                             open-class="mobile-menu-open"></app-mobile-shelf>
-          <div class="content">            
+          <div class="content">
             <app-codemirror v-bind:value="code"
                             v-bind:mode="codeMirrorModes[options.language]"
                             v-bind:lint="lintCodeAsync"
@@ -74,7 +72,7 @@
         </section>
       </div>
 
-      <div class="section-group results">
+      <div class="section-group results" v-bind:class="{loading: loading}">
         <section v-show="result.success" class="decompiled">
           <header>
             <input class="mobile-menu-button" type="button"/>
@@ -83,7 +81,7 @@
             </span-->
 
             <div class="select-wrapper option-target-language option">
-              <select v-model="options.target">              
+              <select v-model="options.target">
                 <option value="csharp">C#</option>
                 <option value="vbnet">VB.NET</option>
                 <option value="il">IL</option>
@@ -101,8 +99,8 @@
                             toggle=".decompiled .mobile-menu-button"
                             container=".decompiled"
                             open-class="mobile-menu-open"></app-mobile-shelf>
-
-            <div class="content">
+          <div class="content">
+            <app-loader></app-loader>
             <app-codemirror v-bind:value="result.decompiled"
                             v-bind:mode="codeMirrorModes[options.target]"
                             v-bind:options="{ readOnly: true, indentUnit: 4 }"></app-codemirror>
@@ -112,10 +110,9 @@
         <section class="errors" v-show="result.errors.length > 0">
           <header>
             <h1>Errors</h1>
-            <!--span class="loader-container" data-ng-show="loading" data-ng-include="'loader/loader.html'">
-            </span-->
           </header>
           <div class="content">
+            <app-loader></app-loader>
             <ul>
               <li v-for="error in result.errors">
                 <app-diagnostic v-bind:model="error"></app-diagnostic>
@@ -140,7 +137,7 @@
     </main>
     <footer>
       Built by Andrey Shchekin (<a href="http://twitter.com/ashmind">@ashmind</a>). See <a href="http://github.com/ashmind/TryRoslyn">TryRoslyn</a> on GitHub.
-    </footer>  
+    </footer>
 
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <!-- build:js -->
