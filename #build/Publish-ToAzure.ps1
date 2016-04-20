@@ -1,7 +1,8 @@
 param (
     [Parameter(Mandatory=$true)] [string] $resourceGroupName,
+    [Parameter(Mandatory=$true)] [string] $appServicePlanName,
     [Parameter(Mandatory=$true)] [string] $webAppName,
-    [Parameter(Mandatory=$true)] [string] $sourcePath,    
+    [Parameter(Mandatory=$true)] [string] $sourcePath,
     [Parameter(Mandatory=$true)] [string] $targetPath,
     [switch] $canCreateWebApp = $false,
     [switch] $canStopWebApp = $false
@@ -35,6 +36,7 @@ if (!$webApp) {
     $location = (Get-AzureRmResourceGroup -Name $resourceGroupName).Location
     $webApp = (New-AzureRmWebApp `
         -ResourceGroupName $resourceGroupName `
+        -AppServicePlan $appServicePlanName `
         -Location $location `
         -Name $webAppName)
 }

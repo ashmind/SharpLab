@@ -71,6 +71,7 @@ try {
         if ($azure) {
             &$PublishToAzure `
                 -ResourceGroupName $($azureConfig.ResourceGroupName) `
+                -AppServicePlanName $($azureConfig.AppServicePlanName) `
                 -WebAppName $webAppName `
                 -CanCreateWebApp `
                 -CanStopWebApp `

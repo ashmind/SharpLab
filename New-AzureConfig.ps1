@@ -21,6 +21,15 @@ $options = $resourceGroups | % {
 $result = $Host.UI.PromptForChoice("Choose Azure resource group", "", $options, 0)
 $json.ResourceGroupName = $resourceGroups[$result].ResourceGroupName
 
+$appServicePlans = @(Get-AzureRMAppServicePlan)
+$index = 0
+$options = $appServicePlans | % {
+    New-Object Management.Automation.Host.ChoiceDescription("&$($index+1). $($_.Name)")
+    $index += 1
+}
+$result = $Host.UI.PromptForChoice("Choose Azure app service plan", "", $options, 0)
+$json.AppServicePlanName = $appServicePlans[$result].Name
+
 Set-Content '.\!azureconfig.json' (ConvertTo-Json $json)
 
 Write-Host "Saved config at .\!azureconfig.json. Environment variable for build:"
