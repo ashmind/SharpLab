@@ -33,63 +33,13 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
         #endregion
 
         private readonly ConcurrentDictionary<string, Delegate> _delegateCache = new ConcurrentDictionary<string, Delegate>();
-        
-        [ThreadSafe]
-        private static class CachedEnum<[ThreadSafe] TEnum> {
-            public static readonly TEnum MaxValue = Enumerable.Cast<TEnum>(Enum.GetValues(typeof(TEnum))).Max();
-        }
 
         public EmitResult Emit(Compilation compilation, Stream stream) {
             return GetDelegate<Func<Compilation, Stream, EmitResult>>("Compilation.Emit", typeof(Compilation), "Emit").Invoke(compilation, stream);
         }
 
-        public TCompilationOptions NewCompilationOptions<TCompilationOptions>(OutputKind outputKind) {
-            return GetFactory<Func<OutputKind, TCompilationOptions>>(typeof(TCompilationOptions).Name + ".new").Invoke(outputKind);
-        }
-
-        public TCompilationOptions WithOptimizationLevel<TCompilationOptions>(TCompilationOptions compilationOptions, OptimizationLevelAbstraction value) {
-            // latest master
-            var optimizationLevelType = typeof(CompilationOptions).Assembly.GetType("Microsoft.CodeAnalysis.OptimizationLevel", false);
-            if (optimizationLevelType != null) {
-                return GetDelegate(typeof(TCompilationOptions).Name + ".WithOptimizationLevel", BuildWithOptimizationLevel<TCompilationOptions>)
-                        .Invoke(compilationOptions, value);
-            }
-
-            return GetDelegate<Func<TCompilationOptions, bool, TCompilationOptions>>(typeof(TCompilationOptions).Name + ".WithOptimizations", typeof(TCompilationOptions), "WithOptimizations")
-                        .Invoke(compilationOptions, value == OptimizationLevelAbstraction.Release);
-        }
-
-        private Expression<Func<TCompilationOptions, OptimizationLevelAbstraction, TCompilationOptions>> BuildWithOptimizationLevel<TCompilationOptions>() {
-            var optionsType = typeof(TCompilationOptions);
-            var options = Expression.Parameter(optionsType);
-            var levelAbstraction = Expression.Parameter(typeof(OptimizationLevelAbstraction));
-
-            var levelType = typeof(CompilationOptions).Assembly.GetType("Microsoft.CodeAnalysis.OptimizationLevel", true);
-            var level = Expression.Condition(
-                Expression.Equal(levelAbstraction, Expression.Constant(OptimizationLevelAbstraction.Release)),
-                Expression.Field(null, levelType, "Release"),
-                Expression.Field(null, levelType, "Debug")
-            );
-            var resolved = ResolveMethod(optionsType, optionsType.GetMethods().Where(m => m.Name == "WithOptimizationLevel"), new Expression[] { options, level });
-            var call = Expression.Call(resolved.Instance, resolved.Method, resolved.Arguments);
-
-            return Expression.Lambda<Func<TCompilationOptions, OptimizationLevelAbstraction, TCompilationOptions>>(call, options, levelAbstraction);
-        }
-
-        public TLanguageVersion GetMaxValue<TLanguageVersion>() {
-            return CachedEnum<TLanguageVersion>.MaxValue;
-        }
-        
-        private TDelegate GetFactory<TDelegate>(string key) {
-            return (TDelegate)(object)_delegateCache.GetOrAdd(key, _ => (Delegate)(object)BuildFactory<TDelegate>());
-        }
-
         private TDelegate GetDelegate<TDelegate>(string key, Type type, string methodName) {
             return (TDelegate)(object)_delegateCache.GetOrAdd(key, _ => (Delegate)(object)BuildDelegate<TDelegate>(type, methodName));
-        }
-
-        private TDelegate GetDelegate<TDelegate>(string key, Func<Expression<TDelegate>> build) {
-            return (TDelegate)(object)_delegateCache.GetOrAdd(key, _ => (Delegate)(object)build().Compile());
         }
 
         private TDelegate BuildDelegate<TDelegate>(Type type, string methodName) {
@@ -102,19 +52,6 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             var resolved = ResolveMethod(type, methods, parameters);
             
             return Expression.Lambda<TDelegate>(Expression.Call(resolved.Instance, resolved.Method, resolved.Arguments), parameters)
-                             .Compile();
-        }
-
-        private TDelegate BuildFactory<TDelegate>(Type type = null) {
-            var signature = GetParametersAndReturnType<TDelegate>();
-            var parameters = signature.Item1;
-            var returnType = signature.Item2;
-            var constructedType = type ?? returnType;
-
-            var constructors = constructedType.GetConstructors().Where(c => c.IsPublic);
-            var resolved = ResolveMethod(returnType, constructors, parameters);
-
-            return Expression.Lambda<TDelegate>(Expression.New(resolved.Method, resolved.Arguments), parameters)
                              .Compile();
         }
 

@@ -14,14 +14,10 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             .Cast<LanguageVersion>()
             .Max();
 
-        private readonly IRoslynAbstraction _roslynAbstraction;
         // ReSharper disable once AgentHeisenbug.FieldOfNonThreadSafeTypeInThreadSafeType
-        private readonly MetadataReference _microsoftVisualBasicReference;
-
-        public VBNetLanguage(IRoslynAbstraction roslynAbstraction) {
-            _roslynAbstraction = roslynAbstraction;
-            _microsoftVisualBasicReference = MetadataReference.CreateFromFile(typeof(StandardModuleAttribute).Assembly.Location);
-        }
+        private readonly IReadOnlyCollection<MetadataReference> _references = new[] {
+            MetadataReference.CreateFromFile(typeof(StandardModuleAttribute).Assembly.Location)
+        };
 
         public LanguageIdentifier Identifier => LanguageIdentifier.VBNet;
 
@@ -34,14 +30,12 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
         }
 
         public Compilation CreateLibraryCompilation(string assemblyName, bool optimizationsEnabled) {
-            var options = _roslynAbstraction.NewCompilationOptions<VisualBasicCompilationOptions>(OutputKind.DynamicallyLinkedLibrary);
-            options = _roslynAbstraction.WithOptimizationLevel(
-                options, optimizationsEnabled ? OptimizationLevelAbstraction.Release : OptimizationLevelAbstraction.Debug
+            var options = new VisualBasicCompilationOptions(
+                OutputKind.DynamicallyLinkedLibrary,
+                optimizationLevel: optimizationsEnabled ? OptimizationLevel.Release : OptimizationLevel.Debug
             );
 
-            return VisualBasicCompilation.Create(assemblyName)
-                                         .WithOptions(options)
-                                         .AddReferences(_microsoftVisualBasicReference);
+            return VisualBasicCompilation.Create(assemblyName, options: options, references: _references);
         }
     }
 }

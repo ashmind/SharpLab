@@ -11,11 +11,5 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
     public interface IRoslynAbstraction {
         [Pure, Obsolete]
         EmitResult Emit(Compilation compilation, Stream stream);
-
-        [Pure, Obsolete]
-        TCompilationOptions NewCompilationOptions<TCompilationOptions>(OutputKind outputKind);
-
-        [Pure, Obsolete]
-        TCompilationOptions WithOptimizationLevel<TCompilationOptions>(TCompilationOptions options, OptimizationLevelAbstraction value);
     }
 }

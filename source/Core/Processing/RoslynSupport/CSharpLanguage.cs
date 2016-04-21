@@ -15,14 +15,10 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             .Max();
         private static readonly IReadOnlyCollection<string> PreprocessorSymbols = new[] { "__DEMO_EXPERIMENTAL__" };
 
-        private readonly IRoslynAbstraction _roslynAbstraction;
         // ReSharper disable once AgentHeisenbug.FieldOfNonThreadSafeTypeInThreadSafeType
-        private readonly MetadataReference _microsoftCSharpReference;
-
-        public CSharpLanguage(IRoslynAbstraction roslynAbstraction) {
-            _roslynAbstraction = roslynAbstraction;
-            _microsoftCSharpReference = MetadataReference.CreateFromFile(typeof(Binder).Assembly.Location);
-        }
+        private readonly IReadOnlyCollection<MetadataReference> _references = new[] {
+            MetadataReference.CreateFromFile(typeof(Binder).Assembly.Location)
+        };
 
         public LanguageIdentifier Identifier => LanguageIdentifier.CSharp;
 
@@ -36,15 +32,13 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
         }
 
         public Compilation CreateLibraryCompilation(string assemblyName, bool optimizationsEnabled) {
-            var options = _roslynAbstraction.NewCompilationOptions<CSharpCompilationOptions>(OutputKind.DynamicallyLinkedLibrary)
-                                            .WithAllowUnsafe(true);
-            options = _roslynAbstraction.WithOptimizationLevel(
-                options, optimizationsEnabled ? OptimizationLevelAbstraction.Release : OptimizationLevelAbstraction.Debug
+            var options = new CSharpCompilationOptions(
+                OutputKind.DynamicallyLinkedLibrary,
+                optimizationLevel: optimizationsEnabled ? OptimizationLevel.Release : OptimizationLevel.Debug,
+                allowUnsafe: true
             );
             
-            return CSharpCompilation.Create(assemblyName)
-                                    .WithOptions(options)
-                                    .AddReferences(_microsoftCSharpReference);
+            return CSharpCompilation.Create(assemblyName, options: options, references: _references);
         }
     }
 }
