@@ -15,8 +15,7 @@ namespace TryRoslyn.Core.Processing {
         private readonly MetadataReference[] _references = {
             MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(Uri).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(DynamicAttribute).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(FormattableStringFactory).Assembly.Location)
+            MetadataReference.CreateFromFile(typeof(DynamicAttribute).Assembly.Location)
         };
         private readonly IReadOnlyCollection<IDecompiler> _decompilers;
         private readonly IReadOnlyCollection<IRoslynLanguage> _languages;
