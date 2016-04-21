@@ -20,7 +20,7 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
 
         public VBNetLanguage(IRoslynAbstraction roslynAbstraction) {
             _roslynAbstraction = roslynAbstraction;
-            _microsoftVisualBasicReference = _roslynAbstraction.MetadataReferenceFromPath(typeof(StandardModuleAttribute).Assembly.Location);
+            _microsoftVisualBasicReference = MetadataReference.CreateFromFile(typeof(StandardModuleAttribute).Assembly.Location);
         }
 
         public LanguageIdentifier Identifier => LanguageIdentifier.VBNet;

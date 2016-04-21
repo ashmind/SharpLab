@@ -50,41 +50,6 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             return GetDelegate<Func<Compilation, Stream, EmitResult>>("Compilation.Emit", typeof(Compilation), "Emit").Invoke(compilation, stream);
         }
 
-        public MetadataReference MetadataReferenceFromPath(string path) {
-            var factory = (Func<string, MetadataReference>)_delegateCache.GetOrAdd("MetadataReferenceFromPath", _ => BuildMetadataReferenceFromPath());
-            return factory(path);
-        }
-
-        private Func<string, MetadataReference> BuildMetadataReferenceFromPath() {
-            var metadataReferenceType = typeof(MetadataReference);
-            var assembly = metadataReferenceType.Assembly;
-
-            // after-CTP4 master
-            var factoryMethodName = "CreateFromFile";
-            if (metadataReferenceType.GetMethods().Any(x => x.Name == factoryMethodName)) {
-                return BuildDelegate<Func<string, MetadataReference>>(metadataReferenceType, factoryMethodName);
-            }
-
-            // pre-CTP4 master
-            var imageReferenceType = assembly.GetType("Microsoft.CodeAnalysis.MetadataImageReference", false);
-            if (imageReferenceType != null) {
-                var imageReferenceFactory = BuildFactory<Func<Stream, MetadataReference>>(imageReferenceType);
-                return path => {
-                    using (var stream = File.OpenRead(path)) {
-                        return imageReferenceFactory(stream);
-                    }
-                };
-            }
-
-            // older APIs
-            var fileReferenceType = assembly.GetType("Microsoft.CodeAnalysis.MetadataFileReference", true);
-            return BuildFactory<Func<string, MetadataReference>>(fileReferenceType);
-        }
-
-        public TParseOptions NewParseOptions<TLanguageVersion, TParseOptions>(TLanguageVersion languageVersion, SourceCodeKind kind) {
-            return GetFactory<Func<TLanguageVersion, SourceCodeKind, TParseOptions>>(typeof(TParseOptions).Name + ".new").Invoke(languageVersion, kind);
-        }
-
         public TCompilationOptions NewCompilationOptions<TCompilationOptions>(OutputKind outputKind) {
             return GetFactory<Func<OutputKind, TCompilationOptions>>(typeof(TCompilationOptions).Name + ".new").Invoke(outputKind);
         }

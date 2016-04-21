@@ -21,7 +21,7 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
 
         public CSharpLanguage(IRoslynAbstraction roslynAbstraction) {
             _roslynAbstraction = roslynAbstraction;
-            _microsoftCSharpReference = _roslynAbstraction.MetadataReferenceFromPath(typeof(Binder).Assembly.Location);
+            _microsoftCSharpReference = MetadataReference.CreateFromFile(typeof(Binder).Assembly.Location);
         }
 
         public LanguageIdentifier Identifier => LanguageIdentifier.CSharp;

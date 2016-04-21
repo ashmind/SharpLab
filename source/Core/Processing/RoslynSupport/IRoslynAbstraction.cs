@@ -17,9 +17,6 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
         EmitResult Emit(Compilation compilation, Stream stream);
 
         [Pure, Obsolete]
-        MetadataReference MetadataReferenceFromPath(string path);
-        
-        [Pure, Obsolete]
         TCompilationOptions NewCompilationOptions<TCompilationOptions>(OutputKind outputKind);
 
         [Pure, Obsolete]
