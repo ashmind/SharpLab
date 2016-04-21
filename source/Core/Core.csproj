@@ -114,9 +114,7 @@
     <Compile Include="ICodeProcessor.cs" />
     <Compile Include="Decompilation\IDecompiler.cs" />
     <Compile Include="ProcessingResult.cs" />
-    <Compile Include="Processing\RoslynSupport\IRoslynAbstraction.cs" />
     <Compile Include="Processing\RoslynSupport\CSharpLanguage.cs" />
-    <Compile Include="Processing\RoslynSupport\RoslynAbstraction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProcessingResultDiagnosticLocation.cs" />
   </ItemGroup>

@@ -9,7 +9,6 @@ using TryRoslyn.Core.Processing.RoslynSupport;
 namespace TryRoslyn.Core {
     public class CoreModule : Module {
         protected override void Load(ContainerBuilder builder) {
-            builder.RegisterType<RoslynAbstraction>().As<IRoslynAbstraction>().SingleInstance();
             builder.RegisterType<CSharpLanguage>().As<IRoslynLanguage>().SingleInstance();
             builder.RegisterType<VBNetLanguage>().As<IRoslynLanguage>().SingleInstance();
             builder.RegisterType<CSharpDecompiler>().As<IDecompiler>().SingleInstance();

@@ -12,26 +12,21 @@ namespace TryRoslyn.Core.Processing {
     [ThreadSafe]
     public class CodeProcessor : ICodeProcessor {
         // ReSharper disable once AgentHeisenbug.FieldOfNonThreadSafeTypeInThreadSafeType
-        private readonly MetadataReference[] _references;
+        private readonly MetadataReference[] _references = {
+            MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Uri).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(DynamicAttribute).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(FormattableStringFactory).Assembly.Location)
+        };
         private readonly IReadOnlyCollection<IDecompiler> _decompilers;
-        private readonly IRoslynAbstraction _roslynAbstraction;
         private readonly IReadOnlyCollection<IRoslynLanguage> _languages;
         
         public CodeProcessor(
-            IRoslynAbstraction roslynAbstraction,
             IReadOnlyCollection<IRoslynLanguage> languages,
             IReadOnlyCollection<IDecompiler> decompilers
         ) {
-            _roslynAbstraction = roslynAbstraction;
             _languages = languages;
             _decompilers = decompilers;
-
-            _references = new[] {
-                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(Uri).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(DynamicAttribute).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(FormattableStringFactory).Assembly.Location)
-            };
         }
 
         public ProcessingResult Process(string code, ProcessingOptions options) {
@@ -47,7 +42,7 @@ namespace TryRoslyn.Core.Processing {
                 .AddReferences(_references)
                 .AddSyntaxTrees(syntaxTree);
 
-            var emitResult = _roslynAbstraction.Emit(compilation, stream);
+            var emitResult = compilation.Emit(stream);
 
             if (!emitResult.Success)
                 return new ProcessingResult(null, emitResult.Diagnostics.Select(d => new ProcessingResultDiagnostic(d)));
