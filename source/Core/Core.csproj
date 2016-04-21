@@ -34,10 +34,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\#packages\AshMind.Extensions.1.7.2\lib\net45\AshMind.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="AshMind.IO.Abstractions, Version=0.9.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\#packages\AshMind.IO.Abstractions.0.9.1-pre\lib\net40\AshMind.IO.Abstractions.dll</HintPath>
-    </Reference>
     <Reference Include="Autofac">
       <HintPath>..\#packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
       <Private>True</Private>

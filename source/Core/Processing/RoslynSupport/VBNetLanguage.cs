@@ -9,6 +9,11 @@ using Microsoft.VisualBasic.CompilerServices;
 namespace TryRoslyn.Core.Processing.RoslynSupport {
     [ThreadSafe]
     public class VBNetLanguage : IRoslynLanguage {
+        private static readonly LanguageVersion MaxLanguageVersion = Enum
+            .GetValues(typeof(LanguageVersion))
+            .Cast<LanguageVersion>()
+            .Max();
+
         private readonly IRoslynAbstraction _roslynAbstraction;
         // ReSharper disable once AgentHeisenbug.FieldOfNonThreadSafeTypeInThreadSafeType
         private readonly MetadataReference _microsoftVisualBasicReference;
@@ -18,13 +23,12 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             _microsoftVisualBasicReference = _roslynAbstraction.MetadataReferenceFromPath(typeof(StandardModuleAttribute).Assembly.Location);
         }
 
-        public LanguageIdentifier Identifier {
-            get { return LanguageIdentifier.VBNet; }
-        }
+        public LanguageIdentifier Identifier => LanguageIdentifier.VBNet;
 
         public SyntaxTree ParseText(string code, SourceCodeKind kind) {
-            var options = _roslynAbstraction.NewParseOptions<LanguageVersion, VisualBasicParseOptions>(
-                _roslynAbstraction.GetMaxValue<LanguageVersion>(), kind
+            var options = new VisualBasicParseOptions(
+                kind: kind,
+                languageVersion: MaxLanguageVersion
             );
             return _roslynAbstraction.ParseText(typeof(VisualBasicSyntaxTree), code, options);
         }

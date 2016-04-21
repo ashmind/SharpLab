@@ -37,7 +37,7 @@
             <div class="select-wrapper option-branch option">
               <select v-model="branch">
                 <option v-bind:value="null">Release (NuGet)</option>
-                <option v-for="branch in branches" v-bind:value="branch">{{branch.name}} ({{branch.commits[0].date | app-date 'd mmm'}})</option>
+                <option v-for="branch in branches" v-bind:value="branch">{{branch.name}} ({{branch.commits[0].date | app-date 'd mmm yyyy'}})</option>
               </select>
             </div>
           </header>

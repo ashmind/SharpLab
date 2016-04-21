@@ -7,28 +7,22 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Emit;
 
 namespace TryRoslyn.Core.Processing.RoslynSupport {
-    [ThreadSafe]
+    [ThreadSafe, Obsolete]
     public interface IRoslynAbstraction {
-        [Pure]
+        [Pure, Obsolete]
         SyntaxTree ParseText<TParseOptions>(Type syntaxTreeType, string code, TParseOptions options)
             where TParseOptions : ParseOptions;
 
-        [Pure]
+        [Pure, Obsolete]
         EmitResult Emit(Compilation compilation, Stream stream);
 
-        [Pure]
+        [Pure, Obsolete]
         MetadataReference MetadataReferenceFromPath(string path);
-
-        [Pure]
-        TParseOptions NewParseOptions<TLanguageVersion, TParseOptions>(TLanguageVersion languageVersion, SourceCodeKind kind);
-
-        [Pure]
+        
+        [Pure, Obsolete]
         TCompilationOptions NewCompilationOptions<TCompilationOptions>(OutputKind outputKind);
 
-        [Pure]
+        [Pure, Obsolete]
         TCompilationOptions WithOptimizationLevel<TCompilationOptions>(TCompilationOptions options, OptimizationLevelAbstraction value);
-
-        [Pure]
-        TLanguageVersion GetMaxValue<TLanguageVersion>();
     }
 }

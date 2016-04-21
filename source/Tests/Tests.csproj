@@ -38,21 +38,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\#packages\AshMind.Extensions.1.7.2\lib\net45\AshMind.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="AshMind.IO.Abstractions, Version=0.9.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\#packages\AshMind.IO.Abstractions.0.9.1-pre\lib\net40\AshMind.IO.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="AshMind.IO.Abstractions.Mocks, Version=0.7.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\#packages\AshMind.IO.Abstractions.Mocks.0.7.2-pre3\lib\net35\AshMind.IO.Abstractions.Mocks.dll</HintPath>
-    </Reference>
     <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\#packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\#roslyn\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
     <Reference Include="Moq, Version=4.2.1510.2205, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\#packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>

@@ -9,6 +9,12 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace TryRoslyn.Core.Processing.RoslynSupport {
     [ThreadSafe]
     public class CSharpLanguage : IRoslynLanguage {
+        private static readonly LanguageVersion MaxLanguageVersion = Enum
+            .GetValues(typeof (LanguageVersion))
+            .Cast<LanguageVersion>()
+            .Max();
+        private static readonly IReadOnlyCollection<string> PreprocessorSymbols = new[] { "__DEMO_EXPERIMENTAL__" };
+
         private readonly IRoslynAbstraction _roslynAbstraction;
         // ReSharper disable once AgentHeisenbug.FieldOfNonThreadSafeTypeInThreadSafeType
         private readonly MetadataReference _microsoftCSharpReference;
@@ -18,13 +24,13 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             _microsoftCSharpReference = _roslynAbstraction.MetadataReferenceFromPath(typeof(Binder).Assembly.Location);
         }
 
-        public LanguageIdentifier Identifier {
-            get { return LanguageIdentifier.CSharp; }
-        }
+        public LanguageIdentifier Identifier => LanguageIdentifier.CSharp;
 
         public SyntaxTree ParseText(string code, SourceCodeKind kind) {
-            var options = _roslynAbstraction.NewParseOptions<LanguageVersion, CSharpParseOptions>(
-                _roslynAbstraction.GetMaxValue<LanguageVersion>(), kind
+            var options = new CSharpParseOptions(
+                kind: kind,
+                languageVersion: MaxLanguageVersion,
+                preprocessorSymbols: PreprocessorSymbols
             );
             return _roslynAbstraction.ParseText(typeof(CSharpSyntaxTree), code, options);
         }
@@ -35,7 +41,7 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             options = _roslynAbstraction.WithOptimizationLevel(
                 options, optimizationsEnabled ? OptimizationLevelAbstraction.Release : OptimizationLevelAbstraction.Debug
             );
-
+            
             return CSharpCompilation.Create(assemblyName)
                                     .WithOptions(options)
                                     .AddReferences(_microsoftCSharpReference);

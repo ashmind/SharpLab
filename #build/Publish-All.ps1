@@ -102,6 +102,7 @@ try {
     if ($azure) {
         &$PublishToAzure `
             -ResourceGroupName $($azureConfig.ResourceGroupName) `
+            -AppServicePlanName $($azureConfig.AppServicePlanName) `
             -WebAppName "tryroslyn" `
             -SourcePath "$sitesBuildRoot\$branchesFileName" `
             -TargetPath "wwwroot\$branchesFileName"
