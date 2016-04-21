@@ -11,7 +11,7 @@ $ProgressPreference = "SilentlyContinue" # https://www.amido.com/powershell-win3
 # Note: Write-Host, Write-Error and Write-Warning do not function properly in Azure
 ."$PSScriptRoot\Setup-Build.ps1"
 
-$branchFsName = $_ -replace '[/\\:]', '-'
+$branchFsName = $branchName -replace '[/\\:]', '-'
 
 $hashMarkerPath = "$outputRoot\!Hash"
 $hashMarkerPathFull = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($hashMarkerPath)
@@ -90,7 +90,7 @@ function Restore-Packages() {
 }
 
 Restore-Packages
-    
+
 $standardArgs = "/p:RestorePackages=false /p:Configuration=Debug /p:DelaySign=false /p:SignAssembly=false /p:NeedsFakeSign=false /p:SolutionDir=`"$sourceRoot\Src`""
 $csCandidates = @(
     "Src\Compilers\CSharp\Portable\CSharpCodeAnalysis.csproj",

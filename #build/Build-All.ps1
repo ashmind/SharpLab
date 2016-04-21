@@ -103,11 +103,16 @@ try {
         ? { $_ -notmatch '^\s+origin/HEAD' } |
         % { ($_ -match 'origin/(.+)$') | Out-Null; $matches[1] }
 
+    $failedListPath = "$sitesBuildRoot\!failed.txt"    
     Write-Output "  $branches"
+    if (Test-Path $failedListPath) {
+        Write-Output "Deleting $failedListPath..."
+        Remove-Item $failedListPath
+    }
     $branches | % {
         Write-Output ''
         Write-Output "*** $_"
-        if ($_ -match '^revert|hotfix|\bmerge\b') {
+        if ($_ -match '^revert|(?:hot|build)fix|\bmerge\b') {
             Write-Output "Matches exclusion rule, skipped."
             return
         }
@@ -185,6 +190,7 @@ try {
             }
 
             Write-Output "  [WARNING] $($ex.Message)"
+            Add-Content $failedListPath @($branchFsName, $ex.Message, '')
         }
     }
 }
