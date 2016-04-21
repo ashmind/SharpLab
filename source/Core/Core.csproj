@@ -104,6 +104,8 @@
     <Compile Include="Decompilation\VBNetDecompiler.cs" />
     <Compile Include="Decompilation\CSharpDecompiler.cs" />
     <Compile Include="Decompilation\Support\CustomizableIndentPlainTextOutput.cs" />
+    <Compile Include="Processing\Internal\ICSharpFeatures.cs" />
+    <Compile Include="Processing\Internal\CSharpFeatures.cs" />
     <Compile Include="Processing\Languages\VBNetLanguage.cs" />
     <Compile Include="Processing\Languages\IRoslynLanguage.cs" />
     <Compile Include="Processing\CodeProcessor.cs" />

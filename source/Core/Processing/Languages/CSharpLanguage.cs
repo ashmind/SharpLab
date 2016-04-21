@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CSharp.RuntimeBinder;
+using TryRoslyn.Core.Processing.Internal;
 
 namespace TryRoslyn.Core.Processing.Languages {
     [ThreadSafe]
@@ -19,6 +20,11 @@ namespace TryRoslyn.Core.Processing.Languages {
         private readonly IReadOnlyCollection<MetadataReference> _references = new[] {
             MetadataReference.CreateFromFile(typeof(Binder).Assembly.Location)
         };
+        private readonly IReadOnlyDictionary<string, string> _features;
+
+        public CSharpLanguage(ICSharpFeatures features) {
+            _features = features.DiscoverAll().ToDictionary(f => f, f => (string)null);
+        }
 
         public LanguageIdentifier Identifier => LanguageIdentifier.CSharp;
 
@@ -27,7 +33,7 @@ namespace TryRoslyn.Core.Processing.Languages {
                 kind: kind,
                 languageVersion: MaxLanguageVersion,
                 preprocessorSymbols: PreprocessorSymbols
-            );
+            ).WithFeatures(_features);
             return CSharpSyntaxTree.ParseText(code, options);
         }
 

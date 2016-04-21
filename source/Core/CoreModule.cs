@@ -4,11 +4,13 @@ using System.Linq;
 using Autofac;
 using TryRoslyn.Core.Decompilation;
 using TryRoslyn.Core.Processing;
+using TryRoslyn.Core.Processing.Internal;
 using TryRoslyn.Core.Processing.Languages;
 
 namespace TryRoslyn.Core {
     public class CoreModule : Module {
         protected override void Load(ContainerBuilder builder) {
+            builder.RegisterType<CSharpFeatures>().As<ICSharpFeatures>().SingleInstance();
             builder.RegisterType<CSharpLanguage>().As<IRoslynLanguage>().SingleInstance();
             builder.RegisterType<VBNetLanguage>().As<IRoslynLanguage>().SingleInstance();
             builder.RegisterType<CSharpDecompiler>().As<IDecompiler>().SingleInstance();
