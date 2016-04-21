@@ -1,7 +1,7 @@
 /* globals module:false, require:false, process:false */
-const webpack = require('webpack');
+var webpack = require('webpack');
 
-const plugins = [];
+var plugins = [];
 if (process.env.NODE_ENV === 'production') {
     plugins.push(new webpack.optimize.UglifyJsPlugin());
 }

@@ -1,13 +1,13 @@
 /* global require:false */
 
 "use strict";
-const gulp = require('gulp');
-const plumber = require('gulp-plumber');
-const uglify = require('gulp-uglify');
-const g = require('gulp-load-plugins')();
-const htmlreplace = require('gulp-html-replace');
-const webpack = require('webpack-stream');
-const assign = require('object-assign');
+var gulp = require('gulp');
+var plumber = require('gulp-plumber');
+var uglify = require('gulp-uglify');
+var g = require('gulp-load-plugins')();
+var htmlreplace = require('gulp-html-replace');
+var webpack = require('webpack-stream');
+var assign = require('object-assign');
 
 gulp.task('less', function () {
     return gulp
@@ -19,7 +19,7 @@ gulp.task('less', function () {
 });
 
 gulp.task('js', function () {
-    let config = require('./webpack.config.js');
+    var config = require('./webpack.config.js');
     assign(config.output, {
         filename: "app.min.js"
     });
