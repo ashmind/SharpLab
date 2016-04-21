@@ -4,7 +4,7 @@ using System.Linq;
 using Autofac;
 using TryRoslyn.Core.Decompilation;
 using TryRoslyn.Core.Processing;
-using TryRoslyn.Core.Processing.RoslynSupport;
+using TryRoslyn.Core.Processing.Languages;
 
 namespace TryRoslyn.Core {
     public class CoreModule : Module {

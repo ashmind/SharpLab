@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 
-namespace TryRoslyn.Core.Processing.RoslynSupport {
+namespace TryRoslyn.Core.Processing.Languages {
     [ThreadSafe]
     public class VBNetLanguage : IRoslynLanguage {
         private static readonly LanguageVersion MaxLanguageVersion = Enum

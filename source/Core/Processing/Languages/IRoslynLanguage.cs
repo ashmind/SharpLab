@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 
-namespace TryRoslyn.Core.Processing.RoslynSupport {
+namespace TryRoslyn.Core.Processing.Languages {
     [ThreadSafe]
     public interface IRoslynLanguage {
         LanguageIdentifier Identifier { get; }

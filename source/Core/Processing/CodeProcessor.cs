@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using TryRoslyn.Core.Decompilation;
-using TryRoslyn.Core.Processing.RoslynSupport;
+using TryRoslyn.Core.Processing.Languages;
 
 namespace TryRoslyn.Core.Processing {
     [ThreadSafe]

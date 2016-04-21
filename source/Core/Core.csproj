@@ -104,8 +104,8 @@
     <Compile Include="Decompilation\VBNetDecompiler.cs" />
     <Compile Include="Decompilation\CSharpDecompiler.cs" />
     <Compile Include="Decompilation\Support\CustomizableIndentPlainTextOutput.cs" />
-    <Compile Include="Processing\RoslynSupport\VBNetLanguage.cs" />
-    <Compile Include="Processing\RoslynSupport\IRoslynLanguage.cs" />
+    <Compile Include="Processing\Languages\VBNetLanguage.cs" />
+    <Compile Include="Processing\Languages\IRoslynLanguage.cs" />
     <Compile Include="Processing\CodeProcessor.cs" />
     <Compile Include="Decompilation\Support\DecompiledPseudoCSharpOutputVisitor.cs" />
     <Compile Include="Decompilation\Support\OverridableCSharpOutputVisitor.cs" />
@@ -114,7 +114,7 @@
     <Compile Include="ICodeProcessor.cs" />
     <Compile Include="Decompilation\IDecompiler.cs" />
     <Compile Include="ProcessingResult.cs" />
-    <Compile Include="Processing\RoslynSupport\CSharpLanguage.cs" />
+    <Compile Include="Processing\Languages\CSharpLanguage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProcessingResultDiagnosticLocation.cs" />
   </ItemGroup>

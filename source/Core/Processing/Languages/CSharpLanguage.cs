@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CSharp.RuntimeBinder;
 
-namespace TryRoslyn.Core.Processing.RoslynSupport {
+namespace TryRoslyn.Core.Processing.Languages {
     [ThreadSafe]
     public class CSharpLanguage : IRoslynLanguage {
         private static readonly LanguageVersion MaxLanguageVersion = Enum
