@@ -39,13 +39,6 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
             public static readonly TEnum MaxValue = Enumerable.Cast<TEnum>(Enum.GetValues(typeof(TEnum))).Max();
         }
 
-        public SyntaxTree ParseText<TParseOptions>(Type syntaxTreeType, string code, TParseOptions options)
-            where TParseOptions: ParseOptions
-        {
-            return GetDelegate<Func<string, TParseOptions, SyntaxTree>>(syntaxTreeType.Name + ".ParseText", syntaxTreeType, "ParseText")
-                        .Invoke(code, options);
-        }
-
         public EmitResult Emit(Compilation compilation, Stream stream) {
             return GetDelegate<Func<Compilation, Stream, EmitResult>>("Compilation.Emit", typeof(Compilation), "Emit").Invoke(compilation, stream);
         }

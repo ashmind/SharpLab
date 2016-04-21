@@ -10,10 +10,6 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
     [ThreadSafe, Obsolete]
     public interface IRoslynAbstraction {
         [Pure, Obsolete]
-        SyntaxTree ParseText<TParseOptions>(Type syntaxTreeType, string code, TParseOptions options)
-            where TParseOptions : ParseOptions;
-
-        [Pure, Obsolete]
         EmitResult Emit(Compilation compilation, Stream stream);
 
         [Pure, Obsolete]

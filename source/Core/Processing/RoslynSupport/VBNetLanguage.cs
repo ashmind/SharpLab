@@ -30,7 +30,7 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
                 kind: kind,
                 languageVersion: MaxLanguageVersion
             );
-            return _roslynAbstraction.ParseText(typeof(VisualBasicSyntaxTree), code, options);
+            return VisualBasicSyntaxTree.ParseText(code, options);
         }
 
         public Compilation CreateLibraryCompilation(string assemblyName, bool optimizationsEnabled) {

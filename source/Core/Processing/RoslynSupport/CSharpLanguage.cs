@@ -32,7 +32,7 @@ namespace TryRoslyn.Core.Processing.RoslynSupport {
                 languageVersion: MaxLanguageVersion,
                 preprocessorSymbols: PreprocessorSymbols
             );
-            return _roslynAbstraction.ParseText(typeof(CSharpSyntaxTree), code, options);
+            return CSharpSyntaxTree.ParseText(code, options);
         }
 
         public Compilation CreateLibraryCompilation(string assemblyName, bool optimizationsEnabled) {
