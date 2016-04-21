@@ -71,7 +71,6 @@
   <ItemGroup>
     <Compile Include="AssertGold.cs" />
     <Compile Include="CodeProcessorTests.cs" />
-    <EmbeddedResource Include="TestCode\Constructor.ArgumentAssignedToField.cs2cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

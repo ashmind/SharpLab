@@ -20,7 +20,6 @@ namespace TryRoslyn.Tests {
 
         [Theory]
         [InlineData("Constructor.BaseCall.cs2cs")]
-        [InlineData("Constructor.ArgumentAssignedToField.cs2cs")]
         [InlineData("NullPropagation.ToTernary.cs2cs")]
         [InlineData("Script.cs2cs")]
         [InlineData("Simple.cs2il")]
@@ -74,6 +73,7 @@ namespace TryRoslyn.Tests {
             return new ProcessingOptions {
                 SourceLanguage = LanguageMap[fromTo[0]],
                 TargetLanguage = LanguageMap[fromTo[1]],
+                OptimizationsEnabled = true,
                 ScriptMode = scriptMode
             };
         }

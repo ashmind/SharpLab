@@ -6,9 +6,11 @@ End Class
 ?=>
 
 Imports System
+Imports System.Diagnostics
 Imports System.Reflection
 Imports System.Runtime.CompilerServices
 <Assembly: AssemblyVersion("0.0.0.0")>
+<Assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)>
 <Assembly: CompilationRelaxations(8)>
 <Assembly: RuntimeCompatibility(WrapNonExceptionThrows = True)>
 Public Class C
