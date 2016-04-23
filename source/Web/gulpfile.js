@@ -2,19 +2,19 @@
 
 'use strict';
 var gulp = require('gulp');
-var plumber = require('gulp-plumber');
-var uglify = require('gulp-uglify');
 var g = require('gulp-load-plugins')();
-var htmlreplace = require('gulp-html-replace');
 var webpack = require('webpack-stream');
 var assign = require('object-assign');
 
 gulp.task('less', function () {
     return gulp
         .src('./less/app.less')
+        // this doesn't really work properly, e.g. https://github.com/ai/autoprefixer-core/issues/27
         .pipe(g.sourcemaps.init())
         .pipe(g.less())
-        .pipe(g.autoprefixer({ browsers: ['last 2 versions'], cascade: false }))
+        .pipe(g.autoprefixer({ cascade: false }))
+        .pipe(g.cleanCss({ processImport: false }))
+        .pipe(g.rename('app.min.css'))
         .pipe(g.sourcemaps.write('.'))
         .pipe(gulp.dest('wwwroot'));
 });
@@ -31,7 +31,7 @@ gulp.task('js', function () {
 gulp.task('html', function () {
     return gulp
         .src('./index.html')
-        .pipe(htmlreplace({ js: 'app.min.js', css: 'app.css' }))
+        .pipe(g.htmlReplace({ js: 'app.min.js', css: 'app.min.css' }))
         .pipe(gulp.dest('wwwroot'));
 });
 
