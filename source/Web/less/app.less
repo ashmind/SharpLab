@@ -1,9 +1,52 @@
+@import 'https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.0/normalize.min.css';
+
 @import (inline) '../node_modules/codemirror/lib/codemirror.css';
 @import (inline) '../node_modules/codemirror/addon/lint/lint.css';
 
 @import '../legacy/app.less';
-@import 'imports/loader.less';
+@import 'imports/forms.less';
+
+section header {
+    position: relative;
+    display: flex;
+    padding: 5px;
+    padding-left: 7px;
+    color: #fff;
+    background-color: @primary-color;
+}
+
+section h1 {
+    display: inline;
+    margin-top: auto;
+    margin-bottom: auto;
+
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 100%;
+    font-weight: normal;
+}
+
+.languages-and-modes {
+    white-space: nowrap;
+    > * {
+        display: inline-block;
+    }
+}
+
+.languages-and-modes, .option-target-language {
+    margin-left: 10px;
+}
+
+.option-mode {
+    margin-left: 5px;
+}
+
+.option-branch, .option-optimizations {
+    margin-left: auto;
+}
 
 .loading .content > :not(.loader) {
     opacity: 0.5;
 }
+
+@import 'imports/loader.less';
+@import 'imports/mobile.less';

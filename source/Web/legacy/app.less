@@ -1,5 +1,5 @@
-@import url(http://fonts.googleapis.com/css?family=Open+Sans);
-@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+@import url(https://fonts.googleapis.com/css?family=Roboto+Condensed);
 
 @import 'styles/common.less';
 
@@ -62,67 +62,6 @@ section {
   > * {
     width: 100%;
   }
-}
-
-section header {
-  position: relative;
-  .display-flex();
-  padding: 5px;
-  padding-left: 7px;
-  color: #fff;
-  background-color: @normal-background-color;
-
-  h1 {
-    font-family: 'Roboto Condensed', sans-serif;
-  }
-
-  select {
-    font-family: 'Roboto Condensed', sans-serif;
-    background: transparent;
-    outline: none;
-    border: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    padding-right: 10px;
-  }
-
-  .select-wrapper {
-    position: relative;
-    border: 1px solid #fff;
-
-    &::after {
-      content: '▾';
-      position: absolute;
-      right: 2px;
-      top: 0;
-      pointer-events: none;
-    }
-  }
-
-  > .select-wrapper {
-    position: absolute;
-    margin-top: -2px;
-  }
-
-  option {
-    color: #000;
-    background-color: #fff;
-  }
-
-  a {
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-  }
-}
-
-section h1 {
-  display: inline;
-  margin: 0;
-
-  font-size: 100%;
-  font-weight: normal;
 }
 
 section header,
@@ -199,33 +138,6 @@ section {
 .section-group {
   .display-flex();
   .flex-direction(column);
-}
-
-.languages-and-modes {
-  position: absolute;
-  margin-top: -2px;
-  white-space: nowrap;
-  margin-left: 10px;
-
-  > * {
-    display: inline-block;
-  }
-}
-
-.option-mode {
-  margin-left: 5px;
-}
-
-.option-branch {
-  right: 5px;
-}
-
-.option-target-language {
-  margin-left: 8px;
-}
-
-.option-optimizations {
-  right: 5px;
 }
 
 .code {
@@ -340,5 +252,3 @@ textarea, .CodeMirror {
 .CodeMirror-linenumber {
   padding-left: 0;
 }
-
-@import 'styles/mobile.less';

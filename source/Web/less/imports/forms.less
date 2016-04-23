@@ -1,0 +1,26 @@
+select {
+    font-family: 'Roboto Condensed', sans-serif;
+    background: transparent;
+    outline: none;
+    border: none;
+    appearance: none;
+    padding: 1px 15px 1px 5px;
+}
+
+option {
+    color: #000;
+    background-color: #fff;
+}
+
+.select-wrapper {
+    position: relative;
+    border: 1px solid #fff;
+
+    &::after {
+        content: '▾';
+        position: absolute;
+        right: 2px;
+        top: 0;
+        pointer-events: none;
+    }
+}

@@ -1,6 +1,6 @@
 /* global require:false */
 
-"use strict";
+'use strict';
 var gulp = require('gulp');
 var plumber = require('gulp-plumber');
 var uglify = require('gulp-uglify');
@@ -14,15 +14,14 @@ gulp.task('less', function () {
         .src('./less/app.less')
         .pipe(g.sourcemaps.init())
         .pipe(g.less())
+        .pipe(g.autoprefixer({ browsers: ['last 2 versions'], cascade: false }))
         .pipe(g.sourcemaps.write('.'))
         .pipe(gulp.dest('wwwroot'));
 });
 
 gulp.task('js', function () {
     var config = require('./webpack.config.js');
-    assign(config.output, {
-        filename: "app.min.js"
-    });
+    assign(config.output, { filename: 'app.min.js' });
     return gulp
         .src('./js/app.js')
         .pipe(webpack(config))
