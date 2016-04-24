@@ -89,7 +89,7 @@ async function createAppAsync() {
             il:     ''
         },
 
-        branches: null,
+        branchGroups: [],
         branch: null,
 
         loading: false,
@@ -103,13 +103,24 @@ async function createAppAsync() {
     });
     state.load(app);
 
-    let branchesPromise = (async () => {
-        app.branches = await getBranchesAsync();
+    const branchesPromise = (async () => {
+        const branches = await getBranchesAsync();
+        const groups = {};
+        for (let branch of branches) {
+            let group = groups[branch.group];
+            if (!group) {
+                group = { name: branch.group, branches: [] };
+                groups[branch.group] = group;
+                app.branchGroups.push(group);
+            }
+            group.branches.push(branch);
+        }
+        return branches;
     })();
 
     if (app.options.branchId) {
-        await branchesPromise;
-        app.branch = app.branches.filter(b => b.id === app.options.branchId)[0];
+        const branches = await branchesPromise;
+        app.branch = branches.filter(b => b.id === app.options.branchId)[0];
     }
 
     app.processChangeAsync = processChangeAsync.bind(app);

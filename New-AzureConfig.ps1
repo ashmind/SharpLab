@@ -32,5 +32,5 @@ $json.AppServicePlanName = $appServicePlans[$result].Name
 
 Set-Content '.\!azureconfig.json' (ConvertTo-Json $json)
 
-Write-Host "Saved config at .\!azureconfig.json. Environment variable for build:"
+Write-Host "Saved config at .\!Azure.config.json. Environment variable for build:"
 Write-Host "SET TR_AZURE_PASSWORD_KEY=$([Convert]::ToBase64String($key))"

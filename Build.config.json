@@ -1,0 +1,9 @@
+{
+  "RoslynRepositories": [
+    {
+      "Name":    "dotnet",
+      "Url":     "https://github.com/dotnet/roslyn.git",
+      "Exclude": "^revert|(?:hot|build)fix|\\bmerge\\b|releases/(?:VS2015|Dev14)"
+    }
+  ]
+}

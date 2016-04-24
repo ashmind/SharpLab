@@ -60,13 +60,19 @@ function Ensure-ResolvedPath($path) {
     return Resolve-Path $path
 }
 
+function ConvertTo-Hashtable([PSCustomObject] $object) {
+    $result = @{}
+    $object.PSObject.Properties | % { $result[$_.Name] = $_.Value }    
+    return $result
+}
+
 # Code ------
 try {
     $Host.UI.RawUI.WindowTitle = "TryRoslyn Build" # prevents title > 1024 char errors
 
     #Write-Output "Killing VBCSCompiler instances"
     #taskkill /IM VBCSCompiler.exe /F
-
+    
     Write-Output "Environment:"
     Write-Output "  Current Path:       $(Get-Location)"    
     Write-Output "  Script Root:        $PSScriptRoot"
@@ -80,117 +86,134 @@ try {
     $roslynBuildRoot = Ensure-ResolvedPath "$root\!roslyn"
     Write-Output "  Roslyn Build Root:  $roslynBuildRoot"
 
-    $roslynSourceRoot = Ensure-ResolvedPath "$roslynBuildRoot\root"
-    Write-Output "  Roslyn Source Root: $roslynSourceRoot"
-
     $sitesBuildRoot = Ensure-ResolvedPath "$root\!sites"
     Write-Output "  Sites Build Root:   $sitesBuildRoot"   
 
-    $roslynRepositoryUrl = 'https://github.com/dotnet/roslyn.git'
+    $buildConfig = ConvertFrom-Json (Get-Content "$root\Build.config.json" -Raw)
 
     ${env:$HOME} = $PSScriptRoot
-    Invoke-Git . --version  
+    Invoke-Git . --version
 
     Write-Output "Restoring TryRoslyn packages..."
     &"$PSScriptRoot\#tools\nuget" restore "$sourceRoot\TryRoslyn.sln"
 
-    Write-Output "Updating..."
-    Update-RoslynSource -DirectoryPath $roslynSourceRoot -RepositoryUrl $roslynRepositoryUrl
-
-    Write-Output "Getting branches..."
-    $branchesRaw = @(Invoke-Git $roslynSourceRoot branch --remote)
-    $branches = $branchesRaw |
-        ? { $_ -notmatch '^\s+origin/HEAD' } |
-        % { ($_ -match 'origin/(.+)$') | Out-Null; $matches[1] }
-
-    $failedListPath = "$sitesBuildRoot\!failed.txt"    
-    Write-Output "  $branches"
+    $failedListPath = "$sitesBuildRoot\!failed.txt"
     if (Test-Path $failedListPath) {
         Write-Output "Deleting $failedListPath..."
         Remove-Item $failedListPath
     }
-    $branches | % {
-        Write-Output ''
-        Write-Output "*** $_"
-        if ($_ -match '^revert|(?:hot|build)fix|\bmerge\b') {
-            Write-Output "Matches exclusion rule, skipped."
-            return
-        }
 
-        $Host.UI.RawUI.WindowTitle = "TryRoslyn Build: $_"
-        $branchFsName = $_ -replace '[/\\:]', '-'
+    $buildConfig.RoslynRepositories | % {
+        Write-Output "Building repository '$($_.Name)' ($($_.Url))..."
+        $roslynSourceRoot = Ensure-ResolvedPath "$roslynBuildRoot\$($_.Name)"
+        Write-Output "  Roslyn Source Root: $roslynSourceRoot"
+
+        Write-Output "Updating..."
+        Update-RoslynSource -DirectoryPath $roslynSourceRoot -RepositoryUrl $($_.Url)
+
+        Write-Output "Getting branches..."
+        $branchesRaw = @(Invoke-Git $roslynSourceRoot branch --remote)
+        $branches = $branchesRaw |
+            ? { $_ -notmatch '^\s+origin/HEAD' } |
+            % { ($_ -match 'origin/(.+)$') | Out-Null; $matches[1] }
         
-        $siteBuildRoot     = Ensure-ResolvedPath "$sitesBuildRoot\$branchFsName"
-        $roslynBinaryRoot  = Ensure-ResolvedPath "$siteBuildRoot\!roslyn"
-        $siteBuildTempRoot = Ensure-ResolvedPath "$siteBuildRoot\!temp"
-        $siteCopyRoot      = Ensure-ResolvedPath "$siteBuildRoot\!site"
+        $repositoryConfig = ConvertTo-Hashtable $_
+        $repositoryName = $repositoryConfig.Name
+        $include = $repositoryConfig['Include']
+        $exclude = $repositoryConfig['Exclude']
+        
+        Write-Output "  $branches"
+        $branches | % {
+            Write-Output ''
+            Write-Output "*** $repositoryName`: $_"
+            if ($include -and $_ -notmatch $include) {
+                Write-Output "Does not match inclusion rules, skipped."
+                return
+            }
+            if ($exclude -and $_ -match $exclude) {
+                Write-Output "Matches exclusion rule, skipped."
+                return
+            }
 
-        try {
-            Write-Output "  Copying $sourceRoot => $siteBuildRoot"
-            robocopy $sourceRoot $siteBuildRoot /njh /njs /ndl /np /ns /xo /e /purge `
-                /xd "$roslynBinaryRoot" "$siteCopyRoot" "$siteBuildTempRoot" "$sourceRoot\Web"
-            Write-Output ""
+            $Host.UI.RawUI.WindowTitle = "TryRoslyn Build: $_"
+            $branchFsName = $_ -replace '[/\\:]', '-'
+            if ($repositoryName -ne 'dotnet') {
+                $branchFsName = $repositoryName + "-" + $branchFsName
+            }
+            
+            $siteBuildRoot     = Ensure-ResolvedPath "$sitesBuildRoot\$branchFsName"
+            $roslynBinaryRoot  = Ensure-ResolvedPath "$siteBuildRoot\!roslyn"
+            $siteBuildTempRoot = Ensure-ResolvedPath "$siteBuildRoot\!temp"
+            $siteCopyRoot      = Ensure-ResolvedPath "$siteBuildRoot\!site"
 
-            Push-Location $roslynBuildRoot
             try {
-                &$BuildRoslynBranch -SourceRoot $roslynSourceRoot -BranchName $_ -OutputRoot $roslynBinaryRoot
-            }
-            finally {
-                Pop-Location
-            }
+                Write-Output "  Copying $sourceRoot => $siteBuildRoot"
+                robocopy $sourceRoot $siteBuildRoot /njh /njs /ndl /np /ns /xo /e /purge `
+                    /xd "$roslynBinaryRoot" "$siteCopyRoot" "$siteBuildTempRoot" "$sourceRoot\Web"
+                Write-Output ""
 
-            Write-Output "Getting branch info..."
-            $branchInfo = @{
-                name    = $_
-                commits = @(@{
-                    hash    =  (Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%H" )
-                    date    =  (Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%aI")
-                    author  =  (Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%aN")
-                    message = @(Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%B" ) -join "`r`n"
-                })
-            }
-            Set-Content "$roslynBinaryRoot\!BranchInfo.json" (ConvertTo-Json $branchInfo -Depth 100)
+                Push-Location $roslynBuildRoot
+                try {
+                    &$BuildRoslynBranch -SourceRoot $roslynSourceRoot -BranchName $_ -OutputRoot $roslynBinaryRoot
+                }
+                finally {
+                    Pop-Location
+                }
 
-            Push-Location $siteBuildRoot
-            try {
-                $buildLogPath = "$siteBuildRoot\!build.log"
+                Write-Output "Getting branch info..."
+                $branchInfo = @{
+                    name    = $_
+                    repository = $repositoryConfig.Name
+                    commits = @(@{
+                        hash    =  (Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%H" )
+                        date    =  (Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%aI")
+                        author  =  (Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%aN")
+                        message = @(Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%B" ) -join "`r`n"
+                    })
+                }
+                Set-Content "$roslynBinaryRoot\!BranchInfo.json" (ConvertTo-Json $branchInfo -Depth 100)
 
-                Write-Output "Rewriting *.csproj files..."
-                Get-ChildItem *.csproj -Recurse -ErrorAction SilentlyContinue | % {
-                    Rewrite-ProjectReferences $_ @{
-                        'Microsoft.CodeAnalysis'             = "$roslynBinaryRoot\Microsoft.CodeAnalysis.dll"
-                        'Microsoft.CodeAnalysis.CSharp'      = "$roslynBinaryRoot\Microsoft.CodeAnalysis.CSharp.dll"
-                        'Microsoft.CodeAnalysis.VisualBasic' = "$roslynBinaryRoot\Microsoft.CodeAnalysis.VisualBasic.dll"
+                Push-Location $siteBuildRoot
+                try {
+                    $buildLogPath = "$siteBuildRoot\!build.log"
+
+                    Write-Output "Rewriting *.csproj files..."
+                    Get-ChildItem *.csproj -Recurse -ErrorAction SilentlyContinue | % {
+                        Rewrite-ProjectReferences $_ @{
+                            'Microsoft.CodeAnalysis'             = "$roslynBinaryRoot\Microsoft.CodeAnalysis.dll"
+                            'Microsoft.CodeAnalysis.CSharp'      = "$roslynBinaryRoot\Microsoft.CodeAnalysis.CSharp.dll"
+                            'Microsoft.CodeAnalysis.VisualBasic' = "$roslynBinaryRoot\Microsoft.CodeAnalysis.VisualBasic.dll"
+                        }
+                        Write-Output "  $($_.Name)"
                     }
-                    Write-Output "  $($_.Name)"
+
+                    Write-Output "Building Web.Api.csproj..."
+                    &$MSBuild Web.Api\Web.Api.csproj > $buildLogPath `
+                        /p:OutputPath="""$siteCopyRoot\bin\\""" `
+                        /p:IntermediateOutputPath="""$siteBuildTempRoot\\""" `
+                        /p:AllowedReferenceRelatedFileExtensions=.pdb
+
+                    if ($LastExitCode -ne 0) {
+                        throw New-Object BranchBuildException("Build failed, see $buildLogPath", $buildLogPath)
+                    }
+
+                    Copy-Item "Web.Api\Global.asax" "$siteCopyRoot\Global.asax" -Force
+                    Copy-Item "Web.Api\Web.config" "$siteCopyRoot\Web.config" -Force
+                    Write-Output "TryRoslyn build done."
+                }
+                finally {
+                    Pop-Location
+                }
+            }
+            catch {
+                $ex = $_.Exception
+                if ($ex -isnot [BranchBuildException]) {
+                    throw
                 }
 
-                Write-Output "Building Web.Api.csproj..."
-                &$MSBuild Web.Api\Web.Api.csproj > $buildLogPath `
-                    /p:OutputPath="""$siteCopyRoot\bin\\""" `
-                    /p:IntermediateOutputPath="""$siteBuildTempRoot\\""" `
-                    /p:AllowedReferenceRelatedFileExtensions=.pdb
-
-                if ($LastExitCode -ne 0) {
-                    throw New-Object BranchBuildException("Build failed, see $buildLogPath", $buildLogPath)
-                }
-
-                Copy-Item "Web.Api\Global.asax" "$siteCopyRoot\Global.asax" -Force
-                Copy-Item "Web.Api\Web.config" "$siteCopyRoot\Web.config" -Force
-                Write-Output "TryRoslyn build done."
+                Write-Output "  [WARNING] $($ex.Message)"
+                Add-Content $failedListPath @("$branchFsName ($repositoryName)", $ex.Message, '')
             }
-            finally {
-                Pop-Location
-            }
-        }
-        catch {
-            $ex = $_.Exception
-            if ($ex -isnot [BranchBuildException]) {
-                throw
-            }
-
-            Write-Output "  [WARNING] $($ex.Message)"
-            Add-Content $failedListPath @($branchFsName, $ex.Message, '')
         }
     }
 }

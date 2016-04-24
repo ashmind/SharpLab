@@ -38,7 +38,7 @@ try {
     Write-Output "  Sites Build Root:   $sitesBuildRoot"
         
     if ($azure) {
-        $azureConfigPath = ".\!azureconfig.json"
+        $azureConfigPath = ".\!Azure.config.json"
         if (!(Test-Path $azureConfigPath)) {
             throw "Path '$azureConfigPath' was not found."
         }
@@ -82,8 +82,9 @@ try {
         
         # Success!
         $branchesJson += [ordered]@{
-            id = $branchInfo.name -replace '/','-'
+            id = $branchFsName
             name = $branchInfo.name
+            group = $branchInfo.repository
             url = $url
             commits = $branchInfo.commits
         }
@@ -96,8 +97,8 @@ try {
     $brachesJsLocalRoot = "$sourceRoot\Web\wwwroot"
     if (!(Test-Path $brachesJsLocalRoot)) {
         New-Item -ItemType Directory -Path $brachesJsLocalRoot | Out-Null    
-    }    
-    Copy-Item "$sitesBuildRoot\$branchesFileName" "$brachesJsLocalRoot\$branchesFileName"
+    }
+    Copy-Item "$sitesBuildRoot\$branchesFileName" "$brachesJsLocalRoot\$branchesFileName" -Force
 
     if ($azure) {
         &$PublishToAzure `
