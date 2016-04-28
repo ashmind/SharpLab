@@ -12,7 +12,7 @@ function Update-RoslynSource($directoryPath, $repositoryUrl) {
     if (Test-Path "$directoryPath\.git") {
         Invoke-Git $directoryPath config user.email "tryroslyn@github.test"
         Invoke-Git $directoryPath config user.name "TryRoslyn"
-        Invoke-Git $directoryPath fetch origin
+        Invoke-Git $directoryPath fetch --prune origin
     }
     else {
         Invoke-Git . clone $repositoryUrl $directoryPath
@@ -136,10 +136,7 @@ try {
             }
 
             $Host.UI.RawUI.WindowTitle = "TryRoslyn Build: $_"
-            $branchFsName = $_ -replace '[/\\:]', '-'
-            if ($repositoryName -ne 'dotnet') {
-                $branchFsName = $repositoryName + "-" + $branchFsName
-            }
+            $branchFsName = $repositoryName + "-" + ($_ -replace '[/\\:]', '-')
             
             $siteBuildRoot     = Ensure-ResolvedPath "$sitesBuildRoot\$branchFsName"
             $roslynBinaryRoot  = Ensure-ResolvedPath "$siteBuildRoot\!roslyn"

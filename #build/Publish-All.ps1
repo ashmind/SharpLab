@@ -17,8 +17,9 @@ function Login-ToAzure($azureConfig) {
         throw "Azure credentials require TR_AZURE_PASSWORD_KEY to be set."
     }
     $passwordKey = [Convert]::FromBase64String($passwordKey)
-    $password = $azureConfig.Password | ConvertTo-SecureString -Key $passwordKey        
+    $password = $azureConfig.Password | ConvertTo-SecureString -Key $passwordKey
     $credential = New-Object Management.Automation.PSCredential($azureConfig.UserName, $password)
+
     "Logging to Azure as $($azureConfig.UserName)..." | Out-Default
     Login-AzureRmAccount -Credential $credential | Out-Null
 }
@@ -63,7 +64,7 @@ try {
 
         $branchInfo = ConvertFrom-Json ([IO.File]::ReadAllText("$siteRoslynRoot\!BranchInfo.json"))
 
-        $webAppName = "tr-b-dotnet-$($branchFsName.ToLowerInvariant())"
+        $webAppName = "tr-b-$($branchFsName.ToLowerInvariant())"
         $iisSiteName = "$webAppName.tryroslyn.local"
         $url = "http://$iisSiteName"
         &$PublishToIIS -SiteName $iisSiteName -SourcePath $siteMainRoot
@@ -82,7 +83,7 @@ try {
         
         # Success!
         $branchesJson += [ordered]@{
-            id = $branchFsName
+            id = $branchFsName -replace '^dotnet-',''
             name = $branchInfo.name
             group = $branchInfo.repository
             url = $url
