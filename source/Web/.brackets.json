@@ -1,12 +1,4 @@
 {
-    "insertHintOnTab": true,
-    "spaceUnits": 2,
-    "path": {
-        "**.js": {
-            "spaceUnits": 4,
-            "brackets-git.gitPath": "git"
-        }
-    },
     "language": {
         "javascript": {
             "linting.prefer": [
