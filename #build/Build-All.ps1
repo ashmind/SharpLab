@@ -221,8 +221,7 @@ try {
                         Rewrite-Package-Version $_ $packagesMap
                     }
                     
-                    Write-Output "Updating site nuget packages..."
-                    Write-Output "$siteBuildRoot\TryRoslyn.sln"
+                    Write-Output "Restoring site packages..."
                     &"$PSScriptRoot\#tools\nuget" restore "$siteBuildRoot\TryRoslyn.sln"
 
                     Write-Output "Building Web.Api.csproj..."
