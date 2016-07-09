@@ -30,6 +30,29 @@ function Format-Xml($xml) {
     return $stringWriter.ToString()
 }
 
+function Get-Package-Version($path, $lib) {
+    $content = [IO.File]::ReadAllText((Resolve-Path $path))
+    $json = $content | ConvertFrom-Json
+    return $json.dependencies.$lib
+}
+
+function Rewrite-Package-Version($packagesPath, $map) {
+    $content = [IO.File]::ReadAllText((Resolve-Path $packagesPath))
+    $contentXml = [xml]$content
+    $map.GetEnumerator() | % {
+        $name = $_.Key
+        $version = $_.Value
+        Select-Xml $contentXml -XPath '//package' |
+            ? { $_.Node.id -match "^$([regex]::Escape($name))" } |
+            % { $_.Node.version = $version }
+    }
+    $rewritten = Format-Xml $contentXml
+    if ($rewritten -eq $content) {
+        return
+    }
+    Set-Content $packagesPath $rewritten
+}
+
 function Rewrite-ProjectReferences($projectPath, $map) {
     $xmlNamespaces = @{msbuild='http://schemas.microsoft.com/developer/msbuild/2003'}
 
@@ -174,15 +197,32 @@ try {
                 try {
                     $buildLogPath = "$siteBuildRoot\!build.log"
 
-                    Write-Output "Rewriting *.csproj files..."
-                    Get-ChildItem *.csproj -Recurse -ErrorAction SilentlyContinue | % {
-                        Rewrite-ProjectReferences $_ @{
+                    $map = @{
                             'Microsoft.CodeAnalysis'             = "$roslynBinaryRoot\Microsoft.CodeAnalysis.dll"
                             'Microsoft.CodeAnalysis.CSharp'      = "$roslynBinaryRoot\Microsoft.CodeAnalysis.CSharp.dll"
                             'Microsoft.CodeAnalysis.VisualBasic' = "$roslynBinaryRoot\Microsoft.CodeAnalysis.VisualBasic.dll"
                         }
+                    $packagesMap = @{}
+                    $metadataDependencyJsonPath = "$($roslynSourceRoot)\src\Dependencies\Metadata\project.json"
+                    if (Test-Path $metadataDependencyJsonPath) {
+                        $metadataVersion = Get-Package-Version $metadataDependencyJsonPath "System.Reflection.Metadata"
+                        Write-Output "System.Reflection.Metadata $($metadataVersion)"
+                        $map['System.Reflection.Metadata'] = "..\#packages\System.Reflection.Metadata.$($metadataVersion)\lib\portable-net45+win8\System.Reflection.Metadata.dll"
+                        $packagesMap['System.Reflection.Metadata'] = $metadataVersion
+                    }
+                    Write-Output "Rewriting *.csproj files..."
+                    Get-ChildItem *.csproj -Recurse -ErrorAction SilentlyContinue | % {
+                        Rewrite-ProjectReferences $_ $map
                         Write-Output "  $($_.Name)"
                     }
+                    
+                    Write-Output "Rewriting packages.congig files..."
+                    Get-ChildItem packages.config -Recurse -ErrorAction SilentlyContinue | % {
+                        Rewrite-Package-Version $_ $packagesMap
+                    }
+                    
+                    Write-Output "Restoring site packages..."
+                    &"$PSScriptRoot\#tools\nuget" restore "$siteBuildRoot\TryRoslyn.sln"
 
                     Write-Output "Building Web.Api.csproj..."
                     &$MSBuild Web.Api\Web.Api.csproj > $buildLogPath `
