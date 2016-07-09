@@ -30,20 +30,31 @@ function Format-Xml($xml) {
     return $stringWriter.ToString()
 }
 
-function Get-Package-Version($path, $lib) {
-    $content = [IO.File]::ReadAllText((Resolve-Path $path))
+function Get-PackageVersion($projectJsonPath, $name) {
+    $content = [IO.File]::ReadAllText((Resolve-Path $projectJsonPath))
     $json = $content | ConvertFrom-Json
-    return $json.dependencies.$lib
+    return $json.dependencies.$name
 }
 
-function Rewrite-Package-Version($packagesPath, $map) {
+function Map-SystemReflectionMetadata($roslynSourceRoot, $packageVersionMap, $referencePathMap) {
+    $dependencyJsonPath = "$($roslynSourceRoot)\src\Dependencies\Metadata\project.json"
+    if (!(Test-Path $dependencyJsonPath)) {
+        return
+    }
+
+    $version = Get-PackageVersion $dependencyJsonPath "System.Reflection.Metadata"
+    $referencePathMap['System.Reflection.Metadata'] = "..\#packages\System.Reflection.Metadata.$version\lib\portable-net45+win8\System.Reflection.Metadata.dll"
+    $packageVersionMap['System.Reflection.Metadata'] = $version
+}
+
+function Rewrite-PackageVersions($packagesPath, $map) {
     $content = [IO.File]::ReadAllText((Resolve-Path $packagesPath))
     $contentXml = [xml]$content
     $map.GetEnumerator() | % {
         $name = $_.Key
         $version = $_.Value
         Select-Xml $contentXml -XPath '//package' |
-            ? { $_.Node.id -match "^$([regex]::Escape($name))" } |
+            ? { $_.Node.id -eq $name } |
             % { $_.Node.version = $version }
     }
     $rewritten = Format-Xml $contentXml
@@ -197,28 +208,28 @@ try {
                 try {
                     $buildLogPath = "$siteBuildRoot\!build.log"
 
-                    $map = @{
-                            'Microsoft.CodeAnalysis'             = "$roslynBinaryRoot\Microsoft.CodeAnalysis.dll"
-                            'Microsoft.CodeAnalysis.CSharp'      = "$roslynBinaryRoot\Microsoft.CodeAnalysis.CSharp.dll"
-                            'Microsoft.CodeAnalysis.VisualBasic' = "$roslynBinaryRoot\Microsoft.CodeAnalysis.VisualBasic.dll"
-                        }
-                    $packagesMap = @{}
-                    $metadataDependencyJsonPath = "$($roslynSourceRoot)\src\Dependencies\Metadata\project.json"
-                    if (Test-Path $metadataDependencyJsonPath) {
-                        $metadataVersion = Get-Package-Version $metadataDependencyJsonPath "System.Reflection.Metadata"
-                        Write-Output "System.Reflection.Metadata $($metadataVersion)"
-                        $map['System.Reflection.Metadata'] = "..\#packages\System.Reflection.Metadata.$($metadataVersion)\lib\portable-net45+win8\System.Reflection.Metadata.dll"
-                        $packagesMap['System.Reflection.Metadata'] = $metadataVersion
+                    Write-Output "Mapping references..."
+                    $packageVersionMap = @{}
+                    $referencePathMap = @{
+                        'Microsoft.CodeAnalysis'             = "$roslynBinaryRoot\Microsoft.CodeAnalysis.dll"
+                        'Microsoft.CodeAnalysis.CSharp'      = "$roslynBinaryRoot\Microsoft.CodeAnalysis.CSharp.dll"
+                        'Microsoft.CodeAnalysis.VisualBasic' = "$roslynBinaryRoot\Microsoft.CodeAnalysis.VisualBasic.dll"
                     }
+                    Map-SystemReflectionMetadata $roslynSourceRoot $packageVersionMap $referencePathMap
+                    @($packageVersionMap.GetEnumerator(), $referencePathMap.GetEnumerator()) | % { $_ } | % {
+                        Write-Output "  $($_.Key) $($_.Value)"
+                    }
+
+                    Write-Output "Rewriting packages.config files..."
+                    Get-ChildItem packages.config -Recurse -ErrorAction SilentlyContinue | % {
+                        Rewrite-PackageVersions $_ $packageVersionMap
+                        Write-Output "  $($_.Directory.Name)\$($_.Name)"
+                    }
+
                     Write-Output "Rewriting *.csproj files..."
                     Get-ChildItem *.csproj -Recurse -ErrorAction SilentlyContinue | % {
-                        Rewrite-ProjectReferences $_ $map
+                        Rewrite-ProjectReferences $_ $referencePathMap
                         Write-Output "  $($_.Name)"
-                    }
-                    
-                    Write-Output "Rewriting packages.congig files..."
-                    Get-ChildItem packages.config -Recurse -ErrorAction SilentlyContinue | % {
-                        Rewrite-Package-Version $_ $packagesMap
                     }
                     
                     Write-Output "Restoring site packages..."
