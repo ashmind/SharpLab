@@ -17,7 +17,7 @@ $hashMarkerPath = "$outputRoot\!Hash"
 $hashMarkerPathFull = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($hashMarkerPath)
 
 $newHash = (Invoke-Git $sourceRoot log "origin/$branchName" -n 1 --pretty=format:"%H")
-    
+
 if (Test-Path $hashMarkerPath) {
     $oldHash = [IO.File]::ReadAllText($hashMarkerPath)
     if ($oldHash -eq $newHash) {
@@ -37,31 +37,31 @@ if (Test-Path Binaries) {
 
 Write-Output "Building '$branchName'..."
 
-$buildLogPath = "$sourceRoot\..\$branchFsName.build.log"
+$buildLogPath = "$(Resolve-Path "$sourceRoot\..")\$([IO.Path]::GetFileName($sourceRoot))-$branchFsName.build.log"
 if (Test-Path $buildLogPath) {
     Remove-Item $buildLogPath
 }
-    
+
 function Build-Project(
     [Parameter(Mandatory=$true)][string[]] $candidateProjectPaths,
     [string] $msbuildArgs
-) {    
-    $projectPath = @($candidateProjectPaths | ? { Test-Path "$sourceRoot\$_" })[0];        
+) {
+    $projectPath = @($candidateProjectPaths | ? { Test-Path "$sourceRoot\$_" })[0];
     "  $projectPath $msbuildArgs" | Out-Default
-    
+
     $projectPath = "$sourceRoot\$projectPath"
     Invoke-Expression $("&`"$MSBuild`" `"$projectPath`" $msbuildArgs >> `"$buildLogPath`"")
     if ($LastExitCode -ne 0) {
         throw New-Object BranchBuildException("Build failed, see $buildLogPath", $buildLogPath)
     }
 }
-    
+
 function Restore-Packages() {
    #if (Test-Path "$sourceRoot\.nuget\NuGetRestore.ps1") {
-   #    "  .nuget\NuGetRestore.ps1" | Out-Default       
+   #    "  .nuget\NuGetRestore.ps1" | Out-Default
    #     &"$sourceRoot\.nuget\NuGetRestore.ps1"
    #}
-    
+
     Push-Location $sourceRoot
     try {
         if (Test-Path "Restore.cmd") {
@@ -72,7 +72,7 @@ function Restore-Packages() {
             }
             return
         }
-                    
+
         if (Test-Path "BuildAndTest.proj") {
             $buildContent = [IO.File]::ReadAllText((Resolve-Path "BuildAndTest.proj"))
             if ($buildContent -match 'RestorePackages') {
@@ -81,7 +81,7 @@ function Restore-Packages() {
                 return
             }
         }
-        
+
         throw New-Object BranchBuildException("Failed to find a NuGet restore strategy.")
     }
     finally {
@@ -115,5 +115,5 @@ if (Test-Path "$sourceRoot\NuGet.config") {
 
 robocopy "$sourceRoot\Binaries\Debug" $outputRoot /MIR /np
 [IO.File]::WriteAllText($hashMarkerPathFull, $newHash)
-    
+
 Write-Output "  Build completed"

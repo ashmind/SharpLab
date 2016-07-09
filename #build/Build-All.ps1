@@ -89,14 +89,14 @@ function Rewrite-ProjectReferences($projectPath, $map) {
 
 function Ensure-ResolvedPath($path) {
     if (-not (Test-Path $path)) {
-        New-Item -ItemType directory -Path $path | Out-Null    
+        New-Item -ItemType directory -Path $path | Out-Null
     }
     return Resolve-Path $path
 }
 
 function ConvertTo-Hashtable([PSCustomObject] $object) {
     $result = @{}
-    $object.PSObject.Properties | % { $result[$_.Name] = $_.Value }    
+    $object.PSObject.Properties | % { $result[$_.Name] = $_.Value }
     return $result
 }
 
@@ -106,9 +106,9 @@ try {
 
     #Write-Output "Killing VBCSCompiler instances"
     #taskkill /IM VBCSCompiler.exe /F
-    
+
     Write-Output "Environment:"
-    Write-Output "  Current Path:       $(Get-Location)"    
+    Write-Output "  Current Path:       $(Get-Location)"
     Write-Output "  Script Root:        $PSScriptRoot"
 
     $root = Resolve-Path "$PSScriptRoot\.."
@@ -121,7 +121,7 @@ try {
     Write-Output "  Roslyn Build Root:  $roslynBuildRoot"
 
     $sitesBuildRoot = Ensure-ResolvedPath "$root\!sites"
-    Write-Output "  Sites Build Root:   $sitesBuildRoot"   
+    Write-Output "  Sites Build Root:   $sitesBuildRoot"
 
     $buildConfig = ConvertFrom-Json (Get-Content "$root\Build.config.json" -Raw)
 
@@ -150,12 +150,12 @@ try {
         $branches = $branchesRaw |
             ? { $_ -notmatch '^\s+origin/HEAD' } |
             % { ($_ -match 'origin/(.+)$') | Out-Null; $matches[1] }
-        
+
         $repositoryConfig = ConvertTo-Hashtable $_
         $repositoryName = $repositoryConfig.Name
         $include = $repositoryConfig['Include']
         $exclude = $repositoryConfig['Exclude']
-        
+
         Write-Output "  $branches"
         $branches | % {
             Write-Output ''
@@ -171,7 +171,7 @@ try {
 
             $Host.UI.RawUI.WindowTitle = "TryRoslyn Build: $_"
             $branchFsName = $repositoryName + "-" + ($_ -replace '[/\\:]', '-')
-            
+
             $siteBuildRoot     = Ensure-ResolvedPath "$sitesBuildRoot\$branchFsName"
             $roslynBinaryRoot  = Ensure-ResolvedPath "$siteBuildRoot\!roslyn"
             $siteBuildTempRoot = Ensure-ResolvedPath "$siteBuildRoot\!temp"
@@ -231,7 +231,7 @@ try {
                         Rewrite-ProjectReferences $_ $referencePathMap
                         Write-Output "  $($_.Name)"
                     }
-                    
+
                     Write-Output "Restoring site packages..."
                     &"$PSScriptRoot\#tools\nuget" restore "$siteBuildRoot\TryRoslyn.sln"
 
