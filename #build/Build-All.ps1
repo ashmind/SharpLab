@@ -13,6 +13,11 @@ function Update-RoslynSource($directoryPath, $repositoryUrl) {
         Invoke-Git $directoryPath config user.email "tryroslyn@github.test"
         Invoke-Git $directoryPath config user.name "TryRoslyn"
         Invoke-Git $directoryPath fetch --prune origin
+        @(Invoke-Git $directoryPath branch -vv) |
+            ? { $_ -match '\s*(\S+)\s.*: gone\]' } |
+            % { $matches[1] } |
+            % { Invoke-Git $directoryPath branch -D $_ }
+        Invoke-Git $directoryPath gc --auto
     }
     else {
         Invoke-Git . clone $repositoryUrl $directoryPath

@@ -13,8 +13,7 @@ Add-Type @"
 "@ -Language CSharp
 
 function Invoke-Git(
-    [string] $path,
-    [Parameter(ValueFromRemainingArguments=$true)] [string[]] $args
+    [string] $path
 ) {
     $command = ($args | % { "`"$_`"" }) -join ' '
     Push-Location $path
