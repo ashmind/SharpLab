@@ -65,8 +65,8 @@ try {
         $branchInfo = ConvertFrom-Json ([IO.File]::ReadAllText("$siteRoslynRoot\!BranchInfo.json"))
 
         $webAppName = "tr-b-$($branchFsName.ToLowerInvariant())"
-        if ($webAppName.Length -gt 63) {             
-             $webAppName = $webAppName.Substring(0, 60) + "-01"; # no uniqueness check at the moment, we can add later
+        if ($webAppName.Length -gt 60) {
+             $webAppName = $webAppName.Substring(0, 57) + "-01"; # no uniqueness check at the moment, we can add later
              Write-Output "[WARNING] Name is too long, using '$webAppName'."
         }
         
