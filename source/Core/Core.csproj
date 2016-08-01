@@ -76,13 +76,13 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\#packages\System.Collections.Immutable.1.2.0-rc2-24027\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\#packages\System.Collections.Immutable.1.2.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Reflection.Metadata, Version=1.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\#packages\System.Reflection.Metadata.1.3.0-rc2-24027\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+      <HintPath>..\#packages\System.Reflection.Metadata.1.3.0\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
@@ -101,8 +101,9 @@
     <Compile Include="Decompilation\VBNetDecompiler.cs" />
     <Compile Include="Decompilation\CSharpDecompiler.cs" />
     <Compile Include="Decompilation\Support\CustomizableIndentPlainTextOutput.cs" />
-    <Compile Include="Processing\Internal\ICSharpFeatures.cs" />
-    <Compile Include="Processing\Internal\CSharpFeatures.cs" />
+    <Compile Include="Processing\Languages\Internal\IFeatureDiscovery.cs" />
+    <Compile Include="Processing\Languages\Internal\CSharpFeatureDiscovery.cs" />
+    <Compile Include="Processing\Languages\Internal\VBNetFeatureDiscovery.cs" />
     <Compile Include="Processing\Languages\VBNetLanguage.cs" />
     <Compile Include="Processing\Languages\IRoslynLanguage.cs" />
     <Compile Include="Processing\CodeProcessor.cs" />

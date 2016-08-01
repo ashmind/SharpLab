@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
+using TryRoslyn.Core.Processing.Languages.Internal;
 
 namespace TryRoslyn.Core.Processing.Languages {
     [ThreadSafe]
@@ -18,6 +19,11 @@ namespace TryRoslyn.Core.Processing.Languages {
         private readonly IReadOnlyCollection<MetadataReference> _references = new[] {
             MetadataReference.CreateFromFile(typeof(StandardModuleAttribute).Assembly.Location)
         };
+        private readonly IReadOnlyDictionary<string, string> _features;
+
+        public VBNetLanguage(IFeatureDiscovery featureDiscovery) {
+            _features = featureDiscovery.SlowDiscoverAll().ToDictionary(f => f, f => (string)null);
+        }
 
         public LanguageIdentifier Identifier => LanguageIdentifier.VBNet;
 
@@ -25,7 +31,7 @@ namespace TryRoslyn.Core.Processing.Languages {
             var options = new VisualBasicParseOptions(
                 kind: kind,
                 languageVersion: MaxLanguageVersion
-            );
+            ).WithFeatures(_features);
             return VisualBasicSyntaxTree.ParseText(code, options);
         }
 

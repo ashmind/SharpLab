@@ -23,8 +23,6 @@ namespace TryRoslyn.Core.Decompilation {
             }
         }
 
-        public override LanguageIdentifier Language {
-            get { return LanguageIdentifier.CSharp; }
-        }
+        public override LanguageIdentifier Language => LanguageIdentifier.CSharp;
     }
 }

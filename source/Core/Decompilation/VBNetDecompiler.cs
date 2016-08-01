@@ -29,8 +29,6 @@ namespace TryRoslyn.Core.Decompilation {
             }
         }
 
-        public override LanguageIdentifier Language {
-            get { return LanguageIdentifier.VBNet; }
-        }
+        public override LanguageIdentifier Language => LanguageIdentifier.VBNet;
     }
 }

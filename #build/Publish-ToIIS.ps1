@@ -31,10 +31,16 @@ function Register-HostsRecord([string] $hostName, [string] $ip) {
 # So this mostly uses Write-Output for now
 Write-Output "Deploying to IIS, $siteName..."
 
-$appPool = (Get-ChildItem 'IIS:\AppPools\' | ? { $_.Name -eq $siteName })
+$appPoolName = $siteName
+if ($appPoolName.Length -gt 64) {
+    $parts = $appPoolName -split '\.',2
+    $first = $parts[0].Substring(0, $parts[0].Length - ($appPoolName.Length - 64) - 3)
+    $appPoolName = "$first(…).$($parts[1])"
+}
+$appPool = (Get-ChildItem 'IIS:\AppPools\' | ? { $_.Name -eq $appPoolName })
 if (!$appPool) {
     Write-Output "  Creating app pool..."
-    $appPool = New-WebAppPool $siteName
+    $appPool = New-WebAppPool $appPoolName
 }
 else {
     Write-Output "  App pool found."

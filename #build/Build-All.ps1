@@ -175,7 +175,7 @@ try {
             }
 
             $Host.UI.RawUI.WindowTitle = "TryRoslyn Build: $_"
-            $branchFsName = $repositoryName + "-" + ($_ -replace '[/\\:]', '-')
+            $branchFsName = $repositoryName + "-" + ($_ -replace '[/\\:_]', '-')
 
             $siteBuildRoot     = Ensure-ResolvedPath "$sitesBuildRoot\$branchFsName"
             $roslynBinaryRoot  = Ensure-ResolvedPath "$siteBuildRoot\!roslyn"

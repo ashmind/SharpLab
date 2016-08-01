@@ -5,18 +5,9 @@ using System.Reflection;
 using System.Threading;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace TryRoslyn.Core.Processing.Internal {
-    public class CSharpFeatures : ICSharpFeatures {
-        private readonly Lazy<IReadOnlyCollection<string>> _features;
-
-        public CSharpFeatures() {
-            _features = new Lazy<IReadOnlyCollection<string>>(
-                DiscoverAllUncached,
-                LazyThreadSafetyMode.ExecutionAndPublication
-            );
-        }
-
-        private IReadOnlyCollection<string> DiscoverAllUncached() {
+namespace TryRoslyn.Core.Processing.Languages.Internal {
+    public class CSharpFeatureDiscovery : IFeatureDiscovery {
+        public IReadOnlyCollection<string> SlowDiscoverAll() {
             var assembly = typeof(CSharpCompilation).Assembly;
             var messageIdType = assembly.GetType("Microsoft.CodeAnalysis.CSharp.MessageID");
             if (messageIdType == null)
@@ -29,7 +20,7 @@ namespace TryRoslyn.Core.Processing.Internal {
             var requiredFeature = messageIdExtensionsType.GetMethod("RequiredFeature", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             if (requiredFeature == null)
                 return new string[0];
-            
+
             var messageIds = Enum.GetValues(messageIdType).Cast<object>();
             return messageIds
                 .Select(id => (string)requiredFeature.Invoke(null, new[] {id}))
@@ -37,7 +28,5 @@ namespace TryRoslyn.Core.Processing.Internal {
                 .Distinct()
                 .ToList();
         }
-
-        public IReadOnlyCollection<string> DiscoverAll() => _features.Value;
     }
 }
