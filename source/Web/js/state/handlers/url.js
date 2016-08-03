@@ -20,7 +20,7 @@ function loadInternal(onlyIfChanged) {
     if (!hash)
         return null;
 
-    hash = hash.replace(/^#/, '');
+    hash = decodeURIComponent(hash.replace(/^#/, ''));
     if (!hash || (onlyIfChanged && hash === lastHash))
         return null;
 
