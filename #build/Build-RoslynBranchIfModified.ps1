@@ -1,7 +1,8 @@
 param (
     [Parameter(Mandatory=$true)] [string] $sourceRoot,
     [Parameter(Mandatory=$true)] [string] $branchName,
-    [Parameter(Mandatory=$true)] [string] $outputRoot
+    [Parameter(Mandatory=$true)] [string] $outputRoot,
+    [ScriptBlock] $ifBuilt = $null
 )
 
 Set-StrictMode -Version 2.0
@@ -13,7 +14,7 @@ $ProgressPreference = "SilentlyContinue" # https://www.amido.com/powershell-win3
 
 $branchFsName = $branchName -replace '[/\\:_]', '-'
 
-$hashMarkerPath = "$outputRoot\!Hash"
+$hashMarkerPath = "$outputRoot\!BranchHash"
 $hashMarkerPathFull = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($hashMarkerPath)
 
 $newHash = (Invoke-Git $sourceRoot log "origin/$branchName" -n 1 --pretty=format:"%H")
@@ -117,3 +118,7 @@ robocopy "$sourceRoot\Binaries\Debug" $outputRoot /MIR /np
 [IO.File]::WriteAllText($hashMarkerPathFull, $newHash)
 
 Write-Output "  Build completed"
+
+if ($ifBuilt) {
+    &$ifBuilt
+}

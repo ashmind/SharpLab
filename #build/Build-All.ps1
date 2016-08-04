@@ -4,7 +4,7 @@ $ProgressPreference = "SilentlyContinue" # https://www.amido.com/powershell-win3
 
 # Write-Host, Write-Error and Write-Warning do not function properly in Azure
 # So this mostly uses Write-Output for now
-$BuildRoslynBranch = Resolve-Path "$PSScriptRoot\Build-RoslynBranch.ps1"
+$BuildRoslynBranchIfModified = Resolve-Path "$PSScriptRoot\Build-RoslynBranchIfModified.ps1"
 ."$PSScriptRoot\Setup-Build.ps1"
 
 function Update-RoslynSource($directoryPath, $repositoryUrl) {
@@ -33,6 +33,18 @@ function Format-Xml($xml) {
     $xmlWriter.Flush()
 
     return $stringWriter.ToString()
+}
+
+function ConvertTo-Hashtables($inputObject) {    
+    if ($inputObject -isnot [PSObject]) {
+        return $inputObject
+    }
+    
+    $hash = @{}
+    foreach ($property in $inputObject.PSObject.Properties) {
+        $hash[$property.Name] = ConvertTo-Hashtables $property.Value
+    }
+    return $hash
 }
 
 function Get-PackageVersion($projectJsonPath, $name) {
@@ -181,6 +193,8 @@ try {
             $roslynBinaryRoot  = Ensure-ResolvedPath "$siteBuildRoot\!roslyn"
             $siteBuildTempRoot = Ensure-ResolvedPath "$siteBuildRoot\!temp"
             $siteCopyRoot      = Ensure-ResolvedPath "$siteBuildRoot\!site"
+            
+            $branchMapsPath = "$roslynBinaryRoot\!BranchMaps.json"
 
             try {
                 Write-Output "  Copying $sourceRoot => $siteBuildRoot"
@@ -190,50 +204,58 @@ try {
 
                 Push-Location $roslynBuildRoot
                 try {
-                    &$BuildRoslynBranch -SourceRoot $roslynSourceRoot -BranchName $_ -OutputRoot $roslynBinaryRoot
+                    &$BuildRoslynBranchIfModified `
+                        -SourceRoot $roslynSourceRoot `
+                        -BranchName $_ `
+                        -OutputRoot $roslynBinaryRoot `
+                        -IfBuilt {
+                            Write-Output "Getting branch info..."
+                            $branchInfo = @{
+                                name    = $_
+                                repository = $repositoryConfig.Name
+                                commits = @(@{
+                                    hash    =  (Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%H" )
+                                    date    =  (Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%aI")
+                                    author  =  (Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%aN")
+                                    message = @(Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%B" ) -join "`r`n"
+                                })
+                            }
+                            Set-Content "$roslynBinaryRoot\!BranchInfo.json" (ConvertTo-Json $branchInfo -Depth 100)
+                            
+                            Write-Output "Mapping references..."
+                            $packageVersionMap = @{}
+                            $referencePathMap = @{
+                                'Microsoft.CodeAnalysis'             = "$roslynBinaryRoot\Microsoft.CodeAnalysis.dll"
+                                'Microsoft.CodeAnalysis.CSharp'      = "$roslynBinaryRoot\Microsoft.CodeAnalysis.CSharp.dll"
+                                'Microsoft.CodeAnalysis.VisualBasic' = "$roslynBinaryRoot\Microsoft.CodeAnalysis.VisualBasic.dll"
+                            }
+                            Map-SystemReflectionMetadata $roslynSourceRoot $packageVersionMap $referencePathMap
+                            Set-Content $branchMapsPath (ConvertTo-Json @{packageVersions=$packageVersionMap; referencePaths=$referencePathMap} -Depth 100)
+                        }
                 }
                 finally {
                     Pop-Location
                 }
 
-                Write-Output "Getting branch info..."
-                $branchInfo = @{
-                    name    = $_
-                    repository = $repositoryConfig.Name
-                    commits = @(@{
-                        hash    =  (Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%H" )
-                        date    =  (Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%aI")
-                        author  =  (Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%aN")
-                        message = @(Invoke-Git $roslynSourceRoot log "$_" -n 1 --pretty=format:"%B" ) -join "`r`n"
-                    })
-                }
-                Set-Content "$roslynBinaryRoot\!BranchInfo.json" (ConvertTo-Json $branchInfo -Depth 100)
-
                 Push-Location $siteBuildRoot
                 try {
                     $buildLogPath = "$siteBuildRoot\!build.log"
 
-                    Write-Output "Mapping references..."
-                    $packageVersionMap = @{}
-                    $referencePathMap = @{
-                        'Microsoft.CodeAnalysis'             = "$roslynBinaryRoot\Microsoft.CodeAnalysis.dll"
-                        'Microsoft.CodeAnalysis.CSharp'      = "$roslynBinaryRoot\Microsoft.CodeAnalysis.CSharp.dll"
-                        'Microsoft.CodeAnalysis.VisualBasic' = "$roslynBinaryRoot\Microsoft.CodeAnalysis.VisualBasic.dll"
-                    }
-                    Map-SystemReflectionMetadata $roslynSourceRoot $packageVersionMap $referencePathMap
-                    @($packageVersionMap.GetEnumerator(), $referencePathMap.GetEnumerator()) | % { $_ } | % {
+                    Write-Output "Loading reference maps..."
+                    $referenceMaps = ConvertTo-Hashtables (ConvertFrom-Json (Get-Content $branchMapsPath -Raw))
+                    @($referenceMaps.packageVersions.GetEnumerator(), $referenceMaps.referencePaths.GetEnumerator()) | % { $_ } | % {
                         Write-Output "  $($_.Key) $($_.Value)"
                     }
 
                     Write-Output "Rewriting packages.config files..."
                     Get-ChildItem packages.config -Recurse -ErrorAction SilentlyContinue | % {
-                        Rewrite-PackageVersions $_ $packageVersionMap
+                        Rewrite-PackageVersions $_ $referenceMaps.packageVersions
                         Write-Output "  $($_.Directory.Name)\$($_.Name)"
                     }
 
                     Write-Output "Rewriting *.csproj files..."
                     Get-ChildItem *.csproj -Recurse -ErrorAction SilentlyContinue | % {
-                        Rewrite-ProjectReferences $_ $referencePathMap
+                        Rewrite-ProjectReferences $_ $referenceMaps.referencePaths
                         Write-Output "  $($_.Name)"
                     }
 
