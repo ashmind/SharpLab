@@ -40,7 +40,7 @@ async function processChangeAsync(code, applyAnnotations) {
         this.result = {
             success: false,
             errors: [
-                { message: report, start: {}, end: {}, severity: 'error' }
+                { message: report }
             ]
         };
     }
@@ -62,21 +62,24 @@ function updateAnnotations() {
         return;
 
     const annotations = [];
-    const push = array => {
+    const push = (array, severity) => {
         if (!array)
             return;
 
         for (let item of array) {
+            if (!item.start && !item.end) // e.g. system error
+                continue;
+
             annotations.push({
-                severity: item.severity.toLowerCase(),
+                severity: severity.toLowerCase(),
                 message: item.message,
                 from: CodeMirror.Pos(item.start.line, item.start.column),
                 to: CodeMirror.Pos(item.end.line, item.end.column)
             });
         }
     }
-    push(this.result.errors);
-    push(this.result.warnings);
+    push(this.result.errors,   'error');
+    push(this.result.warnings, 'warning');
 
     savedApplyAnnotations(annotations);
 }

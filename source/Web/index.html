@@ -116,7 +116,7 @@
             <app-loader></app-loader>
             <ul>
               <li v-for="error in result.errors">
-                <app-diagnostic v-bind:model="error"></app-diagnostic>
+                <app-diagnostic v-bind:model="error" severity="error"></app-diagnostic>
               </li>
             </ul>
           </div>
@@ -129,7 +129,7 @@
           <div class="content">
             <ul>
               <li v-for="warning in result.warnings">
-                <app-diagnostic v-bind:model="warning"></app-diagnostic>
+                <app-diagnostic v-bind:model="warning" severity="warning"></app-diagnostic>
               </li>
             </ul>
           </div>
