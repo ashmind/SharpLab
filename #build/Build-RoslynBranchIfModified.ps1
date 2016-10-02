@@ -110,6 +110,9 @@ $vbCandidates = @(
 );
 Build-Project $vbCandidates "$standardArgs /p:IldasmPath=`"$(Resolve-Path "!tools\ildasm.exe")`""
 
+# This pulls NuGet package dlls (e.g. System.IO.FileSystem) into bin, no idea why this specifically
+Build-Project "src\Test\Utilities\Portable.FX45\TestUtilities.FX45.csproj" $standardArgs
+
 if (Test-Path "$sourceRoot\NuGet.config") {
     Remove-Item "$sourceRoot\NuGet.config"
 }
