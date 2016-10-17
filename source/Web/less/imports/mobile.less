@@ -4,13 +4,14 @@
     display: none;
 }
 
-@media screen and (orientation: portrait) and (max-device-width: 1200px),
-       screen and (orientation: portrait) and (max-width: 1200px) {
+@media screen and (orientation: portrait) and (max-device-width: 1600px),
+       screen and (orientation: portrait) and (max-width: 1600px) {
     main {
         flex-direction: column;
 
         > * {
-            flex: 1 0 auto;
+            width: auto;
+            height: 0;
         }
     }
 
@@ -23,8 +24,8 @@
     }
 }
 
-@media screen and (orientation: portrait) and (max-device-width: 600px),
-       screen and (orientation: portrait) and (max-width: 600px) {
+@media screen and (orientation: portrait) and (max-device-width: 700px),
+       screen and (orientation: portrait) and (max-width: 700px) {
 
     .mobile-menu-button {
         display: inline-block;
@@ -34,11 +35,13 @@
         margin-right: 5px;
         background: linear-gradient(
             to bottom,
-            white, white 20%,
-            transparent 20%, transparent 40%,
-            white 40%, white 60%,
-            transparent 60%, transparent 80%,
-            white 80%, white 100%
+            transparent 0%, transparent 10%,
+            white 10%, white 20%,
+            transparent 20%, transparent 45%,
+            white 45%, white 55%,
+            transparent 55%, transparent 80%,
+            white 80%, white 90%,
+            transparent 90%, transparent 100%
         );
 
         input[type=button]& {
@@ -73,24 +76,21 @@
 
     .mobile-menu-open {
         @menu-width: 40%;
+        @header-height: 1.7em;
 
         .mobile-menu {
             display: block;
             position: absolute;
             left: 0;
-            top: 0;
-            height: 100%;
+            top: @header-height;
             width: @menu-width;
+            bottom: 0;
             background-color: @primary-color;
             z-index: 5;
         }
 
-        .content {
-            padding-left: @menu-width;
-        }
-
         .CodeMirror {
-            padding-left: ~"calc(@{menu-width} + 25px + 28px)";
+            left: @menu-width;
         }
 
         header .option {
@@ -106,7 +106,7 @@
             width: 100%;
         }
 
-        @option-top-margin: 2.2em;
+        @option-top-margin: @header-height+0.5em;
         @option-margin-multiplier: 2em;
         .option-language, .option-target-language {
             top: @option-top-margin + 0*@option-margin-multiplier;

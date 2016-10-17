@@ -15,7 +15,7 @@
       <div class="section-group">
         <section class="code">
           <header>
-            <input class="mobile-menu-button" type="button" />
+            <button class="mobile-menu-button"></button>
             <h1>Code</h1>
             <div class="languages-and-modes">
               <div class="select-wrapper option-language option">
@@ -41,11 +41,12 @@
                 </optgroup>
               </select>
             </div>
+
+            <app-mobile-shelf class="mobile-menu"
+                              toggle=".code .mobile-menu-button"
+                              container=".code"
+                              open-class="mobile-menu-open"></app-mobile-shelf>
           </header>
-          <app-mobile-shelf class="mobile-menu"
-                            toggle=".code .mobile-menu-button"
-                            container=".code"
-                            open-class="mobile-menu-open"></app-mobile-shelf>
           <div class="content">
             <app-codemirror v-bind:value="code"
                             v-bind:mode="codeMirrorModes[options.language]"
@@ -58,7 +59,7 @@
           </div>
         </section>
 
-        <section v-if="branch" class="info-only non-code">
+        <section v-if="branch" class="info-only branch-info non-code">
           <header>
             <h1>Branch {{branch.name}}, last commit</h1>
           </header>
@@ -76,7 +77,7 @@
       <div class="section-group results" v-bind:class="{loading: loading}">
         <section v-show="result.success" class="decompiled">
           <header>
-            <input class="mobile-menu-button" type="button"/>
+            <button class="mobile-menu-button"></button>
             <h1>Decompiled</h1>
             <!--span class="loader-container" data-rv-show="loading" data-ng-include="'loader/loader.html'">
             </span-->
@@ -95,11 +96,11 @@
                 <option v-bind:value="true">Release</option>
               </select>
             </div>
+            <app-mobile-shelf class="mobile-menu"
+                              toggle=".decompiled .mobile-menu-button"
+                              container=".decompiled"
+                              open-class="mobile-menu-open"></app-mobile-shelf>
           </header>
-          <app-mobile-shelf class="mobile-menu"
-                            toggle=".decompiled .mobile-menu-button"
-                            container=".decompiled"
-                            open-class="mobile-menu-open"></app-mobile-shelf>
           <div class="content">
             <app-loader></app-loader>
             <app-codemirror v-bind:value="result.decompiled"
