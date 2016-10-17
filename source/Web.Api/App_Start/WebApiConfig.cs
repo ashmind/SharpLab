@@ -11,11 +11,13 @@ namespace TryRoslyn.Web.Api {
     public static class WebApiConfig {
         public static void Register(HttpConfiguration config) {
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
-            config.EnableCors(new EnableCorsAttribute("*", "*", "*"));
+            config.EnableCors(new EnableCorsAttribute("*", "*", "*") {
+                PreflightMaxAge = 60 * 60 * 1000 // 1 hour, though Chrome would limit to 10 mins I believe
+            });
 
             RegisterContainer(config);
             RegisterFormatters(config);
-            
+
             // routes
             config.MapHttpAttributeRoutes();
             config.EnableSystemDiagnosticsTracing();
