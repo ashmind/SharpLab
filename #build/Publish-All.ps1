@@ -83,7 +83,7 @@ try {
                 -CanStopWebApp `
                 -SourcePath $siteMainRoot `
                 -TargetPath "."
-            $url = "http://$($webAppName).azurewebsites.net"
+            $url = "https://$($webAppName).azurewebsites.net"
         }
         
         # Success!
