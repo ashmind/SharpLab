@@ -18,7 +18,7 @@ namespace TryRoslyn.Core.Decompilation {
             var output = new CustomizableIndentPlainTextOutput(codeWriter) {
                 IndentationString = "    "
             };
-            var disassembler = new ReflectionDisassembler(output, false, new CancellationToken());
+            var disassembler = new ReflectionDisassembler(new ILCommentator(output, 30), false, new CancellationToken());
             disassembler.WriteModuleContents(assembly.MainModule);
         }
 
