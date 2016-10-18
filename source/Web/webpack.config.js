@@ -14,7 +14,6 @@ module.exports = {
         new webpack.optimize.UglifyJsPlugin()
     ],
     entry: [
-        'regenerator/runtime',
         './js/app.js'
     ],
     module: {
@@ -23,8 +22,10 @@ module.exports = {
             exclude: /node_modules/,
             loader: 'babel',
             query: {
-                presets: ['es2015'],
-                plugins: ['syntax-async-functions', 'transform-regenerator']
+                plugins: [
+                    'transform-es2015-modules-commonjs',
+                    'transform-async-to-generator'
+                ]
             }
         }]
     },
