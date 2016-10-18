@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Disassembler;
 using JetBrains.Annotations;
 using Mono.Cecil;
@@ -18,7 +17,7 @@ namespace TryRoslyn.Core.Decompilation {
             var output = new CustomizableIndentPlainTextOutput(codeWriter) {
                 IndentationString = "    "
             };
-            var disassembler = new ReflectionDisassembler(output, false, new CancellationToken());
+            var disassembler = new ReflectionDisassembler(new ILCommentingTextOutput(output, 30), false, new CancellationToken());
             disassembler.WriteModuleContents(assembly.MainModule);
         }
 
