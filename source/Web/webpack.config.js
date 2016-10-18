@@ -1,10 +1,15 @@
-/* globals module:false, require:false, process:false */
+/* globals module:false, require:false */
 var webpack = require('webpack');
+var path = require('path');
+
 module.exports = {
     externals: {
         jquery: 'jQuery'
     },
-    devtool: 'source-map',    
+    resolve: {
+        root: path.resolve('./js')
+    },
+    devtool: 'source-map',
     plugins: [
         new webpack.optimize.UglifyJsPlugin()
     ],
