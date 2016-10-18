@@ -21,7 +21,7 @@
     "less-plugin-clean-css": "^1.5.1",
     "object-assign": "^4.0.1",
     "rimraf": "^2.5.4",
-    "uglify-js": "git://github.com/mishoo/UglifyJS2#harmony",
+    "uglify-js": "https://github.com/mishoo/UglifyJS2#harmony",
     "webpack-stream": "^3.1.0"
   },
   "dependencies": {
