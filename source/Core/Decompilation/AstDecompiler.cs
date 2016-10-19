@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using AshMind.Extensions;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler.Ast.Transforms;
@@ -14,12 +15,15 @@ using TryRoslyn.Core.Decompilation.Support;
 namespace TryRoslyn.Core.Decompilation {
     [ThreadSafe]
     public abstract class AstDecompiler : IDecompiler {
+        private static readonly ConcurrentDictionary<string, AssemblyDefinition> AssemblyCache = new ConcurrentDictionary<string, AssemblyDefinition>();
+
         public void Decompile(Stream assemblyStream, TextWriter resultWriter) {
             // ReSharper disable once AgentHeisenbug.CallToNonThreadSafeStaticMethodInThreadSafeType
             var module = ModuleDefinition.ReadModule(assemblyStream);
-            ((BaseAssemblyResolver)module.AssemblyResolver).AddSearchDirectory(
-                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-            );
+            ((BaseAssemblyResolver)module.AssemblyResolver).ResolveFailure += (_, name) => AssemblyCache.GetOrAdd(name.FullName, fullName => {
+                var assembly = AppDomain.CurrentDomain.GetAssemblies().Single(a => a.FullName == fullName);
+                return AssemblyDefinition.ReadAssembly(assembly.GetAssemblyFile().FullName);
+            });
 
             var context = new DecompilerContext(module) {
                 Settings = {

@@ -17,7 +17,8 @@ namespace TryRoslyn.Core.Processing.Languages {
 
         // ReSharper disable once AgentHeisenbug.FieldOfNonThreadSafeTypeInThreadSafeType
         private readonly IReadOnlyCollection<MetadataReference> _references = new[] {
-            MetadataReference.CreateFromFile(typeof(StandardModuleAttribute).Assembly.Location)
+            MetadataReference.CreateFromFile(typeof(StandardModuleAttribute).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(ValueTuple<>).Assembly.Location)
         };
         private readonly IReadOnlyDictionary<string, string> _features;
 
