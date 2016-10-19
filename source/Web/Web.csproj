@@ -135,7 +135,7 @@
   <Target Name="Gulp" AfterTargets="Build">
     <Exec Command="node_modules\.bin\gulp.cmd" />
     <ItemGroup>
-      <Content Include="wwwroot\*.*" />
+      <Content Include="wwwroot\**\*.*" />
     </ItemGroup>
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
