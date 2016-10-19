@@ -53,21 +53,24 @@ function Get-PackageVersion($projectJsonPath, $name) {
     return $json.dependencies.$name
 }
 
-function Map-SystemReflectionMetadata($roslynSourceRoot, $packageVersionMap, $referencePathMap) {
+function Map-SystemReflectionMetadata($roslynSourceRoot, $maps) {
     $dependencyJsonPath = "$($roslynSourceRoot)\src\Dependencies\Metadata\project.json"
     if (!(Test-Path $dependencyJsonPath)) {
         return
     }
 
     $version = Get-PackageVersion $dependencyJsonPath "System.Reflection.Metadata"
-    $referencePathMap['System.Reflection.Metadata'] = "..\#packages\System.Reflection.Metadata.$version\lib\portable-net45+win8\System.Reflection.Metadata.dll"
-    $packageVersionMap['System.Reflection.Metadata'] = $version
+    $maps.referencePaths['System.Reflection.Metadata'] = "..\#packages\System.Reflection.Metadata.$version\lib\portable-net45+win8\System.Reflection.Metadata.dll"
+    $maps.packageVersions['System.Reflection.Metadata'] = $version
+    $maps.assemblyVersions['System.Reflection.Metadata'] = ($version -replace '-.+$','') + '.0'
 }
 
-function Rewrite-PackageVersions($packagesPath, $map) {
-    $content = [IO.File]::ReadAllText((Resolve-Path $packagesPath))
+function Rewrite-PackageVersions($packagesPath, $maps) {
+    $packagesPath = (Resolve-Path $packagesPath)
+
+    $content = [IO.File]::ReadAllText($packagesPath)
     $contentXml = [xml]$content
-    $map.GetEnumerator() | % {
+    $maps.packageVersions.GetEnumerator() | % {
         $name = $_.Key
         $version = $_.Value
         Select-Xml $contentXml -XPath '//package' |
@@ -81,12 +84,13 @@ function Rewrite-PackageVersions($packagesPath, $map) {
     Set-Content $packagesPath $rewritten
 }
 
-function Rewrite-ProjectReferences($projectPath, $map) {
+function Rewrite-ProjectReferences($projectPath, $maps) {
     $xmlNamespaces = @{msbuild='http://schemas.microsoft.com/developer/msbuild/2003'}
+    $projectPath = (Resolve-Path $projectPath)
 
-    $content = [IO.File]::ReadAllText((Resolve-Path $projectPath))
+    $content = [IO.File]::ReadAllText($projectPath)
     $contentXml = [xml]$content
-    $map.GetEnumerator() | % {
+    $maps.referencePaths.GetEnumerator() | % {
         $name = $_.Key
         $path = $_.Value
         Select-Xml -Xml $contentXml -XPath '//msbuild:Reference' -Namespace $xmlNamespaces |
@@ -102,6 +106,30 @@ function Rewrite-ProjectReferences($projectPath, $map) {
         return
     }
     Set-Content $projectPath $rewritten
+}
+
+function Rewrite-BindingRedirects($webConfigPath, $maps) {
+    $xmlNamespaces = @{a='urn:schemas-microsoft-com:asm.v1'}
+    $webConfigPath = (Resolve-Path $webConfigPath)
+    
+    $content = [IO.File]::ReadAllText($webConfigPath)
+    $contentXml = [xml]$content
+
+    $maps.assemblyVersions.GetEnumerator() | % {
+        $name = $_.Key
+        $version = $_.Value
+        Select-Xml -Xml $contentXml -XPath "//a:dependentAssembly[a:assemblyIdentity[@name='$name']]/a:bindingRedirect" -Namespace $xmlNamespaces |
+            % {
+                $_.Node.SetAttribute('oldVersion', "0.0.0.0-$version")
+                $_.Node.SetAttribute('newVersion', $version)
+            }
+    }
+
+    $rewritten = Format-Xml $contentXml
+    if ($rewritten -eq $content) {
+        return
+    }
+    Set-Content $webConfigPath $rewritten
 }
 
 function Ensure-ResolvedPath($path) {
@@ -223,14 +251,17 @@ try {
                             Set-Content "$roslynBinaryRoot\!BranchInfo.json" (ConvertTo-Json $branchInfo -Depth 100)
                             
                             Write-Output "Mapping references..."
-                            $packageVersionMap = @{}
-                            $referencePathMap = @{
-                                'Microsoft.CodeAnalysis'             = "$roslynBinaryRoot\Microsoft.CodeAnalysis.dll"
-                                'Microsoft.CodeAnalysis.CSharp'      = "$roslynBinaryRoot\Microsoft.CodeAnalysis.CSharp.dll"
-                                'Microsoft.CodeAnalysis.VisualBasic' = "$roslynBinaryRoot\Microsoft.CodeAnalysis.VisualBasic.dll"
+                            $referenceMaps = @{
+                                packageVersions = @{}
+                                assemblyVersions = @{}
+                                referencePaths = @{
+                                    'Microsoft.CodeAnalysis'             = "$roslynBinaryRoot\Microsoft.CodeAnalysis.dll"
+                                    'Microsoft.CodeAnalysis.CSharp'      = "$roslynBinaryRoot\Microsoft.CodeAnalysis.CSharp.dll"
+                                    'Microsoft.CodeAnalysis.VisualBasic' = "$roslynBinaryRoot\Microsoft.CodeAnalysis.VisualBasic.dll"
+                                }
                             }
-                            Map-SystemReflectionMetadata $roslynSourceRoot $packageVersionMap $referencePathMap
-                            Set-Content $branchMapsPath (ConvertTo-Json @{packageVersions=$packageVersionMap; referencePaths=$referencePathMap} -Depth 100)
+                            Map-SystemReflectionMetadata $roslynSourceRoot $referenceMaps
+                            Set-Content $branchMapsPath (ConvertTo-Json $referenceMaps -Depth 100)
                         }
                 }
                 finally {
@@ -243,20 +274,30 @@ try {
 
                     Write-Output "Loading reference maps..."
                     $referenceMaps = ConvertTo-Hashtables (ConvertFrom-Json (Get-Content $branchMapsPath -Raw))
-                    @($referenceMaps.packageVersions.GetEnumerator(), $referenceMaps.referencePaths.GetEnumerator()) | % { $_ } | % {
+                    @(
+                        $referenceMaps.packageVersions.GetEnumerator(),
+                        $referenceMaps.assemblyVersions.GetEnumerator(),
+                        $referenceMaps.referencePaths.GetEnumerator()
+                    ) | % { $_ } | % {
                         Write-Output "  $($_.Key) $($_.Value)"
                     }
 
                     Write-Output "Rewriting packages.config files..."
                     Get-ChildItem packages.config -Recurse -ErrorAction SilentlyContinue | % {
-                        Rewrite-PackageVersions $_ $referenceMaps.packageVersions
+                        Rewrite-PackageVersions $_ $referenceMaps
                         Write-Output "  $($_.Directory.Name)\$($_.Name)"
                     }
 
                     Write-Output "Rewriting *.csproj files..."
                     Get-ChildItem *.csproj -Recurse -ErrorAction SilentlyContinue | % {
-                        Rewrite-ProjectReferences $_ $referenceMaps.referencePaths
+                        Rewrite-ProjectReferences $_ $referenceMaps
                         Write-Output "  $($_.Name)"
+                    }
+
+                    Write-Output "Rewriting Web.config file..."
+                    Get-Item Web.Api\Web.config | % {
+                        Rewrite-BindingRedirects $_ $referenceMaps
+                        Write-Output "  $($_.Directory.Name)\$($_.Name)"
                     }
 
                     Write-Output "Restoring site packages..."

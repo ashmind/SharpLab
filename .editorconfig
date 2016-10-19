@@ -7,5 +7,5 @@ indent_size = 4
 trim_trailing_whitespace = true
 insert_final_newline = false
 
-[*.html]
+[*.{html,config}]
 indent_size = 2
