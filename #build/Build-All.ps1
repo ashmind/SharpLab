@@ -145,6 +145,15 @@ function ConvertTo-Hashtable([PSCustomObject] $object) {
     return $result
 }
 
+function Find-FirstFilePathDeep($path, $name) {
+    $file = Get-ChildItem -Path $path -Filter $name -Recurse | select -first 1
+    if (!$file) {
+        return "$path\$name"
+    }
+    
+    return $file.FullName
+}
+
 # Code ------
 try {
     $Host.UI.RawUI.WindowTitle = "TryRoslyn Build" # prevents title > 1024 char errors
@@ -255,9 +264,9 @@ try {
                                 packageVersions = @{}
                                 assemblyVersions = @{}
                                 referencePaths = @{
-                                    'Microsoft.CodeAnalysis'             = "$roslynBinaryRoot\Microsoft.CodeAnalysis.dll"
-                                    'Microsoft.CodeAnalysis.CSharp'      = "$roslynBinaryRoot\Microsoft.CodeAnalysis.CSharp.dll"
-                                    'Microsoft.CodeAnalysis.VisualBasic' = "$roslynBinaryRoot\Microsoft.CodeAnalysis.VisualBasic.dll"
+                                    'Microsoft.CodeAnalysis'             = Find-FirstFilePathDeep $roslynBinaryRoot "Microsoft.CodeAnalysis.dll"
+                                    'Microsoft.CodeAnalysis.CSharp'      = Find-FirstFilePathDeep $roslynBinaryRoot "Microsoft.CodeAnalysis.CSharp.dll"
+                                    'Microsoft.CodeAnalysis.VisualBasic' = Find-FirstFilePathDeep $roslynBinaryRoot "Microsoft.CodeAnalysis.VisualBasic.dll"
                                 }
                             }
                             Map-SystemReflectionMetadata $roslynSourceRoot $referenceMaps

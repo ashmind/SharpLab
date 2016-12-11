@@ -67,6 +67,18 @@ function Restore-Packages() {
     try {
         if (Test-Path "Restore.cmd") {
             "  Restore.cmd" | Out-Default
+
+            # Without the fix below, Roslyn can't be built if a directory name contains an exclamation mark
+            # See https://github.com/dotnet/roslyn/commit/eff05a2f444393a93e41e95260066f1c47b94d42#commitcomment-20146648
+            # and https://github.com/ashmind/TryRoslyn/pull/37/commits/b7ac882d410c849f0c4710d7374490910ed4dbce
+            $cmdFullPath = (Join-Path $sourceRoot "Restore.cmd")
+            $content = [IO.File]::ReadAllText($cmdFullPath)
+            $fixed = $content -replace '@setlocal enabledelayedexpansion\r?\n?', ''
+            if ($fixed -ne $content) {
+                "    enabledelayedexpansion fix" | Out-Default
+                [IO.File]::WriteAllText($cmdFullPath, $fixed)
+            }
+
             Invoke-Expression "cmd /c Restore.cmd"
             if ($LastExitCode -ne 0) {
                 throw New-Object BranchBuildException("Restore failed, see $buildLogPath", $buildLogPath)
