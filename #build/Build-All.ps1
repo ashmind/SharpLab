@@ -145,6 +145,15 @@ function ConvertTo-Hashtable([PSCustomObject] $object) {
     return $result
 }
 
+function FindFirstFileInPath($path, $name) {
+    $files = Get-ChildItem -Path $path -Filter $name -Recurse
+    foreach ($file in $files) {
+        return $file.FullName
+    }
+
+    return "$path\$name";
+}
+
 # Code ------
 try {
     $Host.UI.RawUI.WindowTitle = "TryRoslyn Build" # prevents title > 1024 char errors
@@ -162,7 +171,7 @@ try {
     $sourceRoot = Resolve-Path "$root\source"
     Write-Output "  Source Root:        $sourceRoot"
 
-    $roslynBuildRoot = Ensure-ResolvedPath "$root\!roslyn"
+    $roslynBuildRoot = Ensure-ResolvedPath "$root\roslyn_build_root"
     Write-Output "  Roslyn Build Root:  $roslynBuildRoot"
 
     $sitesBuildRoot = Ensure-ResolvedPath "$root\!sites"
@@ -218,7 +227,7 @@ try {
             $branchFsName = $repositoryName + "-" + ($_ -replace '[/\\:_]', '-')
 
             $siteBuildRoot     = Ensure-ResolvedPath "$sitesBuildRoot\$branchFsName"
-            $roslynBinaryRoot  = Ensure-ResolvedPath "$siteBuildRoot\!roslyn"
+            $roslynBinaryRoot  = Ensure-ResolvedPath "$siteBuildRoot\roslyn_build_root"
             $siteBuildTempRoot = Ensure-ResolvedPath "$siteBuildRoot\!temp"
             $siteCopyRoot      = Ensure-ResolvedPath "$siteBuildRoot\!site"
             
@@ -255,9 +264,9 @@ try {
                                 packageVersions = @{}
                                 assemblyVersions = @{}
                                 referencePaths = @{
-                                    'Microsoft.CodeAnalysis'             = "$roslynBinaryRoot\Microsoft.CodeAnalysis.dll"
-                                    'Microsoft.CodeAnalysis.CSharp'      = "$roslynBinaryRoot\Microsoft.CodeAnalysis.CSharp.dll"
-                                    'Microsoft.CodeAnalysis.VisualBasic' = "$roslynBinaryRoot\Microsoft.CodeAnalysis.VisualBasic.dll"
+                                    'Microsoft.CodeAnalysis'             = FindFirstFileInPath $roslynBinaryRoot "Microsoft.CodeAnalysis.dll"
+                                    'Microsoft.CodeAnalysis.CSharp'      = FindFirstFileInPath $roslynBinaryRoot "Microsoft.CodeAnalysis.CSharp.dll"
+                                    'Microsoft.CodeAnalysis.VisualBasic' = FindFirstFileInPath $roslynBinaryRoot "Microsoft.CodeAnalysis.VisualBasic.dll"
                                 }
                             }
                             Map-SystemReflectionMetadata $roslynSourceRoot $referenceMaps
