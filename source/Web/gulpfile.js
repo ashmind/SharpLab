@@ -37,7 +37,7 @@ gulp.task('favicon', function () {
           pipe(g.svg2png({ width:  16, height:  16 }), g.rename('favicon-16.png')),
           pipe(g.svg2png({ width:  32, height:  32 }), g.rename('favicon-32.png')),
           pipe(g.svg2png({ width:  64, height:  64 }), g.rename('favicon-64.png')),
-          pipe(g.svg2png({ width:  96, height:  96 }), g.rename('favicon-64.png')),
+          pipe(g.svg2png({ width:  96, height:  96 }), g.rename('favicon-96.png')),
           pipe(g.svg2png({ width: 128, height: 128 }), g.rename('favicon-128.png')),
           pipe(g.svg2png({ width: 196, height: 196 }), g.rename('favicon-196.png')),
           pipe(g.svg2png({ width: 256, height: 256 }), g.rename('favicon-256.png'))
