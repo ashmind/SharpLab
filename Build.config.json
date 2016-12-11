@@ -9,16 +9,6 @@
       "Name":    "ashmind",
       "Url":     "https://github.com/ashmind/roslyn.git",
       "Include": "coalesce-assignment"
-    }, 
-    {
-      "Name":    "ljw1004",
-      "Url":     "https://github.com/ljw1004/roslyn.git",
-      "Include": "async-return"
-    }, 
-    {
-      "Name":    "AdamSpeight2008",
-      "Url":     "https://github.com/AdamSpeight2008/roslyn-AdamSpeight2008.git",
-      "Include": "master_Feature_ImplicitDefaultOptionalParameter"
     }
   ]
 }
