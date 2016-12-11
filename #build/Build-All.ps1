@@ -162,7 +162,7 @@ try {
     $sourceRoot = Resolve-Path "$root\source"
     Write-Output "  Source Root:        $sourceRoot"
 
-    $roslynBuildRoot = Ensure-ResolvedPath "$root\!roslyn"
+    $roslynBuildRoot = Ensure-ResolvedPath "$root\roslyn_build_root"
     Write-Output "  Roslyn Build Root:  $roslynBuildRoot"
 
     $sitesBuildRoot = Ensure-ResolvedPath "$root\!sites"
@@ -218,7 +218,7 @@ try {
             $branchFsName = $repositoryName + "-" + ($_ -replace '[/\\:_]', '-')
 
             $siteBuildRoot     = Ensure-ResolvedPath "$sitesBuildRoot\$branchFsName"
-            $roslynBinaryRoot  = Ensure-ResolvedPath "$siteBuildRoot\!roslyn"
+            $roslynBinaryRoot  = Ensure-ResolvedPath "$siteBuildRoot\roslyn_build_root"
             $siteBuildTempRoot = Ensure-ResolvedPath "$siteBuildRoot\!temp"
             $siteCopyRoot      = Ensure-ResolvedPath "$siteBuildRoot\!site"
             

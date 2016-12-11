@@ -60,7 +60,7 @@ try {
         Write-Output "*** $_"
 
         $siteMainRoot   = Resolve-Path $siteMainRoot
-        $siteRoslynRoot = Resolve-Path "$($_.FullName)\!roslyn"        
+        $siteRoslynRoot = Resolve-Path "$($_.FullName)\roslyn_build_root"        
 
         $branchInfo = ConvertFrom-Json ([IO.File]::ReadAllText("$siteRoslynRoot\!BranchInfo.json"))
 
