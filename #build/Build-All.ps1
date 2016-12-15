@@ -50,6 +50,10 @@ function ConvertTo-Hashtables($inputObject) {
 function Get-PackageVersion($projectJsonPath, $name) {
     $content = [IO.File]::ReadAllText((Resolve-Path $projectJsonPath))
     $json = $content | ConvertFrom-Json
+    if (!($json.dependencies.PSObject.Properties | ? { $_.Name -eq $name })) {
+        return $null
+    }
+
     return $json.dependencies.$name
 }
 
@@ -61,6 +65,7 @@ function Map-PackageVersions($name, $projectJsonPaths, $framework, $maps) {
     }
 
     $version = Get-PackageVersion $projectJsonPath $name
+    if (!$version) { return }
     $maps.referencePaths[$name] = "..\#packages\$name.$version\lib\$framework\$name.dll"
     $maps.packageVersions[$name] = $version
     $maps.assemblyVersions[$name] = '<mapped after package restore>'
