@@ -53,16 +53,17 @@ function Get-PackageVersion($projectJsonPath, $name) {
     return $json.dependencies.$name
 }
 
-function Map-SystemReflectionMetadata($roslynSourceRoot, $maps) {
-    $dependencyJsonPath = "$($roslynSourceRoot)\src\Dependencies\Metadata\project.json"
-    if (!(Test-Path $dependencyJsonPath)) {
+function Map-PackageVersions($name, $projectJsonPaths, $framework, $maps) {
+    $projectJsonPath = ($projectJsonPaths | ? { Test-Path $_ } | select -first 1)
+    if (!$projectJsonPath) {
+        Write-Output "  [WARNING] None of project.json paths found for $name"
         return
     }
 
-    $version = Get-PackageVersion $dependencyJsonPath "System.Reflection.Metadata"
-    $maps.referencePaths['System.Reflection.Metadata'] = "..\#packages\System.Reflection.Metadata.$version\lib\portable-net45+win8\System.Reflection.Metadata.dll"
-    $maps.packageVersions['System.Reflection.Metadata'] = $version
-    $maps.assemblyVersions['System.Reflection.Metadata'] = ($version -replace '-.+$','') + '.0'
+    $version = Get-PackageVersion $projectJsonPath $name
+    $maps.referencePaths[$name] = "..\#packages\$name.$version\lib\$framework\$name.dll"
+    $maps.packageVersions[$name] = $version
+    $maps.assemblyVersions[$name] = '<mapped after package restore>'
 }
 
 function Rewrite-PackageVersions($packagesPath, $maps) {
@@ -108,6 +109,16 @@ function Rewrite-ProjectReferences($projectPath, $maps) {
     Set-Content $projectPath $rewritten
 }
 
+function Map-AssemblyVersions($siteBuildRoot, $maps) {
+    @($maps.assemblyVersions.Keys) | % {
+        $name = $_
+        $path = Join-Path (Join-Path $siteBuildRoot '_') ($maps.referencePaths[$name])        
+        $assembly = [Reflection.Assembly]::LoadFrom($path)
+        $version = $assembly.GetName().Version
+        $maps.assemblyVersions[$name] = $version
+    }
+}
+
 function Rewrite-BindingRedirects($webConfigPath, $maps) {
     $xmlNamespaces = @{a='urn:schemas-microsoft-com:asm.v1'}
     $webConfigPath = (Resolve-Path $webConfigPath)
@@ -118,6 +129,7 @@ function Rewrite-BindingRedirects($webConfigPath, $maps) {
     $maps.assemblyVersions.GetEnumerator() | % {
         $name = $_.Key
         $version = $_.Value
+
         Select-Xml -Xml $contentXml -XPath "//a:dependentAssembly[a:assemblyIdentity[@name='$name']]/a:bindingRedirect" -Namespace $xmlNamespaces |
             % {
                 $_.Node.SetAttribute('oldVersion', "0.0.0.0-$version")
@@ -269,7 +281,19 @@ try {
                                     'Microsoft.CodeAnalysis.VisualBasic' = Find-FirstFilePathDeep $roslynBinaryRoot "Microsoft.CodeAnalysis.VisualBasic.dll"
                                 }
                             }
-                            Map-SystemReflectionMetadata $roslynSourceRoot $referenceMaps
+                            $portableProjectJsonPath = "$roslynSourceRoot\src\Compilers\Core\Portable\project.json"
+                            Map-PackageVersions 'System.Reflection.Metadata' `
+                                -ProjectJsonPaths @($portableProjectJsonPath, "$roslynSourceRoot\src\Dependencies\Metadata\project.json") `
+                                -Framework 'portable-net45+win8' -Maps $referenceMaps
+                            Map-PackageVersions 'System.Collections.Immutable' `
+                                -ProjectJsonPaths @($portableProjectJsonPath) `
+                                -Framework 'portable-net45+win8+wp8+wpa81' -Maps $referenceMaps
+                            Map-PackageVersions 'System.IO.FileSystem' `
+                                -ProjectJsonPaths @($portableProjectJsonPath) `
+                                -Framework 'net46' -Maps $referenceMaps
+                            Map-PackageVersions 'System.Security.Cryptography.Algorithms' `
+                                -ProjectJsonPaths @($portableProjectJsonPath) `
+                                -Framework 'net46' -Maps $referenceMaps
                             Set-Content $branchMapsPath (ConvertTo-Json $referenceMaps -Depth 100)
                         }
                 }
@@ -285,7 +309,6 @@ try {
                     $referenceMaps = ConvertTo-Hashtables (ConvertFrom-Json (Get-Content $branchMapsPath -Raw))
                     @(
                         $referenceMaps.packageVersions.GetEnumerator(),
-                        $referenceMaps.assemblyVersions.GetEnumerator(),
                         $referenceMaps.referencePaths.GetEnumerator()
                     ) | % { $_ } | % {
                         Write-Output "  $($_.Key) $($_.Value)"
@@ -303,14 +326,20 @@ try {
                         Write-Output "  $($_.Name)"
                     }
 
+                    Write-Output "Restoring site packages..."
+                    &"$PSScriptRoot\#tools\nuget" restore "$siteBuildRoot\TryRoslyn.sln"
+
+                    Write-Output "Mapping assembly versions..."
+                    Map-AssemblyVersions $siteBuildRoot $referenceMaps
+                    $referenceMaps.assemblyVersions.GetEnumerator() | % {
+                        Write-Output "  $($_.Key) $($_.Value)"
+                    }
+
                     Write-Output "Rewriting Web.config file..."
                     Get-Item Web.Api\Web.config | % {
                         Rewrite-BindingRedirects $_ $referenceMaps
                         Write-Output "  $($_.Directory.Name)\$($_.Name)"
                     }
-
-                    Write-Output "Restoring site packages..."
-                    &"$PSScriptRoot\#tools\nuget" restore "$siteBuildRoot\TryRoslyn.sln"
 
                     Write-Output "Building Web.Api.csproj..."
                     &$MSBuild Web.Api\Web.Api.csproj > $buildLogPath `
