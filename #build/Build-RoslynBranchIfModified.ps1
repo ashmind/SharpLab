@@ -32,8 +32,8 @@ Write-Output "Resetting '$branchName'..."
 Invoke-Git $sourceRoot checkout $branchName --force
 Invoke-Git $sourceRoot reset --hard origin/$branchName
 #Invoke-Git $sourceRoot clean --force
-if (Test-Path Binaries) {
-    Remove-Item Binaries -Recurse -Force
+if (Test-Path "$sourceRoot\Binaries") {
+    Remove-Item "$sourceRoot\Binaries" -Recurse -Force
 }
 
 Write-Output "Building '$branchName'..."
