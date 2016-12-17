@@ -31,13 +31,20 @@ try {
     Write-Output "Environment:"
     Write-Output "  Current Path:       $(Get-Location)"    
     Write-Output "  Script Root:        $PSScriptRoot"
-    
-    $sourceRoot = Resolve-Path "$PSScriptRoot\..\Source"
+
+    $sourceRoot = Resolve-Path "$PSScriptRoot\..\source"
     Write-Output "  Source Root:        $sourceRoot"
 
     $sitesBuildRoot = Resolve-Path "$PSScriptRoot\..\!sites"
     Write-Output "  Sites Build Root:   $sitesBuildRoot"
-        
+
+    $ftpushExe = @(Get-Item "$sourceRoot\#packages\ftpush*\tools\ftpush.exe")
+    if ($ftpushExe.Count -gt 1) {
+        throw "Found multiple ftpush.exe: $ftpushExe"
+    }
+    $ftpushExe = $ftpushExe[0]
+    Write-Output "  ftpush.exe:         $ftpushExe"
+
     if ($azure) {
         $azureConfigPath = ".\!Azure.config.json"
         if (!(Test-Path $azureConfigPath)) {
@@ -60,7 +67,7 @@ try {
         Write-Output "*** $_"
 
         $siteMainRoot   = Resolve-Path $siteMainRoot
-        $siteRoslynRoot = Resolve-Path "$($_.FullName)\!roslyn"        
+        $siteRoslynRoot = Resolve-Path "$($_.FullName)\!roslyn"
 
         $branchInfo = ConvertFrom-Json ([IO.File]::ReadAllText("$siteRoslynRoot\!BranchInfo.json"))
 
@@ -69,13 +76,14 @@ try {
              $webAppName = $webAppName.Substring(0, 57) + "-01"; # no uniqueness check at the moment, we can add later
              Write-Output "[WARNING] Name is too long, using '$webAppName'."
         }
-        
+
         $iisSiteName = "$webAppName.tryroslyn.local"
         $url = "http://$iisSiteName"
         &$PublishToIIS -SiteName $iisSiteName -SourcePath $siteMainRoot
-        
+
         if ($azure) {
             &$PublishToAzure `
+                -FtpushExe $ftpushExe `
                 -ResourceGroupName $($azureConfig.ResourceGroupName) `
                 -AppServicePlanName $($azureConfig.AppServicePlanName) `
                 -WebAppName $webAppName `
@@ -85,7 +93,7 @@ try {
                 -TargetPath "."
             $url = "https://$($webAppName).azurewebsites.net"
         }
-        
+
         # Success!
         $branchesJson += [ordered]@{
             id = $branchFsName -replace '^dotnet-',''
@@ -95,7 +103,7 @@ try {
             commits = $branchInfo.commits
         }
     }
-    
+
     $branchesFileName = "!branches.json"
     Write-Output "Updating $branchesFileName..."
     Set-Content "$sitesBuildRoot\$branchesFileName" $(ConvertTo-Json $branchesJson -Depth 100)
@@ -108,14 +116,15 @@ try {
 
     if ($azure) {
         &$PublishToAzure `
+            -FtpushExe $ftpushExe `
             -ResourceGroupName $($azureConfig.ResourceGroupName) `
             -AppServicePlanName $($azureConfig.AppServicePlanName) `
             -WebAppName "tryroslyn" `
             -SourcePath "$sitesBuildRoot\$branchesFileName" `
-            -TargetPath "wwwroot\$branchesFileName"
+            -TargetPath "$branchesFileName"
     }
 }
-catch {    
+catch {
     Write-Output "[ERROR] $_"
     Write-Output 'Returning exit code 1'
     exit 1
