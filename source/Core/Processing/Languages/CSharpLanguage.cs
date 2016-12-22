@@ -4,8 +4,8 @@ using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CSharp.RuntimeBinder;
 using TryRoslyn.Core.Processing.Languages.Internal;
+using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
 namespace TryRoslyn.Core.Processing.Languages {
     [ThreadSafe]
@@ -17,13 +17,15 @@ namespace TryRoslyn.Core.Processing.Languages {
         private static readonly IReadOnlyCollection<string> PreprocessorSymbols = new[] { "__DEMO_EXPERIMENTAL__" };
 
         // ReSharper disable once AgentHeisenbug.FieldOfNonThreadSafeTypeInThreadSafeType
-        private readonly IReadOnlyCollection<MetadataReference> _references = new[] {
-            MetadataReference.CreateFromFile(typeof(Binder).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(ValueTuple<>).Assembly.Location)
-        };
+        private readonly IReadOnlyCollection<MetadataReference> _references;
+
         private readonly IReadOnlyDictionary<string, string> _features;
 
-        public CSharpLanguage(IFeatureDiscovery featureDiscovery) {
+        public CSharpLanguage(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
+            _references = referenceCollector.SlowGetMetadataReferencesRecursive(
+                typeof(Binder).Assembly,
+                typeof(ValueTuple<>).Assembly
+            ).ToArray();
             _features = featureDiscovery.SlowDiscoverAll().ToDictionary(f => f, f => (string)null);
         }
 

@@ -16,13 +16,14 @@ namespace TryRoslyn.Core.Processing.Languages {
             .Max();
 
         // ReSharper disable once AgentHeisenbug.FieldOfNonThreadSafeTypeInThreadSafeType
-        private readonly IReadOnlyCollection<MetadataReference> _references = new[] {
-            MetadataReference.CreateFromFile(typeof(StandardModuleAttribute).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(ValueTuple<>).Assembly.Location)
-        };
+        private readonly IReadOnlyCollection<MetadataReference> _references;
         private readonly IReadOnlyDictionary<string, string> _features;
 
-        public VBNetLanguage(IFeatureDiscovery featureDiscovery) {
+        public VBNetLanguage(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
+            _references = referenceCollector.SlowGetMetadataReferencesRecursive(
+                typeof(StandardModuleAttribute).Assembly,
+                typeof(ValueTuple<>).Assembly
+            ).ToArray();
             _features = featureDiscovery.SlowDiscoverAll().ToDictionary(f => f, f => (string)null);
         }
 

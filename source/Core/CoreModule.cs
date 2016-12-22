@@ -11,6 +11,10 @@ using TryRoslyn.Core.Processing.Languages.Internal;
 namespace TryRoslyn.Core {
     public class CoreModule : Module {
         protected override void Load(ContainerBuilder builder) {
+            builder.RegisterType<MetadataReferenceCollector>()
+                   .As<IMetadataReferenceCollector>()
+                   .SingleInstance();
+
             builder.RegisterType<CSharpFeatureDiscovery>()
                    .Keyed<IFeatureDiscovery>(LanguageIdentifier.CSharp)
                    .SingleInstance();

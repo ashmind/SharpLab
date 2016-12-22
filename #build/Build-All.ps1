@@ -299,6 +299,9 @@ try {
                             Map-PackageVersions 'System.Security.Cryptography.Algorithms' `
                                 -ProjectJsonPaths @($portableProjectJsonPath) `
                                 -Framework 'net46' -Maps $referenceMaps
+                            Map-PackageVersions 'System.ValueTuple' `
+                                -ProjectJsonPaths @($portableProjectJsonPath) `
+                                -Framework 'netstandard1.0' -Maps $referenceMaps
                             Set-Content $branchMapsPath (ConvertTo-Json $referenceMaps -Depth 100)
                         }
                 }
