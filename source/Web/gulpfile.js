@@ -29,18 +29,31 @@ gulp.task('js', function () {
         .pipe(gulp.dest('wwwroot'));
 });
 
-gulp.task('favicon', function () {
+gulp.task('favicons', function () {
+    function rename(suffix, extension) {
+        return g.rename(path => {
+            path.extension = extension || path.extension;
+            const parts = path.basename.split('-');
+            if (parts.length > 1) {
+                path.dirname = parts[1];
+                path.basename = parts[0];
+            }
+            path.basename += suffix || '';
+            return;
+        });
+    }
+
     return gulp
-        .src('./favicon.svg')
+        .src('./favicon*.svg')
         .pipe(g.mirror(
-          g.rename('favicon.svg'),
-          pipe(g.svg2png({ width:  16, height:  16 }), g.rename('favicon-16.png')),
-          pipe(g.svg2png({ width:  32, height:  32 }), g.rename('favicon-32.png')),
-          pipe(g.svg2png({ width:  64, height:  64 }), g.rename('favicon-64.png')),
-          pipe(g.svg2png({ width:  96, height:  96 }), g.rename('favicon-96.png')),
-          pipe(g.svg2png({ width: 128, height: 128 }), g.rename('favicon-128.png')),
-          pipe(g.svg2png({ width: 196, height: 196 }), g.rename('favicon-196.png')),
-          pipe(g.svg2png({ width: 256, height: 256 }), g.rename('favicon-256.png'))
+          rename(),
+          pipe(g.svg2png({ width:  16, height:  16 }), rename('-16',  'png')),
+          pipe(g.svg2png({ width:  32, height:  32 }), rename('-32',  'png')),
+          pipe(g.svg2png({ width:  64, height:  64 }), rename('-64',  'png')),
+          pipe(g.svg2png({ width:  96, height:  96 }), rename('-96',  'png')),
+          pipe(g.svg2png({ width: 128, height: 128 }), rename('-128', 'png')),
+          pipe(g.svg2png({ width: 196, height: 196 }), rename('-196', 'png')),
+          pipe(g.svg2png({ width: 256, height: 256 }), rename('-256', 'png'))
         ))
         .pipe(gulp.dest('wwwroot/favicons'));
 });
@@ -55,8 +68,8 @@ gulp.task('html', function () {
 gulp.task('watch', ['default'], function () {
     gulp.watch('less/**/*.less', ['less']);
     gulp.watch('js/**/*.js', ['js']);
-    gulp.watch('favicon.svg', ['favicon']);
+    gulp.watch('favicon*.svg', ['favicons']);
     gulp.watch('index.html', ['html']);
 });
 
-gulp.task('default', ['less', 'js', 'favicon', 'html']);
+gulp.task('default', ['less', 'js', 'favicons', 'html']);

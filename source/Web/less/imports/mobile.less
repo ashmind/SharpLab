@@ -4,6 +4,15 @@
     display: none;
 }
 
+.mobile-menu {
+    position: absolute;
+    background-color: @primary-color;
+
+    .failed & {
+        background-color: @error-color;
+    }
+}
+
 @media screen and (orientation: portrait) and (max-device-width: 1600px),
        screen and (orientation: portrait) and (max-width: 1600px) {
     main {
@@ -80,12 +89,10 @@
 
         .mobile-menu {
             display: block;
-            position: absolute;
             left: 0;
             top: @header-height;
             width: @menu-width;
             bottom: 0;
-            background-color: @primary-color;
             z-index: 5;
         }
 

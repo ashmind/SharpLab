@@ -4,7 +4,6 @@ import 'codemirror/addon/lint/lint';
 import 'codemirror/mode/clike/clike';
 import 'codemirror/mode/vb/vb';
 
-
 function buildGetAnnotations(data) {
     return (cm, updateLinting) => {
         data.lint(data.value, updateLinting);
@@ -20,7 +19,7 @@ Vue.component('app-codemirror', {
     },
     ready: function() {
         const textarea = this.$el;
-        textarea.value = this.value;                
+        textarea.value = this.value;
         const options = Object.assign(
             {},
             this.options,
@@ -31,7 +30,7 @@ Vue.component('app-codemirror', {
         );
         const instance = CodeMirror.fromTextArea(textarea, options);
         this.$watch('mode', value => instance.setOption('mode', value));
-        
+
         let settingValue = false;
         this.$watch('value', value => {
             value = value != null ? value : '';

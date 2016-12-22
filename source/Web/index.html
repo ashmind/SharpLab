@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8">
@@ -15,7 +15,9 @@
     <link rel="icon" type="image/png" href="favicons/favicon-64.png" sizes="64x64">
     <link rel="icon" type="image/png" href="favicons/favicon-32.png" sizes="32x32">
     <link rel="icon" type="image/png" href="favicons/favicon-16.png" sizes="16x16">
-
+    <app-favicon-replace-href v-bind:if="!result.success"
+                              regexp="favicons"
+                              with="favicons/error"></app-favicon-replace-href>
     <!-- build:css -->
     <!-- endbuild -->
   </head>
@@ -121,6 +123,7 @@
         <section class="errors" v-show="result.errors.length > 0">
           <header>
             <h1>Errors</h1>
+            <div class="select-wrapper spacer"><select></select></div>
           </header>
           <div class="content">
             <app-loader></app-loader>

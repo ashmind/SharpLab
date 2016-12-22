@@ -50,6 +50,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="js\ui\components\app-favicon-replace-href.js" />
+    <Content Include="js\ui\components\app-loader.js" />
     <Content Include="webpack.config.js" />
     <Content Include=".brackets.json" />
     <None Include="legacy\directives\syntaxtree.js" />
@@ -76,6 +78,11 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="packages.config" />
+    <Content Include="less\imports\codemirror.less" />
+    <Content Include="less\imports\common.less" />
+    <Content Include="less\imports\forms.less" />
+    <Content Include="less\imports\loader.less" />
+    <Content Include="less\imports\mobile.less" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Global.asax.cs">
