@@ -77,12 +77,12 @@
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="packages.config" />
     <Content Include="less\imports\codemirror.less" />
     <Content Include="less\imports\common.less" />
     <Content Include="less\imports\forms.less" />
     <Content Include="less\imports\loader.less" />
     <Content Include="less\imports\mobile.less" />
+    <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Global.asax.cs">
