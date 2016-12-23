@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.IO;
 using MirrorSharp.Advanced;
 using TryRoslyn.Core;
@@ -19,7 +21,10 @@ namespace TryRoslyn.Web.Api.Integration {
             _memoryStreamManager = memoryStreamManager;
         }
 
-        public async Task<object> PrepareAsync(IWorkSession session, CancellationToken cancellationToken) {
+        public async Task<object> ProcessAsync(IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
+            if (diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error))
+                return null;
+
             var decompiler = _decompilers.First(d => d.Language == LanguageIdentifier.CSharp);
             var compilation = await session.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false);
 
@@ -36,8 +41,9 @@ namespace TryRoslyn.Web.Api.Integration {
             }
         }
 
-        public void Write(IFastJsonWriter writer, object prepared, CancellationToken cancellationToken) {
-            writer.WriteProperty("decompiled", (string)prepared);
+        public void WriteResult(IFastJsonWriter writer, object result) {
+            if (result != null)
+                writer.WriteProperty("decompiled", (string)result);
         }
     }
 }

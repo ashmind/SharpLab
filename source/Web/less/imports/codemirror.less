@@ -1,5 +1,10 @@
 @import 'common.less';
 
+@import (inline) '../../node_modules/codemirror/lib/codemirror.css';
+@import (inline) '../../node_modules/codemirror/addon/lint/lint.css';
+@import (inline) '../../node_modules/codemirror-addon-lint-fix/addon/lint-fix/lint-fix.css';
+@import (inline) '../../node_modules/mirrorsharp/css/mirrorsharp.css';
+
 textarea, .CodeMirror {
     .code-text();
     position: absolute;
@@ -12,4 +17,9 @@ textarea, .CodeMirror {
 
 .CodeMirror-linenumber {
     padding-left: 0;
+}
+
+.CodeMirror-lintfix-popup-marker, .CodeMirror-lintfix-popup {
+    box-sizing: content-box;
+    -moz-box-sizing: content-box;
 }

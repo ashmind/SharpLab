@@ -5,56 +5,29 @@ import getBranchesAsync from './server/get-branches-async';
 import state from './state';
 import uiAsync from './ui';
 
-let savedApplyAnnotations;
-async function processChangeAsync(code, applyAnnotations) {
-    this.options.branchId = this.branch ? this.branch.id : null;
-    state.save(this);
-    if (this.code === undefined || this.code === '')
-        return [];
-
-    const branchUrl = this.branch ? this.branch.url : null;
-
-    //this.loading = true;
-
-    try {
-        this.result = await resultPromise;
-    }
-    catch (ex) {
-        if (ex.reason === 'abort')
-            return;
-
-        const error = ex.response.data;
-        let report = error.exceptionMessage || error.message;
-        if (error.stackTrace)
-            report += '\r\n' + error.stackTrace;
-
-        this.result = {
-            success: false,
-            errors: [
-                { message: report }
-            ]
-        };
-    }
-
-    if (pendingRequest === resultPromise)
-        pendingRequest = null;
-    this.loading = false;
-    this.updateAnnotations();
-}
-
-function applyUpdateResult(result) {
-    this.result = {
+function applyUpdateResult(updateResult) {
+    const result = {
         success: true,
-        decompiled: result.x.decompiled,
+        decompiled: updateResult.x.decompiled,
         errors: [],
         warnings: []
     };
-}
-
-function lintCodeAsync(code, applyAnnotations) {
-    savedApplyAnnotations = applyAnnotations;
-    this.code = code;
-    return this.processChangeAsync();
+    for (let diagnostic of updateResult.diagnostics) {
+        if (diagnostic.severity === 'error') {
+            result.success = false;
+            result.errors.push(diagnostic);
+        }
+        else if (diagnostic.severity === 'warning') {
+            result.warnings.push(diagnostic);
+        }
+    }
+    this.result = result;
+    /*
+            const error = ex.response.data;
+        let report = error.exceptionMessage || error.message;
+        if (error.stackTrace)
+            report += '\r\n' + error.stackTrace;
+    */
 }
 
 async function createAppAsync() {
@@ -107,7 +80,7 @@ async function createAppAsync() {
     const app = await createAppAsync();
     const ui = await uiAsync(app);
 
-    for (let name of ['options', 'branch']) {
+    /*for (let name of ['options', 'branch']) {
         ui.watch(name,  () => app.processChangeAsync(), { deep: true });
-    }
+    }*/
 })();

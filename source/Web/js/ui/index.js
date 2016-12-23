@@ -5,10 +5,10 @@ import hooks from './hooks/registry';
 import './filters/app-date';
 import './filters/app-trim';
 import './components/app-codemirror';
-import './components/app-mirrorsharp';
-import './components/app-diagnostic';
 import './components/app-favicon-replace-href';
 import './components/app-loader';
+import './components/app-mirrorsharp';
+import './components/app-mirrorsharp-diagnostic';
 import './components/app-mobile-shelf';
 import './hooks/app-mobile-codemirror-fullscreen';
 
