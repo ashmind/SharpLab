@@ -36,8 +36,6 @@ namespace TryRoslyn.Core {
             builder.RegisterType<CSharpDecompiler>().As<IDecompiler>().SingleInstance();
             builder.RegisterType<VBNetDecompiler>().As<IDecompiler>().SingleInstance();
             builder.RegisterType<ILDecompiler>().As<IDecompiler>().SingleInstance();
-
-            builder.RegisterType<CodeProcessor>().As<ICodeProcessor>().SingleInstance();
         }
     }
 }

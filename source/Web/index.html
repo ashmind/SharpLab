@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8">
@@ -131,7 +131,7 @@
             <app-loader></app-loader>
             <ul>
               <li v-for="error in result.errors">
-                <app-mirrorsharp-diagnostic v-bind:model="error" severity="error"></app-diagnostic>
+                <app-mirrorsharp-diagnostic v-bind:model="error" severity="error"></app-mirrorsharp-diagnostic>
               </li>
             </ul>
           </div>
@@ -144,7 +144,7 @@
           <div class="content">
             <ul>
               <li v-for="warning in result.warnings">
-                <app-mirrorsharp-diagnostic v-bind:model="warning" severity="warning"></app-diagnostic>
+                <app-mirrorsharp-diagnostic v-bind:model="warning" severity="warning"></app-mirrorsharp-diagnostic>
               </li>
             </ul>
           </div>

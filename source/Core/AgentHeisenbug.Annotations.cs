@@ -9,8 +9,4 @@ namespace JetBrains.Annotations {
     [ThreadSafe]
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Method | AttributeTargets.Struct | AttributeTargets.GenericParameter, AllowMultiple = false, Inherited = false)]
     public class ThreadSafeAttribute : Attribute { }
-
-    [ThreadSafe]
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Method | AttributeTargets.Struct | AttributeTargets.GenericParameter, AllowMultiple = false, Inherited = false)]
-    public class ReadOnlyAttribute : Attribute { }
 }

@@ -1,5 +1,3 @@
-import CodeMirror from 'codemirror';
-
 import getBranchesAsync from './server/get-branches-async';
 
 import state from './state';

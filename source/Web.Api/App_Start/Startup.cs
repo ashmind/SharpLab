@@ -8,7 +8,7 @@ using MirrorSharp;
 using MirrorSharp.Advanced;
 using MirrorSharp.Owin;
 using Owin;
-using TryRoslyn.Core;
+using TryRoslyn.Core.Decompilation;
 using TryRoslyn.Web.Api;
 
 [assembly: OwinStartup(typeof(Startup), nameof(Startup.Configuration))]
@@ -38,8 +38,8 @@ namespace TryRoslyn.Web.Api {
         private static IContainer CreateContainer() {
             var builder = new ContainerBuilder();
             var apiAssembly = Assembly.GetExecutingAssembly();
-            
-            builder.RegisterAssemblyModules(typeof(ICodeProcessor).Assembly);
+
+            builder.RegisterAssemblyModules(typeof(IDecompiler).Assembly);
             builder.RegisterAssemblyModules(apiAssembly);
 
             return builder.Build();

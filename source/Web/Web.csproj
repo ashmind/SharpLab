@@ -181,8 +181,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="js\ui\components\app-codemirror.js" />
     <Content Include="js\ui\components\app-favicon-replace-href.js" />
     <Content Include="js\ui\components\app-loader.js" />
+    <Content Include="js\ui\components\app-mirrorsharp-diagnostic.js" />
+    <Content Include="js\ui\components\app-mirrorsharp.js" />
     <Content Include="webpack.config.js" />
     <Content Include=".brackets.json" />
     <None Include="legacy\directives\syntaxtree.js" />
@@ -191,13 +194,10 @@
     <Content Include="index.html" />
     <Content Include="js\app.js" />
     <Content Include="js\server\get-branches-async.js" />
-    <Content Include="js\server\send-code-async.js" />
     <Content Include="js\state\handlers\defaults.js" />
     <Content Include="js\state\handlers\last-used.js" />
     <Content Include="js\state\handlers\url.js" />
     <Content Include="js\state\index.js" />
-    <Content Include="js\ui\components\app-codemirror.js" />
-    <Content Include="js\ui\components\app-diagnostic.js" />
     <Content Include="js\ui\components\app-mobile-shelf.js" />
     <Content Include="js\ui\filters\app-date.js" />
     <Content Include="js\ui\filters\app-trim.js" />
