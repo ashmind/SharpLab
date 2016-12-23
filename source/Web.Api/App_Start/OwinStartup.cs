@@ -1,5 +1,7 @@
-﻿using Microsoft.Owin;
+﻿using Autofac;
+using Microsoft.Owin;
 using MirrorSharp;
+using MirrorSharp.Advanced;
 using MirrorSharp.Owin;
 using Owin;
 
@@ -8,13 +10,16 @@ using Owin;
 namespace TryRoslyn.Web.Api {
     public class OwinStartup {
         public void Configuration(IAppBuilder app) {
-            app.UseMirrorSharp(new MirrorSharpOptions {
-                SlowUpdateExtra = {
-                    PrepareAsync = (session, token) => {
-                        return null;
-                    }
-                }
-            });
+            RegisterMirrorSharp(app);
+        }
+
+        private static void RegisterMirrorSharp(IAppBuilder app, IContainer container) {
+
+            var options = new MirrorSharpOptions {
+                SlowUpdate = container.Resolve<ICustomSlowUpdate>()
+            };
+
+            app.UseMirrorSharp(options);
         }
     }
 }
