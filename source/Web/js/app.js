@@ -1,12 +1,10 @@
 import CodeMirror from 'codemirror';
 
 import getBranchesAsync from './server/get-branches-async';
-import sendCodeAsync from './server/send-code-async';
 
 import state from './state';
 import uiAsync from './ui';
 
-let pendingRequest;
 let savedApplyAnnotations;
 async function processChangeAsync(code, applyAnnotations) {
     this.options.branchId = this.branch ? this.branch.id : null;
@@ -14,16 +12,9 @@ async function processChangeAsync(code, applyAnnotations) {
     if (this.code === undefined || this.code === '')
         return [];
 
-    if (pendingRequest) {
-        pendingRequest.abort();
-        pendingRequest = null;
-    }
-
     const branchUrl = this.branch ? this.branch.url : null;
 
-    this.loading = true;
-    const resultPromise = sendCodeAsync(this.code, this.options, branchUrl);
-    pendingRequest = resultPromise;
+    //this.loading = true;
 
     try {
         this.result = await resultPromise;
@@ -51,37 +42,19 @@ async function processChangeAsync(code, applyAnnotations) {
     this.updateAnnotations();
 }
 
+function applyUpdateResult(result) {
+    this.result = {
+        success: true,
+        decompiled: result.x.decompiled,
+        errors: [],
+        warnings: []
+    };
+}
+
 function lintCodeAsync(code, applyAnnotations) {
     savedApplyAnnotations = applyAnnotations;
     this.code = code;
     return this.processChangeAsync();
-}
-
-function updateAnnotations() {
-    if (!savedApplyAnnotations)
-        return;
-
-    const annotations = [];
-    const push = (array, severity) => {
-        if (!array)
-            return;
-
-        for (let item of array) {
-            if (!item.start && !item.end) // e.g. system error
-                continue;
-
-            annotations.push({
-                severity: severity.toLowerCase(),
-                message: item.message,
-                from: CodeMirror.Pos(item.start.line, item.start.column),
-                to: CodeMirror.Pos(item.end.line, item.end.column)
-            });
-        }
-    }
-    push(this.result.errors,   'error');
-    push(this.result.warnings, 'warning');
-
-    savedApplyAnnotations(annotations);
 }
 
 async function createAppAsync() {
@@ -126,9 +99,7 @@ async function createAppAsync() {
         app.branch = branches.filter(b => b.id === app.options.branchId)[0];
     }
 
-    app.processChangeAsync = processChangeAsync.bind(app);
-    app.updateAnnotations = updateAnnotations.bind(app);
-    app.lintCodeAsync = lintCodeAsync.bind(app);
+    app.applyUpdateResult = applyUpdateResult.bind(app);
     return app;
 }
 
