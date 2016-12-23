@@ -181,48 +181,48 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="js\ui\components\app-codemirror.js" />
-    <Content Include="js\ui\components\app-favicon-replace-href.js" />
-    <Content Include="js\ui\components\app-loader.js" />
-    <Content Include="js\ui\components\app-mirrorsharp-diagnostic.js" />
-    <Content Include="js\ui\components\app-mirrorsharp.js" />
-    <Content Include="webpack.config.js" />
-    <Content Include=".brackets.json" />
-    <None Include="legacy\directives\syntaxtree.js" />
+    <None Include="browserslist" />
+    <None Include="js\helpers\warn.js" />
+    <None Include="js\ui\components\app-codemirror.js" />
+    <None Include="js\ui\components\app-favicon-replace-href.js" />
+    <None Include="js\ui\components\app-loader.js" />
+    <None Include="js\ui\components\app-mirrorsharp-diagnostic.js" />
+    <None Include="js\ui\components\app-mirrorsharp.js" />
+    <None Include="webpack.config.js" />
+    <None Include=".brackets.json" />
     <None Include="gulpfile.js" />
-    <None Include="legacy\app.less" />
+    <None Include="favicon-error.svg" />
+    <None Include="favicon.svg" />
     <Content Include="index.html" />
-    <Content Include="js\app.js" />
-    <Content Include="js\server\get-branches-async.js" />
-    <Content Include="js\state\handlers\defaults.js" />
-    <Content Include="js\state\handlers\last-used.js" />
-    <Content Include="js\state\handlers\url.js" />
-    <Content Include="js\state\index.js" />
-    <Content Include="js\ui\components\app-mobile-shelf.js" />
-    <Content Include="js\ui\filters\app-date.js" />
-    <Content Include="js\ui\filters\app-trim.js" />
-    <Content Include="js\ui\hooks\app-mobile-codemirror-fullscreen.js" />
-    <Content Include="js\ui\hooks\registry.js" />
-    <Content Include="js\ui\index.js" />
+    <None Include="js\app.js" />
+    <None Include="js\server\get-branches-async.js" />
+    <None Include="js\state\handlers\defaults.js" />
+    <None Include="js\state\handlers\last-used.js" />
+    <None Include="js\state\handlers\url.js" />
+    <None Include="js\state\index.js" />
+    <None Include="js\ui\components\app-mobile-shelf.js" />
+    <None Include="js\ui\filters\app-date.js" />
+    <None Include="js\ui\filters\app-trim.js" />
+    <None Include="js\ui\hooks\app-mobile-codemirror-fullscreen.js" />
+    <None Include="js\ui\hooks\registry.js" />
+    <None Include="js\ui\index.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="less\imports\codemirror.less" />
-    <Content Include="less\imports\common.less" />
-    <Content Include="less\imports\forms.less" />
-    <Content Include="less\imports\loader.less" />
-    <Content Include="less\imports\mobile.less" />
-    <Content Include="packages.config" />
+    <None Include="less\imports\codemirror.less" />
+    <None Include="less\imports\common.less" />
+    <None Include="less\imports\forms.less" />
+    <None Include="less\imports\loader.less" />
+    <None Include="less\imports\mobile.less" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="less\app.less" />
-    <Content Include="package.json" />
+    <None Include="less\app.less" />
+    <None Include="package.json" />
     <None Include=".jshintrc" />
-    <None Include="legacy\styles\mobile.less" />
-    <None Include="legacy\styles\common.less" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\#packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
