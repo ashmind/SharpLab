@@ -10,7 +10,7 @@ using TryRoslyn.Core;
 using TryRoslyn.Core.Decompilation;
 
 namespace TryRoslyn.Web.Api.Integration {
-    public class SlowUpdate : ICustomSlowUpdate {
+    public class SlowUpdate : ISlowUpdateExtension {
         private readonly IReadOnlyCollection<IDecompiler> _decompilers;
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;
 
@@ -36,9 +36,8 @@ namespace TryRoslyn.Web.Api.Integration {
             }
         }
 
-        public Task WriteAsync(IFastJsonWriter writer, object prepared, CancellationToken cancellationToken) {
-            var decompiled = (string) prepared;
-            writer.
+        public void Write(IFastJsonWriter writer, object prepared, CancellationToken cancellationToken) {
+            writer.WriteProperty("decompiled", (string)prepared);
         }
     }
 }

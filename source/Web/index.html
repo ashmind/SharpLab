@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8">
@@ -59,14 +59,15 @@
                               open-class="mobile-menu-open"></app-mobile-shelf>
           </header>
           <div class="content">
-            <app-codemirror v-bind:value="code"
+            <app-mirrorsharp v-bind:value="code"></app-mirrorsharp>
+            <!--app-codemirror v-bind:value="code"
                             v-bind:mode="codeMirrorModes[options.language]"
                             v-bind:lint="lintCodeAsync"
                             v-bind:options="{
                               lineNumbers: true,
                               indentUnit: 4,
                               gutters: ['CodeMirror-linenumbers','CodeMirror-lint-markers']
-                            }"></app-codemirror>
+                            }"></app-codemirror-->
           </div>
         </section>
 
