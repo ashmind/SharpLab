@@ -20,12 +20,14 @@ function applyUpdateResult(updateResult) {
         }
     }
     this.result = result;
-    /*
-            const error = ex.response.data;
-        let report = error.exceptionMessage || error.message;
-        if (error.stackTrace)
-            report += '\r\n' + error.stackTrace;
-    */
+}
+
+function applyServerError(message) {
+    this.result = {
+        success: false,
+        errors: [{ message: message }],
+        warnings: []
+    };
 }
 
 async function createAppAsync() {
@@ -71,6 +73,7 @@ async function createAppAsync() {
     }
 
     app.applyUpdateResult = applyUpdateResult.bind(app);
+    app.applyServerError = applyServerError.bind(app);
     return app;
 }
 

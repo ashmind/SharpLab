@@ -60,7 +60,8 @@
           </header>
           <div class="content">
             <app-mirrorsharp v-bind:value="code"
-                             v-bind:after-slow-update="applyUpdateResult"></app-mirrorsharp>
+                             v-on:after-slow-update="applyUpdateResult"
+                             v-on:server-error="applyServerError"></app-mirrorsharp>
             <!--app-codemirror v-bind:value="code"
                             v-bind:mode="codeMirrorModes[options.language]"
                             v-bind:lint="lintCodeAsync"
