@@ -29,8 +29,12 @@ namespace TryRoslyn.Web.Api.Integration {
 
             using (var stream = _memoryStreamManager.GetStream()) {
                 var emitResult = compilation.Emit(stream);
-                if (!emitResult.Success)
-                    throw new NotImplementedException();
+                if (!emitResult.Success) {
+                    foreach (var diagnostic in emitResult.Diagnostics) {
+                        diagnostics.Add(diagnostic);
+                    }
+                    return null;
+                }
 
                 stream.Seek(0, SeekOrigin.Begin);
 
