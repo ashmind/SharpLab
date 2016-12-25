@@ -60,6 +60,7 @@
           </header>
           <div class="content">
             <app-mirrorsharp v-bind:value="code"
+                             v-bind:server-options="serverOptions"
                              v-on:after-text-change="code = $arguments[0]()"
                              v-on:after-slow-update="applyUpdateResult"
                              v-on:server-error="applyServerError"></app-mirrorsharp>
@@ -105,8 +106,8 @@
               </select>
             </div>
 
-            <div class="select-wrapper option-optimizations option _unsupported">
-              <select v-model="options.optimizations">
+            <div class="select-wrapper option-optimizations option">
+              <select v-model="options.release">
                 <option v-bind:value="false">Debug</option>
                 <option v-bind:value="true">Release</option>
               </select>

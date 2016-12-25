@@ -20,14 +20,16 @@ function wrap(vue) {
     };
 }
 
-export default function(model) {
+export default function(app) {
     return new Promise(function(resolve, reject) {
         $(function() {
             try {
                 // jshint -W031
                 new Vue({
                     el: 'body',
-                    data: model,
+                    data: app.data,
+                    computed: app.computed,
+                    methods: app.methods,
                     ready: function() {
                         for (let hook of hooks.ready) {
                             hook(this);

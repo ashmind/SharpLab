@@ -31,7 +31,7 @@ function applyServerError(message) {
 }
 
 async function createAppAsync() {
-    const app = Object.assign({
+    const data = Object.assign({
         codeMirrorModes: {
             csharp: 'text/x-csharp',
             vbnet:  'text/x-vb',
@@ -50,7 +50,7 @@ async function createAppAsync() {
             warnings: []
         }
     });
-    state.load(app);
+    state.load(data);
 
     const branchesPromise = (async () => {
         const branches = await getBranchesAsync();
@@ -60,28 +60,36 @@ async function createAppAsync() {
             if (!group) {
                 group = { name: branch.group, branches: [] };
                 groups[branch.group] = group;
-                app.branchGroups.push(group);
+                data.branchGroups.push(group);
             }
             group.branches.push(branch);
         }
         return branches;
     })();
 
-    if (app.options.branchId) {
+    if (data.options.branchId) {
         const branches = await branchesPromise;
-        app.branch = branches.filter(b => b.id === app.options.branchId)[0];
+        data.branch = branches.filter(b => b.id === data.options.branchId)[0];
     }
-
-    app.applyUpdateResult = applyUpdateResult.bind(app);
-    app.applyServerError = applyServerError.bind(app);
-    return app;
+    
+    return {
+        data,
+        computed: {
+            serverOptions: function() {
+                return { optimize: this.options.release ? 'release' : 'debug' };
+            }
+        },
+        methods: { applyUpdateResult, applyServerError }
+    };
 }
 
 (async function runAsync() {
     const app = await createAppAsync();
     const ui = await uiAsync(app);
 
-    ui.watch('code', () => state.save(app));
+    for (let name of ['options', 'code']) {
+        ui.watch(name, () => state.save(app.data), { deep: true });
+    }
 
     /*for (let name of ['options', 'branch']) {
         ui.watch(name,  () => app.processChangeAsync(), { deep: true });

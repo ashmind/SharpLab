@@ -5,11 +5,11 @@ const code = {
 
 export default {
     getOptions: () => ({
-        branch:        null,
-        language:      'csharp',
-        target:        'csharp',
-        mode:          'regular',
-        optimizations: false
+        branch:     null,
+        language:   'csharp',
+        target:     'csharp',
+        mode:       'regular',
+        release:    false
     }),
     
     getCode: (language) => code[language]

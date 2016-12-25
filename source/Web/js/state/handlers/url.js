@@ -69,7 +69,7 @@ function stringifyFlags(options) {
         options.language === 'vbnet' ? 'vb' : '',
         targetMap[options.target],
         options.mode === 'script' ? 's' : '',
-        options.optimizations ? 'r' : ''
+        options.release ? 'r' : ''
     ].join('');
 }
 
@@ -87,10 +87,10 @@ function parseFlags(flags) {
     }
 
     return {
-        language:      /(^|[a-z])vb/.test(flags) ? 'vbnet'  : 'csharp',
-        target:        target,
-        mode:          flags.indexOf('s') > -1   ? 'script' : 'regular',
-        optimizations: flags.indexOf('r') > -1
+        language: /(^|[a-z])vb/.test(flags) ? 'vbnet'  : 'csharp',
+        target:   target,
+        mode:     flags.indexOf('s') > -1   ? 'script' : 'regular',
+        release:  flags.indexOf('r') > -1
     };
 }
 
