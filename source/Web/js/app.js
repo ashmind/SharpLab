@@ -81,6 +81,8 @@ async function createAppAsync() {
     const app = await createAppAsync();
     const ui = await uiAsync(app);
 
+    ui.watch('code', () => state.save(app));
+
     /*for (let name of ['options', 'branch']) {
         ui.watch(name,  () => app.processChangeAsync(), { deep: true });
     }*/

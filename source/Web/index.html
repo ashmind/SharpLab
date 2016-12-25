@@ -60,6 +60,7 @@
           </header>
           <div class="content">
             <app-mirrorsharp v-bind:value="code"
+                             v-on:after-text-change="code = $arguments[0]()"
                              v-on:after-slow-update="applyUpdateResult"
                              v-on:server-error="applyServerError"></app-mirrorsharp>
             <!--app-codemirror v-bind:value="code"

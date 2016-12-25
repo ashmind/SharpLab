@@ -1,11 +1,11 @@
 /* global require:false */
 
 'use strict';
-var gulp = require('gulp');
-var g = require('gulp-load-plugins')();
-var webpack = require('webpack-stream');
-var assign = require('object-assign');
-var pipe = require('multipipe');
+const gulp = require('gulp');
+const g = require('gulp-load-plugins')();
+const webpack = require('webpack-stream');
+const assign = require('object-assign');
+const pipe = require('multipipe');
 
 gulp.task('less', function () {
     return gulp
@@ -65,7 +65,7 @@ gulp.task('html', function () {
         .pipe(gulp.dest('wwwroot'));
 });
 
-gulp.task('watch', ['default'], function () {
+gulp.task('watch', function () {
     gulp.watch('less/**/*.less', ['less']);
     gulp.watch('js/**/*.js', ['js']);
     gulp.watch('favicon*.svg', ['favicons']);
