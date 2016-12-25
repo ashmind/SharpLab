@@ -110,14 +110,14 @@
     <Compile Include="Processing\Languages\Internal\IFeatureDiscovery.cs" />
     <Compile Include="Processing\Languages\Internal\CSharpFeatureDiscovery.cs" />
     <Compile Include="Processing\Languages\Internal\VBNetFeatureDiscovery.cs" />
-    <Compile Include="Processing\Languages\VBNetLanguage.cs" />
-    <Compile Include="Processing\Languages\IRoslynLanguage.cs" />
+    <Compile Include="Processing\Languages\VBNetSetup.cs" />
+    <Compile Include="Processing\Languages\ILanguageSetup.cs" />
     <Compile Include="Decompilation\Support\DecompiledPseudoCSharpOutputVisitor.cs" />
     <Compile Include="Decompilation\Support\OverridableCSharpOutputVisitor.cs" />
     <Compile Include="Decompilation\Support\RoslynFriendlyConvertConstructorCallIntoInitializer.cs" />
     <Compile Include="Decompilation\AstDecompiler.cs" />
     <Compile Include="Decompilation\IDecompiler.cs" />
-    <Compile Include="Processing\Languages\CSharpLanguage.cs" />
+    <Compile Include="Processing\Languages\CSharpSetup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

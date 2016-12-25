@@ -1,5 +1,7 @@
 {
   "name": "_",
+  "version":  "0.0.0",
+  "private": true,
   "devDependencies": {
     "babel-core": "^6.17.0",
     "babel-loader": "^6.2.4",

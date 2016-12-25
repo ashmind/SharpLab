@@ -9,7 +9,7 @@ using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
 namespace TryRoslyn.Core.Processing.Languages {
     [ThreadSafe]
-    public class CSharpLanguage : IRoslynLanguage {
+    public class CSharpSetup : ILanguageSetup {
         private static readonly LanguageVersion MaxLanguageVersion = Enum
             .GetValues(typeof (LanguageVersion))
             .Cast<LanguageVersion>()
@@ -21,7 +21,7 @@ namespace TryRoslyn.Core.Processing.Languages {
 
         private readonly IReadOnlyDictionary<string, string> _features;
 
-        public CSharpLanguage(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
+        public CSharpSetup(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
             _references = referenceCollector.SlowGetMetadataReferencesRecursive(
                 typeof(Binder).Assembly,
                 typeof(ValueTuple<>).Assembly
@@ -30,14 +30,14 @@ namespace TryRoslyn.Core.Processing.Languages {
         }
 
         public LanguageIdentifier Identifier => LanguageIdentifier.CSharp;
+        public string LanguageName => LanguageNames.CSharp;
 
-        public SyntaxTree ParseText(string code, SourceCodeKind kind) {
-            var options = new CSharpParseOptions(
+        public ParseOptions GetParseOptions(SourceCodeKind kind) {
+            return new CSharpParseOptions(
                 kind: kind,
                 languageVersion: MaxLanguageVersion,
                 preprocessorSymbols: PreprocessorSymbols
             ).WithFeatures(_features);
-            return CSharpSyntaxTree.ParseText(code, options);
         }
 
         public Compilation CreateLibraryCompilation(string assemblyName, bool optimizationsEnabled) {

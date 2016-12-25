@@ -9,7 +9,7 @@ using TryRoslyn.Core.Processing.Languages.Internal;
 
 namespace TryRoslyn.Core.Processing.Languages {
     [ThreadSafe]
-    public class VBNetLanguage : IRoslynLanguage {
+    public class VBNetSetup : ILanguageSetup {
         private static readonly LanguageVersion MaxLanguageVersion = Enum
             .GetValues(typeof(LanguageVersion))
             .Cast<LanguageVersion>()
@@ -19,7 +19,7 @@ namespace TryRoslyn.Core.Processing.Languages {
         private readonly IReadOnlyCollection<MetadataReference> _references;
         private readonly IReadOnlyDictionary<string, string> _features;
 
-        public VBNetLanguage(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
+        public VBNetSetup(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
             _references = referenceCollector.SlowGetMetadataReferencesRecursive(
                 typeof(StandardModuleAttribute).Assembly,
                 typeof(ValueTuple<>).Assembly
@@ -28,13 +28,13 @@ namespace TryRoslyn.Core.Processing.Languages {
         }
 
         public LanguageIdentifier Identifier => LanguageIdentifier.VBNet;
+        public string LanguageName => LanguageNames.VisualBasic;
 
-        public SyntaxTree ParseText(string code, SourceCodeKind kind) {
-            var options = new VisualBasicParseOptions(
+        public ParseOptions GetParseOptions(SourceCodeKind kind) {
+            return new VisualBasicParseOptions(
                 kind: kind,
                 languageVersion: MaxLanguageVersion
             ).WithFeatures(_features);
-            return VisualBasicSyntaxTree.ParseText(code, options);
         }
 
         public Compilation CreateLibraryCompilation(string assemblyName, bool optimizationsEnabled) {

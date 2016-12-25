@@ -3,9 +3,10 @@ using Microsoft.CodeAnalysis;
 
 namespace TryRoslyn.Core.Processing.Languages {
     [ThreadSafe]
-    public interface IRoslynLanguage {
+    public interface ILanguageSetup {
         LanguageIdentifier Identifier { get; }
-        SyntaxTree ParseText(string code, SourceCodeKind kind);
+        string LanguageName { get; }
+        ParseOptions GetParseOptions(SourceCodeKind kind);
         Compilation CreateLibraryCompilation(string assemblyName, bool optimizationsEnabled);
     }
 }

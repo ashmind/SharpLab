@@ -23,13 +23,13 @@ namespace TryRoslyn.Core {
                    .Keyed<IFeatureDiscovery>(LanguageIdentifier.VBNet)
                    .SingleInstance();
 
-            builder.RegisterType<CSharpLanguage>()
-                   .As<IRoslynLanguage>()
+            builder.RegisterType<CSharpSetup>()
+                   .As<ILanguageSetup>()
                    .WithParameter(ResolvedParameter.ForKeyed<IFeatureDiscovery>(LanguageIdentifier.CSharp))
                    .SingleInstance();
 
-            builder.RegisterType<VBNetLanguage>()
-                   .As<IRoslynLanguage>()
+            builder.RegisterType<VBNetSetup>()
+                   .As<ILanguageSetup>()
                    .WithParameter(ResolvedParameter.ForKeyed<IFeatureDiscovery>(LanguageIdentifier.VBNet))
                    .SingleInstance();
 
