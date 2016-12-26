@@ -14,11 +14,12 @@ Vue.component('app-mirrorsharp', {
             serviceUrl: "ws://" + window.location.host + "/mirrorsharp",
             afterSlowUpdate: result  => this.$emit('after-slow-update', result),
             afterTextChange: getText => this.$emit('after-text-change', getText),
-            onServerError:   message => this.$emit('server-error', message)
+            onServerError:   message => this.$emit('server-error', message),
+            selfDebugEnabled: true
         });
         if (this.serverOptions)
-            instance.setServerOptions(this.serverOptions);
-        this.$watch('serverOptions', o => instance.setServerOptions(o), { deep: true });
+            instance.sendServerOptions(this.serverOptions);
+        this.$watch('serverOptions', o => instance.sendServerOptions(o), { deep: true });
     },
     template: '<textarea></textarea>'
 });
