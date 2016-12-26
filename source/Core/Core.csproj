@@ -96,7 +96,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AgentHeisenbug.Annotations.cs" />
     <Compile Include="Decompilation\ILDecompiler.cs" />
     <Compile Include="Decompilation\Support\ILCommentingTextOutput.cs" />
     <Compile Include="LanguageIdentifier.cs" />
@@ -105,19 +104,19 @@
     <Compile Include="Decompilation\VBNetDecompiler.cs" />
     <Compile Include="Decompilation\CSharpDecompiler.cs" />
     <Compile Include="Decompilation\Support\CustomizableIndentPlainTextOutput.cs" />
-    <Compile Include="Processing\Languages\Internal\IMetadataReferenceCollector.cs" />
-    <Compile Include="Processing\Languages\Internal\MetadataReferenceCollector.cs" />
-    <Compile Include="Processing\Languages\Internal\IFeatureDiscovery.cs" />
-    <Compile Include="Processing\Languages\Internal\CSharpFeatureDiscovery.cs" />
-    <Compile Include="Processing\Languages\Internal\VBNetFeatureDiscovery.cs" />
-    <Compile Include="Processing\Languages\VBNetSetup.cs" />
-    <Compile Include="Processing\Languages\ILanguageSetup.cs" />
+    <Compile Include="Compilation\Internal\IMetadataReferenceCollector.cs" />
+    <Compile Include="Compilation\Internal\MetadataReferenceCollector.cs" />
+    <Compile Include="Compilation\Internal\IFeatureDiscovery.cs" />
+    <Compile Include="Compilation\Internal\CSharpFeatureDiscovery.cs" />
+    <Compile Include="Compilation\Internal\VBNetFeatureDiscovery.cs" />
+    <Compile Include="Compilation\VBNetSetup.cs" />
+    <Compile Include="Compilation\ILanguageSetup.cs" />
     <Compile Include="Decompilation\Support\DecompiledPseudoCSharpOutputVisitor.cs" />
     <Compile Include="Decompilation\Support\OverridableCSharpOutputVisitor.cs" />
     <Compile Include="Decompilation\Support\RoslynFriendlyConvertConstructorCallIntoInitializer.cs" />
     <Compile Include="Decompilation\AstDecompiler.cs" />
     <Compile Include="Decompilation\IDecompiler.cs" />
-    <Compile Include="Processing\Languages\CSharpSetup.cs" />
+    <Compile Include="Compilation\CSharpSetup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

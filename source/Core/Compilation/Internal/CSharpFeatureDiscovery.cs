@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace TryRoslyn.Core.Processing.Languages.Internal {
+namespace TryRoslyn.Core.Compilation.Internal {
     public class CSharpFeatureDiscovery : IFeatureDiscovery {
         public IReadOnlyCollection<string> SlowDiscoverAll() {
             var assembly = typeof(CSharpCompilation).Assembly;

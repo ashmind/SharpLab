@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Autofac;
+﻿using Autofac;
 using Autofac.Core;
+using JetBrains.Annotations;
+using TryRoslyn.Core.Compilation;
+using TryRoslyn.Core.Compilation.Internal;
 using TryRoslyn.Core.Decompilation;
-using TryRoslyn.Core.Processing;
-using TryRoslyn.Core.Processing.Languages;
-using TryRoslyn.Core.Processing.Languages.Internal;
 
 namespace TryRoslyn.Core {
+    [UsedImplicitly]
     public class CoreModule : Module {
         protected override void Load(ContainerBuilder builder) {
             builder.RegisterType<MetadataReferenceCollector>()

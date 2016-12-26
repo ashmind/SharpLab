@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 
-namespace TryRoslyn.Core.Processing.Languages.Internal {
+namespace TryRoslyn.Core.Compilation.Internal {
     public class MetadataReferenceCollector : IMetadataReferenceCollector {
         public IEnumerable<MetadataReference> SlowGetMetadataReferencesRecursive(params Assembly[] assemblies) {
             foreach (var assembly in SlowCollectAllReferencedAssemblies(assemblies)) {

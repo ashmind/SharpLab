@@ -8,12 +8,10 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler.Ast.Transforms;
 using ICSharpCode.NRefactory.CSharp;
-using JetBrains.Annotations;
 using Mono.Cecil;
 using TryRoslyn.Core.Decompilation.Support;
 
 namespace TryRoslyn.Core.Decompilation {
-    [ThreadSafe]
     public abstract class AstDecompiler : IDecompiler {
         private static readonly ConcurrentDictionary<string, AssemblyDefinition> AssemblyCache = new ConcurrentDictionary<string, AssemblyDefinition>();
 

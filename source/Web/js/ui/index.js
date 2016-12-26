@@ -24,6 +24,7 @@ export default function(app) {
     return new Promise(function(resolve, reject) {
         $(function() {
             try {
+                // ReSharper disable once ConstructorCallNotUsed
                 // jshint -W031
                 new Vue({
                     el: 'body',

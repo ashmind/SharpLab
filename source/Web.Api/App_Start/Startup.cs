@@ -10,8 +10,8 @@ using MirrorSharp;
 using MirrorSharp.Advanced;
 using MirrorSharp.Owin;
 using Owin;
+using TryRoslyn.Core.Compilation;
 using TryRoslyn.Core.Decompilation;
-using TryRoslyn.Core.Processing.Languages;
 using TryRoslyn.Web.Api;
 
 [assembly: OwinStartup(typeof(Startup), nameof(Startup.Configuration))]
@@ -33,11 +33,15 @@ namespace TryRoslyn.Web.Api {
             };
             app.UseCors(corsOptions);
 
-            var parseOptions = container.Resolve<ILanguageSetup[]>().ToDictionary(
-                s => s.LanguageName, s => s.GetParseOptions(SourceCodeKind.Regular)
-            );
+            var languageSetups = container.Resolve<ILanguageSetup[]>();
+            var parseOptions = languageSetups.ToDictionary(s => s.LanguageName, s => s.GetParseOptions(SourceCodeKind.Regular));
+            var compilationOptions = languageSetups.ToDictionary(s => s.LanguageName, s => s.GetCompilationOptions());
+            var metadataReferences = languageSetups.ToDictionary(s => s.LanguageName, s => s.GetMetadataReferences());
+
             app.UseMirrorSharp(new MirrorSharpOptions {
                 GetDefaultParseOptionsByLanguageName = name => parseOptions[name],
+                GetDefaultCompilationOptionsByLanguageName = name => compilationOptions[name],
+                GetDefaultMetadataReferencesByLanguageName = name => metadataReferences[name],
                 SetOptionsFromClient = container.Resolve<ISetOptionsFromClientExtension>(),
                 SlowUpdate = container.Resolve<ISlowUpdateExtension>()
             });

@@ -1,5 +1,5 @@
 /* globals module:false, require:false */
-var webpack = require('webpack');
+//var webpack = require('webpack');
 var path = require('path');
 
 module.exports = {

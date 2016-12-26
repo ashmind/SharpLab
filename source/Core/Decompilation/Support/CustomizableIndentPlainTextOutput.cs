@@ -23,6 +23,7 @@ using ICSharpCode.NRefactory;
 
 // this is a slightly modified copy of CSharpOutputVisitor from NRefactory,
 // so any code issues in this file will be ignored.
+// ReSharper disable All
 
 namespace TryRoslyn.Core.Decompilation.Support {
     public sealed class CustomizableIndentPlainTextOutput : ITextOutput {

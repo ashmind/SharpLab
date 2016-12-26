@@ -1,5 +1,4 @@
-﻿import $ from 'jquery';
-import Vue from 'vue';
+﻿import Vue from 'vue';
 
 const savedHrefKey = 'app-favicon-replace-href::saved';
 

@@ -1,5 +1,4 @@
 import $ from 'jquery';
-import Vue from 'vue';
 import registry from './registry';
 
 registry.ready.push(function(vue) {
