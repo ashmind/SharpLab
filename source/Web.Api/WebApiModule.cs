@@ -16,6 +16,10 @@ namespace TryRoslyn.Web.Api {
             builder.RegisterType<SlowUpdate>()
                    .As<ISlowUpdateExtension>()
                    .SingleInstance();
+
+            builder.RegisterType<SetOptionsFromClient>()
+                   .As<ISetOptionsFromClientExtension>()
+                   .SingleInstance();
         }
     }
 }

@@ -76,7 +76,10 @@ async function createAppAsync() {
         data,
         computed: {
             serverOptions: function() {
-                return { optimize: this.options.release ? 'release' : 'debug' };
+                return {
+                    optimize: this.options.release ? 'release' : 'debug',
+                    'x-target-language': this.options.target
+                };
             }
         },
         methods: { applyUpdateResult, applyServerError }

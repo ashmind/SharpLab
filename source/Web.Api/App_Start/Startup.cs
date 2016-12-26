@@ -38,6 +38,7 @@ namespace TryRoslyn.Web.Api {
             );
             app.UseMirrorSharp(new MirrorSharpOptions {
                 GetDefaultParseOptionsByLanguageName = name => parseOptions[name],
+                SetOptionsFromClient = container.Resolve<ISetOptionsFromClientExtension>(),
                 SlowUpdate = container.Resolve<ISlowUpdateExtension>()
             });
         }
