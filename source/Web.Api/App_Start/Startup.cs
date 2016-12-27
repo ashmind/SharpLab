@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Cors;
@@ -43,7 +44,8 @@ namespace TryRoslyn.Web.Api {
                 GetDefaultCompilationOptionsByLanguageName = name => compilationOptions[name],
                 GetDefaultMetadataReferencesByLanguageName = name => metadataReferences[name],
                 SetOptionsFromClient = container.Resolve<ISetOptionsFromClientExtension>(),
-                SlowUpdate = container.Resolve<ISlowUpdateExtension>()
+                SlowUpdate = container.Resolve<ISlowUpdateExtension>(),
+                IncludeExceptionDetails = true
             });
         }
 

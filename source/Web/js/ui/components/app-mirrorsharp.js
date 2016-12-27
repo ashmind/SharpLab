@@ -14,8 +14,7 @@ Vue.component('app-mirrorsharp', {
             serviceUrl: "ws://" + window.location.host + "/mirrorsharp",
             afterSlowUpdate: result  => this.$emit('after-slow-update', result),
             afterTextChange: getText => this.$emit('after-text-change', getText),
-            onServerError:   message => this.$emit('server-error', message),
-            selfDebugEnabled: true
+            onServerError:   message => this.$emit('server-error', message)
         });
         if (this.serverOptions)
             instance.sendServerOptions(this.serverOptions);
