@@ -89,6 +89,7 @@ section {
         padding-left: 7px;
         color: #fff;
         background-color: @primary-color;
+        font-family: 'Roboto Condensed', sans-serif;
     }
 
     h1 {
@@ -96,7 +97,6 @@ section {
         margin-top: auto;
         margin-bottom: auto;
 
-        font-family: 'Roboto Condensed', sans-serif;
         font-size: 100%;
         font-weight: normal;
     }
@@ -170,12 +170,20 @@ section.info-only {
 }
 
 .errors header,
-.failed .code header {
+.root-status-error .code header {
     background-color: @error-color;
 }
 
 .warnings header {
     background-color: @warning-color;
+}
+
+.root-status-offline  {
+    .code, .decompiled {
+        header {
+            background-color: @offline-color;
+        }
+    }
 }
 
 .commit-message {
@@ -203,6 +211,7 @@ section.info-only {
 @import 'imports/loader.less';
 @import 'imports/mobile.less';
 @import 'imports/codemirror.less';
+@import 'imports/offline.less';
 
 ._unsupported {
     pointer-events: none;

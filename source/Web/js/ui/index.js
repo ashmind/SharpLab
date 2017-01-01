@@ -5,7 +5,7 @@ import hooks from './hooks/registry';
 import './filters/app-date';
 import './filters/app-trim';
 import './components/app-codemirror';
-import './components/app-favicon-replace-href';
+import './components/app-favicon-manager';
 import './components/app-loader';
 import './components/app-mirrorsharp';
 import './components/app-mirrorsharp-diagnostic';
@@ -27,7 +27,7 @@ export default function(app) {
                 // ReSharper disable once ConstructorCallNotUsed
                 // jshint -W031
                 new Vue({
-                    el: 'body',
+                    el: 'html',
                     data: app.data,
                     computed: app.computed,
                     methods: app.methods,

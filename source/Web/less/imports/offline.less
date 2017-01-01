@@ -1,0 +1,38 @@
+﻿@import 'mobile.less';
+
+/* TODO: https://github.com/ashmind/mirrorsharp/issues/48 */
+.CodeMirror.mirrorsharp-connection-has-issue {
+    padding-top: 0;
+}
+.mirrorsharp-connection-has-issue .mirrorsharp-connection-issue {
+    display: none;
+}
+
+.offline-only {
+    display: none;
+
+    .code header & {
+        margin-left: 10px;
+    }
+}
+
+.root-status-offline {
+    .languages-and-modes {
+        display: none;
+        .mobile-compact({
+            /* if it's in menu, no reason to hide it */
+            display: block;
+        });
+    }
+
+    header .offline-only {
+        display: inline-block;
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+
+    select {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+}

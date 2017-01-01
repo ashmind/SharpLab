@@ -30,6 +30,10 @@ function applyServerError(message) {
     };
 }
 
+function applyConnectionChange(connectionState) {
+    this.online = (connectionState === 'open');
+}
+
 async function createAppAsync() {
     const data = Object.assign({
         codeMirrorModes: {
@@ -41,6 +45,7 @@ async function createAppAsync() {
         branchGroups: [],
         branch: null,
 
+        online: true,
         loading: false,
 
         result: {
@@ -80,9 +85,16 @@ async function createAppAsync() {
                     optimize: this.options.release ? 'release' : 'debug',
                     'x-target-language': this.options.target
                 };
+            },
+            status: function() {
+                if (!this.online)
+                    return { name: 'offline', color: '#aaa' };
+                if (!this.result.success)
+                    return { name: 'error', color: '#dc3912' };
+                return { name: 'default', color: '#4684ee' };
             }
         },
-        methods: { applyUpdateResult, applyServerError }
+        methods: { applyUpdateResult, applyServerError, applyConnectionChange }
     };
 }
 

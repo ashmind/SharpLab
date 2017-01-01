@@ -1,5 +1,12 @@
 @import 'common.less';
 
+.mobile-compact(@rules) {
+    @media screen and (orientation: portrait) and (max-device-width: 700px),
+           screen and (orientation: portrait) and (max-width: 700px) {
+        @rules();
+    }
+}
+
 .mobile-menu-button, .mobile-menu {
     display: none;
 }
@@ -33,9 +40,7 @@
     }
 }
 
-@media screen and (orientation: portrait) and (max-device-width: 700px),
-       screen and (orientation: portrait) and (max-width: 700px) {
-
+.mobile-compact({
     .mobile-menu-button {
         display: inline-block;
         vertical-align: middle;
@@ -131,7 +136,7 @@
     main + footer {
         font-size: 70%;
     }
-}
+});
 
 @media screen and (orientation: landscape) and (max-device-width: 600px) {
     body.mobile-editor-focus {

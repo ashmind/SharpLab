@@ -3,26 +3,24 @@
   <head>
     <meta charset="UTF-8">
     <title>Try Roslyn</title>
-
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
     <meta name="theme-color" content="#4684ee">
 
-    <link rel="icon" type="image/svg+xml" href="favicons/favicon.svg">
-    <link rel="icon" type="image/png" href="favicons/favicon-256.png" sizes="256x256">
-    <link rel="icon" type="image/png" href="favicons/favicon-196.png" sizes="196x196">
-    <link rel="icon" type="image/png" href="favicons/favicon-128.png" sizes="128x128">
-    <link rel="icon" type="image/png" href="favicons/favicon-96.png" sizes="96x96">
-    <link rel="icon" type="image/png" href="favicons/favicon-64.png" sizes="64x64">
-    <link rel="icon" type="image/png" href="favicons/favicon-32.png" sizes="32x32">
-    <link rel="icon" type="image/png" href="favicons/favicon-16.png" sizes="16x16">
-    <app-favicon-replace-href v-bind:if="!result.success"
-                              regexp="favicons"
-                              with="favicons/error"></app-favicon-replace-href>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,{build:favicon-svg}">
+    <link rel="icon" type="image/png" href="favicon-256.png" sizes="256x256">
+    <link rel="icon" type="image/png" href="favicon-196.png" sizes="196x196">
+    <link rel="icon" type="image/png" href="favicon-128.png" sizes="128x128">
+    <link rel="icon" type="image/png" href="favicon-96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="favicon-64.png" sizes="64x64">
+    <link rel="icon" type="image/png" href="favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="favicon-16.png" sizes="16x16">
+    <app-favicon-manager default-color="#4684ee" v-bind:color="status.color"></app-favicon-manager>
+
     <!-- build:css -->
     <!-- endbuild -->
   </head>
   <body data-mobile-codemirror-fullscreen-class="mobile-editor-focus">
-    <main v-bind:class="{failed: !result.success}">
+    <main class="root-status-{{status.name}}">
       <div class="section-group">
         <section class="code">
           <header>
@@ -43,6 +41,7 @@
                 </select>
               </div>
             </div>
+            <div class="offline-only">[connection lost, reconnecting…]</div>
 
             <div class="select-wrapper option-branch option _unsupported">
               <select v-model="branch">
@@ -52,7 +51,7 @@
                 </optgroup>
               </select>
             </div>
-
+            
             <app-mobile-shelf class="mobile-menu"
                               toggle=".code .mobile-menu-button"
                               container=".code"
@@ -61,9 +60,10 @@
           <div class="content">
             <app-mirrorsharp v-bind:value="code"
                              v-bind:server-options="serverOptions"
-                             v-on:after-text-change="code = $arguments[0]()"
-                             v-on:after-slow-update="applyUpdateResult"
-                             v-on:server-error="applyServerError"></app-mirrorsharp>
+                             v-on:text-change="code = $arguments[0]()"
+                             v-on:slow-update-result="applyUpdateResult"
+                             v-on:server-error="applyServerError"
+                             v-on:connection-change="applyConnectionChange"></app-mirrorsharp>
             <!--app-codemirror v-bind:value="code"
                             v-bind:mode="codeMirrorModes[options.language]"
                             v-bind:lint="lintCodeAsync"
@@ -158,7 +158,7 @@
       Built by Andrey Shchekin (<a href="http://twitter.com/ashmind">@ashmind</a>). See <a href="http://github.com/ashmind/TryRoslyn">TryRoslyn</a> on GitHub.
     </footer>
 
-    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
     <!-- build:js -->
     <!-- endbuild -->
 
