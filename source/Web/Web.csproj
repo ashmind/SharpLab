@@ -187,12 +187,12 @@
     <None Include="js\ui\components\app-loader.js" />
     <None Include="js\ui\components\app-mirrorsharp-diagnostic.js" />
     <None Include="js\ui\components\app-mirrorsharp.js" />
-    <Content Include="less\imports\offline.less" />
+    <None Include="less\imports\offline.less" />
     <None Include="webpack.config.js" />
     <None Include=".brackets.json" />
     <None Include="gulpfile.js" />
     <None Include="favicon.svg" />
-    <Content Include="index.html" />
+    <None Include="index.html" />
     <None Include="js\app.js" />
     <None Include="js\server\get-branches-async.js" />
     <None Include="js\state\handlers\defaults.js" />
@@ -205,7 +205,7 @@
     <None Include="js\ui\hooks\app-mobile-codemirror-fullscreen.js" />
     <None Include="js\ui\hooks\registry.js" />
     <None Include="js\ui\index.js" />
-    <Content Include="js\ui\components\app-favicon-manager.js" />
+    <None Include="js\ui\components\app-favicon-manager.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
