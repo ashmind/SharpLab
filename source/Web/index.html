@@ -26,20 +26,11 @@
           <header>
             <button class="mobile-menu-button"></button>
             <h1>Code</h1>
-            <div class="languages-and-modes">
-              <div class="select-wrapper option-language option">
-                <select v-model="options.language">
-                  <option value="{{languages.csharp}}">C#</option>
-                  <option value="{{languages.vb}}">Visual Basic</option>
-                </select>
-              </div>
-
-              <div class="select-wrapper option-mode option _unsupported">
-                <select v-model="options.mode">
-                  <option value="regular">Standard</option>
-                  <option value="script">Script</option>
-                </select>
-              </div>
+            <div class="select-wrapper option-language option">
+              <select v-model="options.language">
+                <option value="{{languages.csharp}}">C#</option>
+                <option value="{{languages.vb}}">Visual Basic</option>
+              </select>
             </div>
             <div class="offline-only">[connection lost, reconnecting…]</div>
 

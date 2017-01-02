@@ -29,12 +29,9 @@ namespace TryRoslyn.Core.Compilation {
 
         public string LanguageName => LanguageNames.CSharp;
 
-        public ParseOptions GetParseOptions(SourceCodeKind kind) {
-            return new CSharpParseOptions(
-                kind: kind,
-                languageVersion: MaxLanguageVersion,
-                preprocessorSymbols: PreprocessorSymbols
-            ).WithFeatures(_features);
+        public ParseOptions GetParseOptions() {
+            return new CSharpParseOptions(MaxLanguageVersion, preprocessorSymbols: PreprocessorSymbols)
+                .WithFeatures(_features);
         }
 
         public CompilationOptions GetCompilationOptions() {

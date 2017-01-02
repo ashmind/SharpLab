@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Cors;
 using Autofac;
-using Microsoft.CodeAnalysis;
 using Microsoft.Owin;
 using Microsoft.Owin.Cors;
 using MirrorSharp;
@@ -35,7 +34,7 @@ namespace TryRoslyn.Web.Api {
             app.UseCors(corsOptions);
 
             var languageSetups = container.Resolve<ILanguageSetup[]>();
-            var parseOptions = languageSetups.ToDictionary(s => s.LanguageName, s => s.GetParseOptions(SourceCodeKind.Regular));
+            var parseOptions = languageSetups.ToDictionary(s => s.LanguageName, s => s.GetParseOptions());
             var compilationOptions = languageSetups.ToDictionary(s => s.LanguageName, s => s.GetCompilationOptions());
             var metadataReferences = languageSetups.ToDictionary(s => s.LanguageName, s => s.GetMetadataReferences());
 

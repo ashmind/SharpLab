@@ -1,6 +1,4 @@
-﻿using System;
-using MirrorSharp.Advanced;
-using TryRoslyn.Core;
+﻿using MirrorSharp.Advanced;
 
 namespace TryRoslyn.Web.Api.Integration {
     public class SetOptionsFromClient : ISetOptionsFromClientExtension {

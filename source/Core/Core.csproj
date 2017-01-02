@@ -99,7 +99,6 @@
     <Compile Include="Decompilation\ILDecompiler.cs" />
     <Compile Include="Decompilation\Support\ILCommentingTextOutput.cs" />
     <Compile Include="CoreModule.cs" />
-    <Compile Include="ProcessingOptions.cs" />
     <Compile Include="Decompilation\VisualBasicDecompiler.cs" />
     <Compile Include="Decompilation\CSharpDecompiler.cs" />
     <Compile Include="Decompilation\Support\CustomizableIndentPlainTextOutput.cs" />

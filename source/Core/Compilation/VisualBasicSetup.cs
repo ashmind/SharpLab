@@ -28,11 +28,8 @@ namespace TryRoslyn.Core.Compilation {
 
         public string LanguageName => LanguageNames.VisualBasic;
 
-        public ParseOptions GetParseOptions(SourceCodeKind kind) {
-            return new VisualBasicParseOptions(
-                kind: kind,
-                languageVersion: MaxLanguageVersion
-            ).WithFeatures(_features);
+        public ParseOptions GetParseOptions() {
+            return new VisualBasicParseOptions(MaxLanguageVersion).WithFeatures(_features);
         }
 
         public CompilationOptions GetCompilationOptions() {

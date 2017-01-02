@@ -69,7 +69,6 @@ function stringifyFlags(options) {
     return [
         options.language === languages.vb ? 'vb' : '',
         targetMap[options.target],
-        options.mode === 'script' ? 's' : '',
         options.release ? 'r' : ''
     ].join('');
 }
@@ -90,7 +89,6 @@ function parseFlags(flags) {
     return {
         language: /(^|[a-z])vb/.test(flags) ? languages.vb : languages.csharp,
         target:   target,
-        mode:     flags.indexOf('s') > -1   ? 'script' : 'regular',
         release:  flags.indexOf('r') > -1
     };
 }

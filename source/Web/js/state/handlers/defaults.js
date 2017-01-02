@@ -10,7 +10,6 @@ export default {
         branch:     null,
         language:   languages.csharp,
         target:     languages.csharp,
-        mode:       'regular',
         release:    false
     }),
     
