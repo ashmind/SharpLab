@@ -21,6 +21,7 @@ function applyUpdateResult(updateResult) {
         }
     }
     this.result = result;
+    this.loading = false;
 }
 
 function applyServerError(message) {
@@ -29,6 +30,7 @@ function applyServerError(message) {
         errors: [{ message: message }],
         warnings: []
     };
+    this.loading = false;
 }
 
 function applyConnectionChange(connectionState) {
@@ -48,7 +50,7 @@ async function createAppAsync() {
         branch: null,
 
         online: true,
-        loading: false,
+        loading: true,
 
         result: {
             success: true,
