@@ -4,11 +4,11 @@ import hooks from './hooks/registry';
 
 import './filters/app-date';
 import './filters/app-trim';
-import './components/app-codemirror';
 import './components/app-favicon-manager';
 import './components/app-loader';
 import './components/app-mirrorsharp';
 import './components/app-mirrorsharp-diagnostic';
+import './components/app-mirrorsharp-readonly';
 import './components/app-mobile-shelf';
 import './hooks/app-mobile-codemirror-fullscreen';
 

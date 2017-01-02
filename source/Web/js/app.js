@@ -40,11 +40,6 @@ function applyConnectionChange(connectionState) {
 async function createAppAsync() {
     const data = Object.assign({
         languages: languages,
-        codeMirrorModes: {
-            csharp: 'text/x-csharp',
-            vbnet:  'text/x-vb',
-            il:     ''
-        },
 
         branchGroups: [],
         branch: null,

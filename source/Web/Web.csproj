@@ -195,7 +195,7 @@
   <ItemGroup>
     <None Include="browserslist" />
     <None Include="js\helpers\warn.js" />
-    <None Include="js\ui\components\app-codemirror.js" />
+    <None Include="js\ui\components\app-mirrorsharp-readonly.js" />
     <None Include="js\ui\components\app-loader.js" />
     <None Include="js\ui\components\app-mirrorsharp-diagnostic.js" />
     <None Include="js\ui\components\app-mirrorsharp.js" />

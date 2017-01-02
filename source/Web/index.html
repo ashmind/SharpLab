@@ -110,9 +110,8 @@
           </header>
           <div class="content">
             <app-loader></app-loader>
-            <app-codemirror v-bind:value="result.decompiled"
-                            v-bind:mode="codeMirrorModes[options.target]"
-                            v-bind:options="{ readOnly: true, indentUnit: 4 }"></app-codemirror>
+            <app-mirrorsharp-readonly v-bind:value="result.decompiled"
+                                      v-bind:language="options.target"></app-mirrorsharp-readonly>
           </div>
         </section>
 
