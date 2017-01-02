@@ -1,3 +1,4 @@
+import languages from 'helpers/languages';
 import $ from 'jquery';
 import LZString from 'lz-string';
 
@@ -55,8 +56,8 @@ function onchange(callback) {
     });
 }
 
-var targetMap = { csharp: '', vbnet: '>vb', il: '>il' };
-var targetMapReverse = (() => {
+const targetMap = { [languages.csharp]: '', [languages.vb]: '>vb', [languages.il]: '>il' };
+const targetMapReverse = (() => {
     const result = {};
     for (let key in targetMap) {
         result[targetMap[key]] = key;
@@ -66,7 +67,7 @@ var targetMapReverse = (() => {
 
 function stringifyFlags(options) {
     return [
-        options.language === 'vbnet' ? 'vb' : '',
+        options.language === languages.vb ? 'vb' : '',
         targetMap[options.target],
         options.mode === 'script' ? 's' : '',
         options.release ? 'r' : ''
@@ -87,7 +88,7 @@ function parseFlags(flags) {
     }
 
     return {
-        language: /(^|[a-z])vb/.test(flags) ? 'vbnet'  : 'csharp',
+        language: /(^|[a-z])vb/.test(flags) ? languages.vb : languages.csharp,
         target:   target,
         mode:     flags.indexOf('s') > -1   ? 'script' : 'regular',
         release:  flags.indexOf('r') > -1

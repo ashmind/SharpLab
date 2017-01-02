@@ -66,7 +66,7 @@ gulp.task('html', () => {
         .pipe(gulp.dest('wwwroot'));
 });
 
-gulp.task('watch', () => {
+gulp.task('watch', ['default'], () => {
     gulp.watch('less/**/*.less', ['less']);
     gulp.watch('js/**/*.js', ['js']);
     gulp.watch('favicon*.svg', ['favicons']);

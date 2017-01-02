@@ -1,15 +1,14 @@
 ﻿using AshMind.Extensions;
 using MirrorSharp.Advanced;
-using TryRoslyn.Core;
 
 namespace TryRoslyn.Web.Api.Integration {
     public static class WorkSessionExtensions {
-        public static LanguageIdentifier? GetTargetLanguage(this IWorkSession session) {
-            return (LanguageIdentifier?)session.ExtensionData.GetValueOrDefault("TargetLanguage");
+        public static string GetTargetLanguageName(this IWorkSession session) {
+            return (string)session.ExtensionData.GetValueOrDefault("TargetLanguageName");
         }
 
-        public static void SetTargetLanguage(this IWorkSession session, LanguageIdentifier value) {
-            session.ExtensionData["TargetLanguage"] = value;
+        public static void SetTargetLanguageName(this IWorkSession session, string value) {
+            session.ExtensionData["TargetLanguageName"] = value;
         }
     }
 }

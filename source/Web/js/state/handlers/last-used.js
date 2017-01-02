@@ -1,5 +1,5 @@
 import warn from 'helpers/warn';
-
+const version = 2;
 export default {
     loadOptions: function() {
         var loaded = localStorage['tryroslyn.options'];
@@ -7,7 +7,10 @@ export default {
             return null;
 
         try {
-            return JSON.parse(loaded);
+            const parsed = JSON.parse(loaded);
+            if (parsed.version !== version)
+                return null;
+            return parsed.options;
         }
         catch (ex) {
             warn('Failed to load options:', ex);
@@ -17,7 +20,7 @@ export default {
 
     saveOptions: function(options) {
         try {
-            localStorage['tryroslyn.options'] = JSON.stringify(options);
+            localStorage['tryroslyn.options'] = JSON.stringify({ version, options });
         }
         catch (ex) {
             warn('Failed to save options:', ex);

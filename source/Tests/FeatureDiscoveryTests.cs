@@ -10,7 +10,7 @@ namespace TryRoslyn.Tests {
 
         [Fact]
         public void VBNetDiscoverAll_ReturnsExpectedFeature() {
-            Assert.Contains("IOperation", new VBNetFeatureDiscovery().SlowDiscoverAll());
+            Assert.Contains("IOperation", new VisualBasicFeatureDiscovery().SlowDiscoverAll());
         }
     }
 }

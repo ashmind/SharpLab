@@ -5,11 +5,12 @@ using ICSharpCode.ILSpy.VB;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.VB;
 using ICSharpCode.NRefactory.VB.Visitors;
+using Microsoft.CodeAnalysis;
 using TryRoslyn.Core.Decompilation.Support;
 using AstNode = ICSharpCode.NRefactory.CSharp.AstNode;
 
 namespace TryRoslyn.Core.Decompilation {
-    public class VBNetDecompiler : AstDecompiler {
+    public class VisualBasicDecompiler : AstDecompiler {
         protected override void WriteResult(TextWriter writer, IEnumerable<AstNode> ast, DecompilerContext context) {
             var converter = new CSharpToVBConverterVisitor(new ILSpyEnvironmentProvider());
             var visitor = new OutputVisitor(
@@ -25,6 +26,6 @@ namespace TryRoslyn.Core.Decompilation {
             }
         }
 
-        public override LanguageIdentifier Language => LanguageIdentifier.VBNet;
+        public override string LanguageName => LanguageNames.VisualBasic;
     }
 }

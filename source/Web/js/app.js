@@ -1,3 +1,4 @@
+import languages from 'helpers/languages';
 import getBranchesAsync from './server/get-branches-async';
 
 import state from './state';
@@ -36,6 +37,7 @@ function applyConnectionChange(connectionState) {
 
 async function createAppAsync() {
     const data = Object.assign({
+        languages: languages,
         codeMirrorModes: {
             csharp: 'text/x-csharp',
             vbnet:  'text/x-vb',
@@ -76,12 +78,13 @@ async function createAppAsync() {
         const branches = await branchesPromise;
         data.branch = branches.filter(b => b.id === data.options.branchId)[0];
     }
-    
+
     return {
         data,
         computed: {
             serverOptions: function() {
                 return {
+                    language: this.options.language,
                     optimize: this.options.release ? 'release' : 'debug',
                     'x-target-language': this.options.target
                 };

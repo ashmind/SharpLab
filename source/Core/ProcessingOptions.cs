@@ -6,6 +6,5 @@ namespace TryRoslyn.Core {
     [Serializable]
     public class ProcessingOptions {
         public bool ScriptMode { get; set; }
-        public LanguageIdentifier SourceLanguage { get; set; }
     }
 }

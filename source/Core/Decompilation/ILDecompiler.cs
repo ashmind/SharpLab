@@ -19,6 +19,6 @@ namespace TryRoslyn.Core.Decompilation {
             disassembler.WriteModuleContents(assembly.MainModule);
         }
 
-        public LanguageIdentifier Language => LanguageIdentifier.IL;
+        public string LanguageName => "IL";
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.VisualBasic.CompilerServices;
 using TryRoslyn.Core.Compilation.Internal;
 
 namespace TryRoslyn.Core.Compilation {
-    public class VBNetSetup : ILanguageSetup {
+    public class VisualBasicSetup : ILanguageSetup {
         private static readonly LanguageVersion MaxLanguageVersion = Enum
             .GetValues(typeof(LanguageVersion))
             .Cast<LanguageVersion>()
@@ -18,7 +18,7 @@ namespace TryRoslyn.Core.Compilation {
         private readonly ImmutableList<MetadataReference> _references;
         private readonly IReadOnlyDictionary<string, string> _features;
 
-        public VBNetSetup(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
+        public VisualBasicSetup(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
             _references = referenceCollector.SlowGetMetadataReferencesRecursive(
                 typeof(StandardModuleAttribute).Assembly,
                 typeof(ValueTuple<>).Assembly

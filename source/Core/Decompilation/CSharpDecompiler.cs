@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using ICSharpCode.Decompiler;
 using ICSharpCode.NRefactory.CSharp;
+using Microsoft.CodeAnalysis;
 using TryRoslyn.Core.Decompilation.Support;
 
 namespace TryRoslyn.Core.Decompilation {
@@ -21,6 +22,6 @@ namespace TryRoslyn.Core.Decompilation {
             }
         }
 
-        public override LanguageIdentifier Language => LanguageIdentifier.CSharp;
+        public override string LanguageName => LanguageNames.CSharp;
     }
 }

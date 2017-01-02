@@ -1,8 +1,9 @@
 ﻿using System.IO;
+using JetBrains.Annotations;
 
 namespace TryRoslyn.Core.Decompilation {
     public interface IDecompiler {
-        LanguageIdentifier Language { get; }
-        void Decompile(Stream assemblyStream, TextWriter codeWriter);
+        [NotNull] string LanguageName { get; }
+        void Decompile([NotNull] Stream assemblyStream, [NotNull] TextWriter codeWriter);
     }
 }

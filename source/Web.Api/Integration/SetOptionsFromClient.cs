@@ -10,7 +10,7 @@ namespace TryRoslyn.Web.Api.Integration {
             if (name != TargetLanguage)
                 return false;
 
-            session.SetTargetLanguage((LanguageIdentifier)Enum.Parse(typeof(LanguageIdentifier), value, true));
+            session.SetTargetLanguageName(value);
             return true;
         }
     }

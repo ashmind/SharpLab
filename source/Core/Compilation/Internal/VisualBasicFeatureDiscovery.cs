@@ -5,7 +5,7 @@ using System.Reflection;
 using Microsoft.CodeAnalysis.VisualBasic;
 
 namespace TryRoslyn.Core.Compilation.Internal {
-    public class VBNetFeatureDiscovery : IFeatureDiscovery {
+    public class VisualBasicFeatureDiscovery : IFeatureDiscovery {
         public IReadOnlyCollection<string> SlowDiscoverAll() {
             var assembly = typeof(VisualBasicCompilation).Assembly;
             var featureType = assembly.GetType("Microsoft.CodeAnalysis.VisualBasic.Syntax.InternalSyntax.Feature");

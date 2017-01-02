@@ -22,8 +22,8 @@ namespace TryRoslyn.Web.Api.Integration {
             if (diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error))
                 return null;
 
-            var targetLanguage = session.GetTargetLanguage();
-            var decompiler = _decompilers.First(d => d.Language == targetLanguage);
+            var targetLanguageName = session.GetTargetLanguageName();
+            var decompiler = _decompilers.First(d => d.LanguageName == targetLanguageName);
             var compilation = await session.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false);
 
             using (var stream = _memoryStreamManager.GetStream()) {

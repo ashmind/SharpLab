@@ -76,6 +76,6 @@ namespace TryRoslyn.Core.Decompilation {
             }
         }
 
-        public abstract LanguageIdentifier Language { get; }
+        public abstract string LanguageName { get; }
     }
 }

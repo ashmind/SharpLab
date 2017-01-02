@@ -27,10 +27,10 @@
             <button class="mobile-menu-button"></button>
             <h1>Code</h1>
             <div class="languages-and-modes">
-              <div class="select-wrapper option-language option _unsupported">
+              <div class="select-wrapper option-language option">
                 <select v-model="options.language">
-                  <option value="csharp">C#</option>
-                  <option value="vbnet">VB.NET</option>
+                  <option value="{{languages.csharp}}">C#</option>
+                  <option value="{{languages.vb}}">Visual Basic</option>
                 </select>
               </div>
 
@@ -100,9 +100,9 @@
 
             <div class="select-wrapper option-target-language option">
               <select v-model="options.target">
-                <option value="csharp">C#</option>
-                <option value="vbnet">VB.NET</option>
-                <option value="il">IL</option>
+                <option value="{{languages.csharp}}">C#</option>
+                <option value="{{languages.vb}}">Visual Basic</option>
+                <option value="{{languages.il}}">IL</option>
               </select>
             </div>
 

@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Core;
 using JetBrains.Annotations;
+using Microsoft.CodeAnalysis;
 using TryRoslyn.Core.Compilation;
 using TryRoslyn.Core.Compilation.Internal;
 using TryRoslyn.Core.Decompilation;
@@ -14,25 +15,25 @@ namespace TryRoslyn.Core {
                    .SingleInstance();
 
             builder.RegisterType<CSharpFeatureDiscovery>()
-                   .Keyed<IFeatureDiscovery>(LanguageIdentifier.CSharp)
+                   .Keyed<IFeatureDiscovery>(LanguageNames.CSharp)
                    .SingleInstance();
 
-            builder.RegisterType<VBNetFeatureDiscovery>()
-                   .Keyed<IFeatureDiscovery>(LanguageIdentifier.VBNet)
+            builder.RegisterType<VisualBasicFeatureDiscovery>()
+                   .Keyed<IFeatureDiscovery>(LanguageNames.VisualBasic)
                    .SingleInstance();
 
             builder.RegisterType<CSharpSetup>()
                    .As<ILanguageSetup>()
-                   .WithParameter(ResolvedParameter.ForKeyed<IFeatureDiscovery>(LanguageIdentifier.CSharp))
+                   .WithParameter(ResolvedParameter.ForKeyed<IFeatureDiscovery>(LanguageNames.CSharp))
                    .SingleInstance();
 
-            builder.RegisterType<VBNetSetup>()
+            builder.RegisterType<VisualBasicSetup>()
                    .As<ILanguageSetup>()
-                   .WithParameter(ResolvedParameter.ForKeyed<IFeatureDiscovery>(LanguageIdentifier.VBNet))
+                   .WithParameter(ResolvedParameter.ForKeyed<IFeatureDiscovery>(LanguageNames.VisualBasic))
                    .SingleInstance();
 
             builder.RegisterType<CSharpDecompiler>().As<IDecompiler>().SingleInstance();
-            builder.RegisterType<VBNetDecompiler>().As<IDecompiler>().SingleInstance();
+            builder.RegisterType<VisualBasicDecompiler>().As<IDecompiler>().SingleInstance();
             builder.RegisterType<ILDecompiler>().As<IDecompiler>().SingleInstance();
         }
     }
