@@ -19,7 +19,6 @@ using TryRoslyn.Web.Api;
 namespace TryRoslyn.Web.Api {
     public class Startup {
         public void Configuration(IAppBuilder app) {
-            var container = CreateContainer();
             var corsPolicyTask = Task.FromResult(new CorsPolicy {
                 AllowAnyHeader = true,
                 AllowAnyMethod = true,
@@ -33,19 +32,25 @@ namespace TryRoslyn.Web.Api {
             };
             app.UseCors(corsOptions);
 
+            var mirrorSharpOptions = CreateMirrorSharpOptions();
+            app.UseMirrorSharp(mirrorSharpOptions);
+        }
+
+        public static MirrorSharpOptions CreateMirrorSharpOptions() {
+            var container = CreateContainer();
             var languageSetups = container.Resolve<ILanguageSetup[]>();
             var parseOptions = languageSetups.ToDictionary(s => s.LanguageName, s => s.GetParseOptions());
             var compilationOptions = languageSetups.ToDictionary(s => s.LanguageName, s => s.GetCompilationOptions());
             var metadataReferences = languageSetups.ToDictionary(s => s.LanguageName, s => s.GetMetadataReferences());
-
-            app.UseMirrorSharp(new MirrorSharpOptions {
+            var mirrorSharpOptions = new MirrorSharpOptions {
                 GetDefaultParseOptionsByLanguageName = name => parseOptions[name],
                 GetDefaultCompilationOptionsByLanguageName = name => compilationOptions[name],
                 GetDefaultMetadataReferencesByLanguageName = name => metadataReferences[name],
                 SetOptionsFromClient = container.Resolve<ISetOptionsFromClientExtension>(),
                 SlowUpdate = container.Resolve<ISlowUpdateExtension>(),
                 IncludeExceptionDetails = true
-            });
+            };
+            return mirrorSharpOptions;
         }
 
         private static IContainer CreateContainer() {
