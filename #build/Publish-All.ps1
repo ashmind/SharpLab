@@ -121,7 +121,7 @@ try {
             -AppServicePlanName $($azureConfig.AppServicePlanName) `
             -WebAppName "tryroslyn" `
             -SourcePath "$sitesBuildRoot\$branchesFileName" `
-            -TargetPath "$branchesFileName"
+            -TargetPath "wwwroot/$branchesFileName"
     }
 }
 catch {
