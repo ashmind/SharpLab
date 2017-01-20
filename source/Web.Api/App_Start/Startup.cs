@@ -34,6 +34,11 @@ namespace TryRoslyn.Web.Api {
 
             var mirrorSharpOptions = CreateMirrorSharpOptions();
             app.UseMirrorSharp(mirrorSharpOptions);
+
+            app.Map("/status", a => a.Use((c, next) => {
+                c.Response.ContentType = "text/plain";
+                return c.Response.WriteAsync("OK");
+            }));
         }
 
         public static MirrorSharpOptions CreateMirrorSharpOptions() {

@@ -34,7 +34,7 @@
             </div>
             <div class="offline-only">[connection lost, reconnecting…]</div>
 
-            <div class="select-wrapper option-branch option _unsupported">
+            <div class="select-wrapper option-branch option">
               <select v-model="branch">
                 <option v-bind:value="null">Release (NuGet)</option>
                 <optgroup label="{{group.name}}" v-for="group in branchGroups">
@@ -50,6 +50,7 @@
           </header>
           <div class="content">
             <app-mirrorsharp v-bind:value="code"
+                             v-bind:service-url="serviceUrl"
                              v-bind:server-options="serverOptions"
                              v-on:text-change="code = $arguments[0]()"
                              v-on:slow-update-result="applyUpdateResult"

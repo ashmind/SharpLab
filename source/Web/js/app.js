@@ -37,6 +37,12 @@ function applyConnectionChange(connectionState) {
     this.online = (connectionState === 'open');
 }
 
+function getServiceUrl(branch) {
+    if (!branch)
+        return "ws://" + window.location.host + "/mirrorsharp";
+    return branch.url.replace(/http/, 'ws') + '/mirrorsharp';
+}
+
 async function createAppAsync() {
     const data = Object.assign({
         languages: languages,
@@ -75,6 +81,7 @@ async function createAppAsync() {
         const branches = await branchesPromise;
         data.branch = branches.filter(b => b.id === data.options.branchId)[0];
     }
+    data.serviceUrl = getServiceUrl(data.branch);
 
     return {
         data,
@@ -101,10 +108,15 @@ async function createAppAsync() {
 (async function runAsync() {
     const app = await createAppAsync();
     const ui = await uiAsync(app);
+    const data = app.data;
 
-    for (let name of ['options', 'code']) {
-        ui.watch(name, () => state.save(app.data), { deep: true });
-    }
+    ui.watch('options', () => state.save(data), { deep: true });
+    ui.watch('code', () => state.save(data));
+    ui.watch('branch', value => {
+        data.options.branchId = value ? value.id : null;
+        data.loading = true;
+        data.serviceUrl = getServiceUrl(value);
+    });
 
     /*for (let name of ['options', 'branch']) {
         ui.watch(name,  () => app.processChangeAsync(), { deep: true });
