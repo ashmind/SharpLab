@@ -1,0 +1,32 @@
+@import 'common.less';
+
+@import (inline) '../../node_modules/codemirror/lib/codemirror.css';
+@import (inline) '../../node_modules/codemirror/addon/lint/lint.css';
+@import (inline) '../../node_modules/codemirror/addon/hint/show-hint.css';
+@import (inline) '../../node_modules/codemirror-addon-lint-fix/dist/lint-fix.css';
+@import (inline) '../../node_modules/mirrorsharp/mirrorsharp.css';
+
+textarea, .CodeMirror {
+    .code-text();
+    position: absolute;
+    height: auto;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.CodeMirror-linenumber {
+    padding-left: 0;
+}
+
+.CodeMirror-lintfix-popup-marker, .CodeMirror-lintfix-popup {
+    box-sizing: content-box;
+    -moz-box-sizing: content-box;
+}
+
+.mirrorsharp-theme {
+    .cm-keyword, .cm-atom {
+        color: #708; /* does not match VS, but plays better with the TR color scheme */
+    }
+}

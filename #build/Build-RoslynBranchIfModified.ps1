@@ -1,7 +1,7 @@
 param (
     [Parameter(Mandatory=$true)] [string] $sourceRoot,
     [Parameter(Mandatory=$true)] [string] $branchName,
-    [Parameter(Mandatory=$true)] [string] $outputRoot,
+    [Parameter(Mandatory=$true)] [string] $artifactsRoot,
     [ScriptBlock] $ifBuilt = $null
 )
 
@@ -14,11 +14,10 @@ $ProgressPreference = "SilentlyContinue" # https://www.amido.com/powershell-win3
 
 $branchFsName = $branchName -replace '[/\\:_]', '-'
 
-$hashMarkerPath = "$outputRoot\!BranchHash"
+$hashMarkerPath = "$artifactsRoot\BranchHash"
 $hashMarkerPathFull = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($hashMarkerPath)
 
 $newHash = (Invoke-Git $sourceRoot log "origin/$branchName" -n 1 --pretty=format:"%H")
-
 if (Test-Path $hashMarkerPath) {
     $oldHash = [IO.File]::ReadAllText($hashMarkerPath)
     if ($oldHash -eq $newHash) {
@@ -48,6 +47,9 @@ function Build-Project(
     [string] $msbuildArgs
 ) {
     $projectPath = @($candidateProjectPaths | ? { Test-Path "$sourceRoot\$_" })[0];
+    if (!$projectPath) {
+        throw New-Object BranchBuildException("Project not found: none of @($candidateProjectPaths) matched.", $buildLogPath)
+    }
     "  $projectPath $msbuildArgs" | Out-Default
 
     $projectPath = "$sourceRoot\$projectPath"
@@ -111,6 +113,7 @@ $csCandidates = @(
     "Src\Compilers\CSharp\Desktop\CSharpCodeAnalysis.Desktop.csproj"
 );
 Build-Project $csCandidates $standardArgs
+Build-Project @("src\Features\CSharp\Portable\CSharpFeatures.csproj") $standardArgs
 
 $vbSyntaxGenerator = "Src\Tools\Source\CompilerGeneratorTools\Source\VisualBasicSyntaxGenerator\VisualBasicSyntaxGenerator.vbproj";
 Build-Project $vbSyntaxGenerator $standardArgs
@@ -120,16 +123,18 @@ $vbCandidates = @(
     "Src\Compilers\VisualBasic\Source\BasicCodeAnalysis.vbproj",
     "Src\Compilers\VisualBasic\Desktop\BasicCodeAnalysis.Desktop.vbproj"
 );
-Build-Project $vbCandidates "$standardArgs /p:IldasmPath=`"$(Resolve-Path "!tools\ildasm.exe")`""
-
-# This pulls NuGet package dlls (e.g. System.IO.FileSystem) into bin, no idea why this specifically
-Build-Project "src\Test\Utilities\Portable.FX45\TestUtilities.FX45.csproj" $standardArgs
+Build-Project $vbCandidates "$standardArgs /p:IldasmPath=`"$(Resolve-Path "$sourceRoot\..\..\!tools\ildasm.exe")`""
+Build-Project @("src\Features\VisualBasic\Portable\BasicFeatures.vbproj") $standardArgs
 
 if (Test-Path "$sourceRoot\NuGet.config") {
     Remove-Item "$sourceRoot\NuGet.config"
 }
 
-robocopy "$sourceRoot\Binaries\Debug" $outputRoot /MIR /np
+robocopy "$sourceRoot\Binaries\Debug" "$artifactsRoot\Binaries\Debug" `
+    /xd "$sourceRoot\Binaries\Debug\Exes" `
+    /xd "$sourceRoot\Binaries\Debug\CompilerGeneratorTools" `
+    /mir /np
+
 [IO.File]::WriteAllText($hashMarkerPathFull, $newHash)
 
 Write-Output "  Build completed"

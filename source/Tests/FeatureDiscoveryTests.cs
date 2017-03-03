@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TryRoslyn.Core.Processing.Languages.Internal;
+﻿using TryRoslyn.Server.Compilation.Internal;
 using Xunit;
 
 namespace TryRoslyn.Tests {
@@ -15,7 +10,7 @@ namespace TryRoslyn.Tests {
 
         [Fact]
         public void VBNetDiscoverAll_ReturnsExpectedFeature() {
-            Assert.Contains("IOperation", new VBNetFeatureDiscovery().SlowDiscoverAll());
+            Assert.Contains("IOperation", new VisualBasicFeatureDiscovery().SlowDiscoverAll());
         }
     }
 }

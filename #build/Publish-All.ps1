@@ -29,21 +29,24 @@ try {
     $Host.UI.RawUI.WindowTitle = "Deploy TryRoslyn" # prevents title > 1024 char errors
 
     Write-Output "Environment:"
-    Write-Output "  Current Path:       $(Get-Location)"    
-    Write-Output "  Script Root:        $PSScriptRoot"
+    Write-Output "  Current Path:          $(Get-Location)"    
+    Write-Output "  Script Root:           $PSScriptRoot"
 
     $sourceRoot = Resolve-Path "$PSScriptRoot\..\source"
-    Write-Output "  Source Root:        $sourceRoot"
+    Write-Output "  Source Root:           $sourceRoot"
 
-    $sitesBuildRoot = Resolve-Path "$PSScriptRoot\..\!sites"
-    Write-Output "  Sites Build Root:   $sitesBuildRoot"
+    $roslynArtifactsRoot = Resolve-Path "$PSScriptRoot\..\!roslyn\artifacts"
+    Write-Output "  Roslyn Artifacts Root: $roslynArtifactsRoot"
+
+    $sitesRoot = Resolve-Path "$PSScriptRoot\..\!sites"
+    Write-Output "  Sites Root:            $sitesRoot"
 
     $ftpushExe = @(Get-Item "$sourceRoot\#packages\ftpush*\tools\ftpush.exe")
     if ($ftpushExe.Count -gt 1) {
         throw "Found multiple ftpush.exe: $ftpushExe"
     }
     $ftpushExe = $ftpushExe[0]
-    Write-Output "  ftpush.exe:         $ftpushExe"
+    Write-Output "  ftpush.exe:            $ftpushExe"
 
     if ($azure) {
         $azureConfigPath = ".\!Azure.config.json"
@@ -55,21 +58,19 @@ try {
     }  
 
     $branchesJson = @()
-    Get-ChildItem $sitesBuildRoot | ? { $_ -is [IO.DirectoryInfo] } | % {
+    Get-ChildItem $sitesRoot | ? { $_ -is [IO.DirectoryInfo] } | % {
         $branchFsName = $_.Name
 
-        $siteMainRoot = "$($_.FullName)\!site"
-        if (!(Test-Path $siteMainRoot) -or !(Get-ChildItem $siteMainRoot -Recurse | ? { $_ -is [IO.FileInfo] })) {
+        $siteRoot = $_.FullName
+        if (!(Get-ChildItem $siteRoot\bin -Recurse | ? { $_ -is [IO.FileInfo] })) {
             return
         }
 
         Write-Output ''
         Write-Output "*** $_"
 
-        $siteMainRoot   = Resolve-Path $siteMainRoot
-        $siteRoslynRoot = Resolve-Path "$($_.FullName)\!roslyn"
-
-        $branchInfo = ConvertFrom-Json ([IO.File]::ReadAllText("$siteRoslynRoot\!BranchInfo.json"))
+        $siteRoslynArtifactsRoot = Resolve-Path "$roslynArtifactsRoot\$($_.Name)"
+        $branchInfo = ConvertFrom-Json ([IO.File]::ReadAllText("$siteRoslynArtifactsRoot\BranchInfo.json"))
 
         $webAppName = "tr-b-$($branchFsName.ToLowerInvariant())"
         if ($webAppName.Length -gt 60) {
@@ -79,7 +80,7 @@ try {
 
         $iisSiteName = "$webAppName.tryroslyn.local"
         $url = "http://$iisSiteName"
-        &$PublishToIIS -SiteName $iisSiteName -SourcePath $siteMainRoot
+        &$PublishToIIS -SiteName $iisSiteName -SourcePath $siteRoot
 
         if ($azure) {
             &$PublishToAzure `
@@ -89,9 +90,18 @@ try {
                 -WebAppName $webAppName `
                 -CanCreateWebApp `
                 -CanStopWebApp `
-                -SourcePath $siteMainRoot `
+                -SourcePath $siteRoot `
                 -TargetPath "."
             $url = "https://$($webAppName).azurewebsites.net"
+        }
+        
+        Write-Host "GET $url/status"
+        try {
+            Invoke-RestMethod "$url/status"
+        }
+        catch {
+            Write-Output "  [WARNING] $($_.Exception.Message)"
+            return
         }
 
         # Success!
@@ -106,13 +116,13 @@ try {
 
     $branchesFileName = "!branches.json"
     Write-Output "Updating $branchesFileName..."
-    Set-Content "$sitesBuildRoot\$branchesFileName" $(ConvertTo-Json $branchesJson -Depth 100)
+    Set-Content "$sitesRoot\$branchesFileName" $(ConvertTo-Json $branchesJson -Depth 100)
 
     $brachesJsLocalRoot = "$sourceRoot\Web\wwwroot"
     if (!(Test-Path $brachesJsLocalRoot)) {
         New-Item -ItemType Directory -Path $brachesJsLocalRoot | Out-Null    
     }
-    Copy-Item "$sitesBuildRoot\$branchesFileName" "$brachesJsLocalRoot\$branchesFileName" -Force
+    Copy-Item "$sitesRoot\$branchesFileName" "$brachesJsLocalRoot\$branchesFileName" -Force
 
     if ($azure) {
         &$PublishToAzure `
@@ -120,7 +130,7 @@ try {
             -ResourceGroupName $($azureConfig.ResourceGroupName) `
             -AppServicePlanName $($azureConfig.AppServicePlanName) `
             -WebAppName "tryroslyn" `
-            -SourcePath "$sitesBuildRoot\$branchesFileName" `
+            -SourcePath "$sitesRoot\$branchesFileName" `
             -TargetPath "wwwroot/$branchesFileName"
     }
 }
