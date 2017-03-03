@@ -71,8 +71,8 @@ try {
     Write-Output "Building TryRoslyn..."
     Write-Output "  Restoring packages..."
     &"$PSScriptRoot\#tools\nuget" restore "$sourceRoot\TryRoslyn.sln"
-    Write-Output "  Web.Api.csproj"
-    &$MSBuild "$sourceRoot\Web.Api\Web.Api.csproj" `
+    Write-Output "  Server.csproj"
+    &$MSBuild "$sourceRoot\Server\Server.csproj" `
         /p:AllowedReferenceRelatedFileExtensions=.pdb `
         /p:Configuration=Release
     if ($LastExitCode -ne 0) {
@@ -158,13 +158,13 @@ try {
                             /s /njh /njs /ndl /np /ns /xo /purge
                     }
 
-                Write-Output "Copying Web.Api\Web.config to $siteRoot\Web.config..."
-                Copy-Item "$sourceRoot\Web.Api\Web.config" "$siteRoot\Web.config" -Force
+                Write-Output "Copying Server\Web.config to $siteRoot\Web.config..."
+                Copy-Item "$sourceRoot\Server\Web.config" "$siteRoot\Web.config" -Force
                 
                 Write-Output "Resolving and copying assemblies..."
                 $resolverLogPath = "$branchArtifactsRoot\AssemblyResolver.log"
                 $resolverCommand = "&""$assemblyResolver""" +
-                  " --source-bin ""$sourceRoot\Web.Api\bin"" " +
+                  " --source-bin ""$sourceRoot\Server\bin"" " +
                   " --roslyn-bin ""$branchArtifactsRoot\Binaries""" +
                   " --roslyn-src-from ""$repositorySourceRoot""" +
                   " --roslyn-src-to ""$branchArtifactsRoot\SourcesFilteredForPackageDiscovery""" +

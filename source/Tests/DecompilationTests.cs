@@ -5,7 +5,7 @@ using AshMind.Extensions;
 using Microsoft.CodeAnalysis;
 using MirrorSharp.Testing;
 using Pedantic.IO;
-using TryRoslyn.Web.Api;
+using TryRoslyn.Server;
 using Xunit;
 
 namespace TryRoslyn.Tests {

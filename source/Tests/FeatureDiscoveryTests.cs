@@ -1,4 +1,4 @@
-﻿using TryRoslyn.Core.Compilation.Internal;
+﻿using TryRoslyn.Server.Compilation.Internal;
 using Xunit;
 
 namespace TryRoslyn.Tests {
