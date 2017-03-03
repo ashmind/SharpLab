@@ -12,7 +12,6 @@ using MirrorSharp.Owin;
 using Owin;
 using TryRoslyn.Server;
 using TryRoslyn.Server.Compilation;
-using TryRoslyn.Server.Decompilation;
 
 [assembly: OwinStartup(typeof(Startup), nameof(Startup.Configuration))]
 
