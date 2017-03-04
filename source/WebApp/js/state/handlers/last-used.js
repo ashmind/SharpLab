@@ -1,5 +1,5 @@
 import warn from 'helpers/warn';
-const version = 2;
+const version = 3;
 export default {
     loadOptions: function() {
         var loaded = localStorage['tryroslyn.options'];

@@ -7,11 +7,11 @@ const code = {
 
 export default {
     getOptions: () => ({
-        branch:     null,
+        branchId:   null,
         language:   languages.csharp,
         target:     languages.csharp,
         release:    false
     }),
-    
+
     getCode: (language) => code[language]
 };

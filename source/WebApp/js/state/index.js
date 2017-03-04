@@ -5,9 +5,9 @@ import url from './handlers/url';
 export default {
     save: function(state) {
         lastUsed.saveOptions(state.options);
-        url.save(state.code, state.options);        
+        url.save(state.code, state.options);
     },
-    
+
     load: function(state) {
         const fromUrl = url.load() || {};
 
