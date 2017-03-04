@@ -77,4 +77,11 @@ finally {
 if ($canStopWebApp) {
     Write-Output "  Starting $($webApp.Name)..."
     Start-AzureRmWebApp -Webapp $webApp | Out-Null
+    for ($try = 1; $try -lt 10; $try++) {
+        $app = Get-AzureRmWebApp -ResourceGroupName $resourceGroupName -Name $webAppName
+        if ($app.State -eq 'Running') {
+            break;
+        }
+        Start-Sleep -Seconds 1
+    }
 }
