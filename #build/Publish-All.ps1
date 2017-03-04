@@ -94,9 +94,10 @@ try {
                 -TargetPath "."
             $url = "https://$($webAppName).azurewebsites.net"
         }
-        
+
+        Start-Sleep -Seconds 3 # sometimes Azure sites do not start straight away
         Write-Host "GET $url/status"
-        try {
+        try {          
             Invoke-RestMethod "$url/status"
         }
         catch {

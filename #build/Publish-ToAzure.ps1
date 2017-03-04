@@ -33,6 +33,12 @@ if (!$webApp) {
         -AppServicePlan $appServicePlanName `
         -Location $location `
         -Name $webAppName)
+    Set-AzureRmWebApp 
+        -ResourceGroupName $resourceGroupName `
+        -AppServicePlan $appServicePlanName `
+        -Location $location `
+        -Name $webAppName `
+        -WebSocketsEnabled $true
 }
 else {
     Write-Output "  Found web app $($webApp.Name)"
