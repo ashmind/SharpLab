@@ -33,7 +33,7 @@ if (!$webApp) {
         -AppServicePlan $appServicePlanName `
         -Location $location `
         -Name $webAppName)
-    Set-AzureRmWebApp 
+    Set-AzureRmWebApp `
         -ResourceGroupName $resourceGroupName `
         -AppServicePlan $appServicePlanName `
         -Location $location `
