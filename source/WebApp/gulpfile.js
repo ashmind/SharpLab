@@ -2,6 +2,7 @@
 
 'use strict';
 const fs = require('fs');
+const md5File = require('md5-file');
 const gulp = require('gulp');
 const g = require('gulp-load-plugins')();
 const webpack = require('webpack-stream');
@@ -58,10 +59,12 @@ gulp.task('html', () => {
         .replace(/</g, '%3C')
         .replace(/>/g, '%3E')
         .replace(/\s+/g,' ');
+    const jsHash  = md5File.sync('wwwroot/app.min.js');
+    const cssHash = md5File.sync('wwwroot/app.min.css');
 
     return gulp
         .src('./index.html')
-        .pipe(g.htmlReplace({ js: 'app.min.js', css: 'app.min.css' }))
+        .pipe(g.htmlReplace({ js: 'app.min.js?' + jsHash, css: 'app.min.css?' + cssHash }))
         .pipe(g.replace('{build:favicon-svg}', faviconSvgUrlSafe))
         .pipe(gulp.dest('wwwroot'));
 });
