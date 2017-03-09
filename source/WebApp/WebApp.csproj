@@ -200,6 +200,9 @@
     <None Include="js\ui\components\app-mirrorsharp-diagnostic.js" />
     <None Include="js\ui\components\app-mirrorsharp.js" />
     <None Include="less\imports\offline.less" />
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <None Include="webpack.config.js" />
     <None Include=".brackets.json" />
     <None Include="gulpfile.js" />

@@ -38,9 +38,8 @@ function applyConnectionChange(connectionState) {
 }
 
 function getServiceUrl(branch) {
-    if (!branch)
-        return "ws://" + window.location.host + "/mirrorsharp";
-    return branch.url.replace(/http/, 'ws') + '/mirrorsharp';
+    const httpRoot = branch ? branch.url : window.location.origin;
+    return httpRoot.replace(/^http/, 'ws') + '/mirrorsharp';
 }
 
 async function createAppAsync() {

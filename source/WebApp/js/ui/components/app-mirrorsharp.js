@@ -11,7 +11,7 @@ Vue.component('app-mirrorsharp', {
         const textarea = this.$el;
         textarea.value = this.value;
         const options = {
-            serviceUrl: this.serviceUrl, //"ws://" + window.location.host + "/mirrorsharp",
+            serviceUrl: this.serviceUrl,
             on: {
                 slowUpdateResult: result => this.$emit('slow-update-result', result),
                 connectionChange: type => this.$emit('connection-change', type),
