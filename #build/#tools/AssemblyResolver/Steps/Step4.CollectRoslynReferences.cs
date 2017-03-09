@@ -12,6 +12,7 @@ namespace AssemblyResolver.Steps {
         private static readonly string LocalNuGetCachePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".nuget/packages");
         private static readonly IReadOnlyDictionary<string, int> SupportedFrameworkNames = new[] {
                 "net46", "net45",
+                "netstandard1.0",
                 "portable-net45+win8",
                 "portable-net45+win8+wp8+wpa81",
                 "portable-net40+sl4+win8+wp8"
