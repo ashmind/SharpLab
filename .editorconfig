@@ -7,5 +7,8 @@ indent_size = 4
 trim_trailing_whitespace = true
 insert_final_newline = false
 
+[*.cs]
+csharp_new_line_before_open_brace = none
+
 [*.{html,config}]
 indent_size = 2
