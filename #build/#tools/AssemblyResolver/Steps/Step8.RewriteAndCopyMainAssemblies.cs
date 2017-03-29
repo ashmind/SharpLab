@@ -28,14 +28,23 @@ namespace AssemblyResolver.Steps {
                     rewritten = true;
                 }
                 if (rewritten) {
-                    assembly.Definition.Write(targetPath);
-                    // TODO: set last write time if file is the same (by content)
+                    WriteAssembly(assembly, targetPath);
                 }
                 else {
                     Copy.File(assembly.Path, targetPath);
                 }
                 Copy.PdbIfExists(assembly.Path, targetPath);
             }
+        }
+
+        private static void WriteAssembly(AssemblyDetails assembly, string targetPath) {
+            var targetDirectoryPath = Path.GetDirectoryName(targetPath);
+            var resolver = (BaseAssemblyResolver)assembly.Definition.MainModule.AssemblyResolver;
+            foreach (var defaultPath in resolver.GetSearchDirectories()) {
+                resolver.RemoveSearchDirectory(defaultPath);
+            }
+            resolver.AddSearchDirectory(targetDirectoryPath);
+            assembly.Definition.Write(targetPath);
         }
 
         private static bool RewriteReference(AssemblyNameReference reference, AssemblyNameReference newReference) {
