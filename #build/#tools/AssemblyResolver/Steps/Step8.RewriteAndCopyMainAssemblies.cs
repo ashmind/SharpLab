@@ -38,6 +38,11 @@ namespace AssemblyResolver.Steps {
         }
 
         private static void WriteAssembly(AssemblyDetails assembly, string targetPath) {
+            var assemblyName = assembly.Definition.Name;
+            assemblyName.PublicKey = new byte[0];
+            assemblyName.PublicKeyToken = new byte[0];
+            assemblyName.HasPublicKey = false;
+
             var targetDirectoryPath = Path.GetDirectoryName(targetPath);
             var resolver = (BaseAssemblyResolver)assembly.Definition.MainModule.AssemblyResolver;
             foreach (var defaultPath in resolver.GetSearchDirectories()) {
