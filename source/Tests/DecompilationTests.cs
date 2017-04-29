@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AshMind.Extensions;
 using Microsoft.CodeAnalysis;
@@ -38,12 +41,13 @@ namespace TryRoslyn.Tests {
             var errors = result.JoinErrors();
 
             Assert.True(errors.IsNullOrEmpty(), errors);
-            Assert.Equal(data.Expected, result.ExtensionResult.Decompiled.Trim());
+            data.AssertMatches(result.ExtensionResult.Decompiled.Trim());
         }
 
         [Theory]
         [InlineData("JitAsm.Simple.cs2asm")]
         [InlineData("JitAsm.MultipleReturns.cs2asm")]
+        [InlineData("JitAsm.ArrayElement.cs2asm")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForJitAsm(string resourceName) {
             var data = TestData.FromResource(resourceName);
             var driver = MirrorSharpTestDriver.New(Startup.CreateMirrorSharpOptions());
@@ -60,7 +64,7 @@ namespace TryRoslyn.Tests {
             _output.WriteLine(result.ExtensionResult.Decompiled.Trim());
 
             Assert.True(errors.IsNullOrEmpty(), errors);
-            Assert.Equal(data.Expected, result.ExtensionResult.Decompiled.Trim());
+            data.AssertMatches(result.ExtensionResult.Decompiled.Trim());
         }
 
         private class TestData {
@@ -71,26 +75,40 @@ namespace TryRoslyn.Tests {
                 { "asm", "JIT ASM" },
             };
             public string SourceText { get; }
-            public string Expected { get; }
+            public Action<string> AssertMatches { get; }
             public string SourceLanguageName { get; }
             public string TargetLanguageName { get; }
 
-            public TestData(string sourceText, string expected, string sourceLanguageName, string targetLanguageName) {
+            public TestData(string sourceText, Action<string> assertMatches, string sourceLanguageName, string targetLanguageName) {
                 SourceText = sourceText;
-                Expected = expected;
+                AssertMatches = assertMatches;
                 SourceLanguageName = sourceLanguageName;
                 TargetLanguageName = targetLanguageName;
             }
 
             public static TestData FromResource(string name) {
                 var content = EmbeddedResource.ReadAllText(typeof(DecompilationTests), "TestCode." + name);
-                var parts = content.Split("?=>");
+                var parts = content.Split("#=>");
                 var sourceText = parts[0].Trim();
                 var expected = parts[1].Trim();
                 // ReSharper disable once PossibleNullReferenceException
-                var fromTo = Path.GetExtension(name).TrimStart('.').Split('2');
+                var fromTo = Path.GetExtension(name).TrimStart('.').Split('2').Select(x => LanguageMap[x]).ToList();
 
-                return new TestData(sourceText, expected, LanguageMap[fromTo[0]], LanguageMap[fromTo[1]]);
+                if (!expected.Contains("#"))
+                    return new TestData(sourceText, a => Assert.Equal(expected, a), fromTo[0], fromTo[1]);
+
+                var expectedPattern = ParseAsPattern(expected);
+                return new TestData(sourceText, a => Assert.Matches(expectedPattern, a), fromTo[0], fromTo[1]);
+            }
+
+            private static string ParseAsPattern(string expected) {
+                return "^" + Regex.Replace(expected, "#/(.+)/#|([^#]+)", m => {
+                    var patternGroup = m.Groups[1];
+                    if (patternGroup.Success)
+                        return patternGroup.Value;
+                    return Regex.Escape(m.Groups[2].Value)
+                        .Replace(@"\ ", " ").Replace("\\r", "\r").Replace("\\n", "\n");
+                }) + "$";
             }
         }
 

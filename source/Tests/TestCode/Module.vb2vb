@@ -1,7 +1,7 @@
 ﻿Public Module M
 End Module
 
-?=>
+#=>
 
 Imports Microsoft.VisualBasic.CompilerServices
 Imports System

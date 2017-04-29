@@ -4,7 +4,10 @@
     }
 }
 
-?=>
+#=>
+
+; This is an experimental implementation.
+; Please add any bugs to https://github.com/ashmind/TryRoslyn/issues/39.
 
 C::M(System.Boolean)
     0x0000 test cl, cl

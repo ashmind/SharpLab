@@ -1,0 +1,20 @@
+﻿static class C {
+    static int M(int[] x) {
+        return x[0];
+    }
+}
+
+#=>
+
+; This is an experimental implementation.
+; Please add any bugs to https://github.com/ashmind/TryRoslyn/issues/39.
+
+C::M(System.Int32[])
+    0x0000 sub rsp, 0x28
+    0x0004 cmp dword [rcx+0x8], 0x0
+    0x0008 jbe 0x12
+    0x000a mov eax, [rcx+0x10]
+    0x000d add rsp, 0x28
+    0x0011 ret
+    0x0012 call 0x#/[\da-f]+/#
+    0x0017 int3

@@ -9,7 +9,7 @@ public class MyClass : MyBase {
     }
 }
 
-?=>
+#=>
 
 using System;
 using System.Diagnostics;

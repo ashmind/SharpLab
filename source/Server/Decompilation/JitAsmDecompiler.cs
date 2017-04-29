@@ -82,6 +82,9 @@ namespace TryRoslyn.Server.Decompilation {
 
                     if (instruction.Mnemonic == UD_Iret)
                         afterReturn = true;
+
+                    if (instruction.Mnemonic == UD_Iint3)
+                        break;
                 }
             }
         }
