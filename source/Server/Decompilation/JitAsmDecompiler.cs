@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using AppDomainToolkit;
+using JetBrains.Annotations;
 using SharpDisasm;
 using SharpDisasm.Translators;
 using SharpDisasm.Udis86;
@@ -13,10 +14,11 @@ using SharpDisasm.Udis86;
 namespace TryRoslyn.Server.Decompilation {
     using static ud_mnemonic_code;
 
+    [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class JitAsmDecompiler : IDecompiler {
         public string LanguageName => "JIT ASM";
 
-        private HashSet<ud_mnemonic_code> Jumps = new HashSet<ud_mnemonic_code> {
+        private static readonly HashSet<ud_mnemonic_code> Jumps = new HashSet<ud_mnemonic_code> {
             UD_Ija,
             UD_Ijae,
             UD_Ijb,
@@ -56,25 +58,6 @@ namespace TryRoslyn.Server.Decompilation {
                     codeWriter.WriteLine();
                 }
             }
-
-            //var assemblyBytes = ReadAllBytes(assemblyStream);
-            //var assembly = Assembly.ReflectionOnlyLoad(assemblyBytes);
-            //var method = assembly.DefinedTypes.SelectMany(t => t.DeclaredMethods).FirstOrDefault();
-            //if (method == null) {
-            //    codeWriter.WriteLine("No methods found.");
-            //    return;
-            //}
-
-            //var definition = AssemblyDefinition.ReadAssembly(assemblyStream);
-            //var method = definition.Modules.SelectMany(m => m.Types).SelectMany(m => m.Methods).FirstOrDefault();
-            //if (method == null) {
-            //    codeWriter.WriteLine("No methods found.");
-            //    return;
-            //}
-
-            //var dynamicMethod = ConvertToDynamicMethod(method, codeWriter);
-            //if (dynamicMethod == null)
-            //    return;
         }
 
         private void DisassembleAndWrite(Remote.JitCompiledMethod method, Translator translator, TextWriter writer) {
@@ -102,47 +85,6 @@ namespace TryRoslyn.Server.Decompilation {
                 }
             }
         }
-
-        //private DynamicMethod ConvertToDynamicMethod(MethodDefinition definition, TextWriter errorLogger) {
-        //    if (definition.HasGenericParameters || definition.IsGenericInstance)
-        //        return NotImplemented("Generic methods", errorLogger);
-
-        //    var returnType = ResolveType(definition.ReturnType, errorLogger);
-        //    if (returnType == null)
-        //        return null;
-
-        //    if (definition.Parameters.Count > 0)
-        //        return NotImplemented("Method parameters", errorLogger);
-
-        //    if (definition.Body.HasExceptionHandlers)
-        //        return NotImplemented("Exception handlers", errorLogger);
-
-        //    var method = new DynamicMethod(definition.Name, returnType, new Type[0]);
-        //    var il = method.GetILGenerator();
-        //    foreach (var variable in definition.Body.Variables) {
-        //        var type = ResolveType(variable.VariableType, errorLogger);
-        //        if (type == null)
-        //            return null;
-        //        il.DeclareLocal(type);
-        //    }
-        //    foreach (var instruction in definition.Body.Instructions) {
-        //        il.Emit();
-        //    }
-        //}
-
-        //private Type ResolveType(TypeReference reference, TextWriter errorLogger) {
-        //    var definition = reference.Resolve();
-        //    switch (definition.MetadataType) {
-        //        case MetadataType.Void: return typeof(void);
-        //        case MetadataType.Int32: return typeof(int);
-        //    }
-        //    return NotImplemented("Type " + definition.FullName, errorLogger);
-        //}
-
-        //private dynamic NotImplemented(string message, TextWriter errorLogger) {
-        //    errorLogger.WriteLine("{0} is not currently supported in {1}.", message, LanguageName);
-        //    return null;
-        //}
 
         private static class Remote {
             public static IReadOnlyList<JitCompiledMethod> GetCompiledMethods(Stream assemblyStream) {
