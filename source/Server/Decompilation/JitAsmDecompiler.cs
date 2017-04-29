@@ -61,14 +61,14 @@ namespace TryRoslyn.Server.Decompilation {
         }
 
         private void DisassembleAndWrite(Remote.JitCompiledMethod method, Translator translator, TextWriter writer) {
-            var afterReturn = false;
+            var afterReturnOrThrow = false;
             using (var disasm = new Disassembler(method.Pointer, 1024 * 1024, ArchitectureMode.x86_64)) {
                 HashSet<ulong> jumpOffsets = null;
                 foreach (var instruction in disasm.Disassemble()) {
-                    if (afterReturn) {
+                    if (afterReturnOrThrow) {
                         if (!(jumpOffsets?.Contains(instruction.Offset) ?? false))
                             break;
-                        afterReturn = false;
+                        afterReturnOrThrow = false;
                     }
                     writer.Write("    0x{0:x4} ", (uint) instruction.Offset);
                     writer.WriteLine(translator.Translate(instruction));
@@ -80,11 +80,8 @@ namespace TryRoslyn.Server.Decompilation {
                         }
                     }
 
-                    if (instruction.Mnemonic == UD_Iret)
-                        afterReturn = true;
-
-                    if (instruction.Mnemonic == UD_Iint3)
-                        break;
+                    if (instruction.Mnemonic == UD_Iret || instruction.Mnemonic == UD_Iint3)
+                        afterReturnOrThrow = true;
                 }
             }
         }
