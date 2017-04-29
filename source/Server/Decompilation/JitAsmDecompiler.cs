@@ -50,7 +50,7 @@ namespace TryRoslyn.Server.Decompilation {
                 var methods = RemoteFunc.Invoke(context.Domain, assemblyStream, Remote.GetCompiledMethods);
                 var translator = new IntelTranslator();
                 codeWriter.WriteLine("; This is an experimental implementation.");
-                codeWriter.WriteLine("; Please add any bugs to https://github.com/ashmind/TryRoslyn/issues/39.");
+                codeWriter.WriteLine("; Please report any bugs to https://github.com/ashmind/TryRoslyn/issues.");
                 codeWriter.WriteLine();
                 foreach (var method in methods) {
                     codeWriter.WriteLine(method.FullName);

@@ -7,7 +7,7 @@
 #=>
 
 ; This is an experimental implementation.
-; Please add any bugs to https://github.com/ashmind/TryRoslyn/issues/39.
+; Please report any bugs to https://github.com/ashmind/TryRoslyn/issues.
 
 C::M(System.Int32[])
     0x0000 sub rsp, 0x28
