@@ -54,15 +54,21 @@ namespace TryRoslyn.Server.Decompilation {
                 codeWriter.WriteLine();
                 foreach (var method in methods) {
                     codeWriter.WriteLine(method.FullName);
-                    DisassembleAndWrite(method, translator, codeWriter);
+                    if (method.Pointer != null) {
+                        DisassembleAndWrite(method.Pointer.Value, translator, codeWriter);
+                    }
+                    else {
+                        codeWriter.Write("    ; ");
+                        codeWriter.WriteLine(method.Message);
+                    }
                     codeWriter.WriteLine();
                 }
             }
         }
 
-        private void DisassembleAndWrite(Remote.JitCompiledMethod method, Translator translator, TextWriter writer) {
+        private void DisassembleAndWrite(IntPtr methodPointer, Translator translator, TextWriter writer) {
             var afterReturnOrThrow = false;
-            using (var disasm = new Disassembler(method.Pointer, 1024 * 1024, ArchitectureMode.x86_64)) {
+            using (var disasm = new Disassembler(methodPointer, 1024 * 1024, ArchitectureMode.x86_64)) {
                 HashSet<ulong> jumpOffsets = null;
                 foreach (var instruction in disasm.Disassemble()) {
                     if (afterReturnOrThrow) {
@@ -87,9 +93,9 @@ namespace TryRoslyn.Server.Decompilation {
         }
 
         private static class Remote {
-            public static IReadOnlyList<JitCompiledMethod> GetCompiledMethods(Stream assemblyStream) {
+            public static IReadOnlyList<MethodJitResult> GetCompiledMethods(Stream assemblyStream) {
                 var assembly = Assembly.Load(ReadAllBytes(assemblyStream));
-                var results = new List<JitCompiledMethod>();
+                var results = new List<MethodJitResult>();
                 var reusableBuilder = new StringBuilder(300);
                 foreach (var type in assembly.DefinedTypes) {
                     CompileAndCollectMembers(results, type, reusableBuilder);
@@ -97,7 +103,7 @@ namespace TryRoslyn.Server.Decompilation {
                 return results;
             }
 
-            private static void CompileAndCollectMembers(ICollection<JitCompiledMethod> results, TypeInfo type, StringBuilder reusableBuilder) {
+            private static void CompileAndCollectMembers(ICollection<MethodJitResult> results, TypeInfo type, StringBuilder reusableBuilder) {
                 foreach (var constructor in type.DeclaredConstructors) {
                     results.Add(CompileAndWrap(constructor, reusableBuilder));
                 }
@@ -113,13 +119,15 @@ namespace TryRoslyn.Server.Decompilation {
                 }
             }
 
-            private static JitCompiledMethod CompileAndWrap(MethodBase method, StringBuilder reusableBuilder) {
-                var handle = method.MethodHandle;
+            private static MethodJitResult CompileAndWrap(MethodBase method, StringBuilder reusableBuilder) {
+                var fullName = GetFullName(method, reusableBuilder);
+                if (method.IsGenericMethodDefinition || (method.DeclaringType?.IsGenericTypeDefinition ?? false))
+                    return new MethodJitResult(fullName, "Open generics cannot be JIT-compiled.");
 
+                var handle = method.MethodHandle;
                 RuntimeHelpers.PrepareMethod(handle);
-                reusableBuilder.Clear();
-                AppendFullName(reusableBuilder, method);
-                return new JitCompiledMethod(reusableBuilder.ToString(), handle.GetFunctionPointer());
+
+                return new MethodJitResult(fullName, handle.GetFunctionPointer());
             }
 
             private static byte[] ReadAllBytes(Stream stream) {
@@ -139,32 +147,43 @@ namespace TryRoslyn.Server.Decompilation {
                 return bytes;
             }
 
-            private static void AppendFullName(StringBuilder builder, MethodBase method) {
-                builder.Length = 0;
-                builder.Append(method.ReflectedType?.FullName);
-                builder.Append("::");
-                builder.Append(method.Name);
-                builder.Append("(");
+            private static string GetFullName(MethodBase method, StringBuilder reusableBuilder) {
+                reusableBuilder
+                    .Clear()
+                    .Append(method.ReflectedType?.FullName)
+                    .Append("::")
+                    .Append(method.Name)
+                    .Append("(");
+
                 var isFirstParameter = true;
                 foreach (var parameter in method.GetParameters()) {
                     if (!isFirstParameter)
-                        builder.Append(",");
+                        reusableBuilder.Append(",");
 
-                    builder.Append(parameter.ParameterType.FullName);
+                    reusableBuilder.Append(parameter.ParameterType.FullName);
                     isFirstParameter = false;
                 }
-                builder.Append(")");
+                reusableBuilder.Append(")");
+                return reusableBuilder.ToString();
             }
 
             [Serializable]
-            public struct JitCompiledMethod {
-                public JitCompiledMethod(string fullName, IntPtr pointer) {
+            public struct MethodJitResult {
+                public MethodJitResult(string fullName, IntPtr pointer) {
                     FullName = fullName;
                     Pointer = pointer;
+                    Message = null;
+                }
+
+                public MethodJitResult(string fullName, string message) {
+                    FullName = fullName;
+                    Pointer = null;
+                    Message = message;
                 }
 
                 public string FullName { get; }
-                public IntPtr Pointer { get; }
+                public IntPtr? Pointer { get; }
+                public string Message { get; }
             }
         }
     }
