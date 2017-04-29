@@ -38,6 +38,7 @@ namespace TryRoslyn.Server {
             builder.RegisterType<CSharpDecompiler>().As<IDecompiler>().SingleInstance();
             builder.RegisterType<VisualBasicDecompiler>().As<IDecompiler>().SingleInstance();
             builder.RegisterType<ILDecompiler>().As<IDecompiler>().SingleInstance();
+            builder.RegisterType<JitAsmDecompiler>().As<IDecompiler>().SingleInstance();
 
             builder.RegisterInstance(new RecyclableMemoryStreamManager())
                    .AsSelf();

@@ -1,4 +1,4 @@
-import languages from 'helpers/languages';
+﻿import languages from 'helpers/languages';
 import $ from 'jquery';
 import LZString from 'lz-string';
 
@@ -56,7 +56,12 @@ function onchange(callback) {
     });
 }
 
-const targetMap = { [languages.csharp]: '', [languages.vb]: '>vb', [languages.il]: '>il' };
+const targetMap = {
+    [languages.csharp]: '',
+    [languages.vb]:  '>vb',
+    [languages.il]:  '>il',
+    [languages.asm]: '>asm'
+};
 const targetMapReverse = (() => {
     const result = {};
     for (let key in targetMap) {

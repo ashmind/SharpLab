@@ -228,6 +228,8 @@
     <EmbeddedResource Include="TestCode\Simple.cs2il" />
     <EmbeddedResource Include="TestCode\NullPropagation.ToTernary.cs2cs" />
     <None Include="packages.config" />
+    <EmbeddedResource Include="TestCode\JitAsm\MultipleReturns.cs2asm" />
+    <EmbeddedResource Include="TestCode\JitAsm\Simple.cs2asm" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Server\Server.csproj">

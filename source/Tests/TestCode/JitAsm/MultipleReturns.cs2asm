@@ -1,0 +1,15 @@
+﻿static class C {
+    static int M(bool x) {
+        return x ? 1 : 2;
+    }
+}
+
+?=>
+
+C::M(System.Boolean)
+    0x0000 test cl, cl
+    0x0002 jnz 0xa
+    0x0004 mov eax, 0x2
+    0x0009 ret
+    0x000a mov eax, 0x1
+    0x000f ret

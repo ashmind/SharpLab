@@ -7,9 +7,16 @@ using MirrorSharp.Testing;
 using Pedantic.IO;
 using TryRoslyn.Server;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TryRoslyn.Tests {
     public class DecompilationTests {
+        private readonly ITestOutputHelper _output;
+
+        public DecompilationTests(ITestOutputHelper output) {
+            _output = output;
+        }
+
         [Theory]
         [InlineData("Constructor.BaseCall.cs2cs")]
         [InlineData("NullPropagation.ToTernary.cs2cs")]
@@ -22,7 +29,7 @@ namespace TryRoslyn.Tests {
             var driver = MirrorSharpTestDriver.New(Startup.CreateMirrorSharpOptions());
             await driver.SendSetOptionsAsync(new Dictionary<string, string> {
                 { "language", data.SourceLanguageName },
-                { "optimize", OptimizationLevel.Release.ToString().ToLowerInvariant() },
+                { "optimize", nameof(OptimizationLevel.Release).ToLowerInvariant() },
                 { "x-target-language", data.TargetLanguageName }
             });
             driver.SetSourceText(data.SourceText);
@@ -34,11 +41,34 @@ namespace TryRoslyn.Tests {
             Assert.Equal(data.Expected, result.ExtensionResult.Decompiled.Trim());
         }
 
+        [Theory]
+        [InlineData("JitAsm.Simple.cs2asm")]
+        [InlineData("JitAsm.MultipleReturns.cs2asm")]
+        public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForJitAsm(string resourceName) {
+            var data = TestData.FromResource(resourceName);
+            var driver = MirrorSharpTestDriver.New(Startup.CreateMirrorSharpOptions());
+            await driver.SendSetOptionsAsync(new Dictionary<string, string> {
+                { "language", data.SourceLanguageName },
+                { "optimize", nameof(OptimizationLevel.Release).ToLowerInvariant() },
+                { "x-target-language", data.TargetLanguageName }
+            });
+            driver.SetSourceText(data.SourceText);
+
+            var result = await driver.SendSlowUpdateAsync<ExtensionResult>();
+            var errors = result.JoinErrors();
+
+            _output.WriteLine(result.ExtensionResult.Decompiled.Trim());
+
+            Assert.True(errors.IsNullOrEmpty(), errors);
+            Assert.Equal(data.Expected, result.ExtensionResult.Decompiled.Trim());
+        }
+
         private class TestData {
             private static readonly IDictionary<string, string> LanguageMap = new Dictionary<string, string> {
-                { "cs", LanguageNames.CSharp },
-                { "vb", LanguageNames.VisualBasic },
-                { "il", "IL" }
+                { "cs",  LanguageNames.CSharp },
+                { "vb",  LanguageNames.VisualBasic },
+                { "il",  "IL" },
+                { "asm", "JIT ASM" },
             };
             public string SourceText { get; }
             public string Expected { get; }

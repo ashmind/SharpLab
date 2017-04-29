@@ -3,12 +3,14 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.IO;
 using MirrorSharp.Advanced;
 using TryRoslyn.Server.Decompilation;
 
 namespace TryRoslyn.Server.MirrorSharp {
+    [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class SlowUpdate : ISlowUpdateExtension {
         private readonly IReadOnlyCollection<IDecompiler> _decompilers;
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;

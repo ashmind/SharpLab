@@ -1,0 +1,9 @@
+﻿static class C {
+    static int M() => 0x12345;
+}
+
+?=>
+
+C::M()
+    0x0000 mov eax, 0x12345
+    0x0005 ret
