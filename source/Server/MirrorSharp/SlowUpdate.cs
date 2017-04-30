@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -25,7 +26,10 @@ namespace TryRoslyn.Server.MirrorSharp {
                 return null;
 
             var targetLanguageName = session.GetTargetLanguageName();
-            var decompiler = _decompilers.First(d => d.LanguageName == targetLanguageName);
+            var decompiler = _decompilers.FirstOrDefault(d => d.LanguageName == targetLanguageName);
+            if (decompiler == null)
+                throw new NotSupportedException($"Target '{targetLanguageName}' is not (yet?) supported by this branch.");
+
             var compilation = await session.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false);
 
             using (var stream = _memoryStreamManager.GetStream()) {
