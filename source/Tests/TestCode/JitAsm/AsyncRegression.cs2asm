@@ -21,7 +21,7 @@ static class C {
 C::M(System.Int32)
     0x0000 sub rsp, 0x28
     0x0004 add ecx, 0x12345
-    0x000a call 0xffffffffffffea58
+    0x000a call 0x#/[\da-f]+/#
     0x000f mov rcx, rax
     0x0012 cmp [rcx], ecx
     0x0014 call 0x#/[\da-f]+/#
@@ -56,7 +56,7 @@ C::Foo(System.Int32)
     0x0060 mov [rsp+0x50], rcx
     0x0065 lea rcx, [rsp+0x40]
     0x006a lea rdx, [rsp+0x58]
-    0x006f call 0xffffffffffffe870
+    0x006f call 0x#/[\da-f]+/#
     0x0074 lea rcx, [rsp+0x60]
     0x0079 call 0x#/[\da-f]+/#
     0x007e nop
