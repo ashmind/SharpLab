@@ -3,6 +3,7 @@ import languages from 'helpers/languages';
 import CodeMirror from 'codemirror';
 import 'codemirror/mode/clike/clike';
 import 'codemirror/mode/vb/vb';
+import 'ui/codemirror/mode-asm';
 
 Vue.component('app-mirrorsharp-readonly', {
     props: {
@@ -13,7 +14,8 @@ Vue.component('app-mirrorsharp-readonly', {
         const modeMap = {
             [languages.csharp]: 'text/x-csharp',
             [languages.vb]:     'text/x-vb',
-            [languages.il]:     ''
+            [languages.il]:     '',
+            [languages.asm]:    'text/x-asm'
         };
 
         const textarea = this.$el;
