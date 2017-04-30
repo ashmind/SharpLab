@@ -56,14 +56,6 @@
                              v-on:slow-update-result="applyUpdateResult"
                              v-on:server-error="applyServerError"
                              v-on:connection-change="applyConnectionChange"></app-mirrorsharp>
-            <!--app-codemirror v-bind:value="code"
-                            v-bind:mode="codeMirrorModes[options.language]"
-                            v-bind:lint="lintCodeAsync"
-                            v-bind:options="{
-                              lineNumbers: true,
-                              indentUnit: 4,
-                              gutters: ['CodeMirror-linenumbers','CodeMirror-lint-markers']
-                            }"></app-codemirror-->
           </div>
         </section>
 
@@ -87,8 +79,6 @@
           <header>
             <button class="mobile-menu-button"></button>
             <h1>Decompiled</h1>
-            <!--span class="loader-container" data-rv-show="loading" data-ng-include="'loader/loader.html'">
-            </span-->
 
             <div class="select-wrapper option-target-language option">
               <select v-model="options.target">
