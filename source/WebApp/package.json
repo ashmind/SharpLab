@@ -38,7 +38,7 @@
     "codemirror": "^5.19.0",
     "dateformat": "^1.0.12",
     "lz-string": "^1.4.4",
-    "mirrorsharp": "^0.9.0-pre-20170305",
+    "mirrorsharp": "^0.9.0-pre-20170501",
     "vue": "^1.0.21"
   },
   "scripts": {
