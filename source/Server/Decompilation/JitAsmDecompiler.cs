@@ -113,10 +113,6 @@ namespace TryRoslyn.Server.Decompilation {
                         continue;
                     results.Add(CompileAndWrap(method, reusableBuilder));
                 }
-
-                foreach (var nested in type.DeclaredNestedTypes) {
-                    CompileAndCollectMembers(results, nested, reusableBuilder);
-                }
             }
 
             private static MethodJitResult CompileAndWrap(MethodBase method, StringBuilder reusableBuilder) {
