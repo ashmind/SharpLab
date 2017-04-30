@@ -12,28 +12,21 @@ using Microsoft.Diagnostics.Runtime;
 using SharpDisasm;
 using SharpDisasm.Translators;
 using TryRoslyn.Server.Decompilation.Support;
-using IDisposable = System.IDisposable;
 
 namespace TryRoslyn.Server.Decompilation {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-    public class JitAsmDecompiler : IDecompiler, IDisposable {
-        private readonly DataTarget _dataTarget;
-        private readonly ClrRuntime _currentRuntime;
-
+    public class JitAsmDecompiler : IDecompiler {
         public string LanguageName => "JIT ASM";
-
-        public JitAsmDecompiler() {
-            _dataTarget = DataTarget.AttachToProcess(CurrentProcess.Id, UInt32.MaxValue, AttachFlag.Passive);
-            _currentRuntime = _dataTarget.ClrVersions.Single().CreateRuntime();
-        }
 
         public void Decompile(Stream assemblyStream, TextWriter codeWriter) {
             var currentSetup = AppDomain.CurrentDomain.SetupInformation;
-            //using (var diagnosticScope = new DiagnosticRuntimeScope())
+            using (var dataTarget = DataTarget.AttachToProcess(CurrentProcess.Id, UInt32.MaxValue, AttachFlag.Passive))
             using (var context = AppDomainContext.Create(new AppDomainSetup {
                 ApplicationBase = currentSetup.ApplicationBase,
                 PrivateBinPath = currentSetup.PrivateBinPath
             })) {
+                var currentRuntime = dataTarget.ClrVersions.Single().CreateRuntime();
+
                 context.LoadAssembly(LoadMethod.LoadFrom, Assembly.GetExecutingAssembly().GetAssemblyFile().FullName);
                 var methods = RemoteFunc.Invoke(context.Domain, assemblyStream, Remote.GetCompiledMethods);
                 var translator = new IntelTranslator();
@@ -43,7 +36,7 @@ namespace TryRoslyn.Server.Decompilation {
                 foreach (var method in methods) {
                     codeWriter.WriteLine(method.FullName);
                     if (method.Pointer != null) {
-                        DisassembleAndWrite(method.Pointer.Value, translator, codeWriter);
+                        DisassembleAndWrite(currentRuntime, method.Pointer.Value, translator, codeWriter);
                     }
                     else {
                         codeWriter.Write("    ; ");
@@ -54,8 +47,8 @@ namespace TryRoslyn.Server.Decompilation {
             }
         }
 
-        private void DisassembleAndWrite(IntPtr methodPointer, Translator translator, TextWriter writer) {
-            var method = _currentRuntime.GetMethodByAddress((ulong)methodPointer.ToInt64());
+        private void DisassembleAndWrite(ClrRuntime runtime, IntPtr methodPointer, Translator translator, TextWriter writer) {
+            var method = runtime.GetMethodByAddress((ulong)methodPointer.ToInt64());
             var hotSize = method.HotColdInfo.HotSize;
             if (hotSize == 0) {
                 writer.WriteLine("    ; Method HotSize is 0, not sure why yet.");
@@ -160,10 +153,6 @@ namespace TryRoslyn.Server.Decompilation {
                 public IntPtr? Pointer { get; }
                 public string Message { get; }
             }
-        }
-
-        public void Dispose() {
-            _dataTarget.Dispose();
         }
     }
 }
