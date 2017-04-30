@@ -49,6 +49,12 @@ namespace TryRoslyn.Server.Decompilation {
 
         private void DisassembleAndWrite(ClrRuntime runtime, IntPtr methodPointer, Translator translator, TextWriter writer) {
             var method = runtime.GetMethodByAddress((ulong)methodPointer.ToInt64());
+            if (method == null) {
+                writer.WriteLine("    ; Method at 0x{0:X} was somehow not found by CLRMD.", methodPointer.ToInt64());
+                writer.WriteLine("    ; See https://github.com/ashmind/TryRoslyn/issues/84.");
+                return;
+            }
+
             var hotSize = method.HotColdInfo.HotSize;
             if (hotSize == 0) {
                 writer.WriteLine("    ; Method HotSize is 0, not sure why yet.");
