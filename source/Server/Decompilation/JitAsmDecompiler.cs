@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
 using AppDomainToolkit;
 using JetBrains.Annotations;
 using Microsoft.Diagnostics.Runtime;
@@ -25,33 +24,56 @@ namespace TryRoslyn.Server.Decompilation {
                 ApplicationBase = currentSetup.ApplicationBase,
                 PrivateBinPath = currentSetup.PrivateBinPath
             })) {
-                var currentRuntime = dataTarget.ClrVersions.Single().CreateRuntime();
-
                 context.LoadAssembly(LoadMethod.LoadFrom, Assembly.GetExecutingAssembly().GetAssemblyFile().FullName);
-                var methods = RemoteFunc.Invoke(context.Domain, assemblyStream, Remote.GetCompiledMethods);
-                var translator = new IntelTranslator();
+                var results = RemoteFunc.Invoke(context.Domain, assemblyStream, Remote.GetCompiledMethods);
+
+                var currentMethodAddressRef = new Reference<ulong>();
+                var runtime = dataTarget.ClrVersions.Single().CreateRuntime();
+                var translator = new IntelTranslator {
+                    SymbolResolver = (Instruction instruction, long addr, ref long offset) => 
+                        ResolveSymbol(runtime, instruction, addr, currentMethodAddressRef.Value)
+                };
+
                 codeWriter.WriteLine("; This is an experimental implementation.");
                 codeWriter.WriteLine("; Please report any bugs to https://github.com/ashmind/TryRoslyn/issues.");
                 codeWriter.WriteLine();
-                foreach (var method in methods) {
-                    codeWriter.WriteLine(method.FullName);
-                    if (method.Pointer != null) {
-                        DisassembleAndWrite(currentRuntime, method.Pointer.Value, translator, codeWriter);
+                foreach (var result in results) {
+                    var methodHandle = (ulong)result.Handle.ToInt64();
+                    var method = runtime.GetMethodByHandle(methodHandle);
+                    if (method == null) {
+                        codeWriter.WriteLine("    ; Method with handle 0x{0:X} was somehow not found by CLRMD.", methodHandle);
+                        codeWriter.WriteLine("    ; See https://github.com/ashmind/TryRoslyn/issues/84.");
+                        continue;
                     }
-                    else {
-                        codeWriter.Write("    ; ");
-                        codeWriter.WriteLine(method.Message);
-                    }
+
+                    DisassembleAndWrite(method, result.Message, translator, currentMethodAddressRef, codeWriter);
                     codeWriter.WriteLine();
                 }
             }
         }
 
-        private void DisassembleAndWrite(ClrRuntime runtime, IntPtr methodPointer, Translator translator, TextWriter writer) {
-            var method = runtime.GetMethodByAddress((ulong)methodPointer.ToInt64());
-            if (method == null) {
-                writer.WriteLine("    ; Method at 0x{0:X} was somehow not found by CLRMD.", methodPointer.ToInt64());
-                writer.WriteLine("    ; See https://github.com/ashmind/TryRoslyn/issues/84.");
+        private static string ResolveSymbol(ClrRuntime runtime, Instruction instruction, long addr, ulong currentMethodAddress) {
+            var operand = instruction.Operands.Length > 0 ? instruction.Operands[0] : null;
+            if (operand?.PtrOffset == 0) {
+                var baseOffset = instruction.PC - currentMethodAddress;
+                return $"L{baseOffset + operand.PtrSegment:x4}";
+            }
+
+            return runtime.GetMethodByAddress(unchecked((ulong)addr))?.GetFullSignature();
+        }
+
+        private void DisassembleAndWrite(ClrMethod method, string message, Translator translator, Reference<ulong> methodAddressRef, TextWriter writer) {
+            writer.WriteLine(method.GetFullSignature());
+            if (message != null) {
+                writer.Write("    ; ");
+                writer.WriteLine(message);
+                return;
+            }
+
+            var methodAddress = method.HotColdInfo.HotStart;
+            if (methodAddress == 0) {
+                writer.WriteLine("    ; Method HotStart is 0, not sure why yet.");
+                writer.WriteLine("    ; See https://github.com/ashmind/TryRoslyn/issues/82.");
                 return;
             }
 
@@ -62,46 +84,48 @@ namespace TryRoslyn.Server.Decompilation {
                 return;
             }
 
-            using (var disasm = new Disassembler(methodPointer, (int)hotSize, ArchitectureMode.x86_64)) {
+            methodAddressRef.Value = methodAddress;
+            using (var disasm = new Disassembler(new IntPtr(unchecked((long)methodAddress)), (int)hotSize, ArchitectureMode.x86_64, methodAddress)) {
                 foreach (var instruction in disasm.Disassemble()) {
-                    writer.Write("    0x{0:x4} ", (uint) instruction.Offset);
+                    writer.Write("    L{0:x4}: ", instruction.Offset - methodAddress);
                     writer.WriteLine(translator.Translate(instruction));
                 }
             }
+        }
+
+        private class Reference<T> {
+            public T Value { get; set; }
         }
 
         private static class Remote {
             public static IReadOnlyList<MethodJitResult> GetCompiledMethods(Stream assemblyStream) {
                 var assembly = Assembly.Load(ReadAllBytes(assemblyStream));
                 var results = new List<MethodJitResult>();
-                var reusableBuilder = new StringBuilder(300);
                 foreach (var type in assembly.DefinedTypes) {
-                    CompileAndCollectMembers(results, type, reusableBuilder);
+                    CompileAndCollectMembers(results, type);
                 }
                 return results;
             }
 
-            private static void CompileAndCollectMembers(ICollection<MethodJitResult> results, TypeInfo type, StringBuilder reusableBuilder) {
+            private static void CompileAndCollectMembers(ICollection<MethodJitResult> results, TypeInfo type) {
                 foreach (var constructor in type.DeclaredConstructors) {
-                    results.Add(CompileAndWrap(constructor, reusableBuilder));
+                    results.Add(CompileAndWrap(constructor));
                 }
 
                 foreach (var method in type.DeclaredMethods) {
                     if (method.IsAbstract)
                         continue;
-                    results.Add(CompileAndWrap(method, reusableBuilder));
+                    results.Add(CompileAndWrap(method));
                 }
             }
 
-            private static MethodJitResult CompileAndWrap(MethodBase method, StringBuilder reusableBuilder) {
-                var fullName = GetFullName(method, reusableBuilder);
-                if (method.IsGenericMethodDefinition || (method.DeclaringType?.IsGenericTypeDefinition ?? false))
-                    return new MethodJitResult(fullName, "Open generics cannot be JIT-compiled.");
-
+            private static MethodJitResult CompileAndWrap(MethodBase method) {
                 var handle = method.MethodHandle;
-                RuntimeHelpers.PrepareMethod(handle);
+                if (method.IsGenericMethodDefinition || (method.DeclaringType?.IsGenericTypeDefinition ?? false))
+                    return new MethodJitResult(handle.Value, "Open generics cannot be JIT-compiled.");
 
-                return new MethodJitResult(fullName, handle.GetFunctionPointer());
+                RuntimeHelpers.PrepareMethod(handle);
+                return new MethodJitResult(handle.Value);
             }
 
             private static byte[] ReadAllBytes(Stream stream) {
@@ -121,42 +145,14 @@ namespace TryRoslyn.Server.Decompilation {
                 return bytes;
             }
 
-            private static string GetFullName(MethodBase method, StringBuilder reusableBuilder) {
-                reusableBuilder
-                    .Clear()
-                    .Append(method.ReflectedType?.FullName)
-                    .Append("::")
-                    .Append(method.Name)
-                    .Append("(");
-
-                var isFirstParameter = true;
-                foreach (var parameter in method.GetParameters()) {
-                    if (!isFirstParameter)
-                        reusableBuilder.Append(",");
-
-                    reusableBuilder.Append(parameter.ParameterType.FullName);
-                    isFirstParameter = false;
-                }
-                reusableBuilder.Append(")");
-                return reusableBuilder.ToString();
-            }
-
             [Serializable]
             public struct MethodJitResult {
-                public MethodJitResult(string fullName, IntPtr pointer) {
-                    FullName = fullName;
-                    Pointer = pointer;
-                    Message = null;
-                }
-
-                public MethodJitResult(string fullName, string message) {
-                    FullName = fullName;
-                    Pointer = null;
+                public MethodJitResult(IntPtr handle, string message = null) {
+                    Handle = handle;
                     Message = message;
                 }
-
-                public string FullName { get; }
-                public IntPtr? Pointer { get; }
+                
+                public IntPtr Handle { get; }
                 public string Message { get; }
             }
         }

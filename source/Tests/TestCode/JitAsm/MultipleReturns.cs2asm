@@ -9,10 +9,10 @@
 ; This is an experimental implementation.
 ; Please report any bugs to https://github.com/ashmind/TryRoslyn/issues.
 
-C::M(System.Boolean)
-    0x0000 test cl, cl
-    0x0002 jnz 0xa
-    0x0004 mov eax, 0x2
-    0x0009 ret
-    0x000a mov eax, 0x1
-    0x000f ret
+C.M(Boolean)
+    L0000: test cl, cl
+    L0002: jnz L000a
+    L0004: mov eax, 0x2
+    L0009: ret
+    L000a: mov eax, 0x1
+    L000f: ret

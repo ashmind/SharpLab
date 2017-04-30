@@ -49,6 +49,7 @@ namespace TryRoslyn.Tests {
         [InlineData("JitAsm.MultipleReturns.cs2asm")]
         [InlineData("JitAsm.ArrayElement.cs2asm")]
         [InlineData("JitAsm.AsyncRegression.cs2asm")]
+        [InlineData("JitAsm.ConsoleWrite.cs2asm")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForJitAsm(string resourceName) {
             var data = TestData.FromResource(resourceName);
             var driver = MirrorSharpTestDriver.New(Startup.CreateMirrorSharpOptions());
@@ -62,9 +63,8 @@ namespace TryRoslyn.Tests {
             var result = await driver.SendSlowUpdateAsync<ExtensionResult>();
             var errors = result.JoinErrors();
 
-            _output.WriteLine(result.ExtensionResult.Decompiled.Trim());
-
             Assert.True(errors.IsNullOrEmpty(), errors);
+            _output.WriteLine(result.ExtensionResult.Decompiled.Trim());
             data.AssertMatches(result.ExtensionResult.Decompiled.Trim());
         }
 

@@ -232,6 +232,7 @@
     <EmbeddedResource Include="TestCode\JitAsm\MultipleReturns.cs2asm" />
     <EmbeddedResource Include="TestCode\JitAsm\Simple.cs2asm" />
     <EmbeddedResource Include="TestCode\JitAsm\ArrayElement.cs2asm" />
+    <EmbeddedResource Include="TestCode\JitAsm\ConsoleWrite.cs2asm" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Server\Server.csproj">

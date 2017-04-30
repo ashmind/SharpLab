@@ -18,57 +18,57 @@ static class C {
 ; This is an experimental implementation.
 ; Please report any bugs to https://github.com/ashmind/TryRoslyn/issues.
 
-C::M(System.Int32)
-    0x0000 sub rsp, 0x28
-    0x0004 add ecx, 0x12345
-    0x000a call 0x#/[\da-f]+/#
-    0x000f mov rcx, rax
-    0x0012 cmp [rcx], ecx
-    0x0014 call 0x#/[\da-f]+/#
-    0x0019 nop
-    0x001a add rsp, 0x28
-    0x001e ret
+C.M(Int32)
+    L0000: sub rsp, 0x28
+    L0004: add ecx, 0x12345
+    L000a: call C.Foo(Int32)
+    L000f: mov rcx, rax
+    L0012: cmp [rcx], ecx
+    L0014: call System.Threading.Tasks.Task`1[[System.Int32, mscorlib]].get_Result()
+    L0019: nop
+    L001a: add rsp, 0x28
+    L001e: ret
 
-C::Foo(System.Int32)
-    0x0000 push rdi
-    0x0001 push rsi
-    0x0002 sub rsp, 0x78
-    0x0006 mov rsi, rcx
-    0x0009 lea rdi, [rsp+0x28]
-    0x000e mov ecx, 0x14
-    0x0013 xor eax, eax
-    0x0015 rep stosd
-    0x0017 mov rcx, rsi
-    0x001a mov [rsp+0x5c], ecx
-    0x001e xor ecx, ecx
-    0x0020 lea rdx, [rsp+0x28]
-    0x0025 xorpd xmm0, xmm0
-    0x0029 movdqu [rdx], xmm0
-    0x002d mov [rdx+0x10], rcx
-    0x0031 movdqu xmm0, [rsp+0x28]
-    0x0037 movdqu [rsp+0x60], xmm0
-    0x003d mov rcx, [rsp+0x38]
-    0x0042 mov [rsp+0x70], rcx
-    0x0047 mov dword [rsp+0x58], 0xffffffff
-    0x004f movdqu xmm0, [rsp+0x60]
-    0x0055 movdqu [rsp+0x40], xmm0
-    0x005b mov rcx, [rsp+0x70]
-    0x0060 mov [rsp+0x50], rcx
-    0x0065 lea rcx, [rsp+0x40]
-    0x006a lea rdx, [rsp+0x58]
-    0x006f call 0x#/[\da-f]+/#
-    0x0074 lea rcx, [rsp+0x60]
-    0x0079 call 0x#/[\da-f]+/#
-    0x007e nop
-    0x007f add rsp, 0x78
-    0x0083 pop rsi
-    0x0084 pop rdi
-    0x0085 ret
+C.Foo(Int32)
+    L0000: push rdi
+    L0001: push rsi
+    L0002: sub rsp, 0x78
+    L0006: mov rsi, rcx
+    L0009: lea rdi, [rsp+0x28]
+    L000e: mov ecx, 0x14
+    L0013: xor eax, eax
+    L0015: rep stosd
+    L0017: mov rcx, rsi
+    L001a: mov [rsp+0x5c], ecx
+    L001e: xor ecx, ecx
+    L0020: lea rdx, [rsp+0x28]
+    L0025: xorpd xmm0, xmm0
+    L0029: movdqu [rdx], xmm0
+    L002d: mov [rdx+0x10], rcx
+    L0031: movdqu xmm0, [rsp+0x28]
+    L0037: movdqu [rsp+0x60], xmm0
+    L003d: mov rcx, [rsp+0x38]
+    L0042: mov [rsp+0x70], rcx
+    L0047: mov dword [rsp+0x58], 0xffffffff
+    L004f: movdqu xmm0, [rsp+0x60]
+    L0055: movdqu [rsp+0x40], xmm0
+    L005b: mov rcx, [rsp+0x70]
+    L0060: mov [rsp+0x50], rcx
+    L0065: lea rcx, [rsp+0x40]
+    L006a: lea rdx, [rsp+0x58]
+    L006f: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, mscorlib]].Start[[C+<Foo>d__1, _]](<Foo>d__1 ByRef)
+    L0074: lea rcx, [rsp+0x60]
+    L0079: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, mscorlib]].get_Task()
+    L007e: nop
+    L007f: add rsp, 0x78
+    L0083: pop rsi
+    L0084: pop rdi
+    L0085: ret
 
-C+<Foo>d__1::MoveNext()
+C+<Foo>d__1.MoveNext()
     ; Method HotSize is 0, not sure why yet.
     ; See https://github.com/ashmind/TryRoslyn/issues/82.
 
-C+<Foo>d__1::SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)
+C+<Foo>d__1.SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)
     ; Method HotSize is 0, not sure why yet.
     ; See https://github.com/ashmind/TryRoslyn/issues/82.
