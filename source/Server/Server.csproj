@@ -277,6 +277,7 @@
     <Compile Include="Compilation\Internal\VisualBasicFeatureDiscovery.cs" />
     <Compile Include="Compilation\VisualBasicSetup.cs" />
     <Compile Include="Decompilation\JitAsmDecompiler.cs" />
+    <Compile Include="Decompilation\Support\CurrentProcess.cs" />
     <Compile Include="ServerModule.cs" />
     <Compile Include="Decompilation\AstDecompiler.cs" />
     <Compile Include="Decompilation\CSharpDecompiler.cs" />
@@ -299,6 +300,12 @@
   <ItemGroup>
     <Analyzer Include="..\#packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\#packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\%40 GitHub\clrmd\src\Microsoft.Diagnostics.Runtime\Microsoft.Diagnostics.Runtime.csproj">
+      <Project>{a82126ca-23aa-41f1-8586-a5938d44d0a7}</Project>
+      <Name>Microsoft.Diagnostics.Runtime</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

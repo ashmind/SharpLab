@@ -2,46 +2,34 @@
 using AshMind.Extensions;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using AppDomainToolkit;
 using JetBrains.Annotations;
+using Microsoft.Diagnostics.Runtime;
 using SharpDisasm;
 using SharpDisasm.Translators;
-using SharpDisasm.Udis86;
+using TryRoslyn.Server.Decompilation.Support;
+using IDisposable = System.IDisposable;
 
 namespace TryRoslyn.Server.Decompilation {
-    using static ud_mnemonic_code;
-
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-    public class JitAsmDecompiler : IDecompiler {
+    public class JitAsmDecompiler : IDecompiler, IDisposable {
+        private readonly DataTarget _dataTarget;
+        private readonly ClrRuntime _currentRuntime;
+
         public string LanguageName => "JIT ASM";
 
-        private static readonly HashSet<ud_mnemonic_code> Jumps = new HashSet<ud_mnemonic_code> {
-            UD_Ija,
-            UD_Ijae,
-            UD_Ijb,
-            UD_Ijbe,
-            UD_Ijcxz,
-            UD_Ijecxz,
-            UD_Ijg,
-            UD_Ijge,
-            UD_Ijl,
-            UD_Ijle,
-            UD_Ijmp,
-            UD_Ijno,
-            UD_Ijnp,
-            UD_Ijns,
-            UD_Ijnz,
-            UD_Ijo,
-            UD_Ijp,
-            UD_Ijs,
-            UD_Ijz
-        };
+        public JitAsmDecompiler() {
+            _dataTarget = DataTarget.AttachToProcess(CurrentProcess.Id, UInt32.MaxValue, AttachFlag.Passive);
+            _currentRuntime = _dataTarget.ClrVersions.Single().CreateRuntime();
+        }
 
         public void Decompile(Stream assemblyStream, TextWriter codeWriter) {
             var currentSetup = AppDomain.CurrentDomain.SetupInformation;
+            //using (var diagnosticScope = new DiagnosticRuntimeScope())
             using (var context = AppDomainContext.Create(new AppDomainSetup {
                 ApplicationBase = currentSetup.ApplicationBase,
                 PrivateBinPath = currentSetup.PrivateBinPath
@@ -67,27 +55,18 @@ namespace TryRoslyn.Server.Decompilation {
         }
 
         private void DisassembleAndWrite(IntPtr methodPointer, Translator translator, TextWriter writer) {
-            var afterReturnOrThrow = false;
-            using (var disasm = new Disassembler(methodPointer, 1024 * 1024, ArchitectureMode.x86_64)) {
-                HashSet<ulong> jumpOffsets = null;
+            var method = _currentRuntime.GetMethodByAddress((ulong)methodPointer.ToInt64());
+            var hotSize = method.HotColdInfo.HotSize;
+            if (hotSize == 0) {
+                writer.WriteLine("    ; Method HotSize is 0, not sure why yet.");
+                writer.WriteLine("    ; See https://github.com/ashmind/TryRoslyn/issues/82.");
+                return;
+            }
+
+            using (var disasm = new Disassembler(methodPointer, (int)hotSize, ArchitectureMode.x86_64)) {
                 foreach (var instruction in disasm.Disassemble()) {
-                    if (afterReturnOrThrow) {
-                        if (!(jumpOffsets?.Contains(instruction.Offset) ?? false))
-                            break;
-                        afterReturnOrThrow = false;
-                    }
                     writer.Write("    0x{0:x4} ", (uint) instruction.Offset);
                     writer.WriteLine(translator.Translate(instruction));
-                    if (Jumps.Contains(instruction.Mnemonic)) {
-                        var operand = instruction.Operands[0];
-                        if (operand.PtrOffset == 0) {
-                            jumpOffsets = jumpOffsets ?? new HashSet<ulong>();
-                            jumpOffsets.Add(instruction.PC + operand.PtrSegment);
-                        }
-                    }
-
-                    if (instruction.Mnemonic == UD_Iret || instruction.Mnemonic == UD_Iint3)
-                        afterReturnOrThrow = true;
                 }
             }
         }
@@ -181,6 +160,10 @@ namespace TryRoslyn.Server.Decompilation {
                 public IntPtr? Pointer { get; }
                 public string Message { get; }
             }
+        }
+
+        public void Dispose() {
+            _dataTarget.Dispose();
         }
     }
 }

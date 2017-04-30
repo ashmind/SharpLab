@@ -223,6 +223,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <EmbeddedResource Include="TestCode\Constructor.BaseCall.cs2cs" />
+    <EmbeddedResource Include="TestCode\JitAsm\AsyncRegression.cs2asm" />
     <EmbeddedResource Include="TestCode\Simple.vb2vb" />
     <EmbeddedResource Include="TestCode\Module.vb2vb" />
     <EmbeddedResource Include="TestCode\Simple.cs2il" />
