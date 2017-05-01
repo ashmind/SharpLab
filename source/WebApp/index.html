@@ -19,8 +19,8 @@
     <!-- build:css -->
     <!-- endbuild -->
   </head>
-  <body data-mobile-codemirror-fullscreen-class="mobile-editor-focus">
-    <main class="root-status-{{status.name}}">
+  <body data-mobile-codemirror-fullscreen-class="mobile-editor-focus" class="loading" data-cloak="loading">
+    <main v-bind:class="'root-status-' + status.name">
       <div class="section-group">
         <section class="code">
           <header>
@@ -28,8 +28,8 @@
             <h1>Code</h1>
             <div class="select-wrapper option-language option">
               <select v-model="options.language">
-                <option value="{{languages.csharp}}">C#</option>
-                <option value="{{languages.vb}}">Visual Basic</option>
+                <option v-bind:value="languages.csharp">C#</option>
+                <option v-bind:value="languages.vb">Visual Basic</option>
               </select>
             </div>
             <div class="offline-only">[connection lost, reconnecting…]</div>
@@ -37,12 +37,12 @@
             <div class="select-wrapper option-branch option">
               <select v-model="branch">
                 <option v-bind:value="null">Release (NuGet)</option>
-                <optgroup label="{{group.name}}" v-for="group in branchGroups">
-                  <option v-for="branch in group.branches" v-bind:value="branch">{{branch.name}} ({{branch.commits[0].date | app-date 'd mmm yyyy'}})</option>
+                <optgroup v-bind:label="group.name" v-for="group in branchGroups">
+                  <option v-for="branch in group.branches" v-bind:value="branch">{{branch.name}} ({{formatDate(branch.commits[0].date, 'd mmm yyyy')}})</option>
                 </optgroup>
               </select>
             </div>
-            
+
             <app-mobile-shelf class="mobile-menu"
                               toggle=".code .mobile-menu-button"
                               container=".code"
@@ -65,11 +65,11 @@
           </header>
           <div class="content">
             <div>
-              <a href="https://github.com/dotnet/roslyn/commit/{{branch.commits[0].hash}}" target="_blank">{{branch.commits[0].hash}}</a>
-              at {{branch.commits[0].date | app-date 'dd mmm yyyy'}}
+              <a v-bind:href="'https://github.com/dotnet/roslyn/commit/' + branch.commits[0].hash" target="_blank">{{branch.commits[0].hash}}</a>
+              at {{formatDate(branch.commits[0].date, 'dd mmm yyyy')}}
               by {{branch.commits[0].author}}
             </div>
-            <div class="commit-message">{{branch.commits[0].message | app-trim}}</div>
+            <div class="commit-message">{{branch.commits[0].message.trim()}}</div>
           </div>
         </section>
       </div>
@@ -82,10 +82,10 @@
 
             <div class="select-wrapper option-target-language option">
               <select v-model="options.target">
-                <option value="{{languages.csharp}}">C#</option>
-                <option value="{{languages.vb}}">Visual Basic</option>
-                <option value="{{languages.il}}">IL</option>
-                <option value="{{languages.asm}}">JIT Asm (Experimental)</option>
+                <option v-bind:value="languages.csharp">C#</option>
+                <option v-bind:value="languages.vb">Visual Basic</option>
+                <option v-bind:value="languages.il">IL</option>
+                <option v-bind:value="languages.asm">JIT Asm (Experimental)</option>
               </select>
             </div>
 
@@ -101,7 +101,7 @@
                               open-class="mobile-menu-open"></app-mobile-shelf>
           </header>
           <div class="content">
-            <app-loader></app-loader>
+            <div class="loader"></div>
             <app-mirrorsharp-readonly v-bind:value="result.decompiled"
                                       v-bind:language="options.target"></app-mirrorsharp-readonly>
           </div>
@@ -113,7 +113,7 @@
             <div class="select-wrapper spacer"><select></select></div>
           </header>
           <div class="content">
-            <app-loader></app-loader>
+            <div class="loader"></div>
             <ul>
               <li v-for="error in result.errors">
                 <app-mirrorsharp-diagnostic v-bind:model="error" severity="error"></app-mirrorsharp-diagnostic>

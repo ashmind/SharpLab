@@ -5,7 +5,7 @@ Vue.component('app-favicon-manager', {
         color: String,
         defaultColor: String
     },
-    ready: function() {
+    mounted: function() {
         const favicons = Array.from(document.querySelectorAll('link[rel=icon]'));
         let faviconSvg;
         let faviconSvgUrl;

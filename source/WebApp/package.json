@@ -22,6 +22,7 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-svg2png": "https://github.com/ashmind/gulp-svg2png.git#gh-36-temp",
     "gulp-uglify": "^1.5.1",
+    "jshint": "^2.9.4",
     "md5-file": "^3.1.1",
     "multipipe": "^1.0.1",
     "object-assign": "^4.0.1",
@@ -36,6 +37,6 @@
     "dateformat": "^1.0.12",
     "lz-string": "^1.4.4",
     "mirrorsharp": "^0.9.0-pre-20170501",
-    "vue": "^1.0.21"
+    "vue": "^2.3.0"
   }
 }

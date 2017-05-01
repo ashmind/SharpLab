@@ -9,7 +9,6 @@
     box-sizing: border-box;
     -moz-box-sizing: border-box;
 }
-
 html, body {
     width: 100%;
     height: 100%;
@@ -19,6 +18,10 @@ html, body {
 body {
     display: flex;
     flex-direction: column;
+
+    &.loading {
+        visibility: hidden;
+    }
 }
 
 a {
@@ -205,8 +208,3 @@ section.info-only {
 @import 'imports/mobile.less';
 @import 'imports/codemirror.less';
 @import 'imports/offline.less';
-
-._unsupported {
-    pointer-events: none;
-    opacity: 0.1;
-}

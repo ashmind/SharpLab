@@ -6,11 +6,13 @@ Vue.component('app-mobile-shelf', {
         toggle:    String,
         openClass: String
     },
-    ready: function() {
-        const $ = s => document.querySelector(s);
-        const classChangeTarget = this.container ? $(this.container) : this.$el;
-        $(this.toggle).addEventListener('click', () => {
-            classChangeTarget.classList.toggle(this.openClass);
+    mounted: function() {
+        Vue.nextTick(() => {
+            const $ = s => document.querySelector(s);
+            const classChangeTarget = this.container ? $(this.container) : this.$el;
+            $(this.toggle).addEventListener('click', () => {
+                classChangeTarget.classList.toggle(this.openClass);
+            });
         });
     },
     template: '<div></div>'

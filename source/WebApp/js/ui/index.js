@@ -1,15 +1,20 @@
 import Vue from 'vue';
+import './mixins/format-date.js';
 import hooks from './hooks/registry.js';
 
-import './filters/app-date.js';
-import './filters/app-trim.js';
 import './components/app-favicon-manager.js';
-import './components/app-loader.js';
 import './components/app-mirrorsharp.js';
 import './components/app-mirrorsharp-diagnostic.js';
 import './components/app-mirrorsharp-readonly.js';
 import './components/app-mobile-shelf.js';
 import './hooks/app-mobile-codemirror-fullscreen.js';
+import './hooks/app-cloak.js';
+
+const documentReadyPromise = new Promise(resolve => {
+    document.addEventListener('DOMContentLoaded', function() {
+        resolve();
+    });
+});
 
 function wrap(vue) {
     return {
@@ -19,29 +24,34 @@ function wrap(vue) {
     };
 }
 
-export default function(app) {
-    return new Promise(function(resolve, reject) {
-        document.addEventListener('DOMContentLoaded', () => {
-            try {
-                // ReSharper disable once ConstructorCallNotUsed
-                // jshint -W031
-                new Vue({
-                    el: 'html',
-                    data: app.data,
-                    computed: app.computed,
-                    methods: app.methods,
-                    ready: function() {
+function createUIAsync(app) {
+    return new Promise((resolve, reject) => {
+        try {
+            // ReSharper disable once ConstructorCallNotUsed
+            // jshint -W031
+            new Vue({
+                el:       'main',
+                data:     app.data,
+                computed: app.computed,
+                methods:  app.methods,
+                mounted: function() {
+                    Vue.nextTick(() => {
                         for (let hook of hooks.ready) {
                             hook(this);
                         }
                         const ui = wrap(this);
                         resolve(ui);
-                    }
-                });
-            }
-            catch (e) {
-                reject(e);
-            }
-        });
+                    });
+                }
+            });
+        }
+        catch (e) {
+            reject(e);
+        }
     });
+}
+
+export default async function(app) {
+    await documentReadyPromise;
+    return await createUIAsync(app);
 }
