@@ -3,18 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "devDependencies": {
-    "babel-core": "^6.17.0",
-    "babel-loader": "^6.2.4",
-    "babel-plugin-transform-async-to-generator": "^6.16.0",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.16.0",
-    "babel-plugin-transform-runtime": "^6.7.5",
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^3.1.0",
+    "gulp-babili": "0.0.2",
+    "gulp-better-rollup": "^1.1.1",
     "gulp-clean-css": "^2.0.6",
     "gulp-concat": "^2.6.0",
     "gulp-debug": "^3.0.0",
     "gulp-html-replace": "^1.5.5",
-    "gulp-less": "^3.0.5",
+    "gulp-if": "^2.0.2",
+    "gulp-less": "^3.3.0",
     "gulp-load-plugins": "^1.2.2",
     "gulp-mirror": "^1.0.0",
     "gulp-noop": "^1.0.0",
@@ -24,15 +22,14 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-svg2png": "https://github.com/ashmind/gulp-svg2png.git#gh-36-temp",
     "gulp-uglify": "^1.5.1",
-    "less-plugin-autoprefix": "^1.5.1",
-    "less-plugin-clean-css": "^1.5.1",
     "md5-file": "^3.1.1",
     "multipipe": "^1.0.1",
     "object-assign": "^4.0.1",
     "rimraf": "^2.5.4",
-    "svg2png": "3.0.0",
-    "uglify-js": "https://github.com/mishoo/UglifyJS2#harmony",
-    "webpack-stream": "^3.1.0"
+    "rollup": "^0.41.6",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "svg2png": "3.0.0"
   },
   "dependencies": {
     "codemirror": "^5.19.0",
@@ -40,8 +37,5 @@
     "lz-string": "^1.4.4",
     "mirrorsharp": "^0.9.0-pre-20170501",
     "vue": "^1.0.21"
-  },
-  "scripts": {
-    "postinstall": "node_modules/.bin/rimraf node_modules/webpack/node_modules/uglify-js"
   }
 }

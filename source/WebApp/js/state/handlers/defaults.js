@@ -1,4 +1,4 @@
-import languages from 'helpers/languages';
+import languages from '../../helpers/languages.js';
 
 const code = {
     [languages.csharp]: 'using System;\r\npublic class C {\r\n    public void M() {\r\n    }\r\n}',

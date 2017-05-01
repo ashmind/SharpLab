@@ -1,9 +1,9 @@
 import Vue from 'vue';
-import languages from 'helpers/languages';
+import languages from '../../helpers/languages.js';
 import CodeMirror from 'codemirror';
 import 'codemirror/mode/clike/clike';
 import 'codemirror/mode/vb/vb';
-import 'ui/codemirror/mode-asm';
+import '../codemirror/mode-asm.js';
 
 Vue.component('app-mirrorsharp-readonly', {
     props: {

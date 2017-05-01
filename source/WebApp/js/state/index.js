@@ -1,6 +1,6 @@
-import defaults from './handlers/defaults';
-import lastUsed from './handlers/last-used';
-import url from './handlers/url';
+import defaults from './handlers/defaults.js';
+import lastUsed from './handlers/last-used.js';
+import url from './handlers/url.js';
 
 export default {
     save: function(state) {

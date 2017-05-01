@@ -1,16 +1,15 @@
 import Vue from 'vue';
-import $ from 'jquery';
-import hooks from './hooks/registry';
+import hooks from './hooks/registry.js';
 
-import './filters/app-date';
-import './filters/app-trim';
-import './components/app-favicon-manager';
-import './components/app-loader';
-import './components/app-mirrorsharp';
-import './components/app-mirrorsharp-diagnostic';
-import './components/app-mirrorsharp-readonly';
-import './components/app-mobile-shelf';
-import './hooks/app-mobile-codemirror-fullscreen';
+import './filters/app-date.js';
+import './filters/app-trim.js';
+import './components/app-favicon-manager.js';
+import './components/app-loader.js';
+import './components/app-mirrorsharp.js';
+import './components/app-mirrorsharp-diagnostic.js';
+import './components/app-mirrorsharp-readonly.js';
+import './components/app-mobile-shelf.js';
+import './hooks/app-mobile-codemirror-fullscreen.js';
 
 function wrap(vue) {
     return {
@@ -22,7 +21,7 @@ function wrap(vue) {
 
 export default function(app) {
     return new Promise(function(resolve, reject) {
-        $(function() {
+        document.addEventListener('DOMContentLoaded', () => {
             try {
                 // ReSharper disable once ConstructorCallNotUsed
                 // jshint -W031

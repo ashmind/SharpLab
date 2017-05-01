@@ -1,8 +1,8 @@
-import languages from 'helpers/languages';
-import getBranchesAsync from './server/get-branches-async';
+import languages from './helpers/languages.js';
+import getBranchesAsync from './server/get-branches-async.js';
 
-import state from './state';
-import uiAsync from './ui';
+import state from './state/index.js';
+import uiAsync from './ui/index.js';
 
 function applyUpdateResult(updateResult) {
     const result = {

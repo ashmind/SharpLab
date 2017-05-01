@@ -1,5 +1,4 @@
-﻿import languages from 'helpers/languages';
-import $ from 'jquery';
+﻿import languages from '../../helpers/languages.js';
 import LZString from 'lz-string';
 
 let lastHash;
@@ -49,7 +48,7 @@ function load() {
 }
 
 function onchange(callback) {
-    $(window).on('hashchange', () => {
+    window.addEventListener("hashchange", () => {
         const loaded = loadInternal(true);
         if (loaded !== null)
             callback(loaded);
