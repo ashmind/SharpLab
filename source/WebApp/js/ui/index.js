@@ -11,9 +11,7 @@ import './hooks/app-mobile-codemirror-fullscreen.js';
 import './hooks/app-cloak.js';
 
 const documentReadyPromise = new Promise(resolve => {
-    document.addEventListener('DOMContentLoaded', function() {
-        resolve();
-    });
+    document.addEventListener('DOMContentLoaded', () => resolve());
 });
 
 function wrap(vue) {
@@ -28,7 +26,6 @@ function createUIAsync(app) {
     return new Promise((resolve, reject) => {
         try {
             // ReSharper disable once ConstructorCallNotUsed
-            // jshint -W031
             new Vue({
                 el:       'main',
                 data:     app.data,
@@ -36,7 +33,7 @@ function createUIAsync(app) {
                 methods:  app.methods,
                 mounted: function() {
                     Vue.nextTick(() => {
-                        for (let hook of hooks.ready) {
+                        for (const hook of hooks.ready) {
                             hook(this);
                         }
                         const ui = wrap(this);
@@ -53,5 +50,5 @@ function createUIAsync(app) {
 
 export default async function(app) {
     await documentReadyPromise;
-    return await createUIAsync(app);
+    return createUIAsync(app);
 }

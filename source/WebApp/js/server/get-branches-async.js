@@ -1,8 +1,8 @@
 export default async function getBranchesAsync() {
     try {
         const branches = await (await fetch('!branches.json')).json();
-        for (let branch of branches) {
-            for (let commit of branch.commits) {
+        for (const branch of branches) {
+            for (const commit of branch.commits) {
                 commit.date = new Date(commit.date);
             }
         }

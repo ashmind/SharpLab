@@ -6,10 +6,10 @@ function save(code, options) {
     let hash = LZString.compressToBase64(code);
     const flags = stringifyFlags(options);
     if (flags)
-        hash = 'f:' + flags + '/' + hash;
+        hash = `f:${flags}/${hash}`;
 
     if (options.branchId)
-        hash = 'b:' + options.branchId + '/' + hash;
+        hash = `b:${options.branchId}/${hash}`;
 
     lastHash = hash;
     window.location.hash = hash;
@@ -25,7 +25,7 @@ function loadInternal(onlyIfChanged) {
         return null;
 
     lastHash = hash;
-    const match = /(?:b:([^\/]+)\/)?(?:f:([^\/]+)\/)?(.+)/.exec(hash);
+    const match = /(?:b:([^/]+)\/)?(?:f:([^/]+)\/)?(.+)/.exec(hash);
     if (match === null)
         return null;
 
@@ -48,7 +48,7 @@ function load() {
 }
 
 function onchange(callback) {
-    window.addEventListener("hashchange", () => {
+    window.addEventListener('hashchange', () => {
         const loaded = loadInternal(true);
         if (loaded !== null)
             callback(loaded);
@@ -63,7 +63,7 @@ const targetMap = {
 };
 const targetMapReverse = (() => {
     const result = {};
-    for (let key in targetMap) {
+    for (const key in targetMap) {
         result[targetMap[key]] = key;
     }
     return result;
@@ -82,7 +82,7 @@ function parseFlags(flags) {
         return {};
 
     let target = targetMapReverse[''];
-    for (var key in targetMapReverse) {
+    for (const key in targetMapReverse) {
         if (key === '')
             continue;
 
@@ -92,7 +92,7 @@ function parseFlags(flags) {
 
     return {
         language: /(^|[a-z])vb/.test(flags) ? languages.vb : languages.csharp,
-        target:   target,
+        target,
         release:  flags.indexOf('r') > -1
     };
 }
