@@ -18,9 +18,11 @@ const plugins = [
 ];
 
 module.exports = {
-    entry: 'js/app.js',
     plugins: plugins,
-    dest: 'wwwroot/app.rollup-test.js',
     format: 'iife',
-    sourceMap: true
+    sourceMap: true,
+    
+    // test only, gulp does not use these
+    entry: 'js/app.js',
+    dest: 'wwwroot/app.rollup-test.js',
 };

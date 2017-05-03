@@ -26,7 +26,7 @@ gulp.task('less', () => {
 gulp.task('js', () => {
     const config = require('./rollup.config.js');
     delete config.entry;
-    delete config.dest;    
+    delete config.dest;
     return gulp
         .src('./js/app.js')
         .pipe(g.sourcemaps.init())
@@ -53,7 +53,7 @@ gulp.task('favicons', () => {
         .pipe(gulp.dest('wwwroot'));
 });
 
-gulp.task('html', () => {
+gulp.task('html', ['js', 'less'], () => {
     const faviconSvg = fs.readFileSync('favicon.svg', 'utf8');
     // http://codepen.io/jakob-e/pen/doMoML
     const faviconSvgUrlSafe = faviconSvg
@@ -76,8 +76,8 @@ gulp.task('html', () => {
 });
 
 gulp.task('watch', ['default'], () => {
-    gulp.watch('less/**/*.less', ['less']);
-    gulp.watch('js/**/*.js', ['js']);
+    gulp.watch('less/**/*.less', ['less', 'html']);
+    gulp.watch('js/**/*.js', ['js', 'html']);
     gulp.watch('favicon*.svg', ['favicons']);
     gulp.watch('index.html', ['html']);
 });
