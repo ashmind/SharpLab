@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import Vue from 'vue';
 
 Vue.component('app-mobile-shelf', {
@@ -7,12 +6,13 @@ Vue.component('app-mobile-shelf', {
         toggle:    String,
         openClass: String
     },
-    ready: function() {
-        const $container = this.container ? $(this.container) : null;
-        const $classChangeTarget = $container || $(this.$el);
-
-        $(this.toggle).click(() => {
-            $classChangeTarget.toggleClass(this.openClass);
+    mounted: function() {
+        Vue.nextTick(() => {
+            const $ = s => document.querySelector(s);
+            const classChangeTarget = this.container ? $(this.container) : this.$el;
+            $(this.toggle).addEventListener('click', () => {
+                classChangeTarget.classList.toggle(this.openClass);
+            });
         });
     },
     template: '<div></div>'

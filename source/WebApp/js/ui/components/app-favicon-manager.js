@@ -5,7 +5,7 @@ Vue.component('app-favicon-manager', {
         color: String,
         defaultColor: String
     },
-    ready: function() {
+    mounted: function() {
         const favicons = Array.from(document.querySelectorAll('link[rel=icon]'));
         let faviconSvg;
         let faviconSvgUrl;
@@ -13,7 +13,7 @@ Vue.component('app-favicon-manager', {
         const cacheDefault = {};
         const cache = { [this.defaultColor]: cacheDefault };
 
-        for (let favicon of favicons) {
+        for (const favicon of favicons) {
             if (favicon.getAttribute('type') === 'image/svg+xml') {
                 faviconSvg = favicon;
                 faviconSvgUrl = favicon.getAttribute('href');
@@ -27,7 +27,7 @@ Vue.component('app-favicon-manager', {
 
         const loadImage = src => {
             const img = new Image();
-            const promise = new Promise(resolve => img.onload = () => resolve(img));
+            const promise = new Promise(resolve => { img.onload = () => resolve(img); });
             img.src = src;
             return promise;
         };
@@ -49,10 +49,10 @@ Vue.component('app-favicon-manager', {
                 urls[size] = canvas.toDataURL('image/png');
             }));
             return urls;
-        }
+        };
 
         this.$watch('color', async color => {
-            var urls = cache[color];
+            let urls = cache[color];
             if (!urls) {
                 urls = await generateDataUrls(color);
                 cache[color] = urls;
@@ -60,7 +60,7 @@ Vue.component('app-favicon-manager', {
                     return;
             }
             faviconSvg.href = urls.svg;
-            for (let size in faviconsBySizes) {
+            for (const size in faviconsBySizes) {
                 faviconsBySizes[size].setAttribute('href', urls[size]);
             }
         });

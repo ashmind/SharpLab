@@ -5,9 +5,10 @@ const fs = require('fs');
 const md5File = require('md5-file');
 const gulp = require('gulp');
 const g = require('gulp-load-plugins')();
-const webpack = require('webpack-stream');
 const assign = require('object-assign');
 const pipe = require('multipipe');
+
+const production = process.env.NODE_ENV === 'production';
 
 gulp.task('less', () => {
     return gulp
@@ -23,11 +24,16 @@ gulp.task('less', () => {
 });
 
 gulp.task('js', () => {
-    var config = require('./webpack.config.js');
-    assign(config.output, { filename: 'app.min.js' });
+    const config = require('./rollup.config.js');
+    delete config.entry;
+    delete config.dest;    
     return gulp
         .src('./js/app.js')
-        .pipe(webpack(config))
+        .pipe(g.sourcemaps.init())
+        .pipe(g.betterRollup(config, config))
+        .pipe(g.if(production, g.babili({ comments: false })))
+        .pipe(g.rename('app.min.js'))
+        .pipe(g.sourcemaps.write('.'))
         .pipe(gulp.dest('wwwroot'));
 });
 

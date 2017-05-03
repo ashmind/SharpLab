@@ -1,8 +1,10 @@
-import languages from 'helpers/languages';
-import getBranchesAsync from './server/get-branches-async';
+import languages from './helpers/languages.js';
+import getBranchesAsync from './server/get-branches-async.js';
 
-import state from './state';
-import uiAsync from './ui';
+import state from './state/index.js';
+import uiAsync from './ui/index.js';
+
+/* eslint-disable no-invalid-this */
 
 function applyUpdateResult(updateResult) {
     const result = {
@@ -11,7 +13,7 @@ function applyUpdateResult(updateResult) {
         errors: [],
         warnings: []
     };
-    for (let diagnostic of updateResult.diagnostics) {
+    for (const diagnostic of updateResult.diagnostics) {
         if (diagnostic.severity === 'error') {
             result.success = false;
             result.errors.push(diagnostic);
@@ -27,7 +29,7 @@ function applyUpdateResult(updateResult) {
 function applyServerError(message) {
     this.result = {
         success: false,
-        errors: [{ message: message }],
+        errors: [{ message }],
         warnings: []
     };
     this.loading = false;
@@ -39,12 +41,12 @@ function applyConnectionChange(connectionState) {
 
 function getServiceUrl(branch) {
     const httpRoot = branch ? branch.url : window.location.origin;
-    return httpRoot.replace(/^http/, 'ws') + '/mirrorsharp';
+    return `${httpRoot.replace(/^http/, 'ws')}/mirrorsharp`;
 }
 
 async function createAppAsync() {
     const data = Object.assign({
-        languages: languages,
+        languages,
 
         branchGroups: [],
         branch: null,
@@ -64,7 +66,7 @@ async function createAppAsync() {
     const branchesPromise = (async () => {
         const branches = await getBranchesAsync();
         const groups = {};
-        for (let branch of branches) {
+        for (const branch of branches) {
             let group = groups[branch.group];
             if (!group) {
                 group = { name: branch.group, branches: [] };

@@ -1,19 +1,20 @@
-import defaults from './handlers/defaults';
-import lastUsed from './handlers/last-used';
-import url from './handlers/url';
+import defaults from './handlers/defaults.js';
+import lastUsed from './handlers/last-used.js';
+import url from './handlers/url.js';
 
 export default {
-    save: function(state) {
+    save: state => {
         lastUsed.saveOptions(state.options);
         url.save(state.code, state.options);
     },
 
-    load: function(state) {
+    load: state => {
         const fromUrl = url.load() || {};
+        const lastUsedOptions = lastUsed.loadOptions();
 
-        const options = fromUrl.options || lastUsed.loadOptions() || {};
+        const options = fromUrl.options || lastUsedOptions || {};
         const defaultOptions = defaults.getOptions();
-        for (let key of Object.keys(defaultOptions)) {
+        for (const key of Object.keys(defaultOptions)) {
             if (options[key] == null)
                 options[key] = defaultOptions[key];
         }
@@ -21,5 +22,7 @@ export default {
 
         state.options = options;
         state.code = code;
+        if (options === lastUsedOptions) // need to resync implicit options into URL
+            url.save(fromUrl.code, state.options);
     }
 };

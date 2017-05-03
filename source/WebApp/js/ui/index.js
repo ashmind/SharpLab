@@ -1,16 +1,18 @@
 import Vue from 'vue';
-import $ from 'jquery';
-import hooks from './hooks/registry';
+import './mixins/format-date.js';
+import hooks from './hooks/registry.js';
 
-import './filters/app-date';
-import './filters/app-trim';
-import './components/app-favicon-manager';
-import './components/app-loader';
-import './components/app-mirrorsharp';
-import './components/app-mirrorsharp-diagnostic';
-import './components/app-mirrorsharp-readonly';
-import './components/app-mobile-shelf';
-import './hooks/app-mobile-codemirror-fullscreen';
+import './components/app-favicon-manager.js';
+import './components/app-mirrorsharp.js';
+import './components/app-mirrorsharp-diagnostic.js';
+import './components/app-mirrorsharp-readonly.js';
+import './components/app-mobile-shelf.js';
+import './hooks/app-mobile-codemirror-fullscreen.js';
+import './hooks/app-cloak.js';
+
+const documentReadyPromise = new Promise(resolve => {
+    document.addEventListener('DOMContentLoaded', () => resolve());
+});
 
 function wrap(vue) {
     return {
@@ -20,29 +22,33 @@ function wrap(vue) {
     };
 }
 
-export default function(app) {
-    return new Promise(function(resolve, reject) {
-        $(function() {
-            try {
-                // ReSharper disable once ConstructorCallNotUsed
-                // jshint -W031
-                new Vue({
-                    el: 'html',
-                    data: app.data,
-                    computed: app.computed,
-                    methods: app.methods,
-                    ready: function() {
-                        for (let hook of hooks.ready) {
+function createUIAsync(app) {
+    return new Promise((resolve, reject) => {
+        try {
+            // ReSharper disable once ConstructorCallNotUsed
+            new Vue({
+                el:       'main',
+                data:     app.data,
+                computed: app.computed,
+                methods:  app.methods,
+                mounted: function() {
+                    Vue.nextTick(() => {
+                        for (const hook of hooks.ready) {
                             hook(this);
                         }
                         const ui = wrap(this);
                         resolve(ui);
-                    }
-                });
-            }
-            catch (e) {
-                reject(e);
-            }
-        });
+                    });
+                }
+            });
+        }
+        catch (e) {
+            reject(e);
+        }
     });
+}
+
+export default async function(app) {
+    await documentReadyPromise;
+    return createUIAsync(app);
 }
