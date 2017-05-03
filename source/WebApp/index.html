@@ -52,7 +52,7 @@
             <app-mirrorsharp v-bind:value="code"
                              v-bind:service-url="serviceUrl"
                              v-bind:server-options="serverOptions"
-                             v-on:text-change="code = $arguments[0]()"
+                             v-on:text-change="code = arguments[0]()"
                              v-on:slow-update-result="applyUpdateResult"
                              v-on:server-error="applyServerError"
                              v-on:connection-change="applyConnectionChange"></app-mirrorsharp>
