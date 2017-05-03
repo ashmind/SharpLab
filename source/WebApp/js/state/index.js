@@ -10,8 +10,9 @@ export default {
 
     load: state => {
         const fromUrl = url.load() || {};
+        const lastUsedOptions = lastUsed.loadOptions();
 
-        const options = fromUrl.options || lastUsed.loadOptions() || {};
+        const options = fromUrl.options || lastUsedOptions || {};
         const defaultOptions = defaults.getOptions();
         for (const key of Object.keys(defaultOptions)) {
             if (options[key] == null)
@@ -21,5 +22,7 @@ export default {
 
         state.options = options;
         state.code = code;
+        if (options === lastUsedOptions) // need to resync implicit options into URL
+            url.save(fromUrl.code, state.options);
     }
 };
