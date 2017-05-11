@@ -66,9 +66,48 @@ C.Foo(Int32)
     L0085: ret
 
 C+<Foo>d__1.MoveNext()
-    ; Method HotSize is 0, not sure why yet.
-    ; See https://github.com/ashmind/TryRoslyn/issues/82.
+    L0000: push rbp
+    L0001: sub rsp, 0x30
+    L0005: lea rbp, [rsp+0x30]
+    L000a: mov [rsp+0x20], rsp
+    L000f: mov [rbp+0x10], rcx
+    L0013: mov rcx, [rbp+0x10]
+    L0017: mov edx, [rcx+0x4]
+    L001a: mov rcx, [rbp+0x10]
+    L001e: mov dword [rcx], 0xfffffffe
+    L0024: mov rcx, [rbp+0x10]
+    L0028: cmp [rcx], ecx
+    L002a: mov rcx, [rbp+0x10]
+    L002e: add rcx, 0x8
+    L0032: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, mscorlib]].SetResult(Int32)
+    L0037: nop
+    L0038: lea rsp, [rbp]
+    L003c: pop rbp
+    L003d: ret
+    L003e: push rbp
+    L003f: sub rsp, 0x30
+    L0043: mov rbp, [rcx+0x20]
+    L0047: mov [rsp+0x20], rbp
+    L004c: lea rbp, [rbp+0x30]
+    L0050: mov rcx, [rbp+0x10]
+    L0054: mov dword [rcx], 0xfffffffe
+    L005a: mov rcx, [rbp+0x10]
+    L005e: cmp [rcx], ecx
+    L0060: mov rcx, [rbp+0x10]
+    L0064: add rcx, 0x8
+    L0068: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, mscorlib]].SetException(System.Exception)
+    L006d: lea rax, [rip-0x3d]
+    L0074: add rsp, 0x30
+    L0078: pop rbp
+    L0079: ret
 
 C+<Foo>d__1.SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)
-    ; Method HotSize is 0, not sure why yet.
-    ; See https://github.com/ashmind/TryRoslyn/issues/82.
+    L0000: sub rsp, 0x28
+    L0004: cmp [rcx], ecx
+    L0006: add rcx, 0x8
+    L000a: cmp [rcx], ecx
+    L000c: add rcx, 0x8
+    L0010: call System.Runtime.CompilerServices.AsyncMethodBuilderCore.SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)
+    L0015: nop
+    L0016: add rsp, 0x28
+    L001a: ret

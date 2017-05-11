@@ -70,27 +70,39 @@ namespace TryRoslyn.Server.Decompilation {
                 return;
             }
 
-            var methodAddress = method.HotColdInfo.HotStart;
-            if (methodAddress == 0) {
-                writer.WriteLine("    ; Method HotStart is 0, not sure why yet.");
-                writer.WriteLine("    ; See https://github.com/ashmind/TryRoslyn/issues/82.");
+            var info = FindNonEmptyHotColdInfo(method);
+            if (info == null) {
+                writer.WriteLine("    ; Failed to find HotColdInfo — please report at https://github.com/ashmind/TryRoslyn/issues.");
                 return;
             }
 
-            var hotSize = method.HotColdInfo.HotSize;
-            if (hotSize == 0) {
-                writer.WriteLine("    ; Method HotSize is 0, not sure why yet.");
-                writer.WriteLine("    ; See https://github.com/ashmind/TryRoslyn/issues/82.");
-                return;
-            }
-
+            var methodAddress = info.HotStart;
             methodAddressRef.Value = methodAddress;
-            using (var disasm = new Disassembler(new IntPtr(unchecked((long)methodAddress)), (int)hotSize, ArchitectureMode.x86_64, methodAddress)) {
+            using (var disasm = new Disassembler(new IntPtr(unchecked((long)methodAddress)), (int)info.HotSize, ArchitectureMode.x86_64, methodAddress)) {
                 foreach (var instruction in disasm.Disassemble()) {
                     writer.Write("    L{0:x4}: ", instruction.Offset - methodAddress);
                     writer.WriteLine(translator.Translate(instruction));
                 }
             }
+        }
+
+        private HotColdRegions FindNonEmptyHotColdInfo(ClrMethod method) {
+            // I can't really explain this, but it seems that some methods 
+            // are present multiple times in the same type -- one compiled
+            // and one not compiled. A bug in clrmd?
+            if (method.HotColdInfo.HotSize > 0)
+                return method.HotColdInfo;
+
+            if (method.Type == null)
+                return null;
+
+            var methodSignature = method.GetFullSignature();
+            foreach (var other in method.Type.Methods) {
+                if (other.MetadataToken == method.MetadataToken && other.GetFullSignature() == methodSignature && other.HotColdInfo.HotSize > 0)
+                    return other.HotColdInfo;
+            }
+
+            return null;
         }
 
         private class Reference<T> {
