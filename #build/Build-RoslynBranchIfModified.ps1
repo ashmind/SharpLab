@@ -53,78 +53,22 @@ function Build-Project(
     "  $projectPath $msbuildArgs" | Out-Default
 
     $projectPath = "$sourceRoot\$projectPath"
-    Invoke-Expression $("&`"$MSBuild`" `"$projectPath`" $msbuildArgs >> `"$buildLogPath`"")
+    "    dotnet restore" | Out-Default
+    dotnet restore "$projectPath" >> "$buildLogPath"
+    "    dotnet build" | Out-Default
+    Invoke-Expression ("dotnet build `"$projectPath`" $msbuildArgs >> `"$buildLogPath`"")
     if ($LastExitCode -ne 0) {
         throw New-Object BranchBuildException("Build failed, see $buildLogPath", $buildLogPath)
     }
 }
 
-function Restore-Packages() {
-   #if (Test-Path "$sourceRoot\.nuget\NuGetRestore.ps1") {
-   #    "  .nuget\NuGetRestore.ps1" | Out-Default
-   #     &"$sourceRoot\.nuget\NuGetRestore.ps1"
-   #}
-
-    Push-Location $sourceRoot
-    try {
-        if (Test-Path "Restore.cmd") {
-            "  Restore.cmd" | Out-Default
-
-            # Without the fix below, Roslyn can't be built if a directory name contains an exclamation mark
-            # See https://github.com/dotnet/roslyn/commit/eff05a2f444393a93e41e95260066f1c47b94d42#commitcomment-20146648
-            # and https://github.com/ashmind/TryRoslyn/pull/37/commits/b7ac882d410c849f0c4710d7374490910ed4dbce
-            $cmdFullPath = (Join-Path $sourceRoot "Restore.cmd")
-            $content = [IO.File]::ReadAllText($cmdFullPath)
-            $fixed = $content -replace '@setlocal enabledelayedexpansion\r?\n?', ''
-            if ($fixed -ne $content) {
-                "    enabledelayedexpansion fix" | Out-Default
-                [IO.File]::WriteAllText($cmdFullPath, $fixed)
-            }
-
-            Invoke-Expression "cmd /c Restore.cmd"
-            if ($LastExitCode -ne 0) {
-                throw New-Object BranchBuildException("Restore failed, see $buildLogPath", $buildLogPath)
-            }
-            return
-        }
-
-        if (Test-Path "BuildAndTest.proj") {
-            $buildContent = [IO.File]::ReadAllText((Resolve-Path "BuildAndTest.proj"))
-            if ($buildContent -match 'RestorePackages') {
-                #Copy-Item NuGet.Roslyn.config "NuGet.config" -Force
-                Build-Project BuildAndTest.proj "/target:RestorePackages"
-                return
-            }
-        }
-
-        throw New-Object BranchBuildException("Failed to find a NuGet restore strategy.")
-    }
-    finally {
-        Pop-Location
-    }
-}
-
-Restore-Packages
-
 $standardArgs = "/p:RestorePackages=false /p:Configuration=Debug /p:DelaySign=false /p:SignAssembly=false /p:NeedsFakeSign=false /p:SolutionDir=`"$sourceRoot\Src`""
-$csCandidates = @(
-    "Src\Compilers\CSharp\Portable\CSharpCodeAnalysis.csproj",
-    "Src\Compilers\CSharp\Source\CSharpCodeAnalysis.csproj",
-    "Src\Compilers\CSharp\Desktop\CSharpCodeAnalysis.Desktop.csproj"
-);
-Build-Project $csCandidates $standardArgs
-Build-Project @("src\Features\CSharp\Portable\CSharpFeatures.csproj") $standardArgs
-
-$vbSyntaxGenerator = "Src\Tools\Source\CompilerGeneratorTools\Source\VisualBasicSyntaxGenerator\VisualBasicSyntaxGenerator.vbproj";
-Build-Project $vbSyntaxGenerator $standardArgs
-
-$vbCandidates = @(
-    "Src\Compilers\VisualBasic\Portable\BasicCodeAnalysis.vbproj",
-    "Src\Compilers\VisualBasic\Source\BasicCodeAnalysis.vbproj",
-    "Src\Compilers\VisualBasic\Desktop\BasicCodeAnalysis.Desktop.vbproj"
-);
-Build-Project $vbCandidates "$standardArgs /p:IldasmPath=`"$(Resolve-Path "$sourceRoot\..\..\!tools\ildasm.exe")`""
-Build-Project @("src\Features\VisualBasic\Portable\BasicFeatures.vbproj") $standardArgs
+Build-Project "Src\Compilers\Core\Portable\CodeAnalysis.csproj" $standardArgs
+Build-Project "Src\Compilers\CSharp\Portable\CSharpCodeAnalysis.csproj" $standardArgs
+Build-Project "src\Features\CSharp\Portable\CSharpFeatures.csproj" $standardArgs
+Build-Project "Src\Tools\Source\CompilerGeneratorTools\Source\VisualBasicSyntaxGenerator\VisualBasicSyntaxGenerator.vbproj" $standardArgs
+Build-Project "Src\Compilers\VisualBasic\Portable\BasicCodeAnalysis.vbproj" "$standardArgs /p:IldasmPath=`"$(Resolve-Path "$sourceRoot\..\..\!tools\ildasm.exe")`""
+Build-Project "src\Features\VisualBasic\Portable\BasicFeatures.vbproj" $standardArgs
 
 if (Test-Path "$sourceRoot\NuGet.config") {
     Remove-Item "$sourceRoot\NuGet.config"
@@ -133,6 +77,7 @@ if (Test-Path "$sourceRoot\NuGet.config") {
 robocopy "$sourceRoot\Binaries\Debug" "$artifactsRoot\Binaries\Debug" `
     /xd "$sourceRoot\Binaries\Debug\Exes" `
     /xd "$sourceRoot\Binaries\Debug\CompilerGeneratorTools" `
+    /xd "runtimes" `
     /mir /np
 
 [IO.File]::WriteAllText($hashMarkerPathFull, $newHash)

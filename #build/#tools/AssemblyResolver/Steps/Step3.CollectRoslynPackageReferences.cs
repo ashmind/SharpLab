@@ -2,50 +2,45 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using AshMind.Extensions;
 using AssemblyResolver.Common;
 using Newtonsoft.Json.Linq;
-using Path = System.IO.Path;
 
 namespace AssemblyResolver.Steps {
     public static class Step3 {
         public static void CollectRoslynPackageReferences(
-            string sourceRemapFromPath,
-            string sourceRemapToPath,
-            IEnumerable<AssemblyDetails> roslynAssemblies,
+            string binariesDirectoryPath,
             out IImmutableDictionary<AssemblyShortName, IImmutableSet<PackageInfo>> roslynPackageMap
         ) {
             var map = new Dictionary<AssemblyShortName, ISet<PackageInfo>>();
-            var lockJsonPaths = GetLockJsonPaths(roslynAssemblies, sourceRemapFromPath, sourceRemapToPath);
+            var depsJsonPaths = Directory.EnumerateFiles(binariesDirectoryPath, "*.deps.json", SearchOption.AllDirectories);
 
-            FluentConsole.White.Line("Analyzing Roslyn project.lock.json files…");
-            foreach (var projectLockJsonPath in lockJsonPaths) {
-                var json = JObject.Parse(File.ReadAllText(projectLockJsonPath));
+            FluentConsole.White.Line("Analyzing Roslyn *.deps.json files…");
+            foreach (var depsJsonPath in depsJsonPaths) {
+                var json = JObject.Parse(File.ReadAllText(depsJsonPath));
                 foreach (var library in json.Value<JObject>("libraries")) {
-                    var keyParts = library.Key.Split('/');
-                    var id = keyParts[0];
-                    var version = keyParts[1];
-
-                    var files = library.Value.Value<JArray>("files");
-                    if (files == null)
+                    if (library.Value.Value<string>("type") != "package")
                         continue;
-                    foreach (var path in files.Values<string>()) {
-                        var dllName = Path.GetFileName(path);
-                        // ReSharper disable once PossibleNullReferenceException
-                        if (!dllName.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+
+                    var (id,version) = ParsePackageKey(library.Key);
+                    MapToPackage(id, id, version, depsJsonPath, map);
+                }
+
+                foreach (var target in json.Value<JObject>("targets")) {
+                    foreach (var package in (JObject)target.Value) {
+                        var runtime = package.Value.Value<JObject>("runtime");
+                        if (runtime == null)
                             continue;
 
-                        var name = dllName.Substring(0, dllName.Length - ".dll".Length);
-                        var packageInfo = new PackageInfo(id, version, projectLockJsonPath);
-                        var packageInfoSet = map.GetOrAdd(name, _ => new HashSet<PackageInfo>());
-                        if (packageInfoSet.Contains(packageInfo))
-                            continue;
+                        foreach (var entry in runtime) {
+                            var path = entry.Key;
+                            if (!path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                                continue;
 
-                        FluentConsole.Gray.Line($"  {name}");
-                        FluentConsole.Gray.Line($"    {id}.{version}");
-                        packageInfoSet.Add(packageInfo);
+                            var name = Path.GetFileNameWithoutExtension(path);
+                            var (id, version) = ParsePackageKey(package.Key);
+                            MapToPackage(name, id, version, depsJsonPath, map);
+                        }
                     }
                 }
             }
@@ -55,42 +50,20 @@ namespace AssemblyResolver.Steps {
             );
         }
 
-        private static IReadOnlyCollection<string> GetLockJsonPaths(
-            IEnumerable<AssemblyDetails> roslynAssemblies,
-            string remapFromPath, string remapToPath
-        ) {
-            FluentConsole.White.Line("Finding project.lock.json for each Roslyn assembly…");
-            var lockJsonPaths = new HashSet<string>();
-            foreach (var assembly in roslynAssemblies) {
-                FluentConsole.Gray.Line($"  {assembly.Definition.Name}");
-                var path = assembly.Definition.MainModule.Types
-                    .SelectMany(t => t.Methods)
-                    .Where(m => m.HasBody)
-                    .Select(m => m.Body)
-                    .SelectMany(b => b.Instructions)
-                    .Select(i => i.SequencePoint?.Document.Url)
-                    .First(u => u != null && !Regex.IsMatch(u, @"[\\/]obj(?:[\\/]|$)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant));
-                path = RemapPath(path, remapFromPath, remapToPath);
+        private static void MapToPackage(AssemblyShortName assemblyName, string id, string version, string depsJsonPath, IDictionary<AssemblyShortName, ISet<PackageInfo>> map) {
+            var packageInfo = new PackageInfo(id, version, depsJsonPath);
+            var packageInfoSet = map.GetOrAdd(assemblyName, _ => new HashSet<PackageInfo>());
+            if (packageInfoSet.Contains(packageInfo))
+                return;
 
-                var directoryPath = path;
-                string lockJsonPath;
-                var tried = new List<string>();
-                do {
-                    directoryPath = Path.GetDirectoryName(directoryPath);
-                    if (directoryPath == null)
-                        throw new FileNotFoundException($"Could not find project.lock.json file for assembly {assembly.Path}. Tried:  \r\n{string.Join("  \r\n", tried)}");
-                    lockJsonPath = Path.Combine(directoryPath, "project.lock.json");
-                    tried.Add(lockJsonPath);
-                } while (!File.Exists(lockJsonPath));
-                FluentConsole.Gray.Line($"    {lockJsonPath}");
-                lockJsonPaths.Add(lockJsonPath);
-            }
-            return lockJsonPaths;
+            FluentConsole.Gray.Line($"  {id}");
+            FluentConsole.Gray.Line($"    {id}.{version}");
+            packageInfoSet.Add(packageInfo);
         }
 
-        private static string RemapPath(string path, string rootFromPath, string rootToPath) {
-            return new Regex("^" + Regex.Escape(rootFromPath), RegexOptions.IgnoreCase)
-                .Replace(path, rootToPath);
+        private static (string id, string version) ParsePackageKey(string key) {
+            var parts = key.Split('/');
+            return (parts[0], parts[1]);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace AssemblyResolver {
 
             Step1.CollectMainAssemblies(arguments.SourceProjectAssemblyDirectoryPath, out mainAssemblies);
             Step2.CollectRoslynAssemblies(arguments.RoslynBinariesDirectoryPath, ref mainAssemblies, out usedRoslynAssemblies, out roslynAssemblyPaths);
-            Step3.CollectRoslynPackageReferences(arguments.RoslynSourceRemapFromPath, arguments.RoslynSourceRemapToPath, usedRoslynAssemblies.Values, out roslynPackageMap);
+            Step3.CollectRoslynPackageReferences(arguments.RoslynBinariesDirectoryPath, out roslynPackageMap);
             Step4.CollectRoslynReferences(ref usedRoslynAssemblies, roslynAssemblyPaths, ref mainAssemblies, roslynPackageMap, out othersReferencedByRoslyn);
 
             Step5.CleanTargetDirectory(arguments.TargetDirectoryPath);

@@ -46,7 +46,7 @@ namespace AssemblyResolver.Steps {
                     var roslynAssemblyPath = roslynAssemblyPaths.GetValueOrDefault(reference.Name);
                     if (roslynAssemblyPath != null) {
                         FluentConsole.Gray.Line("      [roslyn assembly, queued]");
-                        var roslynAssembly = AssemblyDetails.ReadFrom(roslynAssemblyPath, readSymbols: true);
+                        var roslynAssembly = AssemblyDetails.ReadFrom(roslynAssemblyPath, readSymbolsIfExist: true);
                         usedRoslynAssemblies = usedRoslynAssemblies.Add(roslynAssembly.Definition.Name.Name, roslynAssembly);
                         queue.Enqueue(roslynAssembly);
                         continue;
@@ -99,7 +99,7 @@ namespace AssemblyResolver.Steps {
 
             if (!File.Exists(assemblyPath))
                 throw new FileNotFoundException($"Could not find assembly '{name}' in NuGet cache, at {assemblyPath}.", assemblyPath);
-            return AssemblyDetails.ReadFrom(assemblyPath, readSymbols: false);
+            return AssemblyDetails.ReadFrom(assemblyPath, readSymbolsIfExist: false);
         }
 
         private static bool InGlobalAssemblyCache(AssemblyNameReference reference) {

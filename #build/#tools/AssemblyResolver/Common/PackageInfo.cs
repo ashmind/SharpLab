@@ -1,4 +1,4 @@
-namespace AssemblyResolver.Common {
+﻿namespace AssemblyResolver.Common {
     public class PackageInfo {
         private readonly string _sourceFilePath;
 
@@ -18,12 +18,12 @@ namespace AssemblyResolver.Common {
             if (other == null)
                 return false;
             return PackageId == other.PackageId
-                   && PackageVersion == other.PackageVersion;
+                && PackageVersion == other.PackageVersion;
         }
 
         public override int GetHashCode() {
             return PackageId.GetHashCode()
-                   ^ PackageVersion.GetHashCode();
+                 ^ PackageVersion.GetHashCode();
         }
 
         public override string ToString() => $"{PackageId}.{PackageVersion} ({_sourceFilePath})";

@@ -21,7 +21,7 @@ namespace AssemblyResolver.Steps {
                 var assemblyFromMain = mainAssemblies.GetValueOrDefault(name);
                 if (assemblyFromMain != null) {
                     FluentConsole.Gray.Line("    [used by main]");
-                    usedRoslynAssembliesBuilder.Add(name, AssemblyDetails.ReadFrom(assemblyPath, readSymbols: true));
+                    usedRoslynAssembliesBuilder.Add(name, AssemblyDetails.ReadFrom(assemblyPath, readSymbolsIfExist: true));
                     mainAssemblies = mainAssemblies.Remove(name);
                 }
                 if (roslynAssemblyPathsBuilder.ContainsKey(name))

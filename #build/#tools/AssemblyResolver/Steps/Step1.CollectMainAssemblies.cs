@@ -15,7 +15,7 @@ namespace AssemblyResolver.Steps {
                 FluentConsole.Gray.Line($"  {Path.GetFileName(assemblyPath)}");
                 var name = Path.GetFileNameWithoutExtension(assemblyPath);
                 // ReSharper disable once AssignNullToNotNullAttribute
-                mainAssembliesBuilder.Add(name, AssemblyDetails.ReadFrom(assemblyPath, readSymbols: false));
+                mainAssembliesBuilder.Add(name, AssemblyDetails.ReadFrom(assemblyPath, readSymbolsIfExist: false));
             }
             mainAssemblies = mainAssembliesBuilder.ToImmutable();
         }

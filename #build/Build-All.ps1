@@ -151,11 +151,6 @@ try {
                             })
                         }
                         Set-Content "$branchArtifactsRoot\BranchInfo.json" (ConvertTo-Json $branchInfo -Depth 100)
-
-                        Write-Output "Copying project.lock.json files..."
-                        robocopy "$repositorySourceRoot" `
-                            $(Ensure-ResolvedPath "$branchArtifactsRoot\SourcesFilteredForPackageDiscovery") project.lock.json `
-                            /s /njh /njs /ndl /np /ns /xo /purge
                     }
 
                 Write-Output "Copying Server\Web.config to $siteRoot\Web.config..."
@@ -166,8 +161,6 @@ try {
                 $resolverCommand = "&""$assemblyResolver""" +
                   " --source-bin ""$sourceRoot\Server\bin"" " +
                   " --roslyn-bin ""$branchArtifactsRoot\Binaries""" +
-                  " --roslyn-src-from ""$repositorySourceRoot""" +
-                  " --roslyn-src-to ""$branchArtifactsRoot\SourcesFilteredForPackageDiscovery""" +
                   " --target ""$(Ensure-ResolvedPath $siteRoot\bin)""" +
                   " --target-app-config ""$siteRoot\Web.config""" +
                   " >> ""$resolverLogPath"""
