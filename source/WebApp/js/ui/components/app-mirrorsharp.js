@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import mirrorsharp from 'mirrorsharp';
+import 'codemirror/mode/mllike/mllike';
 
 Vue.component('app-mirrorsharp', {
     props: {

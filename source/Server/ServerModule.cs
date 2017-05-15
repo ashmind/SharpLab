@@ -26,13 +26,17 @@ namespace TryRoslyn.Server {
                    .SingleInstance();
 
             builder.RegisterType<CSharpSetup>()
-                   .As<ILanguageSetup>()
+                   .As<IMirrorSharpSetup>()
                    .WithParameter(ResolvedParameter.ForKeyed<IFeatureDiscovery>(LanguageNames.CSharp))
                    .SingleInstance();
 
             builder.RegisterType<VisualBasicSetup>()
-                   .As<ILanguageSetup>()
+                   .As<IMirrorSharpSetup>()
                    .WithParameter(ResolvedParameter.ForKeyed<IFeatureDiscovery>(LanguageNames.VisualBasic))
+                   .SingleInstance();
+
+            builder.RegisterType<FSharpSetup>()
+                   .As<IMirrorSharpSetup>()
                    .SingleInstance();
 
             builder.RegisterType<CSharpDecompiler>().As<IDecompiler>().SingleInstance();

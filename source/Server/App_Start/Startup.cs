@@ -11,7 +11,7 @@ using MirrorSharp.Advanced;
 using MirrorSharp.Owin;
 using Owin;
 using TryRoslyn.Server;
-using TryRoslyn.Server.Compilation;
+using TryRoslyn.Server.MirrorSharp;
 
 [assembly: OwinStartup(typeof(Startup), nameof(Startup.Configuration))]
 
@@ -42,19 +42,16 @@ namespace TryRoslyn.Server {
 
         public static MirrorSharpOptions CreateMirrorSharpOptions() {
             var container = CreateContainer();
-            var languageSetups = container.Resolve<ILanguageSetup[]>();
-            var parseOptions = languageSetups.ToDictionary(s => s.LanguageName, s => s.GetParseOptions());
-            var compilationOptions = languageSetups.ToDictionary(s => s.LanguageName, s => s.GetCompilationOptions());
-            var metadataReferences = languageSetups.ToDictionary(s => s.LanguageName, s => s.GetMetadataReferences());
-            var mirrorSharpOptions = new MirrorSharpOptions {
-                GetDefaultParseOptionsByLanguageName = name => parseOptions[name],
-                GetDefaultCompilationOptionsByLanguageName = name => compilationOptions[name],
-                GetDefaultMetadataReferencesByLanguageName = name => metadataReferences[name],
+            var options = new MirrorSharpOptions {
                 SetOptionsFromClient = container.Resolve<ISetOptionsFromClientExtension>(),
                 SlowUpdate = container.Resolve<ISlowUpdateExtension>(),
                 IncludeExceptionDetails = true
             };
-            return mirrorSharpOptions;
+            var setups = container.Resolve<IMirrorSharpSetup[]>();
+            foreach (var setup in setups) {
+                setup.ApplyTo(options);
+            }
+            return options;
         }
 
         private static IContainer CreateContainer() {

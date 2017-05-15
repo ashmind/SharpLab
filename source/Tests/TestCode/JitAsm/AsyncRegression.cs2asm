@@ -19,95 +19,100 @@ static class C {
 ; Please report any bugs to https://github.com/ashmind/TryRoslyn/issues.
 
 C.M(Int32)
-    L0000: sub rsp, 0x28
-    L0004: add ecx, 0x12345
-    L000a: call C.Foo(Int32)
-    L000f: mov rcx, rax
-    L0012: cmp [rcx], ecx
-    L0014: call System.Threading.Tasks.Task`1[[System.Int32, mscorlib]].get_Result()
-    L0019: nop
-    L001a: add rsp, 0x28
-    L001e: ret
+    L0000: push rbp
+    L0001: mov ebp, esp
+    L0003: add ecx, 0x12345
+    L0009: call qword [rip+0x#/[\da-f]+/#]
+    L000f: mov ecx, eax
+    L0011: cmp [rcx], ecx
+    L0013: call System.Threading.Tasks.Task`1[[System.Int32, mscorlib]].get_Result()
+    L0018: pop rbp
+    L0019: ret
 
 C.Foo(Int32)
-    L0000: push rdi
-    L0001: push rsi
-    L0002: sub rsp, 0x78
-    L0006: mov rsi, rcx
-    L0009: lea rdi, [rsp+0x28]
-    L000e: mov ecx, 0x14
-    L0013: xor eax, eax
-    L0015: rep stosd
-    L0017: mov rcx, rsi
-    L001a: mov [rsp+0x5c], ecx
-    L001e: xor ecx, ecx
-    L0020: lea rdx, [rsp+0x28]
-    L0025: xorpd xmm0, xmm0
-    L0029: movdqu [rdx], xmm0
-    L002d: mov [rdx+0x10], rcx
-    L0031: movdqu xmm0, [rsp+0x28]
-    L0037: movdqu [rsp+0x60], xmm0
-    L003d: mov rcx, [rsp+0x38]
-    L0042: mov [rsp+0x70], rcx
-    L0047: mov dword [rsp+0x58], 0xffffffff
-    L004f: movdqu xmm0, [rsp+0x60]
-    L0055: movdqu [rsp+0x40], xmm0
-    L005b: mov rcx, [rsp+0x70]
-    L0060: mov [rsp+0x50], rcx
-    L0065: lea rcx, [rsp+0x40]
-    L006a: lea rdx, [rsp+0x58]
-    L006f: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, mscorlib]].Start[[C+<Foo>d__1, _]](<Foo>d__1 ByRef)
-    L0074: lea rcx, [rsp+0x60]
-    L0079: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, mscorlib]].get_Task()
-    L007e: nop
-    L007f: add rsp, 0x78
-    L0083: pop rsi
-    L0084: pop rdi
-    L0085: ret
+    L0000: push rbp
+    L0001: mov ebp, esp
+    L0003: push rdi
+    L0004: push rsi
+    L0005: sub esp, 0x2c
+    L0008: mov esi, ecx
+    L000a: lea edi, [rbp-0x34]
+    L000d: mov ecx, 0xb
+    L0012: xor eax, eax
+    L0014: rep stosd
+    L0016: mov ecx, esi
+    L0018: mov [rbp-0x18], ecx
+    L001b: lea edi, [rbp-0x34]
+    L001e: xor eax, eax
+    L0020: xorps xmm0, xmm0
+    L0023: movq [rdi], xmm0
+    L0027: add edi, 0x8
+    L002a: stosd
+    L002b: lea edi, [rbp-0x34]
+    L002e: xorps xmm0, xmm0
+    L0031: movq [rdi], xmm0
+    L0035: add edi, 0x8
+    L0038: stosd
+    L0039: lea edi, [rbp-0x14]
+    L003c: lea esi, [rbp-0x34]
+    L003f: call 0x6690dd68
+    L0044: call 0x6690dd68
+    L0049: call 0x6690dd68
+    L004e: mov dword [rbp-0x1c], 0xffffffff
+    L0055: lea edi, [rbp-0x28]
+    L0058: lea esi, [rbp-0x14]
+    L005b: movsd
+    L005c: movsd
+    L005d: movsd
+    L005e: lea ecx, [rbp-0x28]
+    L0061: lea edx, [rbp-0x1c]
+    L0064: call qword [rip+0x#/[\da-f]+/#]
+    L006a: lea ecx, [rbp-0x14]
+    L006d: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, mscorlib]].get_Task()
+    L0072: lea esp, [rbp-0x8]
+    L0075: pop rsi
+    L0076: pop rdi
+    L0077: pop rbp
+    L0078: ret
 
 C+<Foo>d__1.MoveNext()
     L0000: push rbp
-    L0001: sub rsp, 0x30
-    L0005: lea rbp, [rsp+0x30]
-    L000a: mov [rsp+0x20], rsp
-    L000f: mov [rbp+0x10], rcx
-    L0013: mov rcx, [rbp+0x10]
-    L0017: mov edx, [rcx+0x4]
-    L001a: mov rcx, [rbp+0x10]
-    L001e: mov dword [rcx], 0xfffffffe
-    L0024: mov rcx, [rbp+0x10]
-    L0028: cmp [rcx], ecx
-    L002a: mov rcx, [rbp+0x10]
-    L002e: add rcx, 0x8
-    L0032: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, mscorlib]].SetResult(Int32)
-    L0037: nop
-    L0038: lea rsp, [rbp]
-    L003c: pop rbp
-    L003d: ret
-    L003e: push rbp
-    L003f: sub rsp, 0x30
-    L0043: mov rbp, [rcx+0x20]
-    L0047: mov [rsp+0x20], rbp
-    L004c: lea rbp, [rbp+0x30]
-    L0050: mov rcx, [rbp+0x10]
-    L0054: mov dword [rcx], 0xfffffffe
-    L005a: mov rcx, [rbp+0x10]
-    L005e: cmp [rcx], ecx
-    L0060: mov rcx, [rbp+0x10]
-    L0064: add rcx, 0x8
-    L0068: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, mscorlib]].SetException(System.Exception)
-    L006d: lea rax, [rip-0x3d]
-    L0074: add rsp, 0x30
-    L0078: pop rbp
-    L0079: ret
+    L0001: mov ebp, esp
+    L0003: sub esp, 0x18
+    L0006: xor eax, eax
+    L0008: mov [rbp-0x14], eax
+    L000b: mov [rbp-0x10], eax
+    L000e: mov [rbp-0xc], eax
+    L0011: mov [rbp-0x8], eax
+    L0014: mov [rbp-0x18], ecx
+    L0017: mov edx, [rbp-0x18]
+    L001a: mov eax, [rdx+0x4]
+    L001d: jmp L003d
+    L001f: mov edx, eax
+    L0021: mov eax, [rbp-0x18]
+    L0024: mov dword [rax], 0xfffffffe
+    L002a: cmp [rax], al
+    L002c: mov ecx, eax
+    L002e: add ecx, 0x8
+    L0031: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, mscorlib]].SetException(System.Exception)
+    L0036: call 0x#/[\da-f]+/#
+    L003b: jmp L0051
+    L003d: mov dword [rdx], 0xfffffffe
+    L0043: cmp [rdx], al
+    L0045: add edx, 0x8
+    L0048: mov ecx, edx
+    L004a: mov edx, eax
+    L004c: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, mscorlib]].SetResult(Int32)
+    L0051: mov esp, ebp
+    L0053: pop rbp
+    L0054: ret
 
 C+<Foo>d__1.SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)
-    L0000: sub rsp, 0x28
-    L0004: cmp [rcx], ecx
-    L0006: add rcx, 0x8
-    L000a: cmp [rcx], ecx
-    L000c: add rcx, 0x8
-    L0010: call System.Runtime.CompilerServices.AsyncMethodBuilderCore.SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)
-    L0015: nop
-    L0016: add rsp, 0x28
-    L001a: ret
+    L0000: cmp [rcx], al
+    L0002: add ecx, 0x8
+    L0005: mov eax, ecx
+    L0007: cmp [rax], al
+    L0009: add eax, 0x4
+    L000c: mov ecx, eax
+    L000e: call System.Runtime.CompilerServices.AsyncMethodBuilderCore.SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)
+    L0013: ret

@@ -59,6 +59,15 @@
     <Reference Include="Esent.Interop, Version=1.9.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\#packages\ManagedEsent.1.9.4\lib\net40\Esent.Interop.dll</HintPath>
     </Reference>
+    <Reference Include="FSharp.Compiler.Service, Version=12.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\#packages\FSharp.Compiler.Service.12.0.8\lib\net45\FSharp.Compiler.Service.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Compiler.Service.MSBuild.v12, Version=12.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\#packages\FSharp.Compiler.Service.12.0.8\lib\net45\FSharp.Compiler.Service.MSBuild.v12.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Core, Version=4.4.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\#packages\FSharp.Core.4.1.17\lib\net45\FSharp.Core.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.Decompiler, Version=2.1.0.1663, Culture=neutral, PublicKeyToken=d4bfe873e7598c49, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\#libraries\ICSharpCode.Decompiler.dll</HintPath>
@@ -79,9 +88,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\#libraries\ILSpy.exe</HintPath>
     </Reference>
-    <Reference Include="JetBrains.Annotations, Version=10.1.5.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <HintPath>..\#packages\JetBrains.Annotations.10.1.5\lib\net\JetBrains.Annotations.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="JetBrains.Annotations, Version=10.4.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\#packages\JetBrains.Annotations.10.4.0\lib\net\JetBrains.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\#packages\Microsoft.CodeAnalysis.Common.2.0.0\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
@@ -138,10 +146,13 @@
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="MirrorSharp.Common, Version=0.9.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\#packages\MirrorSharp.Common.0.9.0-pre-20170329-3\lib\net46\MirrorSharp.Common.dll</HintPath>
+      <HintPath>..\#packages\MirrorSharp.Common.0.9.0-pre-20170515\lib\net46\MirrorSharp.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="MirrorSharp.FSharp, Version=0.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\#packages\MirrorSharp.FSharp.0.9.0-pre-20170515-2\lib\net46\MirrorSharp.FSharp.dll</HintPath>
     </Reference>
     <Reference Include="MirrorSharp.Owin, Version=0.9.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\#packages\MirrorSharp.Owin.0.9.0-pre-20170329-3\lib\net46\MirrorSharp.Owin.dll</HintPath>
+      <HintPath>..\#packages\MirrorSharp.Owin.0.9.0-pre-20170515\lib\net46\MirrorSharp.Owin.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -273,7 +284,8 @@
   <ItemGroup>
     <Compile Include="App_Start\Startup.cs" />
     <Compile Include="Compilation\CSharpSetup.cs" />
-    <Compile Include="Compilation\ILanguageSetup.cs" />
+    <Compile Include="Compilation\FSharpSetup.cs" />
+    <Compile Include="MirrorSharp\IMirrorSharpSetup.cs" />
     <Compile Include="Compilation\Internal\CSharpFeatureDiscovery.cs" />
     <Compile Include="Compilation\Internal\IFeatureDiscovery.cs" />
     <Compile Include="Compilation\Internal\IMetadataReferenceCollector.cs" />
@@ -305,6 +317,9 @@
     <Analyzer Include="..\#packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\#packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="FSharpCore.targets" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -330,6 +345,7 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="FSharpCore.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>

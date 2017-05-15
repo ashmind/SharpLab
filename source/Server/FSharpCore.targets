@@ -1,0 +1,17 @@
+﻿<Project>
+   <!-- Should not be needed once https://github.com/Microsoft/visualfsharp/pull/2884 is available on NuGet -->
+  <Target Name="CopyOptdataAndSigdata" AfterTargets="Build">
+    <ItemGroup>
+      <FSharpCoreReference Include="@(ReferencePath)" Condition="$([System.String]::Copy('%(ReferencePath.Identity)').EndsWith('FSharp.Core.dll'))" />
+    </ItemGroup>
+    <PropertyGroup>
+      <FSharpCorePath>@(FSharpCoreReference->'%(Identity)')</FSharpCorePath>
+      <FSharpCoreDirectoryPath>$([System.IO.Path]::GetDirectoryName($(FSharpCorePath)))</FSharpCoreDirectoryPath>
+    </PropertyGroup>
+    <ItemGroup>
+      <FSharpOpdataAndSigdata Include="$(FSharpCoreDirectoryPath)\FSharp.Core.optdata" />
+      <FSharpOpdataAndSigdata Include="$(FSharpCoreDirectoryPath)\FSharp.Core.sigdata" />
+    </ItemGroup>
+    <Copy SourceFiles="@(FSharpOpdataAndSigdata)" DestinationFolder="$(OutDir)" />
+  </Target>
+</Project>

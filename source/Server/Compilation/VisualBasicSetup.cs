@@ -5,16 +5,17 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
+using MirrorSharp;
 using TryRoslyn.Server.Compilation.Internal;
+using TryRoslyn.Server.MirrorSharp;
 
 namespace TryRoslyn.Server.Compilation {
-    public class VisualBasicSetup : ILanguageSetup {
+    public class VisualBasicSetup : IMirrorSharpSetup {
         private static readonly LanguageVersion MaxLanguageVersion = Enum
             .GetValues(typeof(LanguageVersion))
             .Cast<LanguageVersion>()
             .Max();
-
-        // ReSharper disable once AgentHeisenbug.FieldOfNonThreadSafeTypeInThreadSafeType
+        
         private readonly ImmutableList<MetadataReference> _references;
         private readonly IReadOnlyDictionary<string, string> _features;
 
@@ -26,16 +27,14 @@ namespace TryRoslyn.Server.Compilation {
             _features = featureDiscovery.SlowDiscoverAll().ToDictionary(f => f, f => (string)null);
         }
 
-        public string LanguageName => LanguageNames.VisualBasic;
+        public void ApplyTo(MirrorSharpOptions options) {
+            // ReSharper disable HeapView.ObjectAllocation.Evident
 
-        public ParseOptions GetParseOptions() {
-            return new VisualBasicParseOptions(MaxLanguageVersion).WithFeatures(_features);
+            options.VisualBasic.ParseOptions = new VisualBasicParseOptions(MaxLanguageVersion).WithFeatures(_features);
+            options.VisualBasic.CompilationOptions = new VisualBasicCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
+            options.VisualBasic.MetadataReferences = _references;
+
+            // ReSharper restore HeapView.ObjectAllocation.Evident
         }
-
-        public CompilationOptions GetCompilationOptions() {
-            return new VisualBasicCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
-        }
-
-        public ImmutableList<MetadataReference> GetMetadataReferences() => _references;
     }
 }

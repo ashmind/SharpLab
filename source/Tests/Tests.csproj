@@ -46,9 +46,17 @@
     <Reference Include="Esent.Interop, Version=1.9.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\#packages\ManagedEsent.1.9.4\lib\net40\Esent.Interop.dll</HintPath>
     </Reference>
-    <Reference Include="JetBrains.Annotations, Version=10.1.5.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <HintPath>..\#packages\JetBrains.Annotations.10.1.5\lib\net\JetBrains.Annotations.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="FSharp.Compiler.Service, Version=12.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\#packages\FSharp.Compiler.Service.12.0.8\lib\net45\FSharp.Compiler.Service.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Compiler.Service.MSBuild.v12, Version=12.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\#packages\FSharp.Compiler.Service.12.0.8\lib\net45\FSharp.Compiler.Service.MSBuild.v12.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Core, Version=4.4.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\#packages\FSharp.Core.4.1.17\lib\net45\FSharp.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Annotations, Version=10.4.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\#packages\JetBrains.Annotations.10.4.0\lib\net\JetBrains.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\#packages\Microsoft.CodeAnalysis.Common.2.0.0\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
@@ -84,10 +92,13 @@
       <HintPath>..\#packages\Microsoft.CodeAnalysis.Workspaces.Common.2.0.0\lib\net46\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
     </Reference>
     <Reference Include="MirrorSharp.Common, Version=0.9.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\#packages\MirrorSharp.Common.0.9.0-pre-20170329-3\lib\net46\MirrorSharp.Common.dll</HintPath>
+      <HintPath>..\#packages\MirrorSharp.Common.0.9.0-pre-20170515\lib\net46\MirrorSharp.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="MirrorSharp.FSharp, Version=0.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\#packages\MirrorSharp.FSharp.0.9.0-pre-20170515-2\lib\net46\MirrorSharp.FSharp.dll</HintPath>
     </Reference>
     <Reference Include="MirrorSharp.Testing, Version=0.9.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\#packages\MirrorSharp.Testing.0.9.0-pre-20170329-3\lib\net46\MirrorSharp.Testing.dll</HintPath>
+      <HintPath>..\#packages\MirrorSharp.Testing.0.9.0-pre-20170515\lib\net46\MirrorSharp.Testing.dll</HintPath>
     </Reference>
     <Reference Include="Moq, Version=4.2.1510.2205, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\#packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
@@ -233,6 +244,8 @@
     <EmbeddedResource Include="TestCode\JitAsm\Simple.cs2asm" />
     <EmbeddedResource Include="TestCode\JitAsm\ArrayElement.cs2asm" />
     <EmbeddedResource Include="TestCode\JitAsm\ConsoleWrite.cs2asm" />
+    <EmbeddedResource Include="TestCode\FSharp\EmptyType.fs2il" />
+    <EmbeddedResource Include="TestCode\FSharp\SimpleMethod.fs2cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Server\Server.csproj">
@@ -248,6 +261,7 @@
     <Analyzer Include="..\#packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\Server\FSharpCore.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>

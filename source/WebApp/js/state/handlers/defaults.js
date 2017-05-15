@@ -1,8 +1,9 @@
-import languages from '../../helpers/languages.js';
+﻿import languages from '../../helpers/languages.js';
 
 const code = {
     [languages.csharp]: 'using System;\r\npublic class C {\r\n    public void M() {\r\n    }\r\n}',
-    [languages.vb]:  'Imports System\r\nPublic Class C\r\n    Public Sub M()\r\n    End Sub\r\nEnd Class'
+    [languages.vb]:  'Imports System\r\nPublic Class C\r\n    Public Sub M()\r\n    End Sub\r\nEnd Class',
+    [languages.fsharp]:  'open System\r\ntype C() =\r\n    member this.M() = ()'
 };
 
 export default {
@@ -13,5 +14,5 @@ export default {
         release:    false
     }),
 
-    getCode: (language) => code[language]
+    getCode: language => code[language]
 };

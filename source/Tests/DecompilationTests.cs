@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AshMind.Extensions;
 using Microsoft.CodeAnalysis;
+using MirrorSharp;
 using MirrorSharp.Testing;
 using Pedantic.IO;
 using TryRoslyn.Server;
@@ -14,6 +15,7 @@ using Xunit.Abstractions;
 
 namespace TryRoslyn.Tests {
     public class DecompilationTests {
+        private static readonly MirrorSharpOptions MirrorSharpOptions = Startup.CreateMirrorSharpOptions();
         private readonly ITestOutputHelper _output;
 
         public DecompilationTests(ITestOutputHelper output) {
@@ -28,19 +30,27 @@ namespace TryRoslyn.Tests {
         [InlineData("Module.vb2vb")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string resourceName) {
             var data = TestData.FromResource(resourceName);
-
-            var driver = MirrorSharpTestDriver.New(Startup.CreateMirrorSharpOptions());
-            await driver.SendSetOptionsAsync(new Dictionary<string, string> {
-                { "language", data.SourceLanguageName },
-                { "optimize", nameof(OptimizationLevel.Release).ToLowerInvariant() },
-                { "x-target-language", data.TargetLanguageName }
-            });
-            driver.SetSourceText(data.SourceText);
+            var driver = await NewTestDriverAsync(data);
 
             var result = await driver.SendSlowUpdateAsync<ExtensionResult>();
             var errors = result.JoinErrors();
 
             Assert.True(errors.IsNullOrEmpty(), errors);
+            data.AssertMatches(result.ExtensionResult.Decompiled.Trim());
+        }
+
+        [Theory]
+        [InlineData("FSharp.EmptyType.fs2il")]
+        [InlineData("FSharp.SimpleMethod.fs2cs")]
+        public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForFSharp(string resourceName) {
+            var data = TestData.FromResource(resourceName);
+            var driver = await NewTestDriverAsync(data);
+
+            var result = await driver.SendSlowUpdateAsync<ExtensionResult>();
+            var errors = result.JoinErrors();
+
+            Assert.True(errors.IsNullOrEmpty(), errors);
+            _output.WriteLine(result.ExtensionResult.Decompiled.Trim());
             data.AssertMatches(result.ExtensionResult.Decompiled.Trim());
         }
 
@@ -52,13 +62,7 @@ namespace TryRoslyn.Tests {
         [InlineData("JitAsm.ConsoleWrite.cs2asm")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForJitAsm(string resourceName) {
             var data = TestData.FromResource(resourceName);
-            var driver = MirrorSharpTestDriver.New(Startup.CreateMirrorSharpOptions());
-            await driver.SendSetOptionsAsync(new Dictionary<string, string> {
-                { "language", data.SourceLanguageName },
-                { "optimize", nameof(OptimizationLevel.Release).ToLowerInvariant() },
-                { "x-target-language", data.TargetLanguageName }
-            });
-            driver.SetSourceText(data.SourceText);
+            var driver = await NewTestDriverAsync(data);
 
             var result = await driver.SendSlowUpdateAsync<ExtensionResult>();
             var errors = result.JoinErrors();
@@ -67,11 +71,23 @@ namespace TryRoslyn.Tests {
             _output.WriteLine(result.ExtensionResult.Decompiled.Trim());
             data.AssertMatches(result.ExtensionResult.Decompiled.Trim());
         }
+        
+        private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestData data) {
+            var driver = MirrorSharpTestDriver.New(MirrorSharpOptions);
+            await driver.SendSetOptionsAsync(new Dictionary<string, string> {
+                {"language", data.SourceLanguageName},
+                {"optimize", nameof(OptimizationLevel.Release).ToLowerInvariant()},
+                {"x-target-language", data.TargetLanguageName}
+            });
+            driver.SetText(data.SourceText);
+            return driver;
+        }
 
         private class TestData {
             private static readonly IDictionary<string, string> LanguageMap = new Dictionary<string, string> {
                 { "cs",  LanguageNames.CSharp },
                 { "vb",  LanguageNames.VisualBasic },
+                { "fs",  "F#" },
                 { "il",  "IL" },
                 { "asm", "JIT ASM" },
             };

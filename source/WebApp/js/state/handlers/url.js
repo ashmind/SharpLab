@@ -55,23 +55,32 @@ function onchange(callback) {
     });
 }
 
-const targetMap = {
-    [languages.csharp]: '',
-    [languages.vb]:  '>vb',
-    [languages.il]:  '>il',
-    [languages.asm]: '>asm'
-};
-const targetMapReverse = (() => {
+function reverseMap(map) {
     const result = {};
-    for (const key in targetMap) {
-        result[targetMap[key]] = key;
+    for (const key in map) {
+        result[map[key]] = key;
     }
     return result;
-})();
+}
+
+const targetMap = {
+    [languages.csharp]: '',
+    [languages.vb]:     '>vb',
+    [languages.il]:     '>il',
+    [languages.asm]:    '>asm'
+};
+const targetMapReverse = reverseMap(targetMap);
+
+const languageMap = {
+    [languages.csharp]: '',
+    [languages.vb]:     'vb',
+    [languages.fsharp]: 'fs',
+};
+const languageMapReverse = reverseMap(languageMap);
 
 function stringifyFlags(options) {
     return [
-        options.language === languages.vb ? 'vb' : '',
+        languageMap[options.language],
         targetMap[options.target],
         options.release ? 'r' : ''
     ].join('');
@@ -81,19 +90,14 @@ function parseFlags(flags) {
     if (!flags)
         return {};
 
-    let target = targetMapReverse[''];
-    for (const key in targetMapReverse) {
-        if (key === '')
-            continue;
-
-        if (flags.indexOf(key) > -1)
-            target = targetMapReverse[key];
-    }
+    const match = flags.match(/^([^>]*?)(>.+?)?(r)?$/);
+    if (!match)
+        return {};
 
     return {
-        language: /(^|[a-z])vb/.test(flags) ? languages.vb : languages.csharp,
-        target,
-        release:  flags.indexOf('r') > -1
+        language: languageMapReverse[match[1] || ''],
+        target:   targetMapReverse[match[2] || ''],
+        release:  match[3] === 'r'
     };
 }
 

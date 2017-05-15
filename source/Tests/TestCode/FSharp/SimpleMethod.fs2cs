@@ -1,0 +1,33 @@
+﻿open System
+type C() =
+    member this.M() = 5
+
+#=>
+
+using Microsoft.FSharp.Core;
+using System;
+using System.Reflection;
+[assembly: AssemblyVersion("0.0.0.0")]
+[assembly: FSharpInterfaceDataVersion(2, 0, 0)]
+[CompilationMapping(SourceConstructFlags.Module)]
+public static class _
+{
+    [CompilationMapping(SourceConstructFlags.ObjectType)]
+    [Serializable]
+    public class C
+    {
+        public C() : this()
+        {
+        }
+        public int M()
+        {
+            return 5;
+        }
+    }
+}
+namespace <StartupCode$_>
+{
+    internal static class $_
+    {
+    }
+}
