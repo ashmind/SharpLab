@@ -1,4 +1,4 @@
-﻿<Project>
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
    <!-- Should not be needed once https://github.com/Microsoft/visualfsharp/pull/2884 is available on NuGet -->
   <Target Name="CopyOptdataAndSigdata" AfterTargets="Build">
     <ItemGroup>
