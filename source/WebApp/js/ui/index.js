@@ -2,13 +2,13 @@ import Vue from 'vue';
 import './mixins/format-date.js';
 import hooks from './hooks/registry.js';
 
-import './components/app-theme-color-manager.js';
 import './components/app-mirrorsharp.js';
 import './components/app-mirrorsharp-diagnostic.js';
 import './components/app-mirrorsharp-readonly.js';
 import './components/app-mobile-shelf.js';
 import './hooks/app-cloak.js';
 import './hooks/app-mobile-codemirror-fullscreen.js';
+import './hooks/app-theme-color-manager.js';
 
 const documentReadyPromise = new Promise(resolve => {
     document.addEventListener('DOMContentLoaded', () => resolve());
