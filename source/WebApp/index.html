@@ -23,7 +23,7 @@
       <div class="section-group">
         <section class="code">
           <header>
-            <button class="mobile-menu-button"></button>
+            <button class="mobile-menu-button" v-app-class-toggle="{ target: '.code', class: 'mobile-menu-open' }"></button>
             <h1>Code</h1>
             <div class="select-wrapper option-language option">
               <select v-model="options.language">
@@ -43,10 +43,7 @@
               </select>
             </div>
 
-            <app-mobile-shelf class="mobile-menu"
-                              toggle=".code .mobile-menu-button"
-                              container=".code"
-                              open-class="mobile-menu-open"></app-mobile-shelf>
+            <div class="mobile-menu"></div>
           </header>
           <div class="content">
             <app-mirrorsharp v-bind:value="code"
@@ -77,7 +74,7 @@
       <div class="section-group results" v-bind:class="{loading: loading}">
         <section v-show="result.success" class="decompiled">
           <header>
-            <button class="mobile-menu-button"></button>
+            <button class="mobile-menu-button" v-app-class-toggle="{ target: '.decompiled', class: 'mobile-menu-open' }"></button>
             <h1>Decompiled</h1>
 
             <div class="select-wrapper option-target-language option">
@@ -95,10 +92,7 @@
                 <option v-bind:value="true">Release</option>
               </select>
             </div>
-            <app-mobile-shelf class="mobile-menu"
-                              toggle=".decompiled .mobile-menu-button"
-                              container=".decompiled"
-                              open-class="mobile-menu-open"></app-mobile-shelf>
+            <div class="mobile-menu"></div>
           </header>
           <div class="content">
             <div class="loader"></div>
@@ -122,8 +116,9 @@
           </div>
         </section>
 
-        <section class="warnings" v-show="result.success && result.warnings.length > 0">
+        <section class="warnings collapsed" v-show="result.success && result.warnings.length > 0">
           <header>
+            <button class="expander" v-app-class-toggle="{ target: '.warnings', class: 'collapsed' }"></button>
             <h1>Warnings</h1>
           </header>
           <div class="content">

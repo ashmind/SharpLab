@@ -31,7 +31,6 @@
 
         > * {
             width: auto;
-            height: 0;
         }
     }
 
@@ -46,10 +45,6 @@
 
 .mobile-compact({
     .mobile-menu-button {
-        display: inline-block;
-        vertical-align: middle;
-        width: 18px;
-        height: 18px;
         margin-right: 5px;
         background: linear-gradient(
             to bottom,
@@ -61,14 +56,7 @@
             white 80%, white 90%,
             transparent 90%, transparent 100%
         );
-
-        input[type=button]& {
-            appearance: none;
-        }
-
-        padding: 0;
-        border: none;
-        border-radius: 0;
+        .header-button();
     }
 
     section {
