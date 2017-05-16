@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>SharpLab</title>
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
-    <meta name="theme-color" content="#4684ee" v-bind:content="status.color">
+    <meta name="theme-color" content="#4684ee">
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,{build:favicon-svg}">
     <link rel="icon" type="image/png" href="favicon-256.png" sizes="256x256">
@@ -14,7 +14,6 @@
     <link rel="icon" type="image/png" href="favicon-64.png" sizes="64x64">
     <link rel="icon" type="image/png" href="favicon-32.png" sizes="32x32">
     <link rel="icon" type="image/png" href="favicon-16.png" sizes="16x16">
-    <app-favicon-manager default-color="#4684ee" v-bind:color="status.color"></app-favicon-manager>
 
     <!-- build:css -->
     <!-- endbuild -->
@@ -136,6 +135,7 @@
           </div>
         </section>
       </div>
+      <app-theme-color-manager hidden default-color="#4684ee" v-bind:color="status.color"></app-theme-color-manager>
     </main>
     <footer>
       Built by Andrey Shchekin (<a href="http://twitter.com/ashmind">@ashmind</a>). See <a href="http://github.com/ashmind/TryRoslyn">SharpLab</a> on GitHub.

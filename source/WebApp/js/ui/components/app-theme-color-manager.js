@@ -1,12 +1,14 @@
 ﻿import Vue from 'vue';
 
-Vue.component('app-favicon-manager', {
+Vue.component('app-theme-color-manager', {
     props: {
         color: String,
         defaultColor: String
     },
     mounted: function() {
+        const meta = document.querySelector('meta[name="theme-color"]');
         const favicons = Array.from(document.querySelectorAll('link[rel=icon]'));
+
         let faviconSvg;
         let faviconSvgUrl;
         const faviconsBySizes = {};
@@ -52,6 +54,7 @@ Vue.component('app-favicon-manager', {
         };
 
         this.$watch('color', async color => {
+            meta.setAttribute('content', color);
             let urls = cache[color];
             if (!urls) {
                 urls = await generateDataUrls(color);
