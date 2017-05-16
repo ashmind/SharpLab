@@ -37,6 +37,10 @@ namespace TryRoslyn.Server.Decompilation {
                 codeWriter.WriteLine("; This is an experimental implementation.");
                 codeWriter.WriteLine("; Please report any bugs to https://github.com/ashmind/TryRoslyn/issues.");
                 codeWriter.WriteLine();
+                
+                WriteJitInfo(runtime.ClrInfo, codeWriter);
+
+                var architecture = MapArchitecture(runtime.ClrInfo.DacInfo.TargetArchitecture);
                 foreach (var result in results) {
                     var methodHandle = (ulong)result.Handle.ToInt64();
                     var method = runtime.GetMethodByHandle(methodHandle);
@@ -46,10 +50,25 @@ namespace TryRoslyn.Server.Decompilation {
                         continue;
                     }
 
-                    DisassembleAndWrite(method, result.Message, translator, currentMethodAddressRef, codeWriter);
+                    DisassembleAndWrite(method, result.Message, architecture, translator, currentMethodAddressRef, codeWriter);
                     codeWriter.WriteLine();
                 }
             }
+        }
+
+        private void WriteJitInfo(ClrInfo clr, TextWriter writer) {
+            writer.Write("; ");
+            // ReSharper disable once HeapView.BoxingAllocation (is it worth caching?)
+            writer.Write(clr.Flavor.ToString("G"));
+            writer.Write(" CLR ");
+            writer.Write(clr.Version.ToString());
+            writer.Write(" (");
+            writer.Write(Path.GetFileName(clr.ModuleInfo.FileName));
+            writer.Write(") on ");
+            // ReSharper disable once HeapView.BoxingAllocation (is it worth caching?)
+            writer.Write(clr.DacInfo.TargetArchitecture.ToString("G").ToLowerInvariant());
+            writer.WriteLine(".");
+            writer.WriteLine();
         }
 
         private static string ResolveSymbol(ClrRuntime runtime, Instruction instruction, long addr, ulong currentMethodAddress) {
@@ -62,7 +81,7 @@ namespace TryRoslyn.Server.Decompilation {
             return runtime.GetMethodByAddress(unchecked((ulong)addr))?.GetFullSignature();
         }
 
-        private void DisassembleAndWrite(ClrMethod method, string message, Translator translator, Reference<ulong> methodAddressRef, TextWriter writer) {
+        private void DisassembleAndWrite(ClrMethod method, string message, ArchitectureMode architecture, Translator translator, Reference<ulong> methodAddressRef, TextWriter writer) {
             writer.WriteLine(method.GetFullSignature());
             if (message != null) {
                 writer.Write("    ; ");
@@ -78,9 +97,11 @@ namespace TryRoslyn.Server.Decompilation {
 
             var methodAddress = info.HotStart;
             methodAddressRef.Value = methodAddress;
-            using (var disasm = new Disassembler(new IntPtr(unchecked((long)methodAddress)), (int)info.HotSize, ArchitectureMode.x86_64, methodAddress)) {
+            using (var disasm = new Disassembler(new IntPtr(unchecked((long)methodAddress)), (int)info.HotSize, architecture, methodAddress)) {
                 foreach (var instruction in disasm.Disassemble()) {
-                    writer.Write("    L{0:x4}: ", instruction.Offset - methodAddress);
+                    writer.Write("    L");
+                    writer.Write((instruction.Offset - methodAddress).ToString("x4"));
+                    writer.Write(": ");
                     writer.WriteLine(translator.Translate(instruction));
                 }
             }
@@ -103,6 +124,16 @@ namespace TryRoslyn.Server.Decompilation {
             }
 
             return null;
+        }
+
+        private ArchitectureMode MapArchitecture(Architecture architecture) {
+            switch (architecture) {
+                case Architecture.Amd64: return ArchitectureMode.x86_64;
+                case Architecture.X86: return ArchitectureMode.x86_32;
+                // ReSharper disable once HeapView.BoxingAllocation
+                // ReSharper disable once HeapView.ObjectAllocation.Evident
+                default: throw new Exception($"Unsupported architecture mode {architecture}.");
+            }
         }
 
         private class Reference<T> {

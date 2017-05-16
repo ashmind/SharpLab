@@ -7,6 +7,8 @@
 ; This is an experimental implementation.
 ; Please report any bugs to https://github.com/ashmind/TryRoslyn/issues.
 
+; Desktop CLR v<IGNORE> (clr.dll) on x86.
+
 C.M()
     L0000: mov eax, 0x12345
     L0005: ret

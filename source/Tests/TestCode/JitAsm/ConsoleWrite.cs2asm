@@ -8,7 +8,9 @@ static class C {
 ; This is an experimental implementation.
 ; Please report any bugs to https://github.com/ashmind/TryRoslyn/issues.
 
+; Desktop CLR v<IGNORE> (clr.dll) on x86.
+
 C.M()
-    L0000: mov ecx, [rip+0x#/[\da-f]+/#]
+    L0000: mov ecx, [0x<IGNORE>]
     L0006: call System.Console.WriteLine(System.String)
     L000b: ret

@@ -35,8 +35,10 @@ namespace TryRoslyn.Tests {
             var result = await driver.SendSlowUpdateAsync<ExtensionResult>();
             var errors = result.JoinErrors();
 
+            var decompiledText = result.ExtensionResult.Decompiled.Trim();
+            _output.WriteLine(decompiledText);
             Assert.True(errors.IsNullOrEmpty(), errors);
-            data.AssertMatches(result.ExtensionResult.Decompiled.Trim());
+            Assert.Equal(data.Expected, decompiledText);
         }
 
         [Theory]
@@ -49,9 +51,10 @@ namespace TryRoslyn.Tests {
             var result = await driver.SendSlowUpdateAsync<ExtensionResult>();
             var errors = result.JoinErrors();
 
+            var decompiledText = result.ExtensionResult.Decompiled.Trim();
+            _output.WriteLine(decompiledText);
             Assert.True(errors.IsNullOrEmpty(), errors);
-            _output.WriteLine(result.ExtensionResult.Decompiled.Trim());
-            data.AssertMatches(result.ExtensionResult.Decompiled.Trim());
+            Assert.Equal(data.Expected, decompiledText);
         }
 
         [Theory]
@@ -67,9 +70,13 @@ namespace TryRoslyn.Tests {
             var result = await driver.SendSlowUpdateAsync<ExtensionResult>();
             var errors = result.JoinErrors();
 
+            var decompiledText = Regex.Replace(
+                result.ExtensionResult.Decompiled.Trim(),
+                @"((?<=0x)[\da-f]{7,8}(?=$|[^\da-f])|(?<=CLR v)[\d\.]+)", "<IGNORE>"
+            );
+            _output.WriteLine(decompiledText);
             Assert.True(errors.IsNullOrEmpty(), errors);
-            _output.WriteLine(result.ExtensionResult.Decompiled.Trim());
-            data.AssertMatches(result.ExtensionResult.Decompiled.Trim());
+            Assert.Equal(data.Expected, decompiledText);
         }
         
         private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestData data) {
@@ -79,7 +86,7 @@ namespace TryRoslyn.Tests {
                 {"optimize", nameof(OptimizationLevel.Release).ToLowerInvariant()},
                 {"x-target-language", data.TargetLanguageName}
             });
-            driver.SetText(data.SourceText);
+            driver.SetText(data.Original);
             return driver;
         }
 
@@ -91,14 +98,14 @@ namespace TryRoslyn.Tests {
                 { "il",  "IL" },
                 { "asm", "JIT ASM" },
             };
-            public string SourceText { get; }
-            public Action<string> AssertMatches { get; }
+            public string Original { get; }
+            public string Expected { get; }
             public string SourceLanguageName { get; }
             public string TargetLanguageName { get; }
 
-            public TestData(string sourceText, Action<string> assertMatches, string sourceLanguageName, string targetLanguageName) {
-                SourceText = sourceText;
-                AssertMatches = assertMatches;
+            public TestData(string original, string expected, string sourceLanguageName, string targetLanguageName) {
+                Original = original;
+                Expected = expected;
                 SourceLanguageName = sourceLanguageName;
                 TargetLanguageName = targetLanguageName;
             }
@@ -106,26 +113,12 @@ namespace TryRoslyn.Tests {
             public static TestData FromResource(string name) {
                 var content = EmbeddedResource.ReadAllText(typeof(DecompilationTests), "TestCode." + name);
                 var parts = content.Split("#=>");
-                var sourceText = parts[0].Trim();
+                var code = parts[0].Trim();
                 var expected = parts[1].Trim();
                 // ReSharper disable once PossibleNullReferenceException
                 var fromTo = Path.GetExtension(name).TrimStart('.').Split('2').Select(x => LanguageMap[x]).ToList();
-
-                if (!expected.Contains("#"))
-                    return new TestData(sourceText, a => Assert.Equal(expected, a), fromTo[0], fromTo[1]);
-
-                var expectedPattern = ParseAsPattern(expected);
-                return new TestData(sourceText, a => Assert.Matches(expectedPattern, a), fromTo[0], fromTo[1]);
-            }
-
-            private static string ParseAsPattern(string expected) {
-                return "^" + Regex.Replace(expected, "#/(.+)/#|([^#]+)", m => {
-                    var patternGroup = m.Groups[1];
-                    if (patternGroup.Success)
-                        return patternGroup.Value;
-                    return Regex.Escape(m.Groups[2].Value)
-                        .Replace(@"\ ", " ").Replace("\\r", "\r").Replace("\\n", "\n");
-                }) + "$";
+                
+                return new TestData(code, expected, fromTo[0], fromTo[1]);
             }
         }
 
