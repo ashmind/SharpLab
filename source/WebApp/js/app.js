@@ -3,6 +3,7 @@ import getBranchesAsync from './server/get-branches-async.js';
 
 import state from './state/index.js';
 import uiAsync from './ui/index.js';
+import 'core-js/web/dom-collections';
 
 /* eslint-disable no-invalid-this */
 
