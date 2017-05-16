@@ -15,8 +15,12 @@
     position: absolute;
     background-color: @primary-color;
 
-    .failed & {
+    .root-status-error & {
         background-color: @error-color;
+    }
+
+    .root-status-offline & {
+        background-color: @offline-color;
     }
 }
 
