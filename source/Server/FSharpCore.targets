@@ -1,6 +1,6 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
    <!-- Should not be needed once https://github.com/Microsoft/visualfsharp/pull/2884 is available on NuGet -->
-  <Target Name="CopyOptdataAndSigdata" AfterTargets="Build">
+  <Target Name="FSharpCoreCopyOptdataAndSigdata" AfterTargets="Build">
     <ItemGroup>
       <FSharpCoreReference Include="@(ReferencePath)" Condition="$([System.String]::Copy('%(ReferencePath.Identity)').EndsWith('FSharp.Core.dll'))" />
     </ItemGroup>
@@ -9,9 +9,15 @@
       <FSharpCoreDirectoryPath>$([System.IO.Path]::GetDirectoryName($(FSharpCorePath)))</FSharpCoreDirectoryPath>
     </PropertyGroup>
     <ItemGroup>
-      <FSharpOpdataAndSigdata Include="$(FSharpCoreDirectoryPath)\FSharp.Core.optdata" />
-      <FSharpOpdataAndSigdata Include="$(FSharpCoreDirectoryPath)\FSharp.Core.sigdata" />
+      <FSharpCoreOpdataAndSigdata Include="$(FSharpCoreDirectoryPath)\FSharp.Core.optdata" />
+      <FSharpCoreOpdataAndSigdata Include="$(FSharpCoreDirectoryPath)\FSharp.Core.sigdata" />
     </ItemGroup>
-    <Copy SourceFiles="@(FSharpOpdataAndSigdata)" DestinationFolder="$(OutDir)" />
+    <Copy SourceFiles="@(FSharpCoreOpdataAndSigdata)" DestinationFolder="$(OutDir)" />
+    <ItemGroup>
+      <FilesForPackagingFromProject Include="@(FSharpCoreOpdataAndSigdata)">
+        <FromTarget>FSharpCoreCopyOptdataAndSigdata</FromTarget>
+        <DestinationRelativePath>bin\%(Filename).%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
   </Target>
 </Project>
