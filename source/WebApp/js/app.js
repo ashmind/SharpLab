@@ -1,3 +1,5 @@
+import './polyfills/iterable-dom.js';
+
 import languages from './helpers/languages.js';
 import getBranchesAsync from './server/get-branches-async.js';
 
