@@ -198,28 +198,11 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <None Include="webpack.config.js" />
     <None Include=".brackets.json" />
     <None Include="gulpfile.js" />
     <None Include="favicon.svg" />
     <None Include="index.html" />
-    <None Include="js\app.js" />
-    <None Include="js\server\get-branches-async.js" />
-    <None Include="js\state\handlers\defaults.js" />
-    <None Include="js\state\handlers\last-used.js" />
-    <None Include="js\state\handlers\url.js" />
-    <None Include="js\state\index.js" />
-    <None Include="js\ui\components\app-mobile-shelf.js" />
-    <None Include="js\ui\filters\app-date.js" />
-    <None Include="js\ui\filters\app-trim.js" />
-    <None Include="js\ui\hooks\app-mobile-codemirror-fullscreen.js" />
-    <None Include="js\ui\hooks\registry.js" />
-    <None Include="js\ui\index.js" />
-    <None Include="js\ui\components\app-favicon-manager.js" />
-    <None Include="js\helpers\languages.js" />
-    <Content Include="Web.config">
-      <SubType>Designer</SubType>
-    </Content>
+    <None Include="js\**\*.js" />
     <None Include="less\imports\codemirror.less" />
     <None Include="less\imports\common.less" />
     <None Include="less\imports\forms.less" />
@@ -235,7 +218,6 @@
   <ItemGroup>
     <None Include="less\app.less" />
     <None Include="package.json" />
-    <None Include=".jshintrc" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\#packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
