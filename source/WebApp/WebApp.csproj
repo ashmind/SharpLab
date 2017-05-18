@@ -188,13 +188,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".eslintrc.json" />
     <None Include="browserslist" />
-    <None Include="js\helpers\warn.js" />
-    <None Include="js\ui\components\app-mirrorsharp-readonly.js" />
-    <None Include="js\ui\components\app-loader.js" />
-    <None Include="js\ui\components\app-mirrorsharp-diagnostic.js" />
-    <None Include="js\ui\components\app-mirrorsharp.js" />
     <None Include="less\imports\offline.less" />
+    <Content Include="rollup.config.js" />
+    <Content Include="Web.config" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
