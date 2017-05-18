@@ -188,10 +188,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include=".eslintrc.json" />
+    <None Include=".eslintrc.json" />
     <None Include="browserslist" />
     <None Include="less\imports\offline.less" />
-    <Content Include="rollup.config.js" />
+    <None Include="rollup.config.js" />
     <Content Include="Web.config" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
