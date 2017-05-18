@@ -10,12 +10,12 @@ using MirrorSharp;
 using MirrorSharp.Advanced;
 using MirrorSharp.Owin;
 using Owin;
-using TryRoslyn.Server;
-using TryRoslyn.Server.MirrorSharp;
+using SharpLab.Server;
+using SharpLab.Server.MirrorSharp;
 
 [assembly: OwinStartup(typeof(Startup), nameof(Startup.Configuration))]
 
-namespace TryRoslyn.Server {
+namespace SharpLab.Server {
     public class Startup {
         public void Configuration(IAppBuilder app) {
             var corsPolicyTask = Task.FromResult(new CorsPolicy {

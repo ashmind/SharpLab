@@ -74,7 +74,7 @@ const targetMapReverse = reverseMap(targetMap);
 const languageMap = {
     [languages.csharp]: '',
     [languages.vb]:     'vb',
-    [languages.fsharp]: 'fs',
+    [languages.fsharp]: 'fs'
 };
 const languageMapReverse = reverseMap(languageMap);
 

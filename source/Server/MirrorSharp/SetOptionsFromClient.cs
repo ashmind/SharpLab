@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using MirrorSharp.Advanced;
 
-namespace TryRoslyn.Server.MirrorSharp {
+namespace SharpLab.Server.MirrorSharp {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class SetOptionsFromClient : ISetOptionsFromClientExtension {
         private const string TargetLanguage = "x-target-language";

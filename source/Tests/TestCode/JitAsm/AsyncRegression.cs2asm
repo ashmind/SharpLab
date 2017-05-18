@@ -1,4 +1,4 @@
-﻿// https://github.com/ashmind/TryRoslyn/issues/39#issuecomment-298152571
+﻿// https://github.com/ashmind/SharpLab/issues/39#issuecomment-298152571
 using System;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
@@ -16,7 +16,7 @@ static class C {
 #=>
 
 ; This is an experimental implementation.
-; Please report any bugs to https://github.com/ashmind/TryRoslyn/issues.
+; Please report any bugs to https://github.com/ashmind/SharpLab/issues.
 
 ; Desktop CLR v<IGNORE> (clr.dll) on x86.
 

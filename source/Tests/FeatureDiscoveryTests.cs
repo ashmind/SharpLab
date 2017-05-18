@@ -1,7 +1,7 @@
-﻿using TryRoslyn.Server.Compilation.Internal;
+﻿using SharpLab.Server.Compilation.Internal;
 using Xunit;
 
-namespace TryRoslyn.Tests {
+namespace SharpLab.Tests {
     public class FeatureDiscoveryTests {
         [Fact]
         public void CSharpDiscoverAll_ReturnsExpectedFeature() {

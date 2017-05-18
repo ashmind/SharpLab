@@ -5,9 +5,9 @@ using System.Linq;
 using ICSharpCode.Decompiler;
 using ICSharpCode.NRefactory.CSharp;
 using Microsoft.CodeAnalysis;
-using TryRoslyn.Server.Decompilation.Support;
+using SharpLab.Server.Decompilation.Support;
 
-namespace TryRoslyn.Server.Decompilation {
+namespace SharpLab.Server.Decompilation {
     public class CSharpDecompiler : AstDecompiler {
         protected override void WriteResult(TextWriter writer, IEnumerable<AstNode> ast, DecompilerContext context) {
             var visitor = new DecompiledPseudoCSharpOutputVisitor(

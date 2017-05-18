@@ -9,8 +9,8 @@
     <ProjectGuid>{893C58AA-1444-46EF-A003-FAFECA67C17C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TryRoslyn.Tests</RootNamespace>
-    <AssemblyName>TryRoslyn.Tests</AssemblyName>
+    <RootNamespace>SharpLab.Tests</RootNamespace>
+    <AssemblyName>SharpLab.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>

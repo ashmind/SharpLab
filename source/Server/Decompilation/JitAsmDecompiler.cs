@@ -1,18 +1,18 @@
 ﻿using System;
-using AshMind.Extensions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using AppDomainToolkit;
+using AshMind.Extensions;
 using JetBrains.Annotations;
 using Microsoft.Diagnostics.Runtime;
 using SharpDisasm;
 using SharpDisasm.Translators;
-using TryRoslyn.Server.Decompilation.Support;
+using SharpLab.Server.Decompilation.Support;
 
-namespace TryRoslyn.Server.Decompilation {
+namespace SharpLab.Server.Decompilation {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class JitAsmDecompiler : IDecompiler {
         public string LanguageName => "JIT ASM";
@@ -35,7 +35,7 @@ namespace TryRoslyn.Server.Decompilation {
                 };
 
                 codeWriter.WriteLine("; This is an experimental implementation.");
-                codeWriter.WriteLine("; Please report any bugs to https://github.com/ashmind/TryRoslyn/issues.");
+                codeWriter.WriteLine("; Please report any bugs to https://github.com/ashmind/SharpLab/issues.");
                 codeWriter.WriteLine();
                 
                 WriteJitInfo(runtime.ClrInfo, codeWriter);
@@ -46,7 +46,7 @@ namespace TryRoslyn.Server.Decompilation {
                     var method = runtime.GetMethodByHandle(methodHandle);
                     if (method == null) {
                         codeWriter.WriteLine("    ; Method with handle 0x{0:X} was somehow not found by CLRMD.", methodHandle);
-                        codeWriter.WriteLine("    ; See https://github.com/ashmind/TryRoslyn/issues/84.");
+                        codeWriter.WriteLine("    ; See https://github.com/ashmind/SharpLab/issues/84.");
                         continue;
                     }
 
@@ -91,7 +91,7 @@ namespace TryRoslyn.Server.Decompilation {
 
             var info = FindNonEmptyHotColdInfo(method);
             if (info == null) {
-                writer.WriteLine("    ; Failed to find HotColdInfo — please report at https://github.com/ashmind/TryRoslyn/issues.");
+                writer.WriteLine("    ; Failed to find HotColdInfo — please report at https://github.com/ashmind/SharpLab/issues.");
                 return;
             }
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TryRoslyn.Server.Compilation.Internal {
+namespace SharpLab.Server.Compilation.Internal {
     public interface IFeatureDiscovery {
         IReadOnlyCollection<string> SlowDiscoverAll();
     }

@@ -5,11 +5,11 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MirrorSharp;
-using TryRoslyn.Server.Compilation.Internal;
-using TryRoslyn.Server.MirrorSharp;
+using SharpLab.Server.Compilation.Internal;
+using SharpLab.Server.MirrorSharp;
 using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
-namespace TryRoslyn.Server.Compilation {
+namespace SharpLab.Server.Compilation {
     public class CSharpSetup : IMirrorSharpSetup {
         private static readonly LanguageVersion MaxLanguageVersion = Enum
             .GetValues(typeof (LanguageVersion))

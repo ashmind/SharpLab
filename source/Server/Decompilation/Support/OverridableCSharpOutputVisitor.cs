@@ -33,7 +33,7 @@ using Attribute = ICSharpCode.NRefactory.CSharp.Attribute;
 // so any code issues in this file will be ignored.
 // ReSharper disable All
 
-namespace TryRoslyn.Server.Decompilation.Support {
+namespace SharpLab.Server.Decompilation.Support {
     /// <summary>
     /// Outputs the AST.
     /// </summary>

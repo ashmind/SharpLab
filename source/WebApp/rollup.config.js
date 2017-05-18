@@ -1,4 +1,4 @@
-const path = require('path');
+﻿const path = require('path');
 const nodeResolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 
@@ -21,8 +21,8 @@ module.exports = {
     plugins: plugins,
     format: 'iife',
     sourceMap: true,
-    
+
     // test only, gulp does not use these
     entry: 'js/app.js',
-    dest: 'wwwroot/app.rollup-test.js',
+    dest: 'wwwroot/app.rollup-test.js'
 };

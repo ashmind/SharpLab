@@ -10,8 +10,8 @@ $BuildRoslynBranchIfModified = Resolve-Path "$PSScriptRoot\Build-RoslynBranchIfM
 function Update-RoslynSource($directoryPath, $repositoryUrl) {
     Write-Output "Updating $directoryPath"
     if (Test-Path "$directoryPath\.git") {
-        Invoke-Git $directoryPath config user.email "tryroslyn@github.test"
-        Invoke-Git $directoryPath config user.name "TryRoslyn"
+        Invoke-Git $directoryPath config user.email "sharplab@github.test"
+        Invoke-Git $directoryPath config user.name "SharpLab"
         Invoke-Git $directoryPath fetch --prune origin
         @(Invoke-Git $directoryPath branch -vv) |
             ? { $_ -match '\s*(\S+)\s.*: gone\]' } |
@@ -39,7 +39,7 @@ function ConvertTo-Hashtable([PSCustomObject] $object) {
 
 # Code ------
 try {
-    $Host.UI.RawUI.WindowTitle = "TryRoslyn Build" # prevents title > 1024 char errors
+    $Host.UI.RawUI.WindowTitle = "SharpLab Build" # prevents title > 1024 char errors
 
     #Write-Output "Killing VBCSCompiler instances"
     #taskkill /IM VBCSCompiler.exe /F
@@ -68,15 +68,15 @@ try {
     ${env:$HOME} = $PSScriptRoot
     Invoke-Git . --version
     
-    Write-Output "Building TryRoslyn..."
+    Write-Output "Building SharpLab..."
     Write-Output "  Restoring packages..."
-    &"$PSScriptRoot\#tools\nuget" restore "$sourceRoot\TryRoslyn.sln"
+    &"$PSScriptRoot\#tools\nuget" restore "$sourceRoot\SharpLab.sln"
     Write-Output "  Server.csproj"
     &$MSBuild "$sourceRoot\Server\Server.csproj" `
         /p:AllowedReferenceRelatedFileExtensions=.pdb `
         /p:Configuration=Release
     if ($LastExitCode -ne 0) {
-        Write-Error "TryRoslyn build failed."
+        Write-Error "SharpLab build failed."
     }
 
     Write-Output "Building AssemblyResolver..."
@@ -127,7 +127,7 @@ try {
                 return
             }
 
-            $Host.UI.RawUI.WindowTitle = "TryRoslyn Build: $_"
+            $Host.UI.RawUI.WindowTitle = "SharpLab Build: $_"
             $branchFsName = $repositoryName + "-" + ($_ -replace '[/\\:_]', '-')
 
             $siteRoot            = Ensure-ResolvedPath "$sitesRoot\$branchFsName"

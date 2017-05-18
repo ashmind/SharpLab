@@ -26,7 +26,7 @@ function Login-ToAzure($azureConfig) {
 
 # Code ------
 try {
-    $Host.UI.RawUI.WindowTitle = "Deploy TryRoslyn" # prevents title > 1024 char errors
+    $Host.UI.RawUI.WindowTitle = "Deploy SharpLab" # prevents title > 1024 char errors
 
     Write-Output "Environment:"
     Write-Output "  Current Path:          $(Get-Location)"    
@@ -78,7 +78,7 @@ try {
              Write-Output "[WARNING] Name is too long, using '$webAppName'."
         }
 
-        $iisSiteName = "$webAppName.tryroslyn.local"
+        $iisSiteName = "$webAppName.sharplab.local"
         $url = "http://$iisSiteName"
         &$PublishToIIS -SiteName $iisSiteName -SourcePath $siteRoot
 

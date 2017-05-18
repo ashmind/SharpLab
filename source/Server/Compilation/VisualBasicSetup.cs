@@ -6,10 +6,10 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using MirrorSharp;
-using TryRoslyn.Server.Compilation.Internal;
-using TryRoslyn.Server.MirrorSharp;
+using SharpLab.Server.Compilation.Internal;
+using SharpLab.Server.MirrorSharp;
 
-namespace TryRoslyn.Server.Compilation {
+namespace SharpLab.Server.Compilation {
     public class VisualBasicSetup : IMirrorSharpSetup {
         private static readonly LanguageVersion MaxLanguageVersion = Enum
             .GetValues(typeof(LanguageVersion))

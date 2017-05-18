@@ -1,6 +1,6 @@
 ﻿using MirrorSharp;
 
-namespace TryRoslyn.Server.MirrorSharp {
+namespace SharpLab.Server.MirrorSharp {
     public interface IMirrorSharpSetup {
         void ApplyTo(MirrorSharpOptions options);
     }

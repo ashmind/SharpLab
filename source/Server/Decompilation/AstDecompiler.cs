@@ -9,9 +9,9 @@ using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler.Ast.Transforms;
 using ICSharpCode.NRefactory.CSharp;
 using Mono.Cecil;
-using TryRoslyn.Server.Decompilation.Support;
+using SharpLab.Server.Decompilation.Support;
 
-namespace TryRoslyn.Server.Decompilation {
+namespace SharpLab.Server.Decompilation {
     public abstract class AstDecompiler : IDecompiler {
         private static readonly ConcurrentDictionary<string, AssemblyDefinition> AssemblyCache = new ConcurrentDictionary<string, AssemblyDefinition>();
 

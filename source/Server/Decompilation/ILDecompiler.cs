@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading;
 using ICSharpCode.Decompiler.Disassembler;
 using Mono.Cecil;
-using TryRoslyn.Server.Decompilation.Support;
+using SharpLab.Server.Decompilation.Support;
 
-namespace TryRoslyn.Server.Decompilation {
+namespace SharpLab.Server.Decompilation {
     public class ILDecompiler : IDecompiler {
         public void Decompile(Stream assemblyStream, TextWriter codeWriter) {
             var assembly = AssemblyDefinition.ReadAssembly(assemblyStream);

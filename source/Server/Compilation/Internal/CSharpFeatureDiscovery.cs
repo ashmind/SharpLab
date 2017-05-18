@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace TryRoslyn.Server.Compilation.Internal {
+namespace SharpLab.Server.Compilation.Internal {
     public class CSharpFeatureDiscovery : IFeatureDiscovery {
         public IReadOnlyCollection<string> SlowDiscoverAll() {
             var assembly = typeof(CSharpCompilation).Assembly;

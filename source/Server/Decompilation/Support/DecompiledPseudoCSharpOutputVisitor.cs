@@ -5,7 +5,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
 using JetBrains.Annotations;
 
-namespace TryRoslyn.Server.Decompilation.Support {
+namespace SharpLab.Server.Decompilation.Support {
     public class DecompiledPseudoCSharpOutputVisitor : OverridableCSharpOutputVisitor {
         private bool _currentStatementIsNotValidCSharp = false;
 
@@ -15,7 +15,7 @@ namespace TryRoslyn.Server.Decompilation.Support {
         public DecompiledPseudoCSharpOutputVisitor(IOutputFormatter formatter, CSharpFormattingOptions formattingPolicy) : base(formatter, formattingPolicy) {
         }
 
-        // fixes bug https://github.com/ashmind/TryRoslyn/issues/7
+        // fixes bug https://github.com/ashmind/SharpLab/issues/7
         // todo: report this to the decompiler guys -- but does not seem like they are reading their queue
         public override void VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression) {
             StartNode(memberReferenceExpression);

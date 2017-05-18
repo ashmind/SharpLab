@@ -5,7 +5,7 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.NRefactory;
 using Mono.Cecil.Cil;
 
-namespace TryRoslyn.Server.Decompilation.Support {
+namespace SharpLab.Server.Decompilation.Support {
     public class ILCommentingTextOutput : ITextOutput {
         private readonly ITextOutput _inner;
         private readonly int _commentMinColumn;

@@ -12,9 +12,9 @@ using Microsoft.FSharp.Control;
 using Microsoft.IO;
 using MirrorSharp.Advanced;
 using MirrorSharp.FSharp.Advanced;
-using TryRoslyn.Server.Decompilation;
+using SharpLab.Server.Decompilation;
 
-namespace TryRoslyn.Server.MirrorSharp {
+namespace SharpLab.Server.MirrorSharp {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class SlowUpdate : ISlowUpdateExtension {
         private readonly IReadOnlyCollection<IDecompiler> _decompilers;

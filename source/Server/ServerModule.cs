@@ -4,12 +4,12 @@ using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.IO;
 using MirrorSharp.Advanced;
-using TryRoslyn.Server.Compilation;
-using TryRoslyn.Server.Compilation.Internal;
-using TryRoslyn.Server.Decompilation;
-using TryRoslyn.Server.MirrorSharp;
+using SharpLab.Server.Compilation;
+using SharpLab.Server.Compilation.Internal;
+using SharpLab.Server.Decompilation;
+using SharpLab.Server.MirrorSharp;
 
-namespace TryRoslyn.Server {
+namespace SharpLab.Server {
     [UsedImplicitly]
     public class ServerModule : Module {
         protected override void Load(ContainerBuilder builder) {

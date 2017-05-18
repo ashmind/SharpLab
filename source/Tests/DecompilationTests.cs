@@ -9,11 +9,11 @@ using Microsoft.CodeAnalysis;
 using MirrorSharp;
 using MirrorSharp.Testing;
 using Pedantic.IO;
-using TryRoslyn.Server;
+using SharpLab.Server;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace TryRoslyn.Tests {
+namespace SharpLab.Tests {
     public class DecompilationTests {
         private static readonly MirrorSharpOptions MirrorSharpOptions = Startup.CreateMirrorSharpOptions();
         private readonly ITestOutputHelper _output;
