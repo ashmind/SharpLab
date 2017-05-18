@@ -33,11 +33,7 @@ namespace SharpLab.Server.Decompilation {
                     SymbolResolver = (Instruction instruction, long addr, ref long offset) => 
                         ResolveSymbol(runtime, instruction, addr, currentMethodAddressRef.Value)
                 };
-
-                codeWriter.WriteLine("; This is an experimental implementation.");
-                codeWriter.WriteLine("; Please report any bugs to https://github.com/ashmind/SharpLab/issues.");
-                codeWriter.WriteLine();
-                
+               
                 WriteJitInfo(runtime.ClrInfo, codeWriter);
 
                 var architecture = MapArchitecture(runtime.ClrInfo.DacInfo.TargetArchitecture);

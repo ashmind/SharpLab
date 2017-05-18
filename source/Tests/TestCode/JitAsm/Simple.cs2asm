@@ -4,9 +4,6 @@
 
 #=>
 
-; This is an experimental implementation.
-; Please report any bugs to https://github.com/ashmind/SharpLab/issues.
-
 ; Desktop CLR v<IGNORE> (clr.dll) on x86.
 
 C.M()
