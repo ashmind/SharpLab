@@ -8,6 +8,7 @@ using AshMind.Extensions;
 using Microsoft.CodeAnalysis;
 using MirrorSharp;
 using MirrorSharp.Testing;
+using MirrorSharp.Testing.Results;
 using Pedantic.IO;
 using SharpLab.Server;
 using Xunit;
@@ -66,6 +67,7 @@ namespace SharpLab.Tests {
         [InlineData("JitAsm.OpenGenerics.cs2asm")]
         [InlineData("JitAsm.GenericMethodWithAttribute.cs2asm")]
         [InlineData("JitAsm.GenericClassWithAttribute.cs2asm")]
+        [InlineData("JitAsm.GenericMethodWithAttribute.fs2asm")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForJitAsm(string resourceName) {
             var data = TestData.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);
@@ -73,15 +75,22 @@ namespace SharpLab.Tests {
             var result = await driver.SendSlowUpdateAsync<ExtensionResult>();
             var errors = result.JoinErrors();
 
-            var decompiledText = Regex.Replace(
-                result.ExtensionResult.Decompiled.Trim(),
-                @"((?<=0x)[\da-f]{7,8}(?=$|[^\da-f])|(?<=CLR v)[\d\.]+)", "<IGNORE>"
-            );
-            _output.WriteLine(decompiledText);
+            var decompiledText = MakeJitAsmComparable(result.ExtensionResult?.Decompiled?.Trim());
+            _output.WriteLine(decompiledText ?? "");
             Assert.True(errors.IsNullOrEmpty(), errors);
             Assert.Equal(data.Expected, decompiledText);
         }
-        
+
+        private static string MakeJitAsmComparable(string jitAsm) {
+            if (jitAsm == null)
+                return null;
+
+            return Regex.Replace(
+                jitAsm,
+                @"((?<=0x)[\da-f]{7,8}(?=$|[^\da-f])|(?<=CLR v)[\d\.]+)", "<IGNORE>"
+            );
+        }
+
         private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestData data) {
             var driver = MirrorSharpTestDriver.New(MirrorSharpOptions);
             await driver.SendSetOptionsAsync(new Dictionary<string, string> {
@@ -120,7 +129,7 @@ namespace SharpLab.Tests {
                 var expected = parts[1].Trim();
                 // ReSharper disable once PossibleNullReferenceException
                 var fromTo = Path.GetExtension(name).TrimStart('.').Split('2').Select(x => LanguageMap[x]).ToList();
-                
+
                 return new TestData(code, expected, fromTo[0], fromTo[1]);
             }
         }

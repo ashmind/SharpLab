@@ -28,7 +28,7 @@ namespace SharpLab.Server.Decompilation {
                 PrivateBinPath = currentSetup.PrivateBinPath
             })) {
                 context.LoadAssembly(LoadMethod.LoadFrom, Assembly.GetExecutingAssembly().GetAssemblyFile().FullName);
-                var results = /*Remote.GetCompiledMethods(assemblyStream); */RemoteFunc.Invoke(context.Domain, assemblyStream, Remote.GetCompiledMethods);
+                var results = RemoteFunc.Invoke(context.Domain, assemblyStream, Remote.GetCompiledMethods);
 
                 var currentMethodAddressRef = new Reference<ulong>();
                 var runtime = dataTarget.ClrVersions.Single().CreateRuntime();
@@ -170,7 +170,7 @@ namespace SharpLab.Server.Decompilation {
                     CollectCompiledWraps(results, method);
                 }
             }
-            
+
             private static bool TryCompileAndCollectMembersOfGeneric(ICollection<MethodJitResult> results, Type type) {
                 if (type.DeclaringType?.IsGenericTypeDefinition ?? false)
                     return true; // we expect to see that one separately when we visit the parent type
@@ -211,7 +211,7 @@ namespace SharpLab.Server.Decompilation {
                 if (!hasAttribute)
                     results.Add(new MethodJitResult(method.MethodHandle, MethodJitStatus.GenericOpenNoAttribute));
             }
-            
+
             private static MethodJitResult CompileAndWrapSimple(MethodBase method) {
                 var handle = method.MethodHandle;
                 RuntimeHelpers.PrepareMethod(handle);

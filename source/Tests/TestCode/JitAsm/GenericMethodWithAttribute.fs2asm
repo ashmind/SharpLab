@@ -1,0 +1,17 @@
+﻿open SharpLab.Runtime
+
+[<JitGeneric(typedefof<int>)>]
+[<JitGeneric(typedefof<string>)>]
+let M<'T> = Unchecked.defaultof<'T>
+
+#=>
+
+; Desktop CLR v<IGNORE> (clr.dll) on x86.
+
+_.M[[System.Int32, mscorlib]]()
+    L0000: xor eax, eax
+    L0002: ret
+
+_.M[[System.String, mscorlib]]()
+    ; Failed to find HotColdInfo for generic method (reference types?).
+    ; If you know a solution, please comment at https://github.com/ashmind/SharpLab/issues/80.

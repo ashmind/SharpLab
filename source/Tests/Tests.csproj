@@ -28,6 +28,7 @@
     <EmbeddedResource Include="TestCode\Constructor.BaseCall.cs2cs" />
     <EmbeddedResource Include="TestCode\FSharp\EmptyType.fs2il" />
     <EmbeddedResource Include="TestCode\FSharp\SimpleMethod.fs2cs" />
+    <EmbeddedResource Include="TestCode\JitAsm\GenericMethodWithAttribute.fs2asm" />
     <EmbeddedResource Include="TestCode\JitAsm\OpenGenerics.cs2asm" />
     <EmbeddedResource Include="TestCode\JitAsm\GenericMethodWithAttribute.cs2asm" />
     <EmbeddedResource Include="TestCode\JitAsm\GenericClassWithAttribute.cs2asm" />
