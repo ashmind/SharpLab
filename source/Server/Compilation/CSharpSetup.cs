@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MirrorSharp;
+using SharpLab.Runtime;
 using SharpLab.Server.Compilation.Internal;
 using SharpLab.Server.MirrorSharp;
 using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
@@ -23,7 +24,8 @@ namespace SharpLab.Server.Compilation {
         public CSharpSetup(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
             _references = referenceCollector.SlowGetMetadataReferencesRecursive(
                 typeof(Binder).Assembly,
-                typeof(ValueTuple<>).Assembly
+                typeof(ValueTuple<>).Assembly,
+                typeof(JitGenericAttribute).Assembly
             ).ToImmutableList();
             _features = featureDiscovery.SlowDiscoverAll().ToDictionary(f => f, f => (string)null);
         }

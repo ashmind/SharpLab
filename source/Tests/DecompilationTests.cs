@@ -63,6 +63,9 @@ namespace SharpLab.Tests {
         [InlineData("JitAsm.ArrayElement.cs2asm")]
         [InlineData("JitAsm.AsyncRegression.cs2asm")]
         [InlineData("JitAsm.ConsoleWrite.cs2asm")]
+        [InlineData("JitAsm.OpenGenerics.cs2asm")]
+        [InlineData("JitAsm.GenericMethodWithAttribute.cs2asm")]
+        [InlineData("JitAsm.GenericClassWithAttribute.cs2asm")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForJitAsm(string resourceName) {
             var data = TestData.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);

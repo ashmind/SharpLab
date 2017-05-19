@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+    <AssemblyName>SharpLab.Runtime</AssemblyName>
+    <RootNamespace>SharpLab.Runtime</RootNamespace>
+  </PropertyGroup>
+
+</Project>

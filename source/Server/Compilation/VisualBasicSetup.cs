@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using MirrorSharp;
+using SharpLab.Runtime;
 using SharpLab.Server.Compilation.Internal;
 using SharpLab.Server.MirrorSharp;
 
@@ -22,7 +23,8 @@ namespace SharpLab.Server.Compilation {
         public VisualBasicSetup(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
             _references = referenceCollector.SlowGetMetadataReferencesRecursive(
                 typeof(StandardModuleAttribute).Assembly,
-                typeof(ValueTuple<>).Assembly
+                typeof(ValueTuple<>).Assembly,
+                typeof(JitGenericAttribute).Assembly
             ).ToImmutableList();
             _features = featureDiscovery.SlowDiscoverAll().ToDictionary(f => f, f => (string)null);
         }
