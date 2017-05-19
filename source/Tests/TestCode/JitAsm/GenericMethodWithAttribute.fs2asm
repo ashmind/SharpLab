@@ -14,4 +14,4 @@ _.M[[System.Int32, mscorlib]]()
 
 _.M[[System.String, mscorlib]]()
     ; Failed to find HotColdInfo for generic method (reference types?).
-    ; If you know a solution, please comment at https://github.com/ashmind/SharpLab/issues/80.
+    ; If you know a solution, please comment at https://github.com/ashmind/SharpLab/issues/99.

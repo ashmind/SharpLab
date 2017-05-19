@@ -34,4 +34,4 @@ C`1[[System.Decimal, mscorlib]].M()
 
 C`1[[System.String, mscorlib]].M()
     ; Failed to find HotColdInfo for generic method (reference types?).
-    ; If you know a solution, please comment at https://github.com/ashmind/SharpLab/issues/80.
+    ; If you know a solution, please comment at https://github.com/ashmind/SharpLab/issues/99.

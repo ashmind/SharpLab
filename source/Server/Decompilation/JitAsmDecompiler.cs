@@ -92,7 +92,7 @@ namespace SharpLab.Server.Decompilation {
             if (info == null) {
                 if (status == Remote.MethodJitStatus.GenericSuccess) {
                     writer.WriteLine("    ; Failed to find HotColdInfo for generic method (reference types?).");
-                    writer.WriteLine("    ; If you know a solution, please comment at https://github.com/ashmind/SharpLab/issues/80.");
+                    writer.WriteLine("    ; If you know a solution, please comment at https://github.com/ashmind/SharpLab/issues/99.");
                     return;
                 }
                 writer.WriteLine("    ; Failed to find HotColdInfo — please report at https://github.com/ashmind/SharpLab/issues.");
