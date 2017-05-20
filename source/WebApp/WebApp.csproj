@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net46</TargetFramework>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
@@ -18,9 +18,11 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="1.2.0" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Server\Server.csproj" />
   </ItemGroup>
-  <Import Project="$(MSBuildProgramFiles32)\MSBuild\Microsoft\VisualStudio\v14.0\WebApplications\Microsoft.WebApplication.targets" />
   <Import Project="..\Server\FSharpCore.targets" />
   <Target Name="Npm" BeforeTargets="Gulp" Inputs="package.json" Outputs="!package.json.installed">
     <PropertyGroup>
@@ -30,10 +32,33 @@
     <Exec Command="$(NpmPath) install" />
     <Copy SourceFiles="package.json" DestinationFiles="!package.json.installed" />
   </Target>
-  <Target Name="Gulp" AfterTargets="Build">
+  <ItemGroup>
+    <_GulpOutputs Include="wwwroot\**\*.*" Exclude="wwwroot\!branches.json" />
+    <_GulpInputs Include="@(None)" Exclude="**\!*.*; @(_GulpOutputs)" />
+  </ItemGroup>
+  <Target Name="Gulp" AfterTargets="Build" Inputs="@(_GulpInputs)" Outputs="@(_GulpOutputs)">
     <Exec Command="node_modules\.bin\gulp.cmd" />
     <ItemGroup>
       <Content Include="wwwroot\**\*.*" />
     </ItemGroup>
+  </Target>
+  <!--Required since Azure doesn't have MSBuild 15, so we can only build through .NET publish. --> 
+  <Target Name="PreparePublishFilesForNonCoreAspNet" AfterTargets="ComputeFilesToPublish">
+    <ItemGroup>
+      <_ResolvedFileToIgnore Include="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').StartsWith('runtimes\')) And '%(ResolvedFileToPublish.Extension)' != '.optdata' And '%(ResolvedFileToPublish.Extension)' != '.sigdata'" />
+      <ResolvedFileToPublish Remove="@(_ResolvedFileToIgnore)" />
+      
+      <_ResolvedFileToPublishToBin Include="@(ResolvedFileToPublish)">
+        <RelativePath>bin\%(FileName)%(Extension)</RelativePath>
+      </_ResolvedFileToPublishToBin>
+      <ResolvedFileToPublish Remove="@(_ResolvedFileToPublishToBin)" />
+      <ResolvedFileToPublish Include="@(_ResolvedFileToPublishToBin)" />
+      <ResolvedFileToPublish Include="@(Content)">
+        <RelativePath>%(RelativeDir)%(FileName)%(Extension)</RelativePath>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+  <Target Name="TransformWebConfig" AfterTargets="Publish">
+    <Exec Command="dotnet transform-xdt --xml &quot;Web.config&quot; --transform &quot;Web.$(Configuration).config&quot; --output &quot;$(PublishDir)Web.config&quot;" />
   </Target>
 </Project>
