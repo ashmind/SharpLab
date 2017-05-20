@@ -45,7 +45,7 @@
   <!--Required since Azure doesn't have MSBuild 15, so we can only build through .NET publish. --> 
   <Target Name="PreparePublishFilesForNonCoreAspNet" AfterTargets="ComputeFilesToPublish">
     <ItemGroup>
-      <_ResolvedFileToIgnore Include="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').StartsWith('runtimes\')) And '%(ResolvedFileToPublish.Extension)' != '.optdata' And '%(ResolvedFileToPublish.Extension)' != '.sigdata'" />
+      <_ResolvedFileToIgnore Include="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').StartsWith('runtimes\'))" />
       <ResolvedFileToPublish Remove="@(_ResolvedFileToIgnore)" />
       
       <_ResolvedFileToPublishToBin Include="@(ResolvedFileToPublish)">

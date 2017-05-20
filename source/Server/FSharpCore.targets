@@ -14,10 +14,7 @@
     </ItemGroup>
     <Copy SourceFiles="@(FSharpCoreOpdataAndSigdata)" DestinationFolder="$(OutDir)" />
     <ItemGroup>
-      <FilesForPackagingFromProject Include="@(FSharpCoreOpdataAndSigdata)">
-        <FromTarget>FSharpCoreCopyOptdataAndSigdata</FromTarget>
-        <DestinationRelativePath>bin\%(Filename).%(Extension)</DestinationRelativePath>
-      </FilesForPackagingFromProject>
+      <Content Include="@(FSharpCoreOpdataAndSigdata->'$(OutDir)\%(Filename)%(Extension)')" />
     </ItemGroup>
   </Target>
 </Project>
