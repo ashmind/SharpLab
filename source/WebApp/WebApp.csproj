@@ -42,7 +42,8 @@
       <Content Include="wwwroot\**\*.*" />
     </ItemGroup>
   </Target>
-  <!--Required since Azure doesn't have MSBuild 15, so we can only build through .NET publish. --> 
+  <!-- Required since Azure doesn't have MSBuild 15, so we can only build through .NET publish. -->
+  <!-- Should be removed after https://github.com/projectkudu/kudu/issues/2350 is resolved. -->
   <Target Name="PreparePublishFilesForNonCoreAspNet" AfterTargets="ComputeFilesToPublish">
     <ItemGroup>
       <_ResolvedFileToIgnore Include="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').StartsWith('runtimes\'))" />
