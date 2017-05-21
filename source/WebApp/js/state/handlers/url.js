@@ -1,18 +1,39 @@
 ﻿import languages from '../../helpers/languages.js';
+import mapObject from '../../helpers/map-object.js';
+import warn from '../../helpers/warn.js';
 import LZString from 'lz-string';
+
+const languageAndTargetMap = {
+    [languages.csharp]: '',
+    [languages.vb]:     'vb',
+    [languages.fsharp]: 'fs',
+    [languages.il]:     'il',
+    [languages.asm]:    'asm'
+};
+const languageAndTargetMapReverse = mapObject(languageAndTargetMap, (key, value) => [value, key]);
+const targetMapReverseV1 = mapObject(languageAndTargetMapReverse, (key, value) => [key !== '' ? '>' + key : '', value]); // eslint-disable-line prefer-template
 
 let lastHash;
 function save(code, options) {
-    let hash = LZString.compressToBase64(code);
-    const flags = stringifyFlags(options);
-    if (flags)
-        hash = `f:${flags}/${hash}`;
-
-    if (options.branchId)
-        hash = `b:${options.branchId}/${hash}`;
+    const optionsPacked = {
+        b: options.branchId,
+        l: languageAndTargetMap[options.language],
+        t: languageAndTargetMap[options.target],
+        d: options.release ? '' : '+'
+    };
+    const optionsPackedString = Object
+        .entries(optionsPacked)
+        .filter(([,value]) => !!value)
+        .map(([key, value]) => key + ':' + value) // eslint-disable-line prefer-template
+        .join(',');
+    const hash = '2$' + LZString.compressToBase64(optionsPackedString + '|' + code); // eslint-disable-line prefer-template
 
     lastHash = hash;
     window.location.hash = hash;
+}
+
+function load() {
+    return loadInternal(false);
 }
 
 function loadInternal(onlyIfChanged) {
@@ -25,26 +46,31 @@ function loadInternal(onlyIfChanged) {
         return null;
 
     lastHash = hash;
-    const match = /(?:b:([^/]+)\/)?(?:f:([^/]+)\/)?(.+)/.exec(hash);
-    if (match === null)
-        return null;
+    if (!hash.startsWith('2$'))
+        return legacyLoadFrom(hash);
 
-    const result = {
-        options: Object.assign({ branchId: match[1] }, parseFlags(match[2]))
-    };
-
+    hash = hash.substring(2);
     try {
-        result.code = LZString.decompressFromBase64(match[3]);
+        const parts = LZString.decompressFromBase64(hash).split('|', 2);
+        const optionsPacked = parts[0].split(',').reduce((result, p) => {
+            const [key, value] = p.split(':', 2);
+            result[key] = value;
+            return result;
+        }, {});
+        return {
+            options: {
+                branchId: optionsPacked.b,
+                language: languageAndTargetMapReverse[optionsPacked.l || ''],
+                target:   languageAndTargetMapReverse[optionsPacked.t || ''],
+                release:  optionsPacked.d !== '+'
+            },
+            code: parts[1]
+        };
     }
     catch (e) {
+        warn('Failed to load state from URL:', e);
         return null;
     }
-
-    return result;
-}
-
-function load() {
-    return loadInternal(false);
 }
 
 function onchange(callback) {
@@ -55,50 +81,29 @@ function onchange(callback) {
     });
 }
 
-function reverseMap(map) {
-    const result = {};
-    for (const key in map) {
-        result[map[key]] = key;
-    }
-    return result;
-}
+function legacyLoadFrom(hash) {
+    const match = /(?:b:([^/]+)\/)?(?:f:([^/]+)\/)?(.+)/.exec(hash);
+    if (match === null)
+        return null;
 
-const targetMap = {
-    [languages.csharp]: '',
-    [languages.vb]:     '>vb',
-    [languages.il]:     '>il',
-    [languages.asm]:    '>asm'
-};
-const targetMapReverse = reverseMap(targetMap);
-
-const languageMap = {
-    [languages.csharp]: '',
-    [languages.vb]:     'vb',
-    [languages.fsharp]: 'fs'
-};
-const languageMapReverse = reverseMap(languageMap);
-
-function stringifyFlags(options) {
-    return [
-        languageMap[options.language],
-        targetMap[options.target],
-        options.release ? 'r' : ''
-    ].join('');
-}
-
-function parseFlags(flags) {
-    if (!flags)
-        return {};
-
-    const match = flags.match(/^([^>]*?)(>.+?)?(r)?$/);
-    if (!match)
-        return {};
-
-    return {
-        language: languageMapReverse[match[1] || ''],
-        target:   targetMapReverse[match[2] || ''],
-        release:  match[3] === 'r'
+    const flags = (match[2] || '').match(/^([^>]*?)(>.+?)?(r)?$/) || [];
+    const result = {
+        options: {
+            branchId: match[1],
+            language: languageAndTargetMapReverse[flags[1] || ''],
+            target: targetMapReverseV1[flags[2] || ''],
+            release: flags[3] === 'r'
+        }
     };
+
+    try {
+        result.code = LZString.decompressFromBase64(match[3]);
+    }
+    catch (e) {
+        result.code = '';
+    }
+
+    return result;
 }
 
 export default {
