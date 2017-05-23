@@ -49,7 +49,7 @@ namespace SharpLab.Server {
             };
             var setups = container.Resolve<IMirrorSharpSetup[]>();
             foreach (var setup in setups) {
-                setup.ApplyTo(options);
+                setup.SlowApplyTo(options);
             }
             return options;
         }

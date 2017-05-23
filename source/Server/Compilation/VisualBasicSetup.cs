@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using MirrorSharp;
@@ -12,30 +10,31 @@ using SharpLab.Server.MirrorSharp;
 
 namespace SharpLab.Server.Compilation {
     public class VisualBasicSetup : IMirrorSharpSetup {
-        private static readonly LanguageVersion MaxLanguageVersion = Enum
-            .GetValues(typeof(LanguageVersion))
-            .Cast<LanguageVersion>()
-            .Max();
-        
-        private readonly ImmutableList<MetadataReference> _references;
-        private readonly IReadOnlyDictionary<string, string> _features;
+        private readonly IMetadataReferenceCollector _referenceCollector;
+        private readonly IFeatureDiscovery _featureDiscovery;
 
         public VisualBasicSetup(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
-            _references = referenceCollector.SlowGetMetadataReferencesRecursive(
-                typeof(StandardModuleAttribute).Assembly,
-                typeof(ValueTuple<>).Assembly,
-                typeof(JitGenericAttribute).Assembly
-            ).ToImmutableList();
-            _features = featureDiscovery.SlowDiscoverAll().ToDictionary(f => f, f => (string)null);
+            _referenceCollector = referenceCollector;
+            _featureDiscovery = featureDiscovery;
         }
 
-        public void ApplyTo(MirrorSharpOptions options) {
+        public void SlowApplyTo(MirrorSharpOptions options) {
             // ReSharper disable HeapView.ObjectAllocation.Evident
+            // ReSharper disable HeapView.DelegateAllocation
+            options.EnableVisualBasic(o => {
+                // This setup will only run if the language is used, so branches
+                // where no one ever used VB will be faster to open.
+                var maxLanguageVersion = Enum.GetValues(typeof(LanguageVersion)).Cast<LanguageVersion>().Max();
+                var features = _featureDiscovery.SlowDiscoverAll().ToDictionary(f => f, f => (string) null);
 
-            options.VisualBasic.ParseOptions = new VisualBasicParseOptions(MaxLanguageVersion).WithFeatures(_features);
-            options.VisualBasic.CompilationOptions = new VisualBasicCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
-            options.VisualBasic.MetadataReferences = _references;
-
+                o.ParseOptions = new VisualBasicParseOptions(maxLanguageVersion).WithFeatures(features);
+                o.MetadataReferences = _referenceCollector.SlowGetMetadataReferencesRecursive(
+                    typeof(StandardModuleAttribute).Assembly,
+                    typeof(ValueTuple<>).Assembly,
+                    typeof(JitGenericAttribute).Assembly
+                ).ToImmutableList();
+            });
+            // ReSharper restore HeapView.DelegateAllocation
             // ReSharper restore HeapView.ObjectAllocation.Evident
         }
     }

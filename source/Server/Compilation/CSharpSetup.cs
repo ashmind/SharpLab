@@ -30,7 +30,7 @@ namespace SharpLab.Server.Compilation {
             _features = featureDiscovery.SlowDiscoverAll().ToDictionary(f => f, f => (string)null);
         }
 
-        public void ApplyTo(MirrorSharpOptions options) {
+        public void SlowApplyTo(MirrorSharpOptions options) {
             // ReSharper disable HeapView.ObjectAllocation.Evident
 
             options.CSharp.ParseOptions = new CSharpParseOptions(MaxLanguageVersion, preprocessorSymbols: PreprocessorSymbols).WithFeatures(_features);

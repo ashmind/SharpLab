@@ -1,4 +1,4 @@
-/* global require:false */
+﻿/* global require:false */
 
 'use strict';
 const fs = require('fs');
@@ -8,6 +8,7 @@ const g = require('gulp-load-plugins')();
 const assign = require('object-assign');
 const pipe = require('multipipe');
 
+// ReSharper disable once UndeclaredGlobalVariableUsing
 const production = process.env.NODE_ENV === 'production';
 
 gulp.task('less', () => {
