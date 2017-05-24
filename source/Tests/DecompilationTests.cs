@@ -35,7 +35,7 @@ namespace SharpLab.Tests {
             var result = await driver.SendSlowUpdateAsync<ExtensionResult>();
             var errors = result.JoinErrors();
 
-            var decompiledText = result.ExtensionResult.Decompiled.Trim();
+            var decompiledText = result.ExtensionResult?.Decompiled.Trim();
             _output.WriteLine(decompiledText);
             Assert.True(errors.IsNullOrEmpty(), errors);
             Assert.Equal(data.Expected, decompiledText);
@@ -51,7 +51,7 @@ namespace SharpLab.Tests {
             var result = await driver.SendSlowUpdateAsync<ExtensionResult>();
             var errors = result.JoinErrors();
 
-            var decompiledText = result.ExtensionResult.Decompiled.Trim();
+            var decompiledText = result.ExtensionResult?.Decompiled.Trim();
             _output.WriteLine(decompiledText);
             Assert.True(errors.IsNullOrEmpty(), errors);
             Assert.Equal(data.Expected, decompiledText);

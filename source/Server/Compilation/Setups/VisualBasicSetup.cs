@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
+using JetBrains.Annotations;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using MirrorSharp;
@@ -8,7 +9,8 @@ using SharpLab.Runtime;
 using SharpLab.Server.Compilation.Internal;
 using SharpLab.Server.MirrorSharp;
 
-namespace SharpLab.Server.Compilation {
+namespace SharpLab.Server.Compilation.Setups {
+    [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class VisualBasicSetup : IMirrorSharpSetup {
         private readonly IMetadataReferenceCollector _referenceCollector;
         private readonly IFeatureDiscovery _featureDiscovery;

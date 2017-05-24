@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MirrorSharp;
@@ -10,7 +11,8 @@ using SharpLab.Server.Compilation.Internal;
 using SharpLab.Server.MirrorSharp;
 using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
-namespace SharpLab.Server.Compilation {
+namespace SharpLab.Server.Compilation.Setups {
+    [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class CSharpSetup : IMirrorSharpSetup {
         private static readonly LanguageVersion MaxLanguageVersion = Enum
             .GetValues(typeof (LanguageVersion))

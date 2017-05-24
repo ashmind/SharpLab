@@ -3,7 +3,7 @@ using MirrorSharp;
 using SharpLab.Runtime;
 using SharpLab.Server.MirrorSharp;
 
-namespace SharpLab.Server.Compilation {
+namespace SharpLab.Server.Compilation.Setups {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class FSharpSetup : IMirrorSharpSetup {
         public void SlowApplyTo(MirrorSharpOptions options) {
