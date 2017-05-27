@@ -51,7 +51,7 @@ function loadInternal(onlyIfChanged) {
     if (!hash.startsWith('v2:'))
         return legacyLoadFrom(hash);
 
-    hash = hash.substring(2);
+    hash = hash.substring('v2:'.length);
     try {
         const parts = LZString.decompressFromBase64(hash).split('|', 2);
         const optionsPacked = parts[0].split(',').reduce((result, p) => {
