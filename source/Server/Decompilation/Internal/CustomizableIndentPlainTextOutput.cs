@@ -25,7 +25,7 @@ using ICSharpCode.NRefactory;
 // so any code issues in this file will be ignored.
 // ReSharper disable All
 
-namespace SharpLab.Server.Decompilation.Support {
+namespace SharpLab.Server.Decompilation.Internal {
     public sealed class CustomizableIndentPlainTextOutput : ITextOutput {
         readonly TextWriter writer;
         int indent;

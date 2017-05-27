@@ -1,0 +1,82 @@
+﻿public class C {
+}
+
+#=>
+
+[
+  {
+    "type": "node",
+    "kind": "CompilationUnit",
+    "children": [
+      {
+        "type": "node",
+        "kind": "ClassDeclaration",
+        "children": [
+          {
+            "type": "token",
+            "kind": "PublicKeyword",
+            "children": [
+              "public",
+              {
+                "type": "trivia",
+                "kind": "WhitespaceTrivia",
+                "value": " "
+              }
+            ]
+          },
+          {
+            "type": "token",
+            "kind": "ClassKeyword",
+            "property": "Keyword",
+            "children": [
+              "class",
+              {
+                "type": "trivia",
+                "kind": "WhitespaceTrivia",
+                "value": " "
+              }
+            ]
+          },
+          {
+            "type": "token",
+            "kind": "IdentifierToken",
+            "property": "Identifier",
+            "children": [
+              "C",
+              {
+                "type": "trivia",
+                "kind": "WhitespaceTrivia",
+                "value": " "
+              }
+            ]
+          },
+          {
+            "type": "token",
+            "kind": "OpenBraceToken",
+            "property": "OpenBraceToken",
+            "children": [
+              "{",
+              {
+                "type": "trivia",
+                "kind": "EndOfLineTrivia",
+                "value": "\r\n"
+              }
+            ]
+          },
+          {
+            "type": "token",
+            "kind": "CloseBraceToken",
+            "property": "CloseBraceToken",
+            "value": "}"
+          }
+        ]
+      },
+      {
+        "type": "token",
+        "kind": "EndOfFileToken",
+        "property": "EndOfFileToken",
+        "value": ""
+      }
+    ]
+  }
+]

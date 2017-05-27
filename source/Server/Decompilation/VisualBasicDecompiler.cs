@@ -6,11 +6,11 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.VB;
 using ICSharpCode.NRefactory.VB.Visitors;
 using Microsoft.CodeAnalysis;
-using SharpLab.Server.Decompilation.Support;
+using SharpLab.Server.Decompilation.Internal;
 using AstNode = ICSharpCode.NRefactory.CSharp.AstNode;
 
 namespace SharpLab.Server.Decompilation {
-    public class VisualBasicDecompiler : AstDecompiler {
+    public class VisualBasicDecompiler : AstBasedDecompiler {
         protected override void WriteResult(TextWriter writer, IEnumerable<AstNode> ast, DecompilerContext context) {
             var converter = new CSharpToVBConverterVisitor(new ILSpyEnvironmentProvider());
             var visitor = new OutputVisitor(

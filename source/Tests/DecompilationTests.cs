@@ -8,6 +8,7 @@ using AshMind.Extensions;
 using Microsoft.CodeAnalysis;
 using MirrorSharp;
 using MirrorSharp.Testing;
+using Newtonsoft.Json.Linq;
 using Pedantic.IO;
 using SharpLab.Server;
 using Xunit;
@@ -32,10 +33,10 @@ namespace SharpLab.Tests {
             var data = TestData.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);
 
-            var result = await driver.SendSlowUpdateAsync<ExtensionResult>();
+            var result = await driver.SendSlowUpdateAsync<string>();
             var errors = result.JoinErrors();
 
-            var decompiledText = result.ExtensionResult?.Decompiled.Trim();
+            var decompiledText = result.ExtensionResult?.Trim();
             _output.WriteLine(decompiledText);
             Assert.True(errors.IsNullOrEmpty(), errors);
             Assert.Equal(data.Expected, decompiledText);
@@ -48,10 +49,10 @@ namespace SharpLab.Tests {
             var data = TestData.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);
 
-            var result = await driver.SendSlowUpdateAsync<ExtensionResult>();
+            var result = await driver.SendSlowUpdateAsync<string>();
             var errors = result.JoinErrors();
 
-            var decompiledText = result.ExtensionResult?.Decompiled.Trim();
+            var decompiledText = result.ExtensionResult?.Trim();
             _output.WriteLine(decompiledText);
             Assert.True(errors.IsNullOrEmpty(), errors);
             Assert.Equal(data.Expected, decompiledText);
@@ -71,13 +72,30 @@ namespace SharpLab.Tests {
             var data = TestData.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);
 
-            var result = await driver.SendSlowUpdateAsync<ExtensionResult>();
+            var result = await driver.SendSlowUpdateAsync<string>();
             var errors = result.JoinErrors();
 
-            var decompiledText = MakeJitAsmComparable(result.ExtensionResult?.Decompiled?.Trim());
+            var decompiledText = MakeJitAsmComparable(result.ExtensionResult?.Trim());
             _output.WriteLine(decompiledText ?? "");
             Assert.True(errors.IsNullOrEmpty(), errors);
             Assert.Equal(data.Expected, decompiledText);
+        }
+
+        [Theory]
+        [InlineData("Ast.EmptyClass.cs2ast")]
+        [InlineData("Ast.StructuredTrivia.cs2ast")]
+        public async Task SlowUpdate_ReturnsExpectedResult_ForAst(string resourceName) {
+            var data = TestData.FromResource(resourceName);
+            var driver = await NewTestDriverAsync(data);
+
+            var result = await driver.SendSlowUpdateAsync<JArray>();
+
+            var json = result.ExtensionResult?.ToString();
+            var errors = result.JoinErrors();
+
+            _output.WriteLine(json ?? "<null>");
+            Assert.True(errors.IsNullOrEmpty(), errors);
+            Assert.Equal(data.Expected, json);
         }
 
         private static string MakeJitAsmComparable(string jitAsm) {
@@ -95,7 +113,7 @@ namespace SharpLab.Tests {
             await driver.SendSetOptionsAsync(new Dictionary<string, string> {
                 {"language", data.SourceLanguageName},
                 {"optimize", nameof(OptimizationLevel.Release).ToLowerInvariant()},
-                {"x-target-language", data.TargetLanguageName}
+                {"x-target", data.TargetLanguageName}
             });
             driver.SetText(data.Original);
             return driver;
@@ -108,6 +126,7 @@ namespace SharpLab.Tests {
                 { "fs",  "F#" },
                 { "il",  "IL" },
                 { "asm", "JIT ASM" },
+                { "ast", "AST" },
             };
             public string Original { get; }
             public string Expected { get; }
@@ -131,12 +150,6 @@ namespace SharpLab.Tests {
 
                 return new TestData(code, expected, fromTo[0], fromTo[1]);
             }
-        }
-
-        // ReSharper disable once ClassNeverInstantiated.Local
-        private class ExtensionResult {
-            // ReSharper disable once UnusedAutoPropertyAccessor.Local
-            public string Decompiled { get; set; }
         }
     }
 }

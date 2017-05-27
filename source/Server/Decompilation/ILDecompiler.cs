@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using ICSharpCode.Decompiler.Disassembler;
 using Mono.Cecil;
-using SharpLab.Server.Decompilation.Support;
+using SharpLab.Server.Decompilation.Internal;
 
 namespace SharpLab.Server.Decompilation {
     public class ILDecompiler : IDecompiler {

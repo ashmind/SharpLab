@@ -72,17 +72,18 @@
       </div>
 
       <div class="section-group results" v-bind:class="{loading: loading}">
-        <section v-show="result.success" class="decompiled">
+        <section v-show="result.success" class="result">
           <header>
-            <button class="mobile-menu-button" v-app-class-toggle="{ target: '.decompiled', class: 'mobile-menu-open' }"></button>
+            <button class="mobile-menu-button" v-app-class-toggle="{ target: '.result', class: 'mobile-menu-open' }"></button>
             <h1>Decompiled</h1>
 
             <div class="select-wrapper option-target-language option">
               <select v-model="options.target">
-                <option v-bind:value="languages.csharp">C#</option>
-                <option v-bind:value="languages.vb">Visual Basic</option>
-                <option v-bind:value="languages.il">IL</option>
-                <option v-bind:value="languages.asm">JIT Asm</option>
+                <option v-bind:value="targets.csharp">C#</option>
+                <option v-bind:value="targets.vb">Visual Basic</option>
+                <option v-bind:value="targets.il">IL</option>
+                <option v-bind:value="targets.asm">JIT Asm</option>
+                <option v-bind:value="targets.ast">Syntax Tree (Experimental)</option>
               </select>
             </div>
 
@@ -96,8 +97,14 @@
           </header>
           <div class="content">
             <div class="loader"></div>
-            <app-mirrorsharp-readonly v-bind:value="result.decompiled"
+            <app-mirrorsharp-readonly v-if="lastResultOfType.code"
+                                      v-show="result.type === 'code'"
+                                      v-bind:value="lastResultOfType.code.value"
                                       v-bind:language="options.target"></app-mirrorsharp-readonly>
+            <app-ast-view class="ast"
+                          v-if="lastResultOfType.ast"
+                          v-show="result.type === 'ast'"
+                          v-bind:roots="lastResultOfType.ast.value"></app-ast-view>
           </div>
         </section>
 
@@ -135,9 +142,27 @@
       Built by Andrey Shchekin (<a href="http://twitter.com/ashmind">@ashmind</a>). See <a href="http://github.com/ashmind/SharpLab">SharpLab</a> on GitHub.
     </footer>
 
+    <script type="text/x-template" id="app-ast-view">
+      <ol>
+        <li v-for="(item, index) in roots" class="collapsed" v-bind:class="{ leaf: !item.children }">
+          <span v-if="typeof item === 'string'" class="ast-item-wrap ast-item-value">
+            <span class="ast-item-type"></span>
+            {{renderValue(item, 'value')}}
+          </span>
+          <span v-else v-bind:class="'ast-item-wrap ast-item-' + item.type">
+            <button v-if="item.children"></button>
+            <span class="ast-item-type" v-bind:title="item.type"></span>
+            <span class="ast-item-property" v-if="item.property">{{item.property}}:</span>
+            <span v-if="item.value !== undefined" class="ast-inline-value">{{renderValue(item.value, item.type)}}</span>
+            <span class="ast-item-kind">{{item.kind}}</span>
+          </span>
+          <app-ast-view v-if="item.children" v-bind:roots="item.children"></app-ast-view>
+        </li>
+      </ol>
+    </script>
+
     <!-- build:js -->
     <!-- endbuild -->
-
     <script>
       (function() {
         var host = window.location.host;

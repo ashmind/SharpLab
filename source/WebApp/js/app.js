@@ -1,18 +1,19 @@
 import './polyfills/iterable-dom.js';
 
 import languages from './helpers/languages.js';
+import targets from './helpers/targets.js';
 import getBranchesAsync from './server/get-branches-async.js';
 
 import state from './state/index.js';
 import uiAsync from './ui/index.js';
-import 'core-js/web/dom-collections';
 
 /* eslint-disable no-invalid-this */
 
 function applyUpdateResult(updateResult) {
     const result = {
         success: true,
-        decompiled: updateResult.x.decompiled,
+        type: this.options.target !== targets.ast ? 'code' : 'ast',
+        value: updateResult.x,
         errors: [],
         warnings: []
     };
@@ -26,6 +27,7 @@ function applyUpdateResult(updateResult) {
         }
     }
     this.result = result;
+    this.lastResultOfType[result.type] = result;
     this.loading = false;
 }
 
@@ -50,6 +52,7 @@ function getServiceUrl(branch) {
 async function createAppAsync() {
     const data = Object.assign({
         languages,
+        targets,
 
         branchGroups: [],
         branch: null,
@@ -59,10 +62,12 @@ async function createAppAsync() {
 
         result: {
             success: true,
-            decompiled: '',
+            type: '',
+            value: '',
             errors: [],
             warnings: []
-        }
+        },
+        lastResultOfType: { code: null, ast: null }
     });
     state.load(data);
 
@@ -94,7 +99,7 @@ async function createAppAsync() {
                 return {
                     language: this.options.language,
                     optimize: this.options.release ? 'release' : 'debug',
-                    'x-target-language': this.options.target
+                    'x-target': this.options.target
                 };
             },
             status: function() {

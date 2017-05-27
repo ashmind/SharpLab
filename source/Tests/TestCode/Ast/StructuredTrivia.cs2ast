@@ -1,0 +1,137 @@
+﻿/// <summary>Test</summary>
+
+#=>
+
+[
+  {
+    "type": "node",
+    "kind": "CompilationUnit",
+    "children": [
+      {
+        "type": "token",
+        "kind": "EndOfFileToken",
+        "property": "EndOfFileToken",
+        "children": [
+          {
+            "type": "trivia",
+            "kind": "SingleLineDocumentationCommentTrivia",
+            "children": [
+              {
+                "type": "node",
+                "kind": "SingleLineDocumentationCommentTrivia",
+                "children": [
+                  {
+                    "type": "node",
+                    "kind": "XmlText",
+                    "children": [
+                      {
+                        "type": "token",
+                        "kind": "XmlTextLiteralToken",
+                        "children": [
+                          {
+                            "type": "trivia",
+                            "kind": "DocumentationCommentExteriorTrivia",
+                            "value": "///"
+                          },
+                          " "
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "node",
+                    "kind": "XmlElement",
+                    "children": [
+                      {
+                        "type": "node",
+                        "kind": "XmlElementStartTag",
+                        "property": "StartTag",
+                        "children": [
+                          {
+                            "type": "token",
+                            "kind": "LessThanToken",
+                            "property": "LessThanToken",
+                            "value": "<"
+                          },
+                          {
+                            "type": "node",
+                            "kind": "XmlName",
+                            "property": "Name",
+                            "children": [
+                              {
+                                "type": "token",
+                                "kind": "IdentifierToken",
+                                "property": "LocalName",
+                                "value": "summary"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "token",
+                            "kind": "GreaterThanToken",
+                            "property": "GreaterThanToken",
+                            "value": ">"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "node",
+                        "kind": "XmlText",
+                        "children": [
+                          {
+                            "type": "token",
+                            "kind": "XmlTextLiteralToken",
+                            "value": "Test"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "node",
+                        "kind": "XmlElementEndTag",
+                        "property": "EndTag",
+                        "children": [
+                          {
+                            "type": "token",
+                            "kind": "LessThanSlashToken",
+                            "property": "LessThanSlashToken",
+                            "value": "</"
+                          },
+                          {
+                            "type": "node",
+                            "kind": "XmlName",
+                            "property": "Name",
+                            "children": [
+                              {
+                                "type": "token",
+                                "kind": "IdentifierToken",
+                                "property": "LocalName",
+                                "value": "summary"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "token",
+                            "kind": "GreaterThanToken",
+                            "property": "GreaterThanToken",
+                            "value": ">"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "token",
+                    "kind": "EndOfDocumentationCommentToken",
+                    "property": "EndOfComment",
+                    "value": ""
+                  }
+                ]
+              }
+            ]
+          },
+          ""
+        ]
+      }
+    ]
+  }
+]

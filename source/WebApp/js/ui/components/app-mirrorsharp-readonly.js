@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import languages from '../../helpers/languages.js';
+import targets from '../../helpers/targets.js';
 import CodeMirror from 'codemirror';
 import 'codemirror/mode/clike/clike';
 import 'codemirror/mode/vb/vb';
@@ -13,32 +13,40 @@ Vue.component('app-mirrorsharp-readonly', {
     mounted: function() {
         Vue.nextTick(() => {
             const modeMap = {
-                [languages.csharp]: 'text/x-csharp',
-                [languages.vb]:     'text/x-vb',
-                [languages.il]:     '',
-                [languages.asm]:    'text/x-asm'
+                [targets.csharp]: 'text/x-csharp',
+                [targets.vb]:     'text/x-vb',
+                [targets.il]:     '',
+                [targets.asm]:    'text/x-asm'
             };
 
-            const textarea = this.$el;
+            const textarea = this.$el.firstChild;
             textarea.value = this.value;
             const options = {
                 readOnly: true,
                 indentUnit: 4,
                 mode: modeMap[this.language]
             };
-            const instance = CodeMirror.fromTextArea(textarea, options);
-            const wrapper = instance.getWrapperElement();
+            const cm = CodeMirror.fromTextArea(textarea, options);
+            this.cm = cm;
+
+            const wrapper = cm.getWrapperElement();
             wrapper.classList.add('mirrorsharp-theme');
 
-            this.$watch('language', value => instance.setOption('mode', modeMap[value]));
-
+            this.$watch('language', value => {
+                cm.setOption('mode', modeMap[value]);
+            });
             this.$watch('value', value => {
                 value = value != null ? value : '';
-                if (instance.getValue() === value)
+                if (cm.getValue() === value)
                     return;
-                instance.setValue(value);
+                cm.setValue(value);
             });
         });
     },
-    template: '<textarea></textarea>'
+
+    beforeDestroy: function() {
+        this.cm.toTextArea();
+    },
+
+    template: '<div><textarea></textarea></div>'
 });

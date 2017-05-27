@@ -5,7 +5,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
 using JetBrains.Annotations;
 
-namespace SharpLab.Server.Decompilation.Support {
+namespace SharpLab.Server.Decompilation.Internal {
     public class DecompiledPseudoCSharpOutputVisitor : OverridableCSharpOutputVisitor {
         private bool _currentStatementIsNotValidCSharp = false;
 

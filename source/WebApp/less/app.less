@@ -135,7 +135,7 @@ section {
     opacity: 0.5;
 }
 
-.code, .decompiled {
+.code, .result {
     flex-shrink: 0;
     flex-grow: 1;
 }
@@ -175,7 +175,7 @@ section.info-only {
 }
 
 .root-status-offline  {
-    .code, .decompiled, .warnings, .errors {
+    .code, .result, .warnings, .errors {
         header {
             background-color: @offline-color;
         }
@@ -207,5 +207,6 @@ section.info-only {
 @import 'imports/loader.less';
 @import 'imports/expanders.less';
 @import 'imports/mobile.less';
+@import 'imports/ast.less';
 @import 'imports/codemirror.less';
 @import 'imports/offline.less';

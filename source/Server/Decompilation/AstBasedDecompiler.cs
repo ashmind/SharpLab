@@ -9,10 +9,10 @@ using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler.Ast.Transforms;
 using ICSharpCode.NRefactory.CSharp;
 using Mono.Cecil;
-using SharpLab.Server.Decompilation.Support;
+using SharpLab.Server.Decompilation.Internal;
 
 namespace SharpLab.Server.Decompilation {
-    public abstract class AstDecompiler : IDecompiler {
+    public abstract class AstBasedDecompiler : IDecompiler {
         private static readonly ConcurrentDictionary<string, AssemblyDefinition> AssemblyCache = new ConcurrentDictionary<string, AssemblyDefinition>();
 
         public void Decompile(Stream assemblyStream, TextWriter resultWriter) {

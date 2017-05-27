@@ -8,6 +8,7 @@ using SharpLab.Server.Compilation;
 using SharpLab.Server.Compilation.Internal;
 using SharpLab.Server.Compilation.Setups;
 using SharpLab.Server.Decompilation;
+using SharpLab.Server.Decompilation.AstOnly;
 using SharpLab.Server.MirrorSharp;
 
 namespace SharpLab.Server {
@@ -43,6 +44,8 @@ namespace SharpLab.Server {
             builder.RegisterType<Compiler>()
                    .As<ICompiler>()
                    .SingleInstance();
+
+            builder.RegisterType<RoslynAstTarget>().As<IAstTarget>().SingleInstance();
 
             builder.RegisterType<CSharpDecompiler>().As<IDecompiler>().SingleInstance();
             builder.RegisterType<VisualBasicDecompiler>().As<IDecompiler>().SingleInstance();

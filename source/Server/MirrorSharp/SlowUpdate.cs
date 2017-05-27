@@ -11,28 +11,45 @@ using Microsoft.IO;
 using MirrorSharp.Advanced;
 using SharpLab.Server.Compilation;
 using SharpLab.Server.Decompilation;
+using SharpLab.Server.Decompilation.AstOnly;
 
 namespace SharpLab.Server.MirrorSharp {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class SlowUpdate : ISlowUpdateExtension {
+        private const string AstTargetName = "AST";
+
         private readonly ICompiler _compiler;
         private readonly IReadOnlyDictionary<string, IDecompiler> _decompilers;
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;
+        private readonly IReadOnlyDictionary<string, IAstTarget> _astTargets;
 
-        public SlowUpdate(ICompiler compiler, IReadOnlyCollection<IDecompiler> decompilers, RecyclableMemoryStreamManager memoryStreamManager) {
+        public SlowUpdate(
+            ICompiler compiler,
+            IReadOnlyCollection<IDecompiler> decompilers,
+            RecyclableMemoryStreamManager memoryStreamManager,
+            IReadOnlyCollection<IAstTarget> astTargets
+        ) {
             _compiler = compiler;
             _decompilers = decompilers.ToDictionary(d => d.LanguageName);
             _memoryStreamManager = memoryStreamManager;
+            _astTargets = astTargets
+                .SelectMany(t => t.SupportedLanguageNames.Select(n => (target: t, languageName: n)))
+                .ToDictionary(x => x.languageName, x => x.target);
         }
 
         public async Task<object> ProcessAsync(IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
+            var targetName = session.GetTargetName();
+            if (targetName == AstTargetName) {
+                var astTarget = _astTargets.GetValueOrDefault(session.LanguageName);
+                return await astTarget.GetAstAsync(session, cancellationToken).ConfigureAwait(false);
+            }
+
             if (diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error))
                 return null;
 
-            var targetLanguageName = session.GetTargetLanguageName();
-            var decompiler = _decompilers.GetValueOrDefault(targetLanguageName);
+            var decompiler = _decompilers.GetValueOrDefault(targetName);
             if (decompiler == null)
-                throw new NotSupportedException($"Target '{targetLanguageName}' is not (yet?) supported by this branch.");
+                throw new NotSupportedException($"Target '{targetName}' is not (yet?) supported by this branch.");
 
             using (var stream = _memoryStreamManager.GetStream()) {
                 if (!await _compiler.TryCompileToStreamAsync(stream, session, diagnostics, cancellationToken).ConfigureAwait(false))
@@ -46,9 +63,19 @@ namespace SharpLab.Server.MirrorSharp {
             }
         }
 
-        public void WriteResult(IFastJsonWriter writer, object result) {
-            if (result != null)
-                writer.WriteProperty("decompiled", (string)result);
+        public void WriteResult(IFastJsonWriter writer, object result, IWorkSession session) {
+            if (result == null) {
+                writer.WriteValue(null);
+                return;
+            }
+
+            if (session.GetTargetName() == AstTargetName) {
+                var astTarget = _astTargets.GetValueOrDefault(session.LanguageName);
+                astTarget.SerializeAst(result, writer);
+                return;
+            }
+
+            writer.WriteValue((string)result);
         }
     }
 }

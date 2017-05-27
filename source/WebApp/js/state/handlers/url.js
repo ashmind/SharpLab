@@ -1,4 +1,5 @@
 ﻿import languages from '../../helpers/languages.js';
+import targets from '../../helpers/targets.js';
 import mapObject from '../../helpers/map-object.js';
 import warn from '../../helpers/warn.js';
 import LZString from 'lz-string';
@@ -7,8 +8,9 @@ const languageAndTargetMap = {
     [languages.csharp]: '',
     [languages.vb]:     'vb',
     [languages.fsharp]: 'fs',
-    [languages.il]:     'il',
-    [languages.asm]:    'asm'
+    [targets.il]:       'il',
+    [targets.asm]:      'asm',
+    [targets.ast]:      'ast'
 };
 const languageAndTargetMapReverse = mapObject(languageAndTargetMap, (key, value) => [value, key]);
 const targetMapReverseV1 = mapObject(languageAndTargetMapReverse, (key, value) => [key !== '' ? '>' + key : '', value]); // eslint-disable-line prefer-template

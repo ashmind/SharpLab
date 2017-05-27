@@ -4,13 +4,13 @@ using MirrorSharp.Advanced;
 namespace SharpLab.Server.MirrorSharp {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class SetOptionsFromClient : ISetOptionsFromClientExtension {
-        private const string TargetLanguage = "x-target-language";
+        private const string Target = "x-target";
 
         public bool TrySetOption(IWorkSession session, string name, string value) {
-            if (name != TargetLanguage)
+            if (name != Target)
                 return false;
 
-            session.SetTargetLanguageName(value);
+            session.SetTargetName(value);
             return true;
         }
     }
