@@ -1,0 +1,82 @@
+﻿1
+'c'
+"a
+b"
+}
+
+#=>
+
+[
+  {
+    "kind": "Ast.ParsedImplFileInput",
+    "type": "node",
+    "children": [
+      {
+        "kind": "Ast.SynModuleOrNamespace",
+        "type": "node",
+        "children": [
+          {
+            "type": "token",
+            "kind": "Ast.Ident",
+            "property": "longId",
+            "value": "_"
+          },
+          {
+            "kind": "Ast.SynModuleDecl.DoExpr",
+            "type": "node",
+            "children": [
+              {
+                "kind": "Ast.SynExpr.Const",
+                "type": "node",
+                "children": [
+                  {
+                    "kind": "Ast.SynConst.Int32",
+                    "property": "constant",
+                    "type": "token",
+                    "value": "1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "Ast.SynModuleDecl.DoExpr",
+            "type": "node",
+            "children": [
+              {
+                "kind": "Ast.SynExpr.Const",
+                "type": "node",
+                "children": [
+                  {
+                    "kind": "Ast.SynConst.Char",
+                    "property": "constant",
+                    "type": "token",
+                    "value": "'c'"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "Ast.SynModuleDecl.DoExpr",
+            "type": "node",
+            "children": [
+              {
+                "kind": "Ast.SynExpr.Const",
+                "type": "node",
+                "children": [
+                  {
+                    "kind": "Ast.SynConst.String",
+                    "property": "constant",
+                    "type": "token",
+                    "value": "\"a\r\nb\""
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

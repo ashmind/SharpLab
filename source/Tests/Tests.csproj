@@ -27,6 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestCode\Ast\EmptyType.fs2ast" />
+    <EmbeddedResource Include="TestCode\Ast\LiteralTokens.fs2ast" />
     <EmbeddedResource Include="TestCode\Ast\LiteralTokens.cs2ast" />
     <EmbeddedResource Include="TestCode\Ast\EmptyClass.cs2ast" />
     <EmbeddedResource Include="TestCode\Ast\StructuredTrivia.cs2ast" />

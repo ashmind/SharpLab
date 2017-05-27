@@ -1,0 +1,59 @@
+﻿type Empty = class end
+
+#=>
+
+[
+  {
+    "kind": "Ast.ParsedImplFileInput",
+    "type": "node",
+    "children": [
+      {
+        "kind": "Ast.SynModuleOrNamespace",
+        "type": "node",
+        "children": [
+          {
+            "type": "token",
+            "kind": "Ast.Ident",
+            "property": "longId",
+            "value": "_"
+          },
+          {
+            "kind": "Ast.SynModuleDecl.Types",
+            "type": "node",
+            "children": [
+              {
+                "kind": "Ast.SynTypeDefn",
+                "type": "node",
+                "children": [
+                  {
+                    "kind": "Ast.SynComponentInfo",
+                    "type": "node",
+                    "children": [
+                      {
+                        "type": "token",
+                        "kind": "Ast.Ident",
+                        "property": "longId",
+                        "value": "Empty"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "Ast.SynTypeDefnRepr.ObjectModel",
+                    "type": "node",
+                    "children": [
+                      {
+                        "kind": "Ast.SynTypeDefnKind",
+                        "type": "node",
+                        "value": "TyconClass"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -46,6 +46,7 @@ namespace SharpLab.Server {
                    .SingleInstance();
 
             builder.RegisterType<RoslynAstTarget>().As<IAstTarget>().SingleInstance();
+            builder.RegisterType<FSharpAstTarget>().As<IAstTarget>().SingleInstance();
 
             builder.RegisterType<CSharpDecompiler>().As<IDecompiler>().SingleInstance();
             builder.RegisterType<VisualBasicDecompiler>().As<IDecompiler>().SingleInstance();
