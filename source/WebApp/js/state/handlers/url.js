@@ -17,6 +17,9 @@ const targetMapReverseV1 = mapObject(languageAndTargetMapReverse, (key, value) =
 
 let lastHash;
 function save(code, options) {
+    if (code == null) // too early?
+        return;
+
     const optionsPacked = {
         b: options.branchId,
         l: languageAndTargetMap[options.language],
