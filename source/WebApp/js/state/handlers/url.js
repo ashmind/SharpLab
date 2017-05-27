@@ -28,7 +28,7 @@ function save(code, options) {
         .filter(([,value]) => !!value)
         .map(([key, value]) => key + ':' + value) // eslint-disable-line prefer-template
         .join(',');
-    const hash = '2$' + LZString.compressToBase64(optionsPackedString + '|' + code); // eslint-disable-line prefer-template
+    const hash = 'v2:' + LZString.compressToBase64(optionsPackedString + '|' + code); // eslint-disable-line prefer-template
 
     lastHash = hash;
     window.location.hash = hash;
@@ -48,7 +48,7 @@ function loadInternal(onlyIfChanged) {
         return null;
 
     lastHash = hash;
-    if (!hash.startsWith('2$'))
+    if (!hash.startsWith('v2:'))
         return legacyLoadFrom(hash);
 
     hash = hash.substring(2);
