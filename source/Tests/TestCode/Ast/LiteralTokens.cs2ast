@@ -1,0 +1,493 @@
+﻿class C {
+    int i = 1;
+    char c = 'c';
+
+    string s1 = "a\r\nb";
+    string s2 = @"a
+b";
+}
+
+#=>
+
+[
+  {
+    "type": "node",
+    "kind": "CompilationUnit",
+    "children": [
+      {
+        "type": "node",
+        "kind": "ClassDeclaration",
+        "children": [
+          {
+            "type": "token",
+            "kind": "ClassKeyword",
+            "property": "Keyword",
+            "children": [
+              "class",
+              {
+                "type": "trivia",
+                "kind": "WhitespaceTrivia",
+                "value": " "
+              }
+            ]
+          },
+          {
+            "type": "token",
+            "kind": "IdentifierToken",
+            "property": "Identifier",
+            "children": [
+              "C",
+              {
+                "type": "trivia",
+                "kind": "WhitespaceTrivia",
+                "value": " "
+              }
+            ]
+          },
+          {
+            "type": "token",
+            "kind": "OpenBraceToken",
+            "property": "OpenBraceToken",
+            "children": [
+              "{",
+              {
+                "type": "trivia",
+                "kind": "EndOfLineTrivia",
+                "value": "\r\n"
+              }
+            ]
+          },
+          {
+            "type": "node",
+            "kind": "FieldDeclaration",
+            "children": [
+              {
+                "type": "node",
+                "kind": "VariableDeclaration",
+                "property": "Declaration",
+                "children": [
+                  {
+                    "type": "node",
+                    "kind": "PredefinedType",
+                    "property": "Type",
+                    "children": [
+                      {
+                        "type": "token",
+                        "kind": "IntKeyword",
+                        "property": "Keyword",
+                        "children": [
+                          {
+                            "type": "trivia",
+                            "kind": "WhitespaceTrivia",
+                            "value": "    "
+                          },
+                          "int",
+                          {
+                            "type": "trivia",
+                            "kind": "WhitespaceTrivia",
+                            "value": " "
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "node",
+                    "kind": "VariableDeclarator",
+                    "children": [
+                      {
+                        "type": "token",
+                        "kind": "IdentifierToken",
+                        "property": "Identifier",
+                        "children": [
+                          "i",
+                          {
+                            "type": "trivia",
+                            "kind": "WhitespaceTrivia",
+                            "value": " "
+                          }
+                        ]
+                      },
+                      {
+                        "type": "node",
+                        "kind": "EqualsValueClause",
+                        "property": "Initializer",
+                        "children": [
+                          {
+                            "type": "token",
+                            "kind": "EqualsToken",
+                            "property": "EqualsToken",
+                            "children": [
+                              "=",
+                              {
+                                "type": "trivia",
+                                "kind": "WhitespaceTrivia",
+                                "value": " "
+                              }
+                            ]
+                          },
+                          {
+                            "type": "node",
+                            "kind": "NumericLiteralExpression",
+                            "property": "Value",
+                            "children": [
+                              {
+                                "type": "token",
+                                "kind": "NumericLiteralToken",
+                                "property": "Token",
+                                "value": "1"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "token",
+                "kind": "SemicolonToken",
+                "property": "SemicolonToken",
+                "children": [
+                  ";",
+                  {
+                    "type": "trivia",
+                    "kind": "EndOfLineTrivia",
+                    "value": "\r\n"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "node",
+            "kind": "FieldDeclaration",
+            "children": [
+              {
+                "type": "node",
+                "kind": "VariableDeclaration",
+                "property": "Declaration",
+                "children": [
+                  {
+                    "type": "node",
+                    "kind": "PredefinedType",
+                    "property": "Type",
+                    "children": [
+                      {
+                        "type": "token",
+                        "kind": "CharKeyword",
+                        "property": "Keyword",
+                        "children": [
+                          {
+                            "type": "trivia",
+                            "kind": "WhitespaceTrivia",
+                            "value": "    "
+                          },
+                          "char",
+                          {
+                            "type": "trivia",
+                            "kind": "WhitespaceTrivia",
+                            "value": " "
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "node",
+                    "kind": "VariableDeclarator",
+                    "children": [
+                      {
+                        "type": "token",
+                        "kind": "IdentifierToken",
+                        "property": "Identifier",
+                        "children": [
+                          "c",
+                          {
+                            "type": "trivia",
+                            "kind": "WhitespaceTrivia",
+                            "value": " "
+                          }
+                        ]
+                      },
+                      {
+                        "type": "node",
+                        "kind": "EqualsValueClause",
+                        "property": "Initializer",
+                        "children": [
+                          {
+                            "type": "token",
+                            "kind": "EqualsToken",
+                            "property": "EqualsToken",
+                            "children": [
+                              "=",
+                              {
+                                "type": "trivia",
+                                "kind": "WhitespaceTrivia",
+                                "value": " "
+                              }
+                            ]
+                          },
+                          {
+                            "type": "node",
+                            "kind": "CharacterLiteralExpression",
+                            "property": "Value",
+                            "children": [
+                              {
+                                "type": "token",
+                                "kind": "CharacterLiteralToken",
+                                "property": "Token",
+                                "value": "'c'"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "token",
+                "kind": "SemicolonToken",
+                "property": "SemicolonToken",
+                "children": [
+                  ";",
+                  {
+                    "type": "trivia",
+                    "kind": "EndOfLineTrivia",
+                    "value": "\r\n"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "node",
+            "kind": "FieldDeclaration",
+            "children": [
+              {
+                "type": "node",
+                "kind": "VariableDeclaration",
+                "property": "Declaration",
+                "children": [
+                  {
+                    "type": "node",
+                    "kind": "PredefinedType",
+                    "property": "Type",
+                    "children": [
+                      {
+                        "type": "token",
+                        "kind": "StringKeyword",
+                        "property": "Keyword",
+                        "children": [
+                          {
+                            "type": "trivia",
+                            "kind": "EndOfLineTrivia",
+                            "value": "\r\n"
+                          },
+                          {
+                            "type": "trivia",
+                            "kind": "WhitespaceTrivia",
+                            "value": "    "
+                          },
+                          "string",
+                          {
+                            "type": "trivia",
+                            "kind": "WhitespaceTrivia",
+                            "value": " "
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "node",
+                    "kind": "VariableDeclarator",
+                    "children": [
+                      {
+                        "type": "token",
+                        "kind": "IdentifierToken",
+                        "property": "Identifier",
+                        "children": [
+                          "s1",
+                          {
+                            "type": "trivia",
+                            "kind": "WhitespaceTrivia",
+                            "value": " "
+                          }
+                        ]
+                      },
+                      {
+                        "type": "node",
+                        "kind": "EqualsValueClause",
+                        "property": "Initializer",
+                        "children": [
+                          {
+                            "type": "token",
+                            "kind": "EqualsToken",
+                            "property": "EqualsToken",
+                            "children": [
+                              "=",
+                              {
+                                "type": "trivia",
+                                "kind": "WhitespaceTrivia",
+                                "value": " "
+                              }
+                            ]
+                          },
+                          {
+                            "type": "node",
+                            "kind": "StringLiteralExpression",
+                            "property": "Value",
+                            "children": [
+                              {
+                                "type": "token",
+                                "kind": "StringLiteralToken",
+                                "property": "Token",
+                                "value": "\"a\\r\\nb\""
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "token",
+                "kind": "SemicolonToken",
+                "property": "SemicolonToken",
+                "children": [
+                  ";",
+                  {
+                    "type": "trivia",
+                    "kind": "EndOfLineTrivia",
+                    "value": "\r\n"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "node",
+            "kind": "FieldDeclaration",
+            "children": [
+              {
+                "type": "node",
+                "kind": "VariableDeclaration",
+                "property": "Declaration",
+                "children": [
+                  {
+                    "type": "node",
+                    "kind": "PredefinedType",
+                    "property": "Type",
+                    "children": [
+                      {
+                        "type": "token",
+                        "kind": "StringKeyword",
+                        "property": "Keyword",
+                        "children": [
+                          {
+                            "type": "trivia",
+                            "kind": "WhitespaceTrivia",
+                            "value": "    "
+                          },
+                          "string",
+                          {
+                            "type": "trivia",
+                            "kind": "WhitespaceTrivia",
+                            "value": " "
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "node",
+                    "kind": "VariableDeclarator",
+                    "children": [
+                      {
+                        "type": "token",
+                        "kind": "IdentifierToken",
+                        "property": "Identifier",
+                        "children": [
+                          "s2",
+                          {
+                            "type": "trivia",
+                            "kind": "WhitespaceTrivia",
+                            "value": " "
+                          }
+                        ]
+                      },
+                      {
+                        "type": "node",
+                        "kind": "EqualsValueClause",
+                        "property": "Initializer",
+                        "children": [
+                          {
+                            "type": "token",
+                            "kind": "EqualsToken",
+                            "property": "EqualsToken",
+                            "children": [
+                              "=",
+                              {
+                                "type": "trivia",
+                                "kind": "WhitespaceTrivia",
+                                "value": " "
+                              }
+                            ]
+                          },
+                          {
+                            "type": "node",
+                            "kind": "StringLiteralExpression",
+                            "property": "Value",
+                            "children": [
+                              {
+                                "type": "token",
+                                "kind": "StringLiteralToken",
+                                "property": "Token",
+                                "value": "@\"a\r\nb\""
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "token",
+                "kind": "SemicolonToken",
+                "property": "SemicolonToken",
+                "children": [
+                  ";",
+                  {
+                    "type": "trivia",
+                    "kind": "EndOfLineTrivia",
+                    "value": "\r\n"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "token",
+            "kind": "CloseBraceToken",
+            "property": "CloseBraceToken",
+            "value": "}"
+          }
+        ]
+      },
+      {
+        "type": "token",
+        "kind": "EndOfFileToken",
+        "property": "EndOfFileToken",
+        "value": ""
+      }
+    ]
+  }
+]

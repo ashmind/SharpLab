@@ -84,6 +84,7 @@ namespace SharpLab.Tests {
         [Theory]
         [InlineData("Ast.EmptyClass.cs2ast")]
         [InlineData("Ast.StructuredTrivia.cs2ast")]
+        [InlineData("Ast.LiteralTokens.cs2ast")]
         public async Task SlowUpdate_ReturnsExpectedResult_ForAst(string resourceName) {
             var data = TestData.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);

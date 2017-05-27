@@ -9,7 +9,7 @@ Vue.component('app-ast-view', {
             if (type === 'trivia')
                 return escapeTrivia(value);
 
-            return `"${escapeCommon(value)}"`;
+            return escapeCommon(value);
         }
     },
     data: () => ({

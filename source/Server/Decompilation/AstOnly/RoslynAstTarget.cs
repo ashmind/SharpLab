@@ -52,14 +52,14 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 foreach (var trivia in token.LeadingTrivia) {
                     SerializeTrivia(trivia, writer);
                 }
-                writer.WriteValue(token.ValueText);
+                writer.WriteValue(token.ToString());
                 foreach (var trivia in token.TrailingTrivia) {
                     SerializeTrivia(trivia, writer);
                 }
                 writer.WriteEndArray();
             }
             else {
-                writer.WriteProperty("value", token.ValueText);
+                writer.WriteProperty("value", token.ToString());
             }
             writer.WriteEndObject();
         }
