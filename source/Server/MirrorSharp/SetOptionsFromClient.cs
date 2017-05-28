@@ -7,7 +7,7 @@ namespace SharpLab.Server.MirrorSharp {
         private const string Target = "x-target";
 
         public bool TrySetOption(IWorkSession session, string name, string value) {
-            if (name != Target)
+            if (name != Target && name != "x-target-language" /* TODO: remove once all branches and main are updated */)
                 return false;
 
             session.SetTargetName(value);
