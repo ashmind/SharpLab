@@ -2,6 +2,7 @@
 import targets from '../../helpers/targets.js';
 import mapObject from '../../helpers/map-object.js';
 import warn from '../../helpers/warn.js';
+import precompressor from './url/precompressor.js';
 import LZString from 'lz-string';
 
 const languageAndTargetMap = {
@@ -31,7 +32,8 @@ function save(code, options) {
         .filter(([,value]) => !!value)
         .map(([key, value]) => key + ':' + value) // eslint-disable-line prefer-template
         .join(',');
-    const hash = 'v2:' + LZString.compressToBase64(optionsPackedString + '|' + code); // eslint-disable-line prefer-template
+    const precompressedCode = precompressor.compress(code, options.language);
+    const hash = 'v2:' + LZString.compressToBase64(optionsPackedString + '|' + precompressedCode); // eslint-disable-line prefer-template
 
     lastHash = hash;
     window.location.hash = hash;
@@ -62,14 +64,15 @@ function loadInternal(onlyIfChanged) {
             result[key] = value;
             return result;
         }, {});
+        const language = languageAndTargetMapReverse[optionsPacked.l || ''];
         return {
             options: {
                 branchId: optionsPacked.b,
-                language: languageAndTargetMapReverse[optionsPacked.l || ''],
+                language,
                 target:   languageAndTargetMapReverse[optionsPacked.t || ''],
                 release:  optionsPacked.d !== '+'
             },
-            code: parts[1]
+            code: precompressor.decompress(parts[1], language)
         };
     }
     catch (e) {
