@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Data;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
@@ -25,9 +26,15 @@ namespace SharpLab.Server.Compilation.Setups {
 
         public CSharpSetup(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
             _references = referenceCollector.SlowGetMetadataReferencesRecursive(
+                // Essential
                 typeof(Binder).Assembly,
                 typeof(ValueTuple<>).Assembly,
-                typeof(JitGenericAttribute).Assembly
+
+                // Runtime
+                typeof(JitGenericAttribute).Assembly,
+
+                // Requested
+                typeof(IDataReader).Assembly // System.Data
             ).ToImmutableList();
             _features = featureDiscovery.SlowDiscoverAll().ToDictionary(f => f, f => (string)null);
         }
