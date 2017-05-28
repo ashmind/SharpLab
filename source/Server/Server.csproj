@@ -20,7 +20,7 @@
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.1" />
     <PackageReference Include="Microsoft.Owin.Cors" Version="3.0.1" />
     <PackageReference Include="Microsoft.Owin.Host.SystemWeb" Version="3.0.1" />
-    <PackageReference Include="MirrorSharp.Common" Version="0.9.0-pre-20170527" />
+    <PackageReference Include="MirrorSharp.Common" Version="0.9.0-pre-20170528" />
     <PackageReference Include="MirrorSharp.FSharp" Version="0.9.0-pre-20170523" />
     <PackageReference Include="MirrorSharp.Owin" Version="0.9.0-pre-20170523" />
     <PackageReference Include="MirrorSharp.VisualBasic" Version="0.9.0-pre-20170523" />
