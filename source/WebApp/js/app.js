@@ -6,6 +6,8 @@ import getBranchesAsync from './server/get-branches-async.js';
 
 import state from './state/index.js';
 import url from './state/handlers/url.js';
+import defaults from './state/handlers/defaults.js';
+
 import uiAsync from './ui/index.js';
 
 /* eslint-disable no-invalid-this */
@@ -127,6 +129,13 @@ async function createAppAsync() {
         data.options.branchId = value ? value.id : null;
         data.loading = true;
         data.serviceUrl = getServiceUrl(value);
+    });
+
+    ui.watch('options.language', (newLanguage, oldLanguage) => {
+        if (data.code !== defaults.getCode(oldLanguage))
+            return;
+        data.code = defaults.getCode(newLanguage);
+        data.lastLoadedCode = data.code;
     });
 
     url.changed(() => {
