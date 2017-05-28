@@ -46,7 +46,7 @@
             <div class="mobile-menu"></div>
           </header>
           <div class="content">
-            <app-mirrorsharp v-bind:value="code"
+            <app-mirrorsharp v-bind:initial-text="lastLoadedCode"
                              v-bind:service-url="serviceUrl"
                              v-bind:server-options="serverOptions"
                              v-on:text-change="code = arguments[0]()"

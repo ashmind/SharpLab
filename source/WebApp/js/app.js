@@ -71,6 +71,7 @@ async function createAppAsync() {
         lastResultOfType: { code: null, ast: null }
     });
     state.load(data);
+    data.lastLoadedCode = data.code;
 
     const branchesPromise = (async () => {
         const branches = await getBranchesAsync();
@@ -128,5 +129,8 @@ async function createAppAsync() {
         data.serviceUrl = getServiceUrl(value);
     });
 
-    url.changed(() => state.load(data));
+    url.changed(() => {
+        state.load(data);
+        data.lastLoadedCode = data.code;
+    });
 })();

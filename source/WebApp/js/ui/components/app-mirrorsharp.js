@@ -4,14 +4,14 @@ import 'codemirror/mode/mllike/mllike';
 
 Vue.component('app-mirrorsharp', {
     props: {
-        value:           String,
+        initialText:     String,
         serverOptions:   Object,
         serviceUrl:      String
     },
     mounted: function() {
         Vue.nextTick(() => {
             const textarea = this.$el;
-            textarea.value = this.value;
+            textarea.value = this.initialText;
             const options = {
                 serviceUrl: this.serviceUrl,
                 on: {
@@ -25,7 +25,7 @@ Vue.component('app-mirrorsharp', {
             if (this.serverOptions)
                 instance.sendServerOptions(this.serverOptions);
 
-            this.$watch('value', v => instance.getCodeMirror().setValue(v));
+            this.$watch('initialText', v => instance.getCodeMirror().setValue(v));
             this.$watch('serverOptions', o => instance.sendServerOptions(o), { deep: true });
             this.$watch('serviceUrl', u => {
                 instance.destroy({ keepCodeMirror: true });
