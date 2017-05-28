@@ -159,7 +159,7 @@ try {
                 Write-Output "Resolving and copying assemblies..."
                 $resolverLogPath = "$branchArtifactsRoot\AssemblyResolver.log"
                 $resolverCommand = "&""$assemblyResolver""" +
-                  " --source-bin ""$sourceRoot\Server\bin"" " +
+                  " --source-bin ""$sourceRoot\Server\bin\Release"" " +
                   " --roslyn-bin ""$branchArtifactsRoot\Binaries""" +
                   " --target ""$(Ensure-ResolvedPath $siteRoot\bin)""" +
                   " --target-app-config ""$siteRoot\Web.config""" +
