@@ -45,7 +45,9 @@ try {
     if ($ftpushExe.Count -gt 1) {
         throw "Found multiple ftpush.exe: $ftpushExe"
     }
-    $ftpushExe = $ftpushExe[0]
+
+    # Temporary solution, need to convert ftpush into a proper SDK tool
+    $ftpushExe = Resolve-Path "$($env:USERPROFILE)\.nuget\packages\ftpush\0.8.0-pre-08\tools\ftpush.exe"
     Write-Output "  ftpush.exe:            $ftpushExe"
 
     if ($azure) {
