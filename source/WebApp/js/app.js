@@ -5,6 +5,7 @@ import targets from './helpers/targets.js';
 import getBranchesAsync from './server/get-branches-async.js';
 
 import state from './state/index.js';
+import url from './state/handlers/url.js';
 import uiAsync from './ui/index.js';
 
 /* eslint-disable no-invalid-this */
@@ -126,4 +127,6 @@ async function createAppAsync() {
         data.loading = true;
         data.serviceUrl = getServiceUrl(value);
     });
+
+    url.changed(() => state.load(data));
 })();

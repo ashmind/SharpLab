@@ -40,16 +40,8 @@ function save(code, options) {
 }
 
 function load() {
-    return loadInternal(false);
-}
-
-function loadInternal(onlyIfChanged) {
-    let hash = window.location.hash;
+    let hash = getCurrentHash();
     if (!hash)
-        return null;
-
-    hash = decodeURIComponent(hash.replace(/^#/, ''));
-    if (!hash || (onlyIfChanged && hash === lastHash))
         return null;
 
     lastHash = hash;
@@ -81,12 +73,19 @@ function loadInternal(onlyIfChanged) {
     }
 }
 
-function onchange(callback) {
+function changed(callback) {
     window.addEventListener('hashchange', () => {
-        const loaded = loadInternal(true);
-        if (loaded !== null)
-            callback(loaded);
+        const hash = getCurrentHash();
+        if (hash !== lastHash)
+            callback();
     });
+}
+
+function getCurrentHash() {
+    const hash = window.location.hash;
+    if (!hash)
+        return null;
+    return decodeURIComponent(hash.replace(/^#/, ''));
 }
 
 function legacyLoadFrom(hash) {
@@ -117,5 +116,5 @@ function legacyLoadFrom(hash) {
 export default {
     save,
     load,
-    onchange
+    changed
 };
