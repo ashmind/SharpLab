@@ -1,11 +1,11 @@
-﻿/* global require:false */
+﻿/* global require:false, process:false */
+/* eslint-disable arrow-body-style */
 
 'use strict';
 const fs = require('fs');
 const md5File = require('md5-file');
 const gulp = require('gulp');
 const g = require('gulp-load-plugins')();
-const assign = require('object-assign');
 const pipe = require('multipipe');
 
 // ReSharper disable once UndeclaredGlobalVariableUsing
@@ -71,7 +71,7 @@ gulp.task('html', ['js', 'less'], () => {
 
     return gulp
         .src('./index.html')
-        .pipe(g.htmlReplace({ js: 'app.min.js?' + jsHash, css: 'app.min.css?' + cssHash }))
+        .pipe(g.htmlReplace({ js: 'app.min.js?' + jsHash, css: 'app.min.css?' + cssHash })) // eslint-disable-line prefer-template
         .pipe(g.replace('{build:favicon-svg}', faviconSvgUrlSafe))
         .pipe(gulp.dest('wwwroot'));
 });

@@ -25,7 +25,6 @@
     "gulp-uglify": "^1.5.1",
     "md5-file": "^3.1.1",
     "multipipe": "^1.0.1",
-    "object-assign": "^4.0.1",
     "rimraf": "^2.5.4",
     "rollup": "^0.41.6",
     "rollup-plugin-commonjs": "^8.0.2",
