@@ -70,9 +70,9 @@ try {
     
     Write-Output "Building SharpLab..."
     Write-Output "  Restoring packages..."
-    &"$PSScriptRoot\#tools\nuget" restore "$sourceRoot\SharpLab.sln"
+    dotnet restore "$sourceRoot\SharpLab.sln"
     Write-Output "  Server.csproj"
-    &$MSBuild "$sourceRoot\Server\Server.csproj" `
+    dotnet build "$sourceRoot\Server\Server.csproj" `
         /p:AllowedReferenceRelatedFileExtensions=.pdb `
         /p:Configuration=Release
     if ($LastExitCode -ne 0) {
