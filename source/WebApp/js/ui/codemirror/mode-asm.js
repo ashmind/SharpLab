@@ -15,7 +15,7 @@
     "use strict";
 
     var grammar = {
-      keyword: new RegExp("^(?:" + [
+      builtin: new RegExp("^(?:" + [
         "aa[adms]", "adc", "add", "and", "arpl",
         "bound", "bsf", "bsr", "bswap", "bt", "bt[crs]",
         "call", "cbw", "cdq", "cl[cdi]", "clts", "cmc", conditional("cmov"), "cmp", "cmps[bdw]", "cmpxchg", "cmpxchg8b", "cpuid", "cwd", "cwde",
@@ -45,9 +45,7 @@
 
     return {
       startState: function() {
-        return {
-          tokenize: null
-        };
+        return {};
       },
 
       token: function(stream) {
@@ -58,6 +56,10 @@
         if (stream.eat(";")) {
           stream.skipToEnd();
           return "comment";
+        }
+
+        if (stream.match(/\w+:/)) {
+          return "tag";
         }
 
         for (var key in grammar) {

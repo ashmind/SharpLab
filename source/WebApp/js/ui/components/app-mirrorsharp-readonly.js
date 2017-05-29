@@ -3,6 +3,7 @@ import targets from '../../helpers/targets.js';
 import CodeMirror from 'codemirror';
 import 'codemirror/mode/clike/clike';
 import 'codemirror/mode/vb/vb';
+import '../codemirror/mode-cil.js';
 import '../codemirror/mode-asm.js';
 
 Vue.component('app-mirrorsharp-readonly', {
@@ -15,7 +16,7 @@ Vue.component('app-mirrorsharp-readonly', {
             const modeMap = {
                 [targets.csharp]: 'text/x-csharp',
                 [targets.vb]:     'text/x-vb',
-                [targets.il]:     '',
+                [targets.il]:     'text/x-cil',
                 [targets.asm]:    'text/x-asm'
             };
 
