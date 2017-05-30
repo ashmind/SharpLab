@@ -19,11 +19,11 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             writer.WriteEndArray();
         }
 
-        private void SerializeNode(SyntaxNode node, IFastJsonWriter writer) {
+        private void SerializeNode(SyntaxNode node, IFastJsonWriter writer, string specialParentPropertyName = null) {
             writer.WriteStartObject();
             writer.WriteProperty("type", "node");
             writer.WriteProperty("kind", RoslynSyntaxHelper.GetKindName(node.RawKind));
-            var parentPropertyName = RoslynSyntaxHelper.GetParentPropertyName(node);
+            var parentPropertyName = specialParentPropertyName ?? RoslynSyntaxHelper.GetParentPropertyName(node);
             if (parentPropertyName != null)
                 writer.WriteProperty("property", parentPropertyName);
             writer.WritePropertyStartArray("children");
@@ -70,7 +70,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             writer.WriteProperty("kind", RoslynSyntaxHelper.GetKindName(trivia.RawKind));
             if (trivia.HasStructure) {
                 writer.WritePropertyStartArray("children");
-                SerializeNode(trivia.GetStructure(), writer);
+                SerializeNode(trivia.GetStructure(), writer, "Structure");
                 writer.WriteEndArray();
             }
             else {
