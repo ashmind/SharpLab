@@ -13,7 +13,6 @@ using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Compiler;
 using MirrorSharp.Advanced;
 using MirrorSharp.FSharp.Advanced;
-using Mono.Cecil.Cil;
 
 namespace SharpLab.Server.Decompilation.AstOnly {
     public class FSharpAstTarget : IAstTarget {

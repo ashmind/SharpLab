@@ -11,7 +11,7 @@ using AstNode = ICSharpCode.NRefactory.CSharp.AstNode;
 
 namespace SharpLab.Server.Decompilation {
     public class VisualBasicDecompiler : AstBasedDecompiler {
-        protected override void WriteResult(TextWriter writer, IEnumerable<AstNode> ast, DecompilerContext context) {
+        protected override void WriteResult(TextWriter writer, AstNode ast, DecompilerContext context) {
             var converter = new CSharpToVBConverterVisitor(new ILSpyEnvironmentProvider());
             var visitor = new OutputVisitor(
                 new VBTextOutputFormatter(new CustomizableIndentPlainTextOutput(writer) {
@@ -19,11 +19,9 @@ namespace SharpLab.Server.Decompilation {
                 }),
                 new VBFormattingOptions()
             );
-            foreach (var node in ast) {
-                node.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
-                var converted = node.AcceptVisitor(converter, null);
-                converted.AcceptVisitor(visitor, null);
-            }
+            ast.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
+            var converted = ast.AcceptVisitor(converter, null);
+            converted.AcceptVisitor(visitor, null);
         }
 
         public override string LanguageName => LanguageNames.VisualBasic;
