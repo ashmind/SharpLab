@@ -25,6 +25,8 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             new Lazy<IReadOnlyDictionary<Type, Func<object, string>>>(CompileTagNameGetters, LazyThreadSafetyMode.ExecutionAndPublication);
         private static readonly Lazy<IReadOnlyDictionary<Type, Func<Ast.SynConst, string>>> ConstValueGetters =
             new Lazy<IReadOnlyDictionary<Type, Func<Ast.SynConst, string>>>(CompileConstValueGetters, LazyThreadSafetyMode.ExecutionAndPublication);
+        private static readonly Lazy<IReadOnlyDictionary<Type, string>> AstTypeNames = 
+            new Lazy<IReadOnlyDictionary<Type, string>>(CollectAstTypeNames, LazyThreadSafetyMode.ExecutionAndPublication);
 
         private static class Methods {
             // ReSharper disable MemberHidesStaticFromOuterClass
@@ -43,6 +45,12 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             // ReSharper restore MemberHidesStaticFromOuterClass
         }
 
+        private static class EnumCache<TEnum>
+            where TEnum : struct, IFormattable
+        {
+            public static readonly IReadOnlyDictionary<TEnum, string> Strings = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToDictionary(e => e, e => e.ToString("G", null));
+        }
+
         public Task<object> GetAstAsync(IWorkSession session, CancellationToken cancellationToken) {
             var parseTree = session.FSharp().GetLastParseResults()?.ParseTree?.Value;
             return Task.FromResult((object)(parseTree as Ast.ParsedInput.ImplFile));
@@ -59,7 +67,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
         private static void SerializeNode(object node, IFastJsonWriter writer, [CanBeNull] string parentPropertyName, ref bool parentChildrenStarted) {
             EnsureChildrenStarted(ref parentChildrenStarted, writer);
             writer.WriteStartObject();
-            writer.WriteProperty("kind", GetFullName(node.GetType()));
+            writer.WriteProperty("kind", AstTypeNames.Value[node.GetType()]);
             if (parentPropertyName != null)
                 writer.WriteProperty("property", parentPropertyName);
 
@@ -114,18 +122,18 @@ namespace SharpLab.Server.Decompilation.AstOnly {
         }
 
         private static void SerializeEnum<TEnum>(TEnum value, IFastJsonWriter writer, [CanBeNull] string parentPropertyName, ref bool parentChildrenStarted)
-            where TEnum: IFormattable
+            where TEnum: struct, IFormattable
         {
             EnsureChildrenStarted(ref parentChildrenStarted, writer);
             if (parentPropertyName != null) {
                 writer.WriteStartObject();
                 writer.WriteProperty("type", "value");
                 writer.WriteProperty("property", parentPropertyName);
-                writer.WriteProperty("value", value.ToString("G", null));
+                writer.WriteProperty("value", EnumCache<TEnum>.Strings[value]);
                 writer.WriteEndObject();
             }
             else {
-                writer.WriteValue(value.ToString("G", null));
+                writer.WriteValue(EnumCache<TEnum>.Strings[value]);
             }
         }
 
@@ -214,12 +222,6 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 && !(type.Name.StartsWith("SequencePoint"));
         }
 
-        private static string GetFullName(Type astType) {
-            if (astType == typeof(Ast))
-                return "Ast";
-            return GetFullName(astType.DeclaringType) + "." + astType.Name;
-        }
-
         private static string GetTagName(object node) {
             var getter = TagNameGetters.Value.GetValueOrDefault(node.GetType());
             return getter?.Invoke(node);
@@ -273,6 +275,21 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 ).Compile());
             }
             return getters;
+        }
+
+        private static IReadOnlyDictionary<Type, string> CollectAstTypeNames() {
+            var results = new Dictionary<Type, string>();
+            void CollectRecusive(Type astType, string parentPrefix) {
+                var name = parentPrefix + astType.Name;
+                var prefix = name + ".";
+                results.Add(astType, name);
+                foreach (var nested in astType.GetNestedTypes()) {
+                    CollectRecusive(nested, prefix);
+                }
+            }
+
+            CollectRecusive(typeof(Ast), "");
+            return results;
         }
 
         public IReadOnlyCollection<string> SupportedLanguageNames { get; } = new[] {"F#"};
