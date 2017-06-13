@@ -122,7 +122,6 @@
         "prefer-const": "warn",
         "prefer-rest-params": "warn",
         "prefer-spread": "warn",
-        "prefer-template": "warn",
         "require-yield": "warn"
     }
 }

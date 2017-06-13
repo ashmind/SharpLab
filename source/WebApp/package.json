@@ -2,7 +2,17 @@
   "name": "_",
   "version": "0.0.0",
   "private": true,
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "testMatch": [
+      "**/tests/**/*.tests.js"
+    ]
+  },
   "devDependencies": {
+    "babel-jest": "^20.0.3",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
     "eslint": "^3.19.0",
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^3.1.0",
@@ -23,6 +33,7 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-svg2png": "https://github.com/ashmind/gulp-svg2png.git#gh-36-temp",
     "gulp-uglify": "^1.5.1",
+    "jest": "^20.0.4",
     "md5-file": "^3.1.1",
     "multipipe": "^1.0.1",
     "rimraf": "^2.5.4",

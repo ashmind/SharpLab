@@ -3,10 +3,11 @@ import targets from '../../helpers/targets.js';
 import mapObject from '../../helpers/map-object.js';
 import warn from '../../helpers/warn.js';
 import precompressor from './url/precompressor.js';
+import getGistAsync from './url/get-gist-async.js';
 import LZString from 'lz-string';
 
 const languageAndTargetMap = {
-    [languages.csharp]: '',
+    [languages.csharp]: 'cs',
     [languages.vb]:     'vb',
     [languages.fsharp]: 'fs',
     [targets.il]:       'il',
@@ -14,17 +15,22 @@ const languageAndTargetMap = {
     [targets.ast]:      'ast'
 };
 const languageAndTargetMapReverse = mapObject(languageAndTargetMap, (key, value) => [value, key]);
-const targetMapReverseV1 = mapObject(languageAndTargetMapReverse, (key, value) => [key !== '' ? '>' + key : '', value]); // eslint-disable-line prefer-template
+const targetMapReverseV1 = mapObject(languageAndTargetMapReverse, (key, value) => ['>' + key, value]); // eslint-disable-line prefer-template
 
-let lastHash;
+const last = {
+    hash: null
+};
 function save(code, options) {
     if (code == null) // too early?
         return;
 
+    if (last.gist && saveGist(code, options))
+        return;
+
     const optionsPacked = {
         b: options.branchId,
-        l: languageAndTargetMap[options.language],
-        t: languageAndTargetMap[options.target],
+        l: options.language !== languages.csharp ? languageAndTargetMap[options.language] : null,
+        t: options.target !== targets.csharp ? languageAndTargetMap[options.target] : null,
         d: options.release ? '' : '+'
     };
     const optionsPackedString = Object
@@ -35,16 +41,40 @@ function save(code, options) {
     const precompressedCode = precompressor.compress(code, options.language);
     const hash = 'v2:' + LZString.compressToBase64(optionsPackedString + '|' + precompressedCode); // eslint-disable-line prefer-template
 
-    lastHash = hash;
+    saveHash(hash);
+}
+
+function saveGist(code, options) {
+    if (code !== last.gist.code || options.language !== last.gist.language)
+        return false;
+    let hash = 'gist:' + last.gist.id;
+    const target = options.target !== getGistDefaultTarget(options.language)
+        ? (languageAndTargetMap[options.target] || '')
+        : '';
+    if (target || options.branchId || !options.release)
+        hash += '/' + target;
+    if (options.branchId || !options.release)
+        hash += '/' + (options.branchId || '');
+    if (!options.release)
+        hash += '/debug';
+    saveHash(hash);
+    return true;
+}
+
+function saveHash(hash) {
+    last.hash = hash;
     window.location.hash = hash;
 }
 
-function load() {
+function loadAsync() {
     let hash = getCurrentHash();
     if (!hash)
         return null;
 
-    lastHash = hash;
+    last.hash = hash;
+    if (hash.startsWith('gist:'))
+        return loadFromGistAsync(hash);
+
     if (!hash.startsWith('v2:'))
         return legacyLoadFrom(hash);
 
@@ -56,15 +86,16 @@ function load() {
             result[key] = value;
             return result;
         }, {});
-        const language = languageAndTargetMapReverse[optionsPacked.l || ''];
+        const language = languageAndTargetMapReverse[optionsPacked.l || 'cs'];
+        const code = precompressor.decompress(parts[1], language);
         return {
             options: {
                 branchId: optionsPacked.b,
                 language,
-                target:   languageAndTargetMapReverse[optionsPacked.t || ''],
+                target:   languageAndTargetMapReverse[optionsPacked.t || 'cs'],
                 release:  optionsPacked.d !== '+'
             },
-            code: precompressor.decompress(parts[1], language)
+            code
         };
     }
     catch (e) {
@@ -76,7 +107,7 @@ function load() {
 function changed(callback) {
     window.addEventListener('hashchange', () => {
         const hash = getCurrentHash();
-        if (hash !== lastHash)
+        if (hash !== last.hash)
             callback();
     });
 }
@@ -88,6 +119,29 @@ function getCurrentHash() {
     return decodeURIComponent(hash.replace(/^#/, ''));
 }
 
+async function loadFromGistAsync(hash) {
+    const parts = hash.replace(/^gist:/, '').split('/');
+    const gist = await getGistAsync(parts[0]);
+    let target = getGistDefaultTarget(gist.language);
+    if (parts[1] != null)
+        target = languageAndTargetMapReverse[parts[1]];
+
+    last.gist = gist;
+    return {
+        options: {
+            branchId: parts[2],
+            language: gist.language,
+            target,
+            release:  parts[3] !== 'debug'
+        },
+        code: gist.code
+    };
+}
+
+function getGistDefaultTarget(language) {
+    return language !== languages.fsharp ? language : languages.csharp;
+}
+
 function legacyLoadFrom(hash) {
     const match = /(?:b:([^/]+)\/)?(?:f:([^/]+)\/)?(.+)/.exec(hash);
     if (match === null)
@@ -97,8 +151,8 @@ function legacyLoadFrom(hash) {
     const result = {
         options: {
             branchId: match[1],
-            language: languageAndTargetMapReverse[flags[1] || ''],
-            target: targetMapReverseV1[flags[2] || ''],
+            language: languageAndTargetMapReverse[flags[1] || 'cs'],
+            target: targetMapReverseV1[flags[2] || '>cs'],
             release: flags[3] === 'r'
         }
     };
@@ -109,12 +163,11 @@ function legacyLoadFrom(hash) {
     catch (e) {
         result.code = '';
     }
-
     return result;
 }
 
 export default {
     save,
-    load,
+    loadAsync,
     changed
 };

@@ -72,7 +72,7 @@ async function createAppAsync() {
         },
         lastResultOfType: { code: null, ast: null }
     });
-    state.load(data);
+    await state.loadAsync(data);
     data.lastLoadedCode = data.code;
 
     const branchesPromise = (async () => {
@@ -138,8 +138,8 @@ async function createAppAsync() {
         data.lastLoadedCode = data.code;
     });
 
-    url.changed(() => {
-        state.load(data);
+    url.changed(async () => {
+        await state.loadAsync(data);
         data.lastLoadedCode = data.code;
     });
 })();

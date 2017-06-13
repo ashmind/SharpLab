@@ -8,8 +8,8 @@ export default {
         url.save(state.code, state.options);
     },
 
-    load: state => {
-        const fromUrl = url.load() || {};
+    loadAsync: async state => {
+        const fromUrl = (await url.loadAsync()) || {};
         const lastUsedOptions = lastUsed.loadOptions();
 
         const options = fromUrl.options || lastUsedOptions || {};

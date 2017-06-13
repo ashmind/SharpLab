@@ -18,7 +18,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
     public class FSharpAstTarget : IAstTarget {
         private delegate void SerializeChildAction<T>(T item, IFastJsonWriter writer, string parentPropertyName, ref bool childrenStarted);
         private delegate void SerializeChildrenAction(object parent, IFastJsonWriter writer, ref bool childrenStarted);
-        
+
         private static readonly ConcurrentDictionary<Type, Lazy<SerializeChildrenAction>> ChildrenSerializers =
             new ConcurrentDictionary<Type, Lazy<SerializeChildrenAction>>();
         private static readonly Lazy<IReadOnlyDictionary<Type, Func<object, string>>> TagNameGetters =
