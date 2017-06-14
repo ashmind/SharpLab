@@ -124,7 +124,8 @@
         }
 
         for (var key in grammar) {
-          if (stream.match(grammar[key])) {
+          if (stream.match(grammar[key], false)) {
+            stream.match(/\S+/);
             return key;
           }
         }

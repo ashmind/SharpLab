@@ -5,6 +5,8 @@ import 'codemirror/mode/clike/clike';
 import 'codemirror/mode/vb/vb';
 import '../codemirror/mode-cil.js';
 import '../codemirror/mode-asm.js';
+import '../codemirror/addon-infotip.js';
+import '../codemirror/addon-cil-infotip.js';
 
 Vue.component('app-mirrorsharp-readonly', {
     props: {
@@ -25,7 +27,8 @@ Vue.component('app-mirrorsharp-readonly', {
             const options = {
                 readOnly: true,
                 indentUnit: 4,
-                mode: modeMap[this.language]
+                mode: modeMap[this.language],
+                infotip: {}
             };
             const cm = CodeMirror.fromTextArea(textarea, options);
             this.cm = cm;

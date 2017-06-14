@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Threading;
 using ICSharpCode.Decompiler.Disassembler;
 using Mono.Cecil;
@@ -15,7 +12,7 @@ namespace SharpLab.Server.Decompilation {
             var output = new CustomizableIndentPlainTextOutput(codeWriter) {
                 IndentationString = "    "
             };
-            var disassembler = new ReflectionDisassembler(new ILCommentingTextOutput(output, 30), false, new CancellationToken());
+            var disassembler = new ReflectionDisassembler(output, false, CancellationToken.None);
             disassembler.WriteModuleContents(assembly.MainModule);
         }
 
