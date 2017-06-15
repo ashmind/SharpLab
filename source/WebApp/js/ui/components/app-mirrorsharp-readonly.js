@@ -36,6 +36,10 @@ Vue.component('app-mirrorsharp-readonly', {
             const wrapper = cm.getWrapperElement();
             wrapper.classList.add('mirrorsharp-theme');
 
+            const codeElement = wrapper.getElementsByClassName('CodeMirror-code')[0];
+            if (codeElement && codeElement.contentEditable) // HACK, mobile only
+                codeElement.contentEditable = false;
+
             this.$watch('language', value => {
                 cm.setOption('mode', modeMap[value]);
             });
