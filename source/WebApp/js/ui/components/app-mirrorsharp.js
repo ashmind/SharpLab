@@ -25,7 +25,7 @@ Vue.component('app-mirrorsharp', {
             if (this.serverOptions)
                 instance.sendServerOptions(this.serverOptions);
 
-            this.$watch('initialText', v => instance.getCodeMirror().setValue(v));
+            this.$watch('initialText', v => instance.setText(v));
             this.$watch('serverOptions', o => instance.sendServerOptions(o), { deep: true });
             this.$watch('serviceUrl', u => {
                 instance.destroy({ keepCodeMirror: true });
