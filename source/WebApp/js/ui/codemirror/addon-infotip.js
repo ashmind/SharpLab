@@ -21,13 +21,24 @@
     };
 
     return {
-      show: function(content, x, y) {
-        if (!this.active) {
+      show: function(content, left, top, altBottom) {
+        if (!this.active)
           ensureElement();
-          element.removeAttribute("hidden");
-        }
+
         element.innerHTML = content;
-        element.style.transform = "translate(" + x + "px, " + y + "px)";
+        element.style.transform = `translate(${left}px, ${top}px)`;
+        if (!this.active) {
+          element.removeAttribute("hidden");
+          // Note: we have to show it *before* we check for a better position
+          // othervise we can't calculate the size
+        }
+
+        const rect = element.getBoundingClientRect();
+        const betterLeft = (rect.right <= window.innerWidth) ? left : (left - (rect.right - window.innerWidth));
+        const betterTop = (rect.bottom <= window.innerHeight) ? top : (altBottom - rect.height);
+        if (betterLeft !== left || betterTop !== top)
+          element.style.transform = `translate(${betterLeft}px, ${betterTop}px)`;
+
         this.active = true;
         this.content = content;
       },
@@ -99,7 +110,7 @@
     if (tooltip.active && content === tooltip.content)
       return;
     const tokenStart = cm.cursorCoords(CodeMirror.Pos(coords.line, token.start));
-    tooltip.show(content, tokenStart.left, tokenStart.bottom);
+    tooltip.show(content, tokenStart.left, tokenStart.bottom, tokenStart.top);
   }
 
   CodeMirror.defineOption("infotip", null, function(cm, options, old) {
