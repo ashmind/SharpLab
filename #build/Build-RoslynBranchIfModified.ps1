@@ -30,7 +30,6 @@ Write-Output "Resetting '$branchName'..."
 
 Invoke-Git $sourceRoot checkout $branchName --force
 Invoke-Git $sourceRoot reset --hard origin/$branchName
-#Invoke-Git $sourceRoot clean --force
 if (Test-Path "$sourceRoot\Binaries") {
     Remove-Item "$sourceRoot\Binaries" -Recurse -Force
 }
@@ -53,16 +52,21 @@ function Build-Project(
     "  $projectPath $msbuildArgs" | Out-Default
 
     $projectPath = "$sourceRoot\$projectPath"
-    "    dotnet restore" | Out-Default
-    dotnet restore "$projectPath" >> "$buildLogPath"
-    "    dotnet build" | Out-Default
-    Invoke-Expression ("dotnet build `"$projectPath`" $msbuildArgs >> `"$buildLogPath`"")
+    "    nuget restore" | Out-Default
+    nuget restore "$projectPath" >> "$buildLogPath"
+    if ($LastExitCode -ne 0) {
+        throw New-Object BranchBuildException("Build failed, see $buildLogPath", $buildLogPath)
+    }
+    
+    $msbuild = $env:MSBUILD_PATH
+    "    msbuild ($msbuild)" | Out-Default
+    Invoke-Expression ("&`"$msbuild`" `"$projectPath`" $msbuildArgs >> `"$buildLogPath`"")
     if ($LastExitCode -ne 0) {
         throw New-Object BranchBuildException("Build failed, see $buildLogPath", $buildLogPath)
     }
 }
 
-$standardArgs = "/p:RestorePackages=false /p:Configuration=Debug /p:DelaySign=false /p:SignAssembly=false /p:NeedsFakeSign=false /p:SolutionDir=`"$sourceRoot\Src`""
+$standardArgs = "/nodeReuse:false /m /p:RestorePackages=false /p:Configuration=Debug /p:DelaySign=false /p:SignAssembly=false /p:NeedsFakeSign=false /p:SolutionDir=`"$sourceRoot\Src`""
 Build-Project "Src\Compilers\Core\Portable\CodeAnalysis.csproj" $standardArgs
 Build-Project "Src\Compilers\CSharp\Portable\CSharpCodeAnalysis.csproj" $standardArgs
 Build-Project "src\Features\CSharp\Portable\CSharpFeatures.csproj" $standardArgs
