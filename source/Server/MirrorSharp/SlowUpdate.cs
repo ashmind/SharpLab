@@ -71,7 +71,7 @@ namespace SharpLab.Server.MirrorSharp {
 
             if (session.GetTargetName() == AstTargetName) {
                 var astTarget = _astTargets.GetValueOrDefault(session.LanguageName);
-                astTarget.SerializeAst(result, writer);
+                astTarget.SerializeAst(result, writer, session);
                 return;
             }
 

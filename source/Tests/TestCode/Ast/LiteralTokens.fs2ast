@@ -14,20 +14,24 @@ b"
       {
         "kind": "Ast.SynModuleOrNamespace",
         "type": "node",
+        "range": "0-14",
         "children": [
           {
             "type": "token",
             "kind": "Ast.Ident",
             "property": "longId",
-            "value": "_"
+            "value": "_",
+            "range": "0-0"
           },
           {
             "kind": "Ast.SynModuleDecl.DoExpr",
             "type": "node",
+            "range": "0-1",
             "children": [
               {
                 "kind": "Ast.SynExpr.Const",
                 "type": "node",
+                "range": "0-1",
                 "children": [
                   {
                     "kind": "Ast.SynConst.Int32",
@@ -42,10 +46,12 @@ b"
           {
             "kind": "Ast.SynModuleDecl.DoExpr",
             "type": "node",
+            "range": "3-6",
             "children": [
               {
                 "kind": "Ast.SynExpr.Const",
                 "type": "node",
+                "range": "3-6",
                 "children": [
                   {
                     "kind": "Ast.SynConst.Char",
@@ -60,10 +66,12 @@ b"
           {
             "kind": "Ast.SynModuleDecl.DoExpr",
             "type": "node",
+            "range": "8-14",
             "children": [
               {
                 "kind": "Ast.SynExpr.Const",
                 "type": "node",
+                "range": "8-14",
                 "children": [
                   {
                     "kind": "Ast.SynConst.String",

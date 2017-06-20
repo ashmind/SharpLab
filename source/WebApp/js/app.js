@@ -57,8 +57,7 @@ function applyAstHover(item) {
         this.highlightedCodeRange = null;
         return;
     }
-
-    const [start, end] = item.range.split(':');
+    const [start, end] = item.range.split('-');
     this.highlightedCodeRange = { start, end };
 }
 

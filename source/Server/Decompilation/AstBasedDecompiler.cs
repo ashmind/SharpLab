@@ -15,7 +15,7 @@ namespace SharpLab.Server.Decompilation {
     public abstract class AstBasedDecompiler : IDecompiler {
         private static readonly ConcurrentDictionary<string, AssemblyDefinition> AssemblyCache = new ConcurrentDictionary<string, AssemblyDefinition>();
 
-        public void Decompile(Stream assemblyStream, TextWriter resultWriter) {
+        public void Decompile(Stream assemblyStream, TextWriter codeWriter) {
             // ReSharper disable once AgentHeisenbug.CallToNonThreadSafeStaticMethodInThreadSafeType
             var module = ModuleDefinition.ReadModule(assemblyStream);
             ((BaseAssemblyResolver)module.AssemblyResolver).ResolveFailure += (_, name) => AssemblyCache.GetOrAdd(name.FullName, fullName => {
@@ -39,7 +39,7 @@ namespace SharpLab.Server.Decompilation {
             RunTransforms(ast, context);
 
             // I cannot use GenerateCode as it re-runs all the transforms
-            WriteResult(resultWriter, ast.SyntaxTree, context);
+            WriteResult(codeWriter, ast.SyntaxTree, context);
         }
 
         protected abstract void WriteResult(TextWriter writer, AstNode root, DecompilerContext context);

@@ -13,19 +13,23 @@ using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Compiler;
 using MirrorSharp.Advanced;
 using MirrorSharp.FSharp.Advanced;
+using SharpLab.Server.Decompilation.Internal;
 
 namespace SharpLab.Server.Decompilation.AstOnly {
     public class FSharpAstTarget : IAstTarget {
-        private delegate void SerializeChildAction<T>(T item, IFastJsonWriter writer, string parentPropertyName, ref bool childrenStarted);
-        private delegate void SerializeChildrenAction(object parent, IFastJsonWriter writer, ref bool childrenStarted);
+        private delegate void SerializeChildAction<T>(T item, IFastJsonWriter writer, string parentPropertyName, ref bool childrenStarted, IFSharpSession session);
+        private delegate void SerializeChildrenAction(object parent, IFastJsonWriter writer, ref bool childrenStarted, IFSharpSession session);
+        private delegate Range.range GetRangeFunc(object target);
 
         private static readonly ConcurrentDictionary<Type, Lazy<SerializeChildrenAction>> ChildrenSerializers =
             new ConcurrentDictionary<Type, Lazy<SerializeChildrenAction>>();
+        private static readonly ConcurrentDictionary<Type, Lazy<GetRangeFunc>> RangeGetters =
+            new ConcurrentDictionary<Type, Lazy<GetRangeFunc>>();
         private static readonly Lazy<IReadOnlyDictionary<Type, Func<object, string>>> TagNameGetters =
             new Lazy<IReadOnlyDictionary<Type, Func<object, string>>>(CompileTagNameGetters, LazyThreadSafetyMode.ExecutionAndPublication);
         private static readonly Lazy<IReadOnlyDictionary<Type, Func<Ast.SynConst, string>>> ConstValueGetters =
             new Lazy<IReadOnlyDictionary<Type, Func<Ast.SynConst, string>>>(CompileConstValueGetters, LazyThreadSafetyMode.ExecutionAndPublication);
-        private static readonly Lazy<IReadOnlyDictionary<Type, string>> AstTypeNames = 
+        private static readonly Lazy<IReadOnlyDictionary<Type, string>> AstTypeNames =
             new Lazy<IReadOnlyDictionary<Type, string>>(CollectAstTypeNames, LazyThreadSafetyMode.ExecutionAndPublication);
 
         private static class Methods {
@@ -56,15 +60,15 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             return Task.FromResult((object)(parseTree as Ast.ParsedInput.ImplFile));
         }
 
-        public void SerializeAst(object ast, IFastJsonWriter writer) {
+        public void SerializeAst(object ast, IFastJsonWriter writer, IWorkSession session) {
             var root = ((Ast.ParsedInput.ImplFile)ast).Item;
             writer.WriteStartArray();
             var childrenStarted = true;
-            SerializeNode(root, writer, null, ref childrenStarted);
+            SerializeNode(root, writer, null, ref childrenStarted, session.FSharp());
             writer.WriteEndArray();
         }
 
-        private static void SerializeNode(object node, IFastJsonWriter writer, [CanBeNull] string parentPropertyName, ref bool parentChildrenStarted) {
+        private static void SerializeNode(object node, IFastJsonWriter writer, [CanBeNull] string parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
             EnsureChildrenStarted(ref parentChildrenStarted, writer);
             writer.WriteStartObject();
             writer.WriteProperty("kind", AstTypeNames.Value[node.GetType()]);
@@ -74,15 +78,19 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             if (node is Ast.SynConst @const) {
                 writer.WriteProperty("type", "token");
                 if (@const is Ast.SynConst.String @string) {
-                    writer.WriteProperty("value", "\"" + @string.text + "\"");
+                    writer.WritePropertyName("value");
+                    writer.WriteValueFromParts("\"", @string.text, "\"");
                 }
                 else if (@const is Ast.SynConst.Char @char) {
-                    writer.WriteProperty("value", "'" + @char.Item + "'");
+                    writer.WritePropertyName("value");
+                    writer.WriteValueFromParts("'", @char.Item, "'");
                 }
                 else {
                     var getter = ConstValueGetters.Value.GetValueOrDefault(@const.GetType());
-                    if (getter != null)
-                        writer.WriteProperty("value", getter(@const));
+                    if (getter != null) {
+                        writer.WritePropertyName("value");
+                        writer.WriteValue(getter(@const));
+                    }
                 }
             }
             else {
@@ -91,20 +99,23 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 if (tagName != null)
                     writer.WriteProperty("value", tagName);
             }
+            var rangeGetter = GetRangeGetter(node.GetType());
+            if (rangeGetter != null)
+                SerializeRangeProperty(rangeGetter(node), writer, session);
 
             var childrenStarted = false;
-            GetChildrenSerializer(node.GetType()).Invoke(node, writer, ref childrenStarted);
+            GetChildrenSerializer(node.GetType()).Invoke(node, writer, ref childrenStarted, session);
             EnsureChildrenEnded(childrenStarted, writer);
             writer.WriteEndObject();
         }
 
-        private static void SerializeList<T>(FSharpList<T> list, IFastJsonWriter writer, [CanBeNull] string parentPropertyName, ref bool parentChildrenStarted) {
+        private static void SerializeList<T>(FSharpList<T> list, IFastJsonWriter writer, [CanBeNull] string parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
             foreach (var item in list) {
-                SerializeNode(item, writer, null /* UI does not support list property names at the moment */, ref parentChildrenStarted);
+                SerializeNode(item, writer, null /* UI does not support list property names at the moment */, ref parentChildrenStarted, session);
             }
         }
 
-        private static void SerializeIdent(Ast.Ident ident, IFastJsonWriter writer, [CanBeNull] string parentPropertyName, ref bool parentChildrenStarted) {
+        private static void SerializeIdent(Ast.Ident ident, IFastJsonWriter writer, [CanBeNull] string parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
             EnsureChildrenStarted(ref parentChildrenStarted, writer);
             writer.WriteStartObject();
             writer.WriteProperty("type", "token");
@@ -112,16 +123,17 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             if (parentPropertyName != null)
                 writer.WriteProperty("property", parentPropertyName);
             writer.WriteProperty("value", ident.idText);
+            SerializeRangeProperty(ident.idRange, writer, session);
             writer.WriteEndObject();
         }
 
-        private static void SerializeIdentList(FSharpList<Ast.Ident> list, IFastJsonWriter writer, [CanBeNull]  string parentPropertyName, ref bool parentChildrenStarted) {
+        private static void SerializeIdentList(FSharpList<Ast.Ident> list, IFastJsonWriter writer, [CanBeNull]  string parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
             foreach (var ident in list) {
-                SerializeIdent(ident, writer, parentPropertyName, ref parentChildrenStarted);
+                SerializeIdent(ident, writer, parentPropertyName, ref parentChildrenStarted, session);
             }
         }
 
-        private static void SerializeEnum<TEnum>(TEnum value, IFastJsonWriter writer, [CanBeNull] string parentPropertyName, ref bool parentChildrenStarted)
+        private static void SerializeEnum<TEnum>(TEnum value, IFastJsonWriter writer, [CanBeNull] string parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session)
             where TEnum: struct, IFormattable
         {
             EnsureChildrenStarted(ref parentChildrenStarted, writer);
@@ -137,6 +149,13 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             }
         }
 
+        private static void SerializeRangeProperty(Range.range range, IFastJsonWriter writer, IFSharpSession session) {
+            writer.WritePropertyName("range");
+            var startOffset = session.ConvertToOffset(range.StartLine, range.StartColumn);
+            var endOffset = session.ConvertToOffset(range.EndLine, range.EndColumn);
+            writer.WriteValueFromParts(startOffset, '-', endOffset);
+        }
+
         private static void EnsureChildrenStarted(ref bool childrenStarted, IFastJsonWriter writer) {
             if (childrenStarted)
                 return;
@@ -149,7 +168,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 return;
             writer.WriteEndArray();
         }
-
+        
         private static SerializeChildrenAction GetChildrenSerializer(Type type) {
             return ChildrenSerializers.GetOrAdd(
                 type,
@@ -161,6 +180,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             var nodeAsObject = Expression.Parameter(typeof(object));
             var writer = Expression.Parameter(typeof(IFastJsonWriter));
             var refChildrenStarted = Expression.Parameter(typeof(bool).MakeByRefType());
+            var session = Expression.Parameter(typeof(IFSharpSession));
 
             var node = Expression.Variable(type);
             var body = new List<Expression> {
@@ -178,12 +198,12 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 var propertyName = property.Name;
                 if (Regex.IsMatch(propertyName, @"^Item\d*$"))
                     propertyName = null;
-                body.Add(Expression.Call(method, Expression.Property(node, property), writer, Expression.Constant(propertyName, typeof(string)), refChildrenStarted));
+                body.Add(Expression.Call(method, Expression.Property(node, property), writer, Expression.Constant(propertyName, typeof(string)), refChildrenStarted, session));
             }
 
             return Expression.Lambda<SerializeChildrenAction>(
                 Expression.Block(new[] {node}, body),
-                nodeAsObject, writer, refChildrenStarted
+                nodeAsObject, writer, refChildrenStarted, session
             ).Compile();
         }
 
@@ -208,6 +228,24 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 return Methods.SerializeEnum.MakeGenericMethod(propertyType);
 
             return Methods.SerializeNode;
+        }
+
+        private static GetRangeFunc GetRangeGetter(Type type) {
+            return RangeGetters.GetOrAdd(
+                type,
+                t => new Lazy<GetRangeFunc>(() => CompileRangeGetter(t), LazyThreadSafetyMode.ExecutionAndPublication)
+            ).Value;
+        }
+
+        private static GetRangeFunc CompileRangeGetter(Type type) {
+            var rangeProperty = type.GetProperty("Range");
+            if (rangeProperty == null)
+                return null;
+
+            var nodeAsObject = Expression.Parameter(typeof(object));
+            var body = Expression.Property(Expression.Convert(nodeAsObject, type), rangeProperty);
+
+            return Expression.Lambda<GetRangeFunc>(body, new[] { nodeAsObject }).Compile();
         }
 
         private static bool ShouldSkipNodeProperty(Type type, PropertyInfo property) {

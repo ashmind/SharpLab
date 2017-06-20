@@ -13,8 +13,8 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             var document = session.Roslyn.Project.Documents.Single();
             return await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
         }
-        
-        public void SerializeAst(object ast, IFastJsonWriter writer) {
+
+        public void SerializeAst(object ast, IFastJsonWriter writer, IWorkSession session) {
             writer.WriteStartArray();
             SerializeNode((SyntaxNode)ast, writer);
             writer.WriteEndArray();
@@ -90,11 +90,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
 
         private void SerializeSpanProperty(TextSpan span, IFastJsonWriter writer) {
             writer.WritePropertyName("range");
-            using (var stringWriter = writer.OpenString()) {
-                stringWriter.Write(span.Start);
-                stringWriter.Write(":");
-                stringWriter.Write(span.End);
-            }
+            writer.WriteValueFromParts(span.Start, '-', span.End);
         }
 
         public IReadOnlyCollection<string> SupportedLanguageNames { get; } = new[] {

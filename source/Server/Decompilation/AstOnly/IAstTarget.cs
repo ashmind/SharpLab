@@ -7,7 +7,7 @@ using MirrorSharp.Advanced;
 namespace SharpLab.Server.Decompilation.AstOnly {
     public interface IAstTarget {
         [NotNull, ItemCanBeNull] Task<object> GetAstAsync([NotNull] IWorkSession session, CancellationToken cancellationToken);
-        void SerializeAst([NotNull] object ast, [NotNull] IFastJsonWriter writer);
+        void SerializeAst([NotNull] object ast, [NotNull] IFastJsonWriter writer, [NotNull] IWorkSession session);
 
         [NotNull, ItemNotNull] IReadOnlyCollection<string> SupportedLanguageNames { get; }
     }
