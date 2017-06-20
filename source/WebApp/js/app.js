@@ -52,6 +52,16 @@ function getServiceUrl(branch) {
     return `${httpRoot.replace(/^http/, 'ws')}/mirrorsharp`;
 }
 
+function applyAstHover(item) {
+    if (!item || !item.range) {
+        this.highlightedCodeRange = null;
+        return;
+    }
+
+    const [start, end] = item.range.split(':');
+    this.highlightedCodeRange = { start, end };
+}
+
 async function createAppAsync() {
     const data = Object.assign({
         languages,
@@ -70,7 +80,9 @@ async function createAppAsync() {
             errors: [],
             warnings: []
         },
-        lastResultOfType: { code: null, ast: null }
+        lastResultOfType: { code: null, ast: null },
+
+        highlightedCodeRange: null
     });
     await state.loadAsync(data);
     data.lastLoadedCode = data.code;
@@ -114,7 +126,7 @@ async function createAppAsync() {
                 return { name: 'default', color: '#4684ee' };
             }
         },
-        methods: { applyUpdateResult, applyServerError, applyConnectionChange }
+        methods: { applyUpdateResult, applyServerError, applyConnectionChange, applyAstHover }
     };
 }
 

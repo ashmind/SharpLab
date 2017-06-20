@@ -4,9 +4,10 @@ import 'codemirror/mode/mllike/mllike';
 
 Vue.component('app-mirrorsharp', {
     props: {
-        initialText:     String,
-        serverOptions:   Object,
-        serviceUrl:      String
+        initialText:      String,
+        serverOptions:    Object,
+        serviceUrl:       String,
+        highlightedRange: Object
     },
     mounted: function() {
         Vue.nextTick(() => {
@@ -40,6 +41,21 @@ Vue.component('app-mirrorsharp', {
                 instance = mirrorsharp(textarea, options);
                 if (this.serverOptions)
                     instance.sendServerOptions(this.serverOptions);
+            });
+
+            let currentMarker = null;
+            this.$watch('highlightedRange', range => {
+                const cm = instance.getCodeMirror();
+                if (currentMarker) {
+                    currentMarker.clear();
+                    currentMarker = null;
+                }
+                if (!range)
+                    return;
+
+                const from = cm.posFromIndex(range.start);
+                const to = cm.posFromIndex(range.end);
+                currentMarker = cm.markText(from, to, { className: 'highlighted' });
             });
         });
     },

@@ -51,6 +51,7 @@
             <app-mirrorsharp v-bind:initial-text="lastLoadedCode"
                              v-bind:service-url="serviceUrl"
                              v-bind:server-options="serverOptions"
+                             v-bind:highlighted-range="highlightedCodeRange"
                              v-on:text-change="code = arguments[0]()"
                              v-on:slow-update-result="applyUpdateResult"
                              v-on:server-error="applyServerError"
@@ -106,7 +107,8 @@
             <app-ast-view class="ast"
                           v-if="lastResultOfType.ast"
                           v-show="result.type === 'ast'"
-                          v-bind:roots="lastResultOfType.ast.value"></app-ast-view>
+                          v-bind:roots="lastResultOfType.ast.value"
+                          v-on:item-hover="applyAstHover"></app-ast-view>
           </div>
         </section>
 
@@ -144,23 +146,18 @@
       Built by Andrey Shchekin (<a href="http://twitter.com/ashmind">@ashmind</a>). See <a href="http://github.com/ashmind/SharpLab">SharpLab</a> on GitHub.
     </footer>
 
-    <script type="text/x-template" id="app-ast-view">
-      <ol>
-        <li v-for="(item, index) in roots" class="collapsed" v-bind:class="{ leaf: !item.children }">
-          <span v-if="typeof item === 'string'" class="ast-item-wrap ast-item-value">
-            <span class="ast-item-type"></span>
-            {{renderValue(item, 'value')}}
-          </span>
-          <span v-else v-bind:class="'ast-item-wrap ast-item-' + item.type">
-            <button v-if="item.children"></button>
-            <span class="ast-item-type" v-bind:title="item.type"></span>
-            <span class="ast-item-property" v-if="item.property">{{item.property}}:</span>
-            <span v-if="item.value !== undefined" class="ast-inline-value">{{renderValue(item.value, item.type)}}</span>
-            <span class="ast-item-kind">{{item.kind}}</span>
-          </span>
-          <app-ast-view v-if="item.children" v-bind:roots="item.children"></app-ast-view>
-        </li>
-      </ol>
+    <script type="text/x-template" id="app-ast-view-item">
+      <span v-if="typeof item === 'string'" class="ast-item-wrap ast-item-value">
+        <span class="ast-item-type"></span>
+        {{renderValue(item, 'value')}}
+      </span>
+      <span v-else v-bind:class="'ast-item-wrap ast-item-' + item.type">
+        <button v-if="item.children"></button>
+        <span class="ast-item-type" v-bind:title="item.type"></span>
+        <span class="ast-item-property" v-if="item.property">{{item.property}}:</span>
+        <span v-if="item.value !== undefined" class="ast-inline-value">{{renderValue(item.value, item.type)}}</span>
+        <span class="ast-item-kind">{{item.kind}}</span>
+      </span>
     </script>
 
     <!-- build:js -->

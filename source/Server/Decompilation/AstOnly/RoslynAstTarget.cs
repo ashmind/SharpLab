@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 using MirrorSharp.Advanced;
 using SharpLab.Server.Decompilation.Internal;
 
@@ -26,6 +27,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             var parentPropertyName = specialParentPropertyName ?? RoslynSyntaxHelper.GetParentPropertyName(node);
             if (parentPropertyName != null)
                 writer.WriteProperty("property", parentPropertyName);
+            SerializeSpanProperty(node.FullSpan, writer);
             writer.WritePropertyStartArray("children");
             foreach (var child in node.ChildNodesAndTokens()) {
                 if (child.IsNode) {
@@ -47,12 +49,18 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             if (parentPropertyName != null)
                 writer.WriteProperty("property", parentPropertyName);
 
+            SerializeSpanProperty(token.FullSpan, writer);
+
             if (token.HasLeadingTrivia || token.HasTrailingTrivia) {
                 writer.WritePropertyStartArray("children");
                 foreach (var trivia in token.LeadingTrivia) {
                     SerializeTrivia(trivia, writer);
                 }
-                writer.WriteValue(token.ToString());
+                writer.WriteStartObject();
+                writer.WriteProperty("type", "value");
+                writer.WriteProperty("value", token.ValueText);
+                SerializeSpanProperty(token.Span, writer);
+                writer.WriteEndObject();
                 foreach (var trivia in token.TrailingTrivia) {
                     SerializeTrivia(trivia, writer);
                 }
@@ -68,6 +76,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             writer.WriteStartObject();
             writer.WriteProperty("type", "trivia");
             writer.WriteProperty("kind", RoslynSyntaxHelper.GetKindName(trivia.RawKind));
+            SerializeSpanProperty(trivia.FullSpan, writer);
             if (trivia.HasStructure) {
                 writer.WritePropertyStartArray("children");
                 SerializeNode(trivia.GetStructure(), writer, "Structure");
@@ -77,6 +86,15 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 writer.WriteProperty("value", trivia.ToString());
             }
             writer.WriteEndObject();
+        }
+
+        private void SerializeSpanProperty(TextSpan span, IFastJsonWriter writer) {
+            writer.WritePropertyName("range");
+            using (var stringWriter = writer.OpenString()) {
+                stringWriter.Write(span.Start);
+                stringWriter.Write(":");
+                stringWriter.Write(span.End);
+            }
         }
 
         public IReadOnlyCollection<string> SupportedLanguageNames { get; } = new[] {
