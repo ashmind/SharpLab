@@ -42,7 +42,7 @@ namespace SharpLab.Server.Decompilation {
             WriteResult(codeWriter, ast.SyntaxTree, context);
         }
 
-        protected abstract void WriteResult(TextWriter writer, AstNode root, DecompilerContext context);
+        protected abstract void WriteResult(TextWriter writer, AstNode ast, DecompilerContext context);
 
         private void RunTransforms(AstBuilder ast, DecompilerContext context) {
             var transforms = TransformationPipeline.CreatePipeline(context).ToList();

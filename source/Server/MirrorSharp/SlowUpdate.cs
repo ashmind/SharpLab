@@ -47,19 +47,23 @@ namespace SharpLab.Server.MirrorSharp {
             if (diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error))
                 return null;
 
-            var decompiler = _decompilers.GetValueOrDefault(targetName);
-            if (decompiler == null)
+            if (!_decompilers.ContainsKey(targetName))
                 throw new NotSupportedException($"Target '{targetName}' is not (yet?) supported by this branch.");
 
-            using (var stream = _memoryStreamManager.GetStream()) {
-                if (!await _compiler.TryCompileToStreamAsync(stream, session, diagnostics, cancellationToken).ConfigureAwait(false))
+            MemoryStream stream = null;
+            try {
+                stream = _memoryStreamManager.GetStream();
+                if (!await _compiler.TryCompileToStreamAsync(stream, session, diagnostics, cancellationToken).ConfigureAwait(false)) {
+                    stream.Dispose();
                     return null;
-
+                }
                 stream.Seek(0, SeekOrigin.Begin);
-
-                var resultWriter = new StringWriter();
-                decompiler.Decompile(stream, resultWriter);
-                return resultWriter.ToString();
+                // it's fine not to Dispose() here -- MirrorSharp will dispose it after calling WriteResult()
+                return stream;
+            }
+            catch {
+                stream?.Dispose();
+                throw;
             }
         }
 
@@ -69,13 +73,18 @@ namespace SharpLab.Server.MirrorSharp {
                 return;
             }
 
+            var targetName = session.GetTargetName();
             if (session.GetTargetName() == AstTargetName) {
                 var astTarget = _astTargets.GetValueOrDefault(session.LanguageName);
                 astTarget.SerializeAst(result, writer, session);
                 return;
             }
 
-            writer.WriteValue((string)result);
+            var decompiler = _decompilers[targetName];
+            using (var stream = (Stream)result)
+            using (var stringWriter = writer.OpenString()) {
+                decompiler.Decompile(stream, stringWriter);
+            }
         }
     }
 }
