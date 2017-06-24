@@ -93,11 +93,19 @@ try {
         }
 
         Write-Host "GET $url/status"
-        try {          
-            Invoke-RestMethod "$url/status"
+        $ok = $false
+        for ($try = 1; $try -le 3; $try++) {
+            try {
+                Invoke-RestMethod "$url/status"
+                $ok = $true
+                break
+            }
+            catch {
+                Write-Warning ($_.Exception.Message)
+            }
+            Start-Sleep -Seconds 2
         }
-        catch {
-            Write-Output "  [WARNING] $($_.Exception.Message)"
+        if (!$ok) {
             return
         }
 
