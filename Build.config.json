@@ -9,6 +9,11 @@
       "Name":    "ashmind",
       "Url":     "https://github.com/ashmind/roslyn.git",
       "Include": "coalesce-assignment"
+    },
+    {
+      "Name":    "alrz",
+      "Url":     "https://github.com/alrz/roslyn.git",
+      "Include": "jmp-expr"
     }
   ]
 }
