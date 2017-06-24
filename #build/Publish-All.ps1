@@ -41,13 +41,8 @@ try {
     $sitesRoot = Resolve-Path "$PSScriptRoot\..\!sites"
     Write-Output "  Sites Root:            $sitesRoot"
 
-    $ftpushExe = @(Get-Item "$sourceRoot\#packages\ftpush*\tools\ftpush.exe")
-    if ($ftpushExe.Count -gt 1) {
-        throw "Found multiple ftpush.exe: $ftpushExe"
-    }
-
-    # Temporary solution, need to convert ftpush into a proper SDK tool
-    $ftpushExe = Resolve-Path "$($env:USERPROFILE)\.nuget\packages\ftpush\0.8.0-pre-08\tools\ftpush.exe"
+    nuget install ftpush -Pre -OutputDirectory "$sourceRoot\!tools"
+    $ftpushExe = @(Get-Item "$sourceRoot\!tools\ftpush*\tools\ftpush.exe")[0].FullName
     Write-Output "  ftpush.exe:            $ftpushExe"
 
     if ($azure) {
