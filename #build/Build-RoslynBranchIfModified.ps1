@@ -21,15 +21,18 @@ $newHash = (Invoke-Git $sourceRoot log "origin/$branchName" -n 1 --pretty=format
 if (Test-Path $hashMarkerPath) {
     $oldHash = [IO.File]::ReadAllText($hashMarkerPath)
     if ($oldHash -eq $newHash) {
-        Write-Output "Branch '$branchName' is up to date."
+        Write-Output "No changes since the last build."
         return
     }
 }
+
+[IO.File]::WriteAllText($hashMarkerPathFull, $newHash)
 
 Write-Output "Resetting '$branchName'..."
 
 Invoke-Git $sourceRoot checkout $branchName --force
 Invoke-Git $sourceRoot reset --hard origin/$branchName
+#Invoke-Git $sourceRoot clean --force
 if (Test-Path "$sourceRoot\Binaries") {
     Remove-Item "$sourceRoot\Binaries" -Recurse -Force
 }
@@ -52,21 +55,16 @@ function Build-Project(
     "  $projectPath $msbuildArgs" | Out-Default
 
     $projectPath = "$sourceRoot\$projectPath"
-    "    nuget restore" | Out-Default
-    nuget restore "$projectPath" >> "$buildLogPath"
-    if ($LastExitCode -ne 0) {
-        throw New-Object BranchBuildException("Build failed, see $buildLogPath", $buildLogPath)
-    }
-    
-    $msbuild = $env:MSBUILD_PATH
-    "    msbuild ($msbuild)" | Out-Default
-    Invoke-Expression ("&`"$msbuild`" `"$projectPath`" $msbuildArgs >> `"$buildLogPath`"")
+    "    dotnet restore" | Out-Default
+    dotnet restore "$projectPath" >> "$buildLogPath"
+    "    dotnet build" | Out-Default
+    Invoke-Expression ("dotnet build `"$projectPath`" $msbuildArgs >> `"$buildLogPath`"")
     if ($LastExitCode -ne 0) {
         throw New-Object BranchBuildException("Build failed, see $buildLogPath", $buildLogPath)
     }
 }
 
-$standardArgs = "/nodeReuse:false /m /p:RestorePackages=false /p:Configuration=Debug /p:DelaySign=false /p:SignAssembly=false /p:NeedsFakeSign=false /p:SolutionDir=`"$sourceRoot\Src`""
+$standardArgs = "/p:RestorePackages=false /p:Configuration=Debug /p:DelaySign=false /p:SignAssembly=false /p:NeedsFakeSign=false /p:SolutionDir=`"$sourceRoot\Src`""
 Build-Project "Src\Compilers\Core\Portable\CodeAnalysis.csproj" $standardArgs
 Build-Project "Src\Compilers\CSharp\Portable\CSharpCodeAnalysis.csproj" $standardArgs
 Build-Project "src\Features\CSharp\Portable\CSharpFeatures.csproj" $standardArgs
@@ -83,8 +81,6 @@ robocopy "$sourceRoot\Binaries\Debug" "$artifactsRoot\Binaries\Debug" `
     /xd "$sourceRoot\Binaries\Debug\CompilerGeneratorTools" `
     /xd "runtimes" `
     /mir /np
-
-[IO.File]::WriteAllText($hashMarkerPathFull, $newHash)
 
 Write-Output "  Build completed"
 

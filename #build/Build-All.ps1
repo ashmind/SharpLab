@@ -2,8 +2,8 @@ Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue" # https://www.amido.com/powershell-win32-error-handle-invalid-0x6/
 
-# Write-Host, Write-Error and Write-Warning do not function properly in Azure
-# So this mostly uses Write-Output for now
+# This mostly uses Write-Output because it was an Azure WebJob before, and Write-Warning/etc
+# didn't work properly in WebJobs
 $BuildRoslynBranchIfModified = Resolve-Path "$PSScriptRoot\Build-RoslynBranchIfModified.ps1"
 ."$PSScriptRoot\Setup-Build.ps1"
 
@@ -35,6 +35,17 @@ function ConvertTo-Hashtable([PSCustomObject] $object) {
     $result = @{}
     $object.PSObject.Properties | % { $result[$_.Name] = $_.Value }
     return $result
+}
+
+function Write-Success($object) {
+    $saved = $Host.UI.RawUI.ForegroundColor
+    try {
+        $Host.UI.RawUI.ForegroundColor = 'Green'
+        Write-Output "SUCCESS: $object"
+    }
+    finally {
+        $Host.UI.RawUI.ForegroundColor = $saved
+    }
 }
 
 # Code ------
@@ -133,6 +144,7 @@ try {
             $siteRoot            = Ensure-ResolvedPath "$sitesRoot\$branchFsName"
             $branchArtifactsRoot = Ensure-ResolvedPath "$roslynArtifactsRoot\$branchFsName"
 
+            $branchBuildFailed = $false
             try {
                 &$BuildRoslynBranchIfModified `
                     -SourceRoot $repositorySourceRoot `
@@ -152,24 +164,6 @@ try {
                         }
                         Set-Content "$branchArtifactsRoot\BranchInfo.json" (ConvertTo-Json $branchInfo -Depth 100)
                     }
-
-                Write-Output "Copying Server\Web.config to $siteRoot\Web.config..."
-                Copy-Item "$sourceRoot\Server\Web.config" "$siteRoot\Web.config" -Force
-                
-                Write-Output "Resolving and copying assemblies..."
-                $resolverLogPath = "$branchArtifactsRoot\AssemblyResolver.log"
-                $resolverCommand = "&""$assemblyResolver""" +
-                  " --source-bin ""$sourceRoot\Server\bin\Release"" " +
-                  " --roslyn-bin ""$branchArtifactsRoot\Binaries""" +
-                  " --target ""$(Ensure-ResolvedPath $siteRoot\bin)""" +
-                  " --target-app-config ""$siteRoot\Web.config""" +
-                  " >> ""$resolverLogPath"""
-                $resolverCommand | Out-File $resolverLogPath -Encoding 'Unicode'
-                Invoke-Expression $resolverCommand
-                if ($LastExitCode -ne 0) {
-                    throw New-Object BranchBuildException("AssemblyResolver failed with code $LastExitCode, see $resolverLogPath.")
-                }
-                Write-Output "All done, looks OK."
             }
             catch {
                 $ex = $_.Exception
@@ -177,8 +171,42 @@ try {
                     throw
                 }
 
-                Write-Output "  [WARNING] $($ex.Message)"
+                $branchBuildFailed = $true
+                Write-Warning "$($ex.Message)"
                 Add-Content $failedListPath @("$branchFsName ($repositoryName)", $ex.Message, '')
+            }
+
+            $branchBinariesPath = "$branchArtifactsRoot\Binaries"
+            if (!(Test-Path $branchBinariesPath)) {
+                Write-Warning "No binaries available, skipping further steps."
+                if (!$branchBuildFailed) {
+                    Add-Content $failedListPath @("$branchFsName ($repositoryName)", "No binaries found under $branchBinariesPath.", '')
+                }
+                return;
+            }
+
+            Write-Output "Copying Server\Web.config to $siteRoot\Web.config..."
+            Copy-Item "$sourceRoot\Server\Web.config" "$siteRoot\Web.config" -Force
+
+            Write-Output "Resolving and copying assemblies..."
+            $resolverLogPath = "$branchArtifactsRoot\AssemblyResolver.log"
+            $resolverCommand = "&""$assemblyResolver""" +
+              " --source-bin ""$sourceRoot\Server\bin\Release"" " +
+              " --roslyn-bin ""$branchBinariesPath""" +
+              " --target ""$(Ensure-ResolvedPath $siteRoot\bin)""" +
+              " --target-app-config ""$siteRoot\Web.config""" +
+              " >> ""$resolverLogPath"""
+            $resolverCommand | Out-File $resolverLogPath -Encoding 'Unicode'
+            Invoke-Expression $resolverCommand
+            if ($LastExitCode -ne 0) {
+                Write-Warning "AssemblyResolver failed with code $LastExitCode, see $resolverLogPath."
+                return
+            }
+            if (!$branchBuildFailed) {
+                Write-Success "All done, looks OK."
+            }
+            else {
+                Write-Warning "Branch build failed: using previous version."
             }
         }
     }
