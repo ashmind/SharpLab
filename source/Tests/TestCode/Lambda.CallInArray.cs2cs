@@ -29,15 +29,9 @@ public class C
     [Serializable]
     private sealed class <>c
     {
-        public static readonly C.<>c <>9;
+        public static readonly C.<>c <>9 = new C.<>c();
 
         public static Func<int, int> <>9__0_0;
-
-        static <>c()
-        {
-            // Note: this type is marked as 'beforefieldinit'.
-            C.<>c.<>9 = new C.<>c();
-        }
 
         internal int <M>b__0_0(int s)
         {
@@ -48,9 +42,9 @@ public class C
     public void M()
     {
         Func<int, int> arg_1F_0;
-        if (arg_1F_0 = C.<>c.<>9__0_0 == null)
+        if ((arg_1F_0 = C.<>c.<>9__0_0) == null)
         {
-            arg_1F_0 = C.<>c.<>9__0_0 = new Func<int, int>(C.<>c.<>9.<M>b__0_0);
+            arg_1F_0 = (C.<>c.<>9__0_0 = new Func<int, int>(C.<>c.<>9.<M>b__0_0));
         }
         Func<int, int> func = arg_1F_0;
         int[] expr_26 = new int[4];

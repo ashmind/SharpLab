@@ -41,6 +41,6 @@ public class Point
 
     public int M(Point p)
     {
-        return (p != null ? new int?(p.X) : null).GetValueOrDefault();
+        return ((p != null) ? new int?(p.X) : null).GetValueOrDefault();
     }
 }

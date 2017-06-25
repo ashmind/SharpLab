@@ -39,22 +39,10 @@ namespace SharpLab.Server.Decompilation {
             var ast = new AstBuilder(context);
             ast.AddAssembly(module.Assembly);
 
-            RunTransforms(ast, context);
-
-            // I cannot use GenerateCode as it re-runs all the transforms
-            WriteResult(codeWriter, ast.SyntaxTree, context);
+            WriteResult(codeWriter, ast);
         }
 
-        protected abstract void WriteResult(TextWriter writer, AstNode ast, DecompilerContext context);
-
-        private void RunTransforms(AstBuilder ast, DecompilerContext context) {
-            var transforms = TransformationPipeline.CreatePipeline(context).ToList();
-            transforms[transforms.FindIndex(t => t is ConvertConstructorCallIntoInitializer)] = new RoslynFriendlyConvertConstructorCallIntoInitializer();
-
-            foreach (var transform in transforms) {
-                transform.Run(ast.SyntaxTree);
-            }
-        }
+        protected abstract void WriteResult(TextWriter writer, AstBuilder ast);
 
         public abstract string LanguageName { get; }
     }
