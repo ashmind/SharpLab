@@ -65,6 +65,8 @@ namespace SharpLab.Tests {
         [Theory]
         [InlineData("FSharp.EmptyType.fs2il")]
         [InlineData("FSharp.SimpleMethod.fs2cs")]
+        // https://github.com/ashmind/SharpLab/issues/119
+        [InlineData("FSharp.NotNull.fs2cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForFSharp(string resourceName) {
             var data = TestData.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);

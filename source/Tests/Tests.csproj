@@ -13,6 +13,7 @@
     <None Remove="TestCode\Ast\StructuredTrivia.cs2ast" />
     <None Remove="TestCode\Constructor.BaseCall.cs2cs" />
     <None Remove="TestCode\FSharp\EmptyType.fs2il" />
+    <None Remove="TestCode\FSharp\NotNull.fs2cs" />
     <None Remove="TestCode\FSharp\SimpleMethod.fs2cs" />
     <None Remove="TestCode\JitAsm\ArrayElement.cs2asm" />
     <None Remove="TestCode\JitAsm\AsyncRegression.cs2asm" />
@@ -42,6 +43,7 @@
     <EmbeddedResource Include="TestCode\Ast\StructuredTrivia.cs2ast" />
     <EmbeddedResource Include="TestCode\Constructor.BaseCall.cs2cs" />
     <EmbeddedResource Include="TestCode\FSharp\EmptyType.fs2il" />
+    <EmbeddedResource Include="TestCode\FSharp\NotNull.fs2cs" />
     <EmbeddedResource Include="TestCode\FSharp\SimpleMethod.fs2cs" />
     <EmbeddedResource Include="TestCode\JitAsm\GenericMethodWithAttribute.fs2asm" />
     <EmbeddedResource Include="TestCode\JitAsm\OpenGenerics.cs2asm" />
