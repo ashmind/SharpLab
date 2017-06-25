@@ -28,33 +28,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\#external\ILSpy\cecil\Mono.Cecil.csproj" />
+    <ProjectReference Include="..\#external\ILSpy\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj" />
+    <ProjectReference Include="..\#external\ILSpy\ILSpy.VB\ILSpy.VB.csproj" />
+    <ProjectReference Include="..\#external\ILSpy\NRefactory.VB\ICSharpCode.NRefactory.VB\ICSharpCode.NRefactory.VB.csproj" />
+    <ProjectReference Include="..\#external\ILSpy\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj" />
     <ProjectReference Include="..\Runtime\Runtime.csproj" />
   </ItemGroup>
   
   <ItemGroup>
-    <Reference Include="ICSharpCode.Decompiler">
-      <HintPath>..\#libraries\ICSharpCode.Decompiler.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.NRefactory">
-      <HintPath>..\#libraries\ICSharpCode.NRefactory.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.NRefactory.CSharp">
-      <HintPath>..\#libraries\ICSharpCode.NRefactory.CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.NRefactory.VB">
-      <HintPath>..\#libraries\ICSharpCode.NRefactory.VB.dll</HintPath>
-    </Reference>
-    <Reference Include="ILSpy">
-      <HintPath>..\#libraries\ILSpy.exe</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Diagnostics.Runtime">
       <HintPath>..\#libraries\Microsoft.Diagnostics.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\#libraries\Mono.Cecil.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <Import Project="FSharpCore.targets" />

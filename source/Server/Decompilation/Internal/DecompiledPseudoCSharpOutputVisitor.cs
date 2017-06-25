@@ -6,13 +6,13 @@ using ICSharpCode.NRefactory.CSharp;
 using JetBrains.Annotations;
 
 namespace SharpLab.Server.Decompilation.Internal {
-    public class DecompiledPseudoCSharpOutputVisitor : OverridableCSharpOutputVisitor {
+    public class DecompiledPseudoCSharpOutputVisitor : CSharpOutputVisitor {
         private bool _currentStatementIsNotValidCSharp = false;
 
         public DecompiledPseudoCSharpOutputVisitor(TextWriter textWriter, CSharpFormattingOptions formattingPolicy) : base(textWriter, formattingPolicy) {
         }
 
-        public DecompiledPseudoCSharpOutputVisitor(IOutputFormatter formatter, CSharpFormattingOptions formattingPolicy) : base(formatter, formattingPolicy) {
+        public DecompiledPseudoCSharpOutputVisitor(TokenWriter tokenWriter, CSharpFormattingOptions formattingPolicy) : base(tokenWriter, formattingPolicy) {
         }
 
         // fixes bug https://github.com/ashmind/SharpLab/issues/7

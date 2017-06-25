@@ -29,8 +29,7 @@
       <NpmPath Condition="'$(TR_BUILD_NPM_PATH)' != ''">"$(TR_BUILD_NPM_PATH)"</NpmPath>
       <NpmPath Condition="'$(TR_BUILD_NPM_PATH)' == ''">npm</NpmPath>
     </PropertyGroup>
-    <Exec Command="$(NpmPath) install --only=development" />
-    <Exec Command="$(NpmPath) install --only=production" />
+    <Exec Command="$(NpmPath) install" EnvironmentVariables="NODE_ENV=" />
     <Copy SourceFiles="package.json" DestinationFiles="!package.json.installed" />
   </Target>
   <ItemGroup>

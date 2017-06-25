@@ -108,7 +108,7 @@ namespace SharpLab.Server.Decompilation.Internal {
         void ITextOutput.MarkFoldEnd() {
         }
 
-        void ITextOutput.AddDebuggerMemberMapping(MemberMapping memberMapping) {
+        void ITextOutput.AddDebugSymbols(MethodDebugSymbols methodDebugSymbols) {
         }
     }
 }

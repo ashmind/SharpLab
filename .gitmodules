@@ -1,0 +1,4 @@
+[submodule "source/#external/ILSpy"]
+	path = "source/#external/ILSpy"
+	url = https://github.com/ashmind/ILSpy.git
+	branch = sharplab
