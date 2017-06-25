@@ -29,6 +29,8 @@ namespace SharpLab.Tests {
         [InlineData("Simple.cs2il")]
         [InlineData("Simple.vb2vb")]
         [InlineData("Module.vb2vb")]
+        // https://github.com/ashmind/SharpLab/issues/9
+        [InlineData("Lambda.CallInArray.cs2cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string resourceName) {
             var data = TestData.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);

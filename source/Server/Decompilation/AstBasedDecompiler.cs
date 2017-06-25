@@ -29,7 +29,9 @@ namespace SharpLab.Server.Decompilation {
                     YieldReturn = false,
                     AsyncAwait = false,
                     AutomaticProperties = false,
-                    ExpressionTrees = false
+                    ExpressionTrees = false,
+                    ArrayInitializers = false,
+                    ObjectOrCollectionInitializers = false
                 }
             };
 

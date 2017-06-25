@@ -7,14 +7,18 @@ public class C {
 	}
 }
 
-?=>
+#=>
 
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
+
 [assembly: AssemblyVersion("0.0.0.0")]
+[assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)]
 [assembly: CompilationRelaxations(8)]
 [assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -22,25 +26,46 @@ using System.Security.Permissions;
 public class C
 {
     [CompilerGenerated]
-    private static Func<int, int> CS$<>9__CachedAnonymousMethodDelegate1;
+    [Serializable]
+    private sealed class <>c
+    {
+        public static readonly C.<>c <>9;
+
+        public static Func<int, int> <>9__0_0;
+
+        static <>c()
+        {
+            // Note: this type is marked as 'beforefieldinit'.
+            C.<>c.<>9 = new C.<>c();
+        }
+
+        internal int <M>b__0_0(int s)
+        {
+            return s;
+        }
+    }
+
     public void M()
     {
-        Func<int, int> arg_1B_0;
-        if (arg_1B_0 = C.CS$<>9__CachedAnonymousMethodDelegate1 == null)
+        Func<int, int> arg_1F_0;
+        if (arg_1F_0 = C.<>c.<>9__0_0 == null)
         {
-            C.CS$<>9__CachedAnonymousMethodDelegate1 = new Func<int, int>(C.<M>b__0);
+            arg_1F_0 = C.<>c.<>9__0_0 = new Func<int, int>(C.<>c.<>9.<M>b__0_0);
         }
-        int[] array = new int[] {
-            1,
-            2,
-            3,
-            0
-        };
-        Console.WriteLine(array[3]);
+        Func<int, int> func = arg_1F_0;
+        int[] expr_26 = new int[4];
+        RuntimeHelpers.InitializeArray(expr_26, fieldof(<PrivateImplementationDetails>.7C7D749A182D008FD83D960F228CB2B1A0177992).FieldHandle);
+        expr_26[3] = func(1);
+        Console.WriteLine(expr_26[3]);
     }
-    [CompilerGenerated]
-    private static int <M>b__0(int s)
+}
+[CompilerGenerated]
+internal sealed class <PrivateImplementationDetails>
+{
+    [StructLayout(LayoutKind.Explicit, Pack = 1, Size = 16)]
+    private struct __StaticArrayInitTypeSize=16
     {
-        return s;
     }
+
+    internal static readonly <PrivateImplementationDetails>.__StaticArrayInitTypeSize=16 7C7D749A182D008FD83D960F228CB2B1A0177992 = bytearray(1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0);
 }
