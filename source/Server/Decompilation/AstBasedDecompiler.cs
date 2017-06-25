@@ -25,6 +25,7 @@ namespace SharpLab.Server.Decompilation {
 
             var context = new DecompilerContext(module) {
                 Settings = {
+                    OperatorOverloading = false,
                     AnonymousMethods = false,
                     YieldReturn = false,
                     AsyncAwait = false,

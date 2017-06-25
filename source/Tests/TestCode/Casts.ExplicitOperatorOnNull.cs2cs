@@ -1,0 +1,39 @@
+﻿public class Foo {
+    public static explicit operator uint? (Foo foo) => 1;
+}
+
+public class Bar {
+    public void Baz() {
+        var x = (uint?)((Foo)null);
+    }
+}
+
+#=>
+
+using System;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Security;
+using System.Security.Permissions;
+
+[assembly: AssemblyVersion("0.0.0.0")]
+[assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)]
+[assembly: CompilationRelaxations(8)]
+[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
+[module: UnverifiableCode]
+public class Foo
+{
+    public static uint? op_Explicit(Foo foo)
+    {
+        return new uint?(1u);
+    }
+}
+public class Bar
+{
+    public void Baz()
+    {
+        /*uint?*/Foo.op_Explicit(null);
+    }
+}

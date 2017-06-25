@@ -27,6 +27,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestCode\Casts.ExplicitOperatorOnNull.cs2cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="TestCode\Ast\EmptyType.fs2ast" />
     <EmbeddedResource Include="TestCode\Ast\LiteralTokens.fs2ast" />
     <EmbeddedResource Include="TestCode\Ast\LiteralTokens.cs2ast" />
