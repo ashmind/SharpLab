@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AshMind.Extensions;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
-using ICSharpCode.Decompiler.Ast.Transforms;
-using ICSharpCode.NRefactory.CSharp;
 using Mono.Cecil;
-using SharpLab.Server.Decompilation.Internal;
 
 namespace SharpLab.Server.Decompilation {
     public abstract class AstBasedDecompiler : IDecompiler {
@@ -24,7 +20,8 @@ namespace SharpLab.Server.Decompilation {
             });
 
             var context = new DecompilerContext(module) {
-                Settings = {
+                Settings = {                    
+                    CanInlineVariables = false,
                     OperatorOverloading = false,
                     AnonymousMethods = false,
                     YieldReturn = false,

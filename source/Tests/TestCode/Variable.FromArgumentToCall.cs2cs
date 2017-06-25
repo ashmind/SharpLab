@@ -1,8 +1,9 @@
-﻿public class C {
-    public void M(string n) {
-        switch(n) {
-            case "foo": break;
-        }
+﻿using System;
+
+public class C {
+    public void M(int argument) {
+        var newVariableForArgument = argument;
+        Console.WriteLine(newVariableForArgument);
     }
 }
 
@@ -23,11 +24,9 @@ using System.Security.Permissions;
 [module: UnverifiableCode]
 public class C
 {
-    public void M(string n)
+    public void M(int argument)
     {
-        string a = n;
-        if (!(a == "foo"))
-        {
-        }
+        int value = argument;
+        Console.WriteLine(value);
     }
 }

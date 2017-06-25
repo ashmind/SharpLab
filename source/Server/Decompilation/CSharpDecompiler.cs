@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using ICSharpCode.Decompiler;
+﻿using System.IO;
 using ICSharpCode.Decompiler.Ast;
-using ICSharpCode.NRefactory.CSharp;
 using Microsoft.CodeAnalysis;
 using SharpLab.Server.Decompilation.Internal;
 

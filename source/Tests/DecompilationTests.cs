@@ -51,6 +51,8 @@ namespace SharpLab.Tests {
         [Theory]
         // https://github.com/ashmind/SharpLab/issues/25
         [InlineData("Condition.SimpleSwitch.cs2cs")]
+        // https://github.com/ashmind/SharpLab/issues/128
+        [InlineData("Variable.FromArgumentToCall.cs2cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_InDebug(string resourceName) {
             var data = TestData.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data, OptimizationLevel.Debug);

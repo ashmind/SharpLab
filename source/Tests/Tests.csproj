@@ -29,6 +29,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestCode\Variable.FromArgumentToCall.cs2cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="TestCode\Condition.SimpleSwitch.cs2cs" />
   </ItemGroup>
 

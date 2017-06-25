@@ -44,13 +44,14 @@ public class C
         Func<int, int> arg_1F_0;
         if ((arg_1F_0 = C.<>c.<>9__0_0) == null)
         {
-            arg_1F_0 = (C.<>c.<>9__0_0 = new Func<int, int>(C.<>c.<>9.<M>b__0_0));
+            C.<>c.<>9__0_0 = (arg_1F_0 = new Func<int, int>(C.<>c.<>9.<M>b__0_0));
         }
         Func<int, int> func = arg_1F_0;
         int[] expr_26 = new int[4];
         RuntimeHelpers.InitializeArray(expr_26, fieldof(<PrivateImplementationDetails>.7C7D749A182D008FD83D960F228CB2B1A0177992).FieldHandle);
-        expr_26[3] = func(1);
-        Console.WriteLine(expr_26[3]);
+        int[] expr_31 = expr_26;
+        expr_31[3] = func(1);
+        Console.WriteLine(expr_31[3]);
     }
 }
 [CompilerGenerated]
