@@ -32,10 +32,26 @@ namespace SharpLab.Tests {
         // https://github.com/ashmind/SharpLab/issues/9
         [InlineData("Lambda.CallInArray.cs2cs")]
         // https://github.com/ashmind/SharpLab/issues/20
-        [InlineData("Casts.ExplicitOperatorOnNull.cs2cs")]
+        [InlineData("Cast.ExplicitOperatorOnNull.cs2cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string resourceName) {
             var data = TestData.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);
+
+            var result = await driver.SendSlowUpdateAsync<string>();
+            var errors = result.JoinErrors();
+
+            var decompiledText = result.ExtensionResult?.Trim();
+            _output.WriteLine(decompiledText);
+            Assert.True(errors.IsNullOrEmpty(), errors);
+            Assert.Equal(data.Expected, decompiledText);
+        }
+
+        [Theory]
+        // https://github.com/ashmind/SharpLab/issues/25
+        [InlineData("Condition.SimpleSwitch.cs2cs")]
+        public async Task SlowUpdate_ReturnsExpectedDecompiledCode_InDebug(string resourceName) {
+            var data = TestData.FromResource(resourceName);
+            var driver = await NewTestDriverAsync(data, OptimizationLevel.Debug);
 
             var result = await driver.SendSlowUpdateAsync<string>();
             var errors = result.JoinErrors();
@@ -113,11 +129,11 @@ namespace SharpLab.Tests {
             );
         }
 
-        private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestData data) {
+        private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestData data, OptimizationLevel optimizationLevel = OptimizationLevel.Release) {
             var driver = MirrorSharpTestDriver.New(MirrorSharpOptions);
             await driver.SendSetOptionsAsync(new Dictionary<string, string> {
                 {"language", data.SourceLanguageName},
-                {"optimize", nameof(OptimizationLevel.Release).ToLowerInvariant()},
+                {"optimize", optimizationLevel.ToString().ToLowerInvariant()},
                 {"x-target", data.TargetLanguageName}
             });
             driver.SetText(data.Original);

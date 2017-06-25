@@ -27,7 +27,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="TestCode\Casts.ExplicitOperatorOnNull.cs2cs" />
+    <EmbeddedResource Include="TestCode\Condition.SimpleSwitch.cs2cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="TestCode\Cast.ExplicitOperatorOnNull.cs2cs" />
   </ItemGroup>
 
   <ItemGroup>
