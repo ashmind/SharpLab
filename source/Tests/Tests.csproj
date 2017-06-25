@@ -15,6 +15,7 @@
     <None Remove="TestCode\FSharp\EmptyType.fs2il" />
     <None Remove="TestCode\FSharp\NotNull.fs2cs" />
     <None Remove="TestCode\FSharp\SimpleMethod.fs2cs" />
+    <None Remove="TestCode\Goto.TryWhile.cs2cs" />
     <None Remove="TestCode\JitAsm\ArrayElement.cs2asm" />
     <None Remove="TestCode\JitAsm\AsyncRegression.cs2asm" />
     <None Remove="TestCode\JitAsm\ConsoleWrite.cs2asm" />
@@ -45,6 +46,7 @@
     <EmbeddedResource Include="TestCode\FSharp\EmptyType.fs2il" />
     <EmbeddedResource Include="TestCode\FSharp\NotNull.fs2cs" />
     <EmbeddedResource Include="TestCode\FSharp\SimpleMethod.fs2cs" />
+    <EmbeddedResource Include="TestCode\Goto.TryWhile.cs2cs" />
     <EmbeddedResource Include="TestCode\JitAsm\GenericMethodWithAttribute.fs2asm" />
     <EmbeddedResource Include="TestCode\JitAsm\OpenGenerics.cs2asm" />
     <EmbeddedResource Include="TestCode\JitAsm\GenericMethodWithAttribute.cs2asm" />

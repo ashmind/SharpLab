@@ -33,6 +33,8 @@ namespace SharpLab.Tests {
         [InlineData("Lambda.CallInArray.cs2cs")]
         // https://github.com/ashmind/SharpLab/issues/20
         [InlineData("Cast.ExplicitOperatorOnNull.cs2cs")]
+        // https://github.com/ashmind/SharpLab/issues/123
+        [InlineData("Goto.TryWhile.cs2cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string resourceName) {
             var data = TestData.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);
