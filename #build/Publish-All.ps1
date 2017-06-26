@@ -41,7 +41,7 @@ try {
     $sitesRoot = Resolve-Path "$PSScriptRoot\..\!sites"
     Write-Output "  Sites Root:            $sitesRoot"
 
-    nuget install ftpush -Pre -OutputDirectory "$sourceRoot\!tools"
+    &"$PSScriptRoot\#tools\nuget" install ftpush -Pre -OutputDirectory "$sourceRoot\!tools"
     $ftpushExe = @(Get-Item "$sourceRoot\!tools\ftpush*\tools\ftpush.exe")[0].FullName
     Write-Output "  ftpush.exe:            $ftpushExe"
 
