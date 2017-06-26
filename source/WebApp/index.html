@@ -31,7 +31,7 @@
               <select v-model="options.language">
                 <option v-bind:value="languages.csharp">C#</option>
                 <option v-bind:value="languages.vb">Visual Basic</option>
-                <option v-bind:value="languages.fsharp">F# (Experimental)</option>
+                <option v-bind:value="languages.fsharp">F#</option>
               </select>
             </div>
             <div class="offline-only">[connection lost, reconnecting…]</div>
@@ -86,7 +86,7 @@
                 <option v-bind:value="targets.vb">Visual Basic</option>
                 <option v-bind:value="targets.il">IL</option>
                 <option v-bind:value="targets.asm">JIT Asm</option>
-                <option v-bind:value="targets.ast">Syntax Tree (Experimental)</option>
+                <option v-bind:value="targets.ast">Syntax Tree</option>
               </select>
             </div>
 
