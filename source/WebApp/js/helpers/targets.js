@@ -5,5 +5,6 @@ export default Object.freeze({
     vb:     languages.vb,
     il:     'IL',
     asm:    'JIT ASM',
-    ast:    'AST'
+    ast:    'AST',
+    run:    'Run'
 });

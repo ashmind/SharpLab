@@ -82,11 +82,16 @@
 
             <div class="select-wrapper option-target-language option">
               <select v-model="options.target">
-                <option v-bind:value="targets.csharp">C#</option>
-                <option v-bind:value="targets.vb">Visual Basic</option>
-                <option v-bind:value="targets.il">IL</option>
-                <option v-bind:value="targets.asm">JIT Asm</option>
-                <option v-bind:value="targets.ast">Syntax Tree</option>
+                <optgroup label="Decompiled">
+                  <option v-bind:value="targets.csharp">C#</option>
+                  <option v-bind:value="targets.vb">Visual Basic</option>
+                  <option v-bind:value="targets.il">IL</option>
+                  <option v-bind:value="targets.asm">JIT Asm</option>
+                </optgroup>
+                <optgroup label="Other">
+                  <option v-bind:value="targets.ast">Syntax Tree</option>
+                  <option v-bind:value="targets.run">[Run]</option>
+                </optgroup>
               </select>
             </div>
 

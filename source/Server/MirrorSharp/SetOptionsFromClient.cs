@@ -11,6 +11,10 @@ namespace SharpLab.Server.MirrorSharp {
                 return false;
 
             session.SetTargetName(value);
+            //if (value == TargetNames.Run) {
+            //    session.Roslyn.Project.
+            //}
+
             return true;
         }
     }

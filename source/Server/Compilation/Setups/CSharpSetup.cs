@@ -43,7 +43,7 @@ namespace SharpLab.Server.Compilation.Setups {
             // ReSharper disable HeapView.ObjectAllocation.Evident
 
             options.CSharp.ParseOptions = new CSharpParseOptions(MaxLanguageVersion, preprocessorSymbols: PreprocessorSymbols).WithFeatures(_features);
-            options.CSharp.CompilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: true);
+            options.CSharp.CompilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
             options.CSharp.MetadataReferences = _references;
 
             // ReSharper restore HeapView.ObjectAllocation.Evident
