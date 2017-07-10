@@ -1,0 +1,25 @@
+.CodeMirror-flow-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.CodeMirror-flow-jump {
+    fill: #b4cdce;
+    stroke: #b4cdce;
+}
+
+.CodeMirror-flow-jump.CodeMirror-flow-jump-up {
+    fill: #f7d1c5;
+    stroke: #f7d1c5;
+}
+
+.CodeMirror-flow-jump-line {
+    fill: none;
+}
+
+.CodeMirror-flow-jump-start {
+    fill: #fff;
+}

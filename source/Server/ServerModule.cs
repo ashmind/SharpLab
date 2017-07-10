@@ -10,6 +10,7 @@ using SharpLab.Server.Compilation.Setups;
 using SharpLab.Server.Decompilation;
 using SharpLab.Server.Decompilation.AstOnly;
 using SharpLab.Server.Execution;
+using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.MirrorSharp;
 
 namespace SharpLab.Server {
@@ -55,6 +56,7 @@ namespace SharpLab.Server {
             builder.RegisterType<JitAsmDecompiler>().As<IDecompiler>().SingleInstance();
 
             builder.RegisterType<Executor>().AsSelf().SingleInstance();
+            builder.RegisterType<FlowReportingRewriter>().AsSelf().SingleInstance();
 
             builder.RegisterInstance(new RecyclableMemoryStreamManager())
                    .AsSelf();

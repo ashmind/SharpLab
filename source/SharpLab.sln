@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runtime", "Runtime\Runtime.csproj", "{412F9C2E-C840-4D37-9B20-203DD06B1D98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Runtime", "Runtime\Runtime.csproj", "{412F9C2E-C840-4D37-9B20-203DD06B1D98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{AD185E40-0431-4C99-BB89-18D48C9798DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{AD185E40-0431-4C99-BB89-18D48C9798DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{D8EF5801-AA5E-43D2-A19D-568D56D23F8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{D8EF5801-AA5E-43D2-A19D-568D56D23F8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "WebApp\WebApp.csproj", "{8C5359F9-5A55-4078-AFB6-E524321DA6C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp", "WebApp\WebApp.csproj", "{8C5359F9-5A55-4078-AFB6-E524321DA6C3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "external", "external", "{298DF95B-B1E8-4E16-AF0F-C2F9CC0AEFB3}"
 EndProject
@@ -24,6 +24,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Cecil", "#external\ILSpy\cecil\Mono.Cecil.csproj", "{D68133BD-1E63-496E-9EDE-4FBDBF77B486}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ILSpy.VB", "#external\ILSpy\ILSpy.VB\ILSpy.VB.csproj", "{3F388596-6160-4BD4-9612-29F01BC00B44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Cecil.Pdb", "#external\ILSpy\cecil\symbols\pdb\Mono.Cecil.Pdb.csproj", "{63E6915C-7EA4-4D76-AB28-0D7191EEA626}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +73,10 @@ Global
 		{3F388596-6160-4BD4-9612-29F01BC00B44}.Debug|Any CPU.Build.0 = net_4_5_Debug|Any CPU
 		{3F388596-6160-4BD4-9612-29F01BC00B44}.Release|Any CPU.ActiveCfg = net_4_5_Release|Any CPU
 		{3F388596-6160-4BD4-9612-29F01BC00B44}.Release|Any CPU.Build.0 = net_4_5_Release|Any CPU
+		{63E6915C-7EA4-4D76-AB28-0D7191EEA626}.Debug|Any CPU.ActiveCfg = net_4_5_Debug|Any CPU
+		{63E6915C-7EA4-4D76-AB28-0D7191EEA626}.Debug|Any CPU.Build.0 = net_4_5_Debug|Any CPU
+		{63E6915C-7EA4-4D76-AB28-0D7191EEA626}.Release|Any CPU.ActiveCfg = net_4_5_Release|Any CPU
+		{63E6915C-7EA4-4D76-AB28-0D7191EEA626}.Release|Any CPU.Build.0 = net_4_5_Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,6 +88,7 @@ Global
 		{984CC812-9470-4A13-AFF9-CC44068D666C} = {298DF95B-B1E8-4E16-AF0F-C2F9CC0AEFB3}
 		{D68133BD-1E63-496E-9EDE-4FBDBF77B486} = {298DF95B-B1E8-4E16-AF0F-C2F9CC0AEFB3}
 		{3F388596-6160-4BD4-9612-29F01BC00B44} = {298DF95B-B1E8-4E16-AF0F-C2F9CC0AEFB3}
+		{63E6915C-7EA4-4D76-AB28-0D7191EEA626} = {298DF95B-B1E8-4E16-AF0F-C2F9CC0AEFB3}
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true

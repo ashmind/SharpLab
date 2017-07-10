@@ -54,29 +54,36 @@ namespace SharpLab.Server.MirrorSharp {
             if (targetName != TargetNames.Run && !_decompilers.ContainsKey(targetName))
                 throw new NotSupportedException($"Target '{targetName}' is not (yet?) supported by this branch.");
 
-            MemoryStream stream = null;
+            MemoryStream assemblyStream = null;
+            MemoryStream symbolStream = null;
             try {
-                stream = _memoryStreamManager.GetStream();
-                if (!await _compiler.TryCompileToStreamAsync(stream, session, diagnostics, cancellationToken).ConfigureAwait(false)) {
-                    stream.Dispose();
+                assemblyStream = _memoryStreamManager.GetStream();
+                if (targetName == TargetNames.Run)
+                    symbolStream = _memoryStreamManager.GetStream();
+
+                if (!await _compiler.TryCompileToStreamAsync(assemblyStream, symbolStream, session, diagnostics, cancellationToken).ConfigureAwait(false)) {
+                    assemblyStream.Dispose();
+                    symbolStream?.Dispose();
                     return null;
                 }
-                stream.Seek(0, SeekOrigin.Begin);
+                assemblyStream.Seek(0, SeekOrigin.Begin);
+                symbolStream?.Seek(0, SeekOrigin.Begin);
                 if (targetName == TargetNames.Run)
-                    return _executor.Execute(stream);
+                    return _executor.Execute(assemblyStream, symbolStream);
 
                 // it's fine not to Dispose() here -- MirrorSharp will dispose it after calling WriteResult()
-                return stream;
+                return assemblyStream;
             }
             catch {
-                stream?.Dispose();
+                assemblyStream?.Dispose();
+                symbolStream?.Dispose();
                 throw;
             }
         }
 
         public void WriteResult(IFastJsonWriter writer, object result, IWorkSession session) {
             if (result == null) {
-                writer.WriteValue(null);
+                writer.WriteValue((string)null);
                 return;
             }
 
@@ -88,7 +95,7 @@ namespace SharpLab.Server.MirrorSharp {
             }
 
             if (targetName == TargetNames.Run) {
-                writer.WriteValue((string)result);
+                _executor.Serialize((ExecutionResult)result, writer);
                 return;
             }
 

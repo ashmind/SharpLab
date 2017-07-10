@@ -11,12 +11,12 @@ using MirrorSharp.FSharp.Advanced;
 
 namespace SharpLab.Server.Compilation {
     public class Compiler : ICompiler {
-        public async Task<bool> TryCompileToStreamAsync(MemoryStream assemblyStream, IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
+        public async Task<bool> TryCompileToStreamAsync(MemoryStream assemblyStream, MemoryStream symbolStream, IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
             if (session.IsFSharp())
                 return await TryCompileFSharpToStreamAsync(assemblyStream, session, diagnostics, cancellationToken);
 
             var compilation = await session.Roslyn.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false);
-            var emitResult = compilation.Emit(assemblyStream);
+            var emitResult = compilation.Emit(assemblyStream, pdbStream: symbolStream);
             if (!emitResult.Success) {
                 foreach (var diagnostic in emitResult.Diagnostics) {
                     diagnostics.Add(diagnostic);

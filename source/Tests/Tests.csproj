@@ -9,6 +9,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" />
 
   <ItemGroup>
+    <Compile Remove="TestCode\Execution\Exceptions.CatchDivideByZero.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="TestCode\Ast\EmptyClass.cs2ast" />
     <None Remove="TestCode\Ast\StructuredTrivia.cs2ast" />
     <None Remove="TestCode\Constructor.BaseCall.cs2cs" />
@@ -29,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestCode\Execution\Exceptions.CatchDivideByZero.cs" />
     <EmbeddedResource Include="TestCode\Variable.FromArgumentToCall.cs2cs" />
   </ItemGroup>
 

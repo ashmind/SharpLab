@@ -12,10 +12,18 @@ import uiAsync from './ui/index.js';
 
 /* eslint-disable no-invalid-this */
 
+function getResultType(target) {
+    switch (target) {
+        case targets.ast: return 'ast';
+        case targets.run: return 'run';
+        default: return 'code';
+    }
+}
+
 function applyUpdateResult(updateResult) {
     const result = {
         success: true,
-        type: this.options.target !== targets.ast ? 'code' : 'ast',
+        type: getResultType(this.options.target),
         value: updateResult.x,
         errors: [],
         warnings: []
@@ -79,7 +87,7 @@ async function createAppAsync() {
             errors: [],
             warnings: []
         },
-        lastResultOfType: { code: null, ast: null },
+        lastResultOfType: { run: null, code: null, ast: null },
 
         highlightedCodeRange: null
     });
