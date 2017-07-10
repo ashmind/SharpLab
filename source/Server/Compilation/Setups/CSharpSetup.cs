@@ -28,7 +28,7 @@ namespace SharpLab.Server.Compilation.Setups {
             _references = referenceCollector.SlowGetMetadataReferencesRecursive(
                 // Essential
                 typeof(Binder).Assembly,
-                typeof(ValueTuple<>).Assembly,
+                NetFrameworkRuntime.AssemblyOfValueTuple,
 
                 // Runtime
                 typeof(JitGenericAttribute).Assembly,

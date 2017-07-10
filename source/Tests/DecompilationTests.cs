@@ -24,6 +24,18 @@ namespace SharpLab.Tests {
         }
 
         [Theory]
+        // Tuples, https://github.com/ashmind/SharpLab/issues/139
+        [InlineData("class C { void M((int, string) t) {} }")]
+        public async Task SlowUpdate_DecompilesSimpleCodeWithoutErrors(string code) {
+            var driver = MirrorSharpTestDriver.New().SetText(code);
+
+            var result = await driver.SendSlowUpdateAsync<string>();
+            var errors = result.JoinErrors();
+
+            Assert.True(errors.IsNullOrEmpty(), errors);
+        }
+
+        [Theory]
         [InlineData("Constructor.BaseCall.cs2cs")]
         [InlineData("NullPropagation.ToTernary.cs2cs")]
         [InlineData("Simple.cs2il")]

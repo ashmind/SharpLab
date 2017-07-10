@@ -32,7 +32,7 @@ namespace SharpLab.Server.Compilation.Setups {
                 o.ParseOptions = new VisualBasicParseOptions(maxLanguageVersion).WithFeatures(features);
                 o.MetadataReferences = _referenceCollector.SlowGetMetadataReferencesRecursive(
                     typeof(StandardModuleAttribute).Assembly,
-                    typeof(ValueTuple<>).Assembly,
+                    NetFrameworkRuntime.AssemblyOfValueTuple,
                     typeof(JitGenericAttribute).Assembly
                 ).ToImmutableList();
             });
