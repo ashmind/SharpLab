@@ -58,11 +58,9 @@ namespace SharpLab.Server.Execution.Internal {
                 if (string.IsNullOrEmpty(variable.Name))
                     continue;
 
-                var closestSequencePoint = sequencePoint ?? FindSequencePoint(instruction);
                 var insertTarget = instruction;
                 InsertAfter(il, ref insertTarget, ref i, il.Create(OpCodes.Ldstr, variable.Name));
                 InsertAfter(il, ref insertTarget, ref i, il.Create(OpCodes.Ldloc, localIndex.Value));
-                InsertAfter(il, ref insertTarget, ref i, il.Create(OpCodes.Ldc_I4, closestSequencePoint.EndLine));
                 InsertAfter(il, ref insertTarget, ref i, il.Create(OpCodes.Call, new GenericInstanceMethod(reportVariable) {
                     GenericArguments = { variable.VariableType }
                 }));
@@ -106,14 +104,6 @@ namespace SharpLab.Server.Execution.Internal {
                 case Code.Stloc: return (int)instruction.Operand;
                 default: return null;
             }
-        }
-
-        private SequencePoint FindSequencePoint(Instruction instruction) {
-            var current = instruction;
-            while (current.SequencePoint == null || current.SequencePoint.StartLine == HiddenLine) {
-                current = current.Previous;
-            }
-            return current.SequencePoint;
         }
     }
 }

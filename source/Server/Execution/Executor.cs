@@ -61,36 +61,23 @@ namespace SharpLab.Server.Execution {
             else {
                 writer.WriteProperty("exception", result.Exception.ToString());
             }
-            writer.WritePropertyStartObject("lines");
-            if (result.Lines != null) { // TODO (on exceptions)
-                foreach (var line in result.Lines) {
-                    writer.WritePropertyName(line.Key.ToString());
-                    SerializeLine(line.Value, writer);
-                }
+            writer.WritePropertyStartArray("flow");
+            foreach (var line in result.Flow) {
+                SerializeFlowLine(line, writer);
             }
-            writer.WriteEndObject();
+            writer.WriteEndArray();
             writer.WriteEndObject();
         }
 
-        private void SerializeLine(Flow.Line line, IFastJsonWriter writer) {
-            if (!line.HasNotes && line.SingleVisit != null) {
-                writer.WriteValue(line.SingleVisit.Value);
+        private void SerializeFlowLine(Flow.Line line, IFastJsonWriter writer) {
+            if (!line.HasNotes) {
+                writer.WriteValue(line.Number);
                 return;
             }
 
             writer.WriteStartObject();
-            if (line.HasNotes)
-                writer.WriteProperty("notes", line.Notes);
-            writer.WritePropertyStartArray("visits");
-            if (line.SingleVisit != null) {
-                writer.WriteValue(line.SingleVisit.Value);
-            }
-            else if (line.MultipleVisits != null /* TODO */) {
-                foreach (var visit in line.MultipleVisits) {
-                    writer.WriteValue(visit);
-                }
-            }
-            writer.WriteEndArray();
+            writer.WriteProperty("line", line.Number);
+            writer.WriteProperty("notes", line.Notes);
             writer.WriteEndObject();
         }
 

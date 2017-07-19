@@ -9,7 +9,7 @@ Vue.component('app-mirrorsharp', {
         serverOptions:    Object,
         serviceUrl:       String,
         highlightedRange: Object,
-        executionFlow:     Object
+        executionFlow:    Array
     },
     mounted: function() {
         Vue.nextTick(() => {
@@ -71,40 +71,26 @@ Vue.component('app-mirrorsharp', {
                 if (!lines)
                     return;
 
-                const visits = [];
-                for (const number in lines) {
-                    const data = lines[number];
-                    if (data.visits) {
-                        for (const visit of data.visits) {
-                            visits.push({ visit, line: parseInt(number) });
-                        }
-                    }
-                    else {
-                        visits.push({ visit: data, line: parseInt(number) });
+                const notes = {};
+                let lastLineNumber;
+                for (const line of lines) {
+                    let lineNumber = line;
+                    if (typeof line === 'object') {
+                        lineNumber = line.line;
+                        (notes[lineNumber] || (notes[lineNumber] = [])).push(line.notes);
                     }
 
-                    const noteWidget = createFlowLineNoteWidget(data);
-                    if (noteWidget != null) {
-                        const end = cm.getLine(number - 1).length;
-                        const noteBookmark = cm.setBookmark({ line: number - 1, ch: end }, { widget: noteWidget });
-                        bookmarks.push(noteBookmark);
-                    }
+                    if (lastLineNumber != null && (lineNumber < lastLineNumber || lineNumber - lastLineNumber > 2))
+                        cm.addFlowJump(lastLineNumber - 1, lineNumber - 1);
+                    lastLineNumber = lineNumber;
                 }
 
-                visits.sort((a, b) => {
-                    if (a.visit > b.visit) return  1;
-                    if (a.visit < b.visit) return -1;
-                    return 0;
-                });
-
-                for (let i = 1; i < visits.length; i++) {
-                    const thisLine = visits[i].line;
-                    const lastLine = visits[i-1].line;
-
-                    if (thisLine >= lastLine && thisLine - lastLine < 3)
-                        continue;
-
-                    cm.addFlowJump(lastLine - 1, thisLine - 1);
+                for (const lineNumber in notes) {
+                    const cmLineNumber = parseInt(lineNumber) - 1;
+                    const noteWidget = createFlowLineNoteWidget(notes[lineNumber]);
+                    const end = cm.getLine(cmLineNumber).length;
+                    const noteBookmark = cm.setBookmark({ line: cmLineNumber, ch: end }, { widget: noteWidget });
+                    bookmarks.push(noteBookmark);
                 }
             });
         });
@@ -112,12 +98,9 @@ Vue.component('app-mirrorsharp', {
     template: '<textarea></textarea>'
 });
 
-function createFlowLineNoteWidget(line) {
-    if (!line.notes)
-        return null;
-
+function createFlowLineNoteWidget(notes) {
     const widget = document.createElement('span');
     widget.className = 'flow-line-end-note';
-    widget.textContent = line.notes;
+    widget.textContent = notes.join('; ');
     return widget;
 }

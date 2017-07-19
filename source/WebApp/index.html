@@ -52,7 +52,7 @@
                              v-bind:service-url="serviceUrl"
                              v-bind:server-options="serverOptions"
                              v-bind:highlighted-range="highlightedCodeRange"
-                             v-bind:execution-flow="result.type === 'run' ? result.value.lines : null"
+                             v-bind:execution-flow="result.type === 'run' ? result.value.flow : null"
                              v-on:text-change="code = arguments[0]()"
                              v-on:slow-update-result="applyUpdateResult"
                              v-on:server-error="applyServerError"

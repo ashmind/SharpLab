@@ -5,18 +5,18 @@ using SharpLab.Runtime.Internal;
 namespace SharpLab.Server.Execution {
     [Serializable]
     public class ExecutionResult {
-        public ExecutionResult(string returnValue, IReadOnlyDictionary<int, Flow.Line> lines) {
+        public ExecutionResult(string returnValue, IReadOnlyList<Flow.Line> flow) {
             ReturnValue = returnValue;
-            Lines = lines;
+            Flow = flow;
         }
 
-        public ExecutionResult(Exception exception, IReadOnlyDictionary<int, Flow.Line> lines) {
+        public ExecutionResult(Exception exception, IReadOnlyList<Flow.Line> flow) {
             Exception = exception;
-            Lines = lines;
+            Flow = flow;
         }
 
         public string ReturnValue { get; }
         public Exception Exception { get; }
-        public IReadOnlyDictionary<int, Flow.Line> Lines { get; }
+        public IReadOnlyList<Flow.Line> Flow { get; }
     }
 }

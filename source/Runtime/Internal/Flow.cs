@@ -6,32 +6,23 @@ using System.Text;
 
 namespace SharpLab.Runtime.Internal {
     public static class Flow {
-        private static Dictionary<int, Line> _lines = new Dictionary<int, Line>();
-        public static IReadOnlyDictionary<int, Line> Lines => _lines;
+        private static readonly List<Line> _lines = new List<Line>();
+        public static IReadOnlyList<Line> Lines => _lines;
 
-        private static int _visitSequence = 0;
+        public static void ReportLineStart(int lineNumber) {
+            _lines.Add(new Line(lineNumber));
+        }
 
-        public static void ReportVariable<T>(string name, T value, int lineNumber) {
-            var notes = GetLine(lineNumber).Notes;
+        public static void ReportVariable<T>(string name, T value) {
+            var line = _lines[_lines.Count - 1];
+            var notes = line.Notes;
             if (notes.Length > 0)
                 notes.Append(", ");
             notes.Append(name).Append(": ");
             AppendValue(notes, value);
+            _lines[_lines.Count - 1] = line;
         }
-
-        public static void ReportLineStart(int lineNumber) {
-            _visitSequence += 1;
-            GetLine(lineNumber).Visit(_visitSequence);
-        }
-
-        private static Line GetLine(int number) {
-            if (!_lines.TryGetValue(number, out var line)) {
-                line = new Line();
-                _lines.Add(number, line);
-            }
-            return line;
-        }
-
+        
         private static StringBuilder AppendValue<T>(StringBuilder builder, T value) {
             if (value == null)
                 return builder.Append("null");
@@ -61,8 +52,15 @@ namespace SharpLab.Runtime.Internal {
         }
 
         [Serializable]
-        public class Line {
+        public struct Line {
             private StringBuilder _notes;
+
+            public Line(int number) {
+                _notes = null;
+                Number = number;
+            }
+
+            public int Number { get; }
 
             public bool HasNotes => _notes != null;
             public StringBuilder Notes {
@@ -71,28 +69,7 @@ namespace SharpLab.Runtime.Internal {
                         _notes = new StringBuilder();
                     return _notes;
                 }
-            }
-
-            public void Visit(int sequence) {
-                if (SingleVisit == null && MultipleVisits == null) {
-                    SingleVisit = sequence;
-                    return;
-                }
-
-                var multipleVisits = (List<int>)MultipleVisits;
-                if (multipleVisits == null) {
-                    multipleVisits = new List<int>();
-                    MultipleVisits = multipleVisits;
-                }
-                if (SingleVisit != null) {
-                    multipleVisits.Add(SingleVisit.Value);
-                    SingleVisit = null;
-                }
-                multipleVisits.Add(sequence);             
-            }
-
-            public int? SingleVisit { get; private set; }
-            public IReadOnlyList<int> MultipleVisits { get; private set; }
+            }            
         }
     }
 }
