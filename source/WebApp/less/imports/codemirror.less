@@ -41,10 +41,18 @@ textarea, .CodeMirror {
     background-color: @highlight-color;
 }
 
-.flow-line-end-note {
+.flow-line-end {
     display: inline-block;
     padding: 0px 5px;
     margin-left: 5px;
-    background: #eee;
     font-size: 90%;
+}
+
+.flow-line-end-notes {
+    background: #eee;
+}
+
+.flow-line-end-exception {
+    background: @error-color;
+    color: #fff;
 }

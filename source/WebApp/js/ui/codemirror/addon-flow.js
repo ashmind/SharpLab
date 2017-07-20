@@ -49,7 +49,7 @@
       this.root.setAttribute("height", this.sizer.offsetHeight);
     }
 
-    renderJump(fromLine, toLine) {
+    renderJump(fromLine, toLine, options) {
       const key = fromLine + "->" + toLine;
       if (this.rendered[key])
         return;
@@ -71,7 +71,7 @@
       const toY = to.y - offsetY;
 
       const g = this.renderSVG("g", {
-        "class": "CodeMirror-flow-jump" + (up ? " CodeMirror-flow-jump-up" : ""),
+        "class": "CodeMirror-flow-jump" + (up ? " CodeMirror-flow-jump-up" : "") + (options.throw ? " CodeMirror-flow-jump-throw" : ""),
         "data-debug": key
       });
       this.renderSVG(g, "path", {
@@ -136,14 +136,14 @@
     }
   }
 
-  CodeMirror.defineExtension("addFlowJump", function(fromLine, toLine) {
+  CodeMirror.defineExtension("addFlowJump", function(fromLine, toLine, options) {
     /* eslint-disable no-invalid-this */
     let flow = this.state.flow;
     if (!flow) {
       flow = new FlowLayer(this);
       this.state.flow = flow;
     }
-    flow.renderJump(fromLine, toLine);
+    flow.renderJump(fromLine, toLine, options);
   });
 
   CodeMirror.defineExtension("clearFlowPoints", function() {

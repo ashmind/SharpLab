@@ -11,9 +11,14 @@
     stroke: #b4cdce;
 }
 
-.CodeMirror-flow-jump.CodeMirror-flow-jump-up {
+.CodeMirror-flow-jump-up {
     fill: #f7d1c5;
     stroke: #f7d1c5;
+}
+
+.CodeMirror-flow-jump-throw {
+    fill: #dc3912;
+    stroke: #dc3912;
 }
 
 .CodeMirror-flow-jump-line {
@@ -22,4 +27,8 @@
 
 .CodeMirror-flow-jump-start {
     fill: #fff;
+}
+
+.CodeMirror-flow-jump-throw .CodeMirror-flow-jump-start {
+    fill: inherit;
 }

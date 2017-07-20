@@ -2,6 +2,7 @@ import Vue from 'vue';
 import mirrorsharp from 'mirrorsharp';
 import 'codemirror/mode/mllike/mllike';
 import '../codemirror/addon-flow.js';
+import groupToMap from '../../helpers/group-to-map.js';
 
 Vue.component('app-mirrorsharp', {
     props: {
@@ -61,36 +62,44 @@ Vue.component('app-mirrorsharp', {
             });
 
             const bookmarks = [];
-            this.$watch('executionFlow', lines => {
+            this.$watch('executionFlow', steps => {
                 while (bookmarks.length > 0) {
                     bookmarks.pop().clear();
                 }
 
                 const cm = instance.getCodeMirror();
                 cm.clearFlowPoints();
-                if (!lines)
+                if (!steps)
                     return;
 
-                const notes = {};
                 let lastLineNumber;
-                for (const line of lines) {
-                    let lineNumber = line;
-                    if (typeof line === 'object') {
-                        lineNumber = line.line;
-                        (notes[lineNumber] || (notes[lineNumber] = [])).push(line.notes);
+                let lastException;
+                for (const step of steps) {
+                    let lineNumber = step;
+                    let exception = null;
+                    if (typeof step === 'object') {
+                        lineNumber = step.line;
+                        exception = step.exception;
                     }
 
-                    if (lastLineNumber != null && (lineNumber < lastLineNumber || lineNumber - lastLineNumber > 2))
-                        cm.addFlowJump(lastLineNumber - 1, lineNumber - 1);
+                    const important = (lastLineNumber != null && (lineNumber < lastLineNumber || lineNumber - lastLineNumber > 2)) || lastException;
+                    if (important)
+                        cm.addFlowJump(lastLineNumber - 1, lineNumber - 1, { throw: !!lastException });
                     lastLineNumber = lineNumber;
+                    lastException = exception;
                 }
 
-                for (const lineNumber in notes) {
-                    const cmLineNumber = parseInt(lineNumber) - 1;
-                    const noteWidget = createFlowLineNoteWidget(notes[lineNumber]);
+                const detailsByLine = groupToMap(steps.filter(s => typeof s === 'object'), s => s.line);
+                for (const [lineNumber, details] of detailsByLine) {
+                    const cmLineNumber = lineNumber - 1;
                     const end = cm.getLine(cmLineNumber).length;
-                    const noteBookmark = cm.setBookmark({ line: cmLineNumber, ch: end }, { widget: noteWidget });
-                    bookmarks.push(noteBookmark);
+                    for (const partName of ['notes', 'exception']) {
+                        const parts = details.map(s => s[partName]).filter(p => p);
+                        if (!parts.length)
+                            continue;
+                        const widget = createFlowLineEndWidget(parts, partName);
+                        bookmarks.push(cm.setBookmark({ line: cmLineNumber, ch: end }, { widget }));
+                    }
                 }
             });
         });
@@ -98,9 +107,9 @@ Vue.component('app-mirrorsharp', {
     template: '<textarea></textarea>'
 });
 
-function createFlowLineNoteWidget(notes) {
+function createFlowLineEndWidget(contents, kind) {
     const widget = document.createElement('span');
-    widget.className = 'flow-line-end-note';
-    widget.textContent = notes.join('; ');
+    widget.className = 'flow-line-end flow-line-end-' + kind;
+    widget.textContent = contents.join('; ');
     return widget;
 }

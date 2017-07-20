@@ -70,14 +70,17 @@ namespace SharpLab.Server.Execution {
         }
 
         private void SerializeFlowLine(Flow.Line line, IFastJsonWriter writer) {
-            if (!line.HasNotes) {
+            if (!line.HasNotes && line.Exception == null) {
                 writer.WriteValue(line.Number);
                 return;
             }
 
             writer.WriteStartObject();
             writer.WriteProperty("line", line.Number);
-            writer.WriteProperty("notes", line.Notes);
+            if (line.HasNotes)
+                writer.WriteProperty("notes", line.Notes);
+            if (line.Exception != null)
+                writer.WriteProperty("exception", line.Exception.GetType().Name);
             writer.WriteEndObject();
         }
 

@@ -8,31 +8,36 @@ namespace SharpLab.Server.Execution.Internal {
     public class FlowReportingRewriter {
         private const int HiddenLine = 0xFEEFEE;
 
-        private static readonly MethodInfo ReportVariableMethod =
-            typeof(Flow).GetMethod(nameof(Flow.ReportVariable));
         private static readonly MethodInfo ReportLineStartMethod =
             typeof(Flow).GetMethod(nameof(Flow.ReportLineStart));
+        private static readonly MethodInfo ReportVariableMethod =
+            typeof(Flow).GetMethod(nameof(Flow.ReportVariable));
+        private static readonly MethodInfo ReportExceptionMethod =
+            typeof(Flow).GetMethod(nameof(Flow.ReportException));
 
         public void Rewrite(AssemblyDefinition assembly) {
             foreach (var module in assembly.Modules) {
-                var reportVariable = module.ImportReference(ReportVariableMethod);
-                var reportLineStart = module.ImportReference(ReportLineStartMethod);
+                var flow = new ReportMethods {
+                    ReportLineStart = module.ImportReference(ReportLineStartMethod),
+                    ReportVariable = module.ImportReference(ReportVariableMethod),
+                    ReportException = module.ImportReference(ReportExceptionMethod),
+                };
                 foreach (var type in module.Types) {
-                    Rewrite(type, reportVariable, reportLineStart);
+                    Rewrite(type, flow);
                     foreach (var nested in type.NestedTypes) {
-                        Rewrite(nested, reportVariable, reportLineStart);
+                        Rewrite(nested, flow);
                     }
                 }
             }
         }
 
-        private void Rewrite(TypeDefinition type, MethodReference reportVariable, MethodReference reportLineStart) {
+        private void Rewrite(TypeDefinition type, ReportMethods flow) {
             foreach (var method in type.Methods) {
-                Rewrite(method, reportVariable, reportLineStart);
+                Rewrite(method, flow);
             }
         }
 
-        private void Rewrite(MethodDefinition method, MethodReference reportVariable, MethodReference reportLineStart) {
+        private void Rewrite(MethodDefinition method, ReportMethods flow) {
             if (!method.HasBody || method.Body.Instructions.Count == 0)
                 return;
 
@@ -45,7 +50,7 @@ namespace SharpLab.Server.Execution.Internal {
                 var sequencePoint = instruction.SequencePoint;
                 if (sequencePoint != null  && sequencePoint.StartLine != HiddenLine && sequencePoint.StartLine != lastLine) {
                     InsertBefore(il, instruction, il.Create(OpCodes.Ldc_I4, sequencePoint.StartLine));
-                    InsertBefore(il, instruction, il.Create(OpCodes.Call, reportLineStart));
+                    InsertBefore(il, instruction, il.Create(OpCodes.Call, flow.ReportLineStart));
                     i += 2;
                     lastLine = sequencePoint.StartLine;
                 }
@@ -61,9 +66,17 @@ namespace SharpLab.Server.Execution.Internal {
                 var insertTarget = instruction;
                 InsertAfter(il, ref insertTarget, ref i, il.Create(OpCodes.Ldstr, variable.Name));
                 InsertAfter(il, ref insertTarget, ref i, il.Create(OpCodes.Ldloc, localIndex.Value));
-                InsertAfter(il, ref insertTarget, ref i, il.Create(OpCodes.Call, new GenericInstanceMethod(reportVariable) {
+                InsertAfter(il, ref insertTarget, ref i, il.Create(OpCodes.Call, new GenericInstanceMethod(flow.ReportVariable) {
                     GenericArguments = { variable.VariableType }
                 }));
+            }
+
+            foreach (var handler in il.Body.ExceptionHandlers) {
+                if (handler.HandlerType != ExceptionHandlerType.Catch)
+                    continue;
+                var start = handler.HandlerStart;
+                InsertBefore(il, start, il.Create(OpCodes.Dup));
+                InsertBefore(il, start, il.Create(OpCodes.Call, flow.ReportException));
             }
         }
 
@@ -104,6 +117,12 @@ namespace SharpLab.Server.Execution.Internal {
                 case Code.Stloc: return (int)instruction.Operand;
                 default: return null;
             }
+        }
+
+        private struct ReportMethods {
+            public MethodReference ReportLineStart { get; set; }
+            public MethodReference ReportVariable { get; set; }
+            public MethodReference ReportException { get; set; }
         }
     }
 }
