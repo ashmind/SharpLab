@@ -28,6 +28,7 @@ namespace SharpLab.Tests {
 
         [Theory]
         [InlineData("Exceptions.CatchDivideByZero.cs", 5, "DivideByZeroException")]
+        [InlineData("Exceptions.DivideByZero.cs", 4, "DivideByZeroException")]
         public async Task SlowUpdate_ReportsExceptionInFlow(string resourceName, int expectedLineNumber, string expectedExceptionTypeName) {
             var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName));
 

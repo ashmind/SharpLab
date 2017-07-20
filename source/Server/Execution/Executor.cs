@@ -97,6 +97,10 @@ namespace SharpLab.Server.Execution {
                     }
                 }
                 catch (Exception ex) {
+                    if (ex is TargetInvocationException invocationEx)
+                        ex = invocationEx.InnerException;
+
+                    Flow.ReportException(ex);
                     return new ExecutionResult(ex, Flow.Lines);
                 }
             }
