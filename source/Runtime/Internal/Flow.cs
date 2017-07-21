@@ -7,6 +7,7 @@ using System.Text;
 namespace SharpLab.Runtime.Internal {
     public static class Flow {
         private const int MaxReportLength = 20;
+        private const int MaxVariableNameLength = 10;
         private const int MaxReportEnumerableItemCount = 3;
         private const int MaxReportStepNotesPerLineCount = 3;
         private const int MaxReportVariablesPerStepCount = 3;
@@ -56,7 +57,8 @@ namespace SharpLab.Runtime.Internal {
                 return;
             }
 
-            notes.Append(name).Append(": ");
+            AppendString(notes, name, MaxVariableNameLength);
+            notes.Append(": ");
             AppendValue(notes, value);
             // Have to reassign in case we set Notes
             _steps[_steps.Count - 1] = step;
@@ -73,13 +75,13 @@ namespace SharpLab.Runtime.Internal {
                 return builder.Append("null");
 
             switch (value) {
-                case IList<int> e: return AppendEnumerable(e, builder);
-                case ICollection e: return AppendEnumerable(e.Cast<object>(), builder);
-                default: return AppendString(value.ToString(), builder);
+                case IList<int> e: return AppendEnumerable(builder, e);
+                case ICollection e: return AppendEnumerable(builder, e.Cast<object>());
+                default: return AppendString(builder, value.ToString(), MaxReportLength - builder.Length);
             }
         }
 
-        private static StringBuilder AppendEnumerable<T>(IEnumerable<T> enumerable, StringBuilder builder) {
+        private static StringBuilder AppendEnumerable<T>(StringBuilder builder, IEnumerable<T> enumerable) {
             builder.Append("{ ");
             var index = 0;
             foreach (var item in enumerable) {
@@ -98,8 +100,7 @@ namespace SharpLab.Runtime.Internal {
             return builder;
         }
 
-        private static StringBuilder AppendString(string value, StringBuilder builder) {
-            var limit = MaxReportLength - builder.Length;
+        private static StringBuilder AppendString(StringBuilder builder, string value, int limit) {
             if (limit <= 0)
                 return builder;
 
@@ -107,7 +108,7 @@ namespace SharpLab.Runtime.Internal {
                 builder.Append(value);
             }
             else {
-                builder.Append(value, 0, limit);
+                builder.Append(value, 0, limit - 1);
                 builder.Append("…");
             }
 
