@@ -80,16 +80,25 @@ namespace SharpLab.Server.Execution.Internal {
 
             var handlers = il.Body.ExceptionHandlers;
             for (var i = 0; i < handlers.Count; i++) {
-                if (handlers[i].HandlerType == ExceptionHandlerType.Catch) {
-                    var start = handlers[i].HandlerStart;
-                    InsertBefore(il, start, il.Create(OpCodes.Dup));
-                    InsertBefore(il, start, il.Create(OpCodes.Call, flow.ReportException));
-                    continue;
-                }
+                switch (handlers[i].HandlerType) {
+                    case ExceptionHandlerType.Catch:
+                        RewriteCatch(handlers[i].HandlerStart, il, flow);
+                        break;
 
-                if (handlers[i].HandlerType == ExceptionHandlerType.Finally)
-                    RewriteFinally(handlers[i], ref i, il, flow);
+                    case ExceptionHandlerType.Filter:
+                        RewriteCatch(handlers[i].FilterStart, il, flow);
+                        break;
+
+                    case ExceptionHandlerType.Finally:
+                        RewriteFinally(handlers[i], ref i, il, flow);
+                        break;
+                }
             }
+        }
+
+        private void RewriteCatch(Instruction start, ILProcessor il, ReportMethods flow) {
+            InsertBefore(il, start, il.Create(OpCodes.Dup));
+            InsertBefore(il, start, il.Create(OpCodes.Call, flow.ReportException));
         }
 
         private void RewriteFinally(ExceptionHandler handler, ref int index, ILProcessor il, ReportMethods flow) {
@@ -136,6 +145,8 @@ namespace SharpLab.Server.Execution.Internal {
                     handler.TryStart = instruction;
                 if (handler.TryEnd == target)
                     handler.TryEnd = instruction;
+                if (handler.FilterStart == target)
+                    handler.FilterStart = instruction;
                 if (handler.HandlerStart == target)
                     handler.HandlerStart = instruction;
                 if (handler.HandlerEnd == target)

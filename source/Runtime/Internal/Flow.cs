@@ -27,7 +27,7 @@ namespace SharpLab.Runtime.Internal {
             _lines[_lines.Count - 1] = line;
         }
 
-        public static void ReportException(Exception exception) {
+        public static void ReportException(object exception) {
             var line = _lines[_lines.Count - 1];
             line.Exception = exception;
             _lines[_lines.Count - 1] = line;
@@ -94,7 +94,7 @@ namespace SharpLab.Runtime.Internal {
             }
 
             public int Number { get; }
-            public Exception Exception { get; internal set; }
+            public object Exception { get; internal set; }
 
             public bool HasNotes => _notes != null;
             public StringBuilder Notes {
