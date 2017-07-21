@@ -62,25 +62,25 @@ namespace SharpLab.Server.Execution {
                 writer.WriteProperty("exception", result.Exception.ToString());
             }
             writer.WritePropertyStartArray("flow");
-            foreach (var line in result.Flow) {
-                SerializeFlowLine(line, writer);
+            foreach (var step in result.Flow) {
+                SerializeFlowStep(step, writer);
             }
             writer.WriteEndArray();
             writer.WriteEndObject();
         }
 
-        private void SerializeFlowLine(Flow.Line line, IFastJsonWriter writer) {
-            if (!line.HasNotes && line.Exception == null) {
-                writer.WriteValue(line.Number);
+        private void SerializeFlowStep(Flow.Step step, IFastJsonWriter writer) {
+            if (step.Notes == null && step.Exception == null) {
+                writer.WriteValue(step.LineNumber);
                 return;
             }
 
             writer.WriteStartObject();
-            writer.WriteProperty("line", line.Number);
-            if (line.HasNotes)
-                writer.WriteProperty("notes", line.Notes);
-            if (line.Exception != null)
-                writer.WriteProperty("exception", line.Exception.GetType().Name);
+            writer.WriteProperty("line", step.LineNumber);
+            if (step.Notes != null)
+                writer.WriteProperty("notes", step.Notes);
+            if (step.Exception != null)
+                writer.WriteProperty("exception", step.Exception.GetType().Name);
             writer.WriteEndObject();
         }
 
@@ -93,7 +93,7 @@ namespace SharpLab.Server.Execution {
 
                     using (guardToken.Scope()) {
                         var result = m.Invoke(Activator.CreateInstance(c), null);
-                        return new ExecutionResult(result?.ToString(), Flow.Lines);
+                        return new ExecutionResult(result?.ToString(), Flow.Steps);
                     }
                 }
                 catch (Exception ex) {
@@ -101,7 +101,7 @@ namespace SharpLab.Server.Execution {
                         ex = invocationEx.InnerException;
 
                     Flow.ReportException(ex);
-                    return new ExecutionResult(ex, Flow.Lines);
+                    return new ExecutionResult(ex, Flow.Steps);
                 }
             }
 

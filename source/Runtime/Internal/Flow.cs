@@ -9,32 +9,52 @@ namespace SharpLab.Runtime.Internal {
     public static class Flow {
         private const int MaxReportLength = 20;
         private const int MaxReportItemCount = 3;
+        private const int MaxReportStepNotesPerLineCount = 3;
 
-        private static readonly List<Line> _lines = new List<Line>();
-        public static IReadOnlyList<Line> Lines => _lines;
+        private static readonly IDictionary<int, int> _stepNotesCountPerLine = new Dictionary<int, int>();
+        private static readonly List<Step> _steps = new List<Step>();
+        public static IReadOnlyList<Step> Steps => _steps;
 
         public static void ReportLineStart(int lineNumber) {
-            _lines.Add(new Line(lineNumber));
+            _steps.Add(new Step(lineNumber));
         }
 
         public static void ReportVariable<T>(string name, T value) {
-            var line = _lines[_lines.Count - 1];
-            var notes = line.Notes;
+            var step = _steps[_steps.Count - 1];
+            if (!_stepNotesCountPerLine.TryGetValue(step.LineNumber, out int countPerLine))
+                countPerLine = 0;
+            countPerLine += 1;
+            _stepNotesCountPerLine[step.LineNumber] = countPerLine;
+
+            if (countPerLine == MaxReportStepNotesPerLineCount + 1) {
+                if (step.Notes != null) // already has "…"
+                    return;
+                step.Notes = new StringBuilder("…");
+                _steps[_steps.Count - 1] = step;
+                return;
+            }
+
+            if (countPerLine > MaxReportStepNotesPerLineCount + 1)
+                return;
+
+            var notes = step.Notes;
+            if (notes == null) {
+                notes = new StringBuilder();
+                step.Notes = notes;
+            }
+
             if (notes.Length > 0)
                 notes.Append(", ");
             notes.Append(name).Append(": ");
             AppendValue(notes, value);
-            _lines[_lines.Count - 1] = line;
+            // Have to reassign in case we set Notes
+            _steps[_steps.Count - 1] = step;
         }
 
         public static void ReportException(object exception) {
-            var line = _lines[_lines.Count - 1];
-            line.Exception = exception;
-            _lines[_lines.Count - 1] = line;
-        }
-
-        private static bool HadException() {
-            return Marshal.GetExceptionPointers() != IntPtr.Zero || Marshal.GetExceptionCode() != 0;
+            var step = _steps[_steps.Count - 1];
+            step.Exception = exception;
+            _steps[_steps.Count - 1] = step;
         }
 
         private static StringBuilder AppendValue<T>(StringBuilder builder, T value) {
@@ -84,26 +104,16 @@ namespace SharpLab.Runtime.Internal {
         }
 
         [Serializable]
-        public struct Line {
-            private StringBuilder _notes;
-
-            public Line(int number) {
-                Number = number;
-                _notes = null;
+        public struct Step {
+            public Step(int lineNumber) {
+                LineNumber = lineNumber;
+                Notes = null;
                 Exception = null;
             }
 
-            public int Number { get; }
+            public int LineNumber { get; }
             public object Exception { get; internal set; }
-
-            public bool HasNotes => _notes != null;
-            public StringBuilder Notes {
-                get {
-                    if (_notes == null)
-                        _notes = new StringBuilder();
-                    return _notes;
-                }
-            }
+            public StringBuilder Notes { get; internal set; }
         }
     }
 }
