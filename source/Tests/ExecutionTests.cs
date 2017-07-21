@@ -11,18 +11,17 @@ using SharpLab.Server;
 using SharpLab.Server.MirrorSharp.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
 namespace SharpLab.Tests {
     public class ExecutionTests {
         private static readonly MirrorSharpOptions MirrorSharpOptions = Startup.CreateMirrorSharpOptions();
 
         [Theory]
-        [InlineData("Exceptions.DivideByZero.cs", 4, "DivideByZeroException")]
-        [InlineData("Exceptions.DivideByZero.Catch.cs", 5, "DivideByZeroException")]
-        [InlineData("Exceptions.DivideByZero.Catch.When.True.cs", 5, "DivideByZeroException")]
-        [InlineData("Exceptions.DivideByZero.Catch.When.False.cs", 5, "DivideByZeroException")]
-        [InlineData("Exceptions.DivideByZero.Finally.cs", 5, "DivideByZeroException")]
+        [InlineData("Exception.DivideByZero.cs", 4, "DivideByZeroException")]
+        [InlineData("Exception.DivideByZero.Catch.cs", 5, "DivideByZeroException")]
+        [InlineData("Exception.DivideByZero.Catch.When.True.cs", 5, "DivideByZeroException")]
+        [InlineData("Exception.DivideByZero.Catch.When.False.cs", 5, "DivideByZeroException")]
+        [InlineData("Exception.DivideByZero.Finally.cs", 5, "DivideByZeroException")]
         public async Task SlowUpdate_ReportsExceptionInFlow(string resourceName, int expectedLineNumber, string expectedExceptionTypeName) {
             var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName));
 
@@ -36,22 +35,24 @@ namespace SharpLab.Tests {
             Assert.Contains(new { Line = expectedLineNumber, Exception = expectedExceptionTypeName }, steps);
         }
 
-        [Fact]
-        public async Task SlowUpdate_ReportsLimitedNumberOfNotesPerLine() {
-            var driver = await NewTestDriverAsync(LoadCodeFromResource("Loops.For.10Iterations.cs"));
+        [Theory]
+        [InlineData("Loop.For.10Iterations.cs", 3, "i: 0; i: 1; i: 2; …")]
+        [InlineData("Variable.MultipleDeclarationsOnTheSameLine.cs", 3, "a: 0, b: 0, c: 0, …")]
+        public async Task SlowUpdate_ReportsLimitedNumberOfNotesPerLine(string resourceName, int lineNumber, string expectedNotes) {
+            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName));
 
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
             var errors = result.JoinErrors();
 
             var notes = string.Join(
-                ", ",
+                "; ",
                 result.ExtensionResult.Flow
-                    .Where(s => s.Line == 3 && s.Notes != null)
+                    .Where(s => s.Line == lineNumber && s.Notes != null)
                     .Select(s => s.Notes)
             );
 
             Assert.True(errors.IsNullOrEmpty(), errors);
-            Assert.Equal("i: 0, i: 1, i: 2, …", notes);
+            Assert.Equal(expectedNotes, notes);
         }
 
         private static int LineNumberFromFlowStep(JToken step) {

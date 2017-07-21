@@ -2,14 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace SharpLab.Runtime.Internal {
     public static class Flow {
         private const int MaxReportLength = 20;
-        private const int MaxReportItemCount = 3;
+        private const int MaxReportEnumerableItemCount = 3;
         private const int MaxReportStepNotesPerLineCount = 3;
+        private const int MaxReportVariablesPerStepCount = 3;
 
         private static readonly IDictionary<int, int> _stepNotesCountPerLine = new Dictionary<int, int>();
         private static readonly List<Step> _steps = new List<Step>();
@@ -23,18 +23,23 @@ namespace SharpLab.Runtime.Internal {
             var step = _steps[_steps.Count - 1];
             if (!_stepNotesCountPerLine.TryGetValue(step.LineNumber, out int countPerLine))
                 countPerLine = 0;
-            countPerLine += 1;
-            _stepNotesCountPerLine[step.LineNumber] = countPerLine;
 
-            if (countPerLine == MaxReportStepNotesPerLineCount + 1) {
-                if (step.Notes != null) // already has "…"
+            if (step.Notes == null) {
+                countPerLine += 1;
+                _stepNotesCountPerLine[step.LineNumber] = countPerLine;
+
+                if (countPerLine == MaxReportStepNotesPerLineCount + 1) {
+                    step.Notes = new StringBuilder("…");
+                    _steps[_steps.Count - 1] = step;
                     return;
-                step.Notes = new StringBuilder("…");
-                _steps[_steps.Count - 1] = step;
-                return;
+                }
             }
 
-            if (countPerLine > MaxReportStepNotesPerLineCount + 1)
+            if (countPerLine >= MaxReportStepNotesPerLineCount + 1)
+                return;
+
+            step.VariableCount += 1;
+            if (step.VariableCount > MaxReportVariablesPerStepCount + 1)
                 return;
 
             var notes = step.Notes;
@@ -45,6 +50,12 @@ namespace SharpLab.Runtime.Internal {
 
             if (notes.Length > 0)
                 notes.Append(", ");
+
+            if (step.VariableCount == MaxReportVariablesPerStepCount + 1) {
+                notes.Append("…");
+                return;
+            }
+
             notes.Append(name).Append(": ");
             AppendValue(notes, value);
             // Have to reassign in case we set Notes
@@ -75,7 +86,7 @@ namespace SharpLab.Runtime.Internal {
                 if (index > 0)
                     builder.Append(", ");
 
-                if (index > MaxReportItemCount) {
+                if (index > MaxReportEnumerableItemCount) {
                     builder.Append("…");
                     break;
                 }
@@ -109,11 +120,14 @@ namespace SharpLab.Runtime.Internal {
                 LineNumber = lineNumber;
                 Notes = null;
                 Exception = null;
+                VariableCount = 0;
             }
 
             public int LineNumber { get; }
             public object Exception { get; internal set; }
             public StringBuilder Notes { get; internal set; }
+
+            internal int VariableCount { get; set; }
         }
     }
 }
