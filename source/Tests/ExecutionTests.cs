@@ -38,7 +38,8 @@ namespace SharpLab.Tests {
         [Theory]
         [InlineData("Loop.For.10Iterations.cs", 3, "i: 0; i: 1; i: 2; …")]
         [InlineData("Variable.MultipleDeclarationsOnTheSameLine.cs", 3, "a: 0, b: 0, c: 0, …")]
-        [InlineData("Variable.VeryLongName.cs", 3, "whyMyVari…: 0")]
+        [InlineData("Variable.LongName.cs", 3, "abcdefghi…: 0")]
+        [InlineData("Variable.LongValue.cs", 3, "x: 123456789…")]
         public async Task SlowUpdate_ReportsVariableNotesWithLengthLimits(string resourceName, int lineNumber, string expectedNotes) {
             var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName));
 
