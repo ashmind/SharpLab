@@ -15,28 +15,19 @@ namespace SharpLab.Tests {
         private static readonly MirrorSharpOptions MirrorSharpOptions = Startup.CreateMirrorSharpOptions();
 
         [Theory]
-        [InlineData("Exceptions.CatchDivideByZero.cs")]
-        public async Task SlowUpdate_ExecutesTryCatchWithoutErrors(string resourceName) {
-            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName));
-
-            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
-            var errors = result.JoinErrors();
-
-            Assert.True(errors.IsNullOrEmpty(), errors);
-            Assert.True(result.ExtensionResult.Exception.IsNullOrEmpty(), result.ExtensionResult.Exception);
-        }
-
-        [Theory]
-        [InlineData("Exceptions.CatchDivideByZero.cs", 5, "DivideByZeroException")]
         [InlineData("Exceptions.DivideByZero.cs", 4, "DivideByZeroException")]
+        [InlineData("Exceptions.DivideByZero.Catch.cs", 5, "DivideByZeroException")]
+        [InlineData("Exceptions.DivideByZero.Finally.cs", 5, "DivideByZeroException")]
         public async Task SlowUpdate_ReportsExceptionInFlow(string resourceName, int expectedLineNumber, string expectedExceptionTypeName) {
             var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName));
 
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            var errors = result.JoinErrors();
             var lines = result.ExtensionResult.Flow
                 .Select(f => new { Line = (f as JObject)?.Value<int>("line") ?? f.Value<int>(), Exception = (f as JObject)?.Value<string>("exception") })
                 .ToArray();
 
+            Assert.True(errors.IsNullOrEmpty(), errors);
             Assert.Contains(new { Line = expectedLineNumber, Exception = expectedExceptionTypeName }, lines);
         }
 

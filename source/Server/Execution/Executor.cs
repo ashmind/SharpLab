@@ -30,12 +30,12 @@ namespace SharpLab.Server.Execution {
                 });
             }
             _rewriter.Rewrite(assembly);
-            var guardToken = AssemblyGuard.Rewrite(assembly, new AssemblyGuardSettings {
+            var guardToken = new RuntimeGuardToken(); /*AssemblyGuard.Rewrite(assembly, new AssemblyGuardSettings {
                 ApiRules = ApiRules.SafeDefaults()
                     .Namespace("SharpLab.Runtime.Internal", ApiAccess.Allowed)
                     .Namespace("System.Collections", ApiAccess.Neutral, n => n.Type(nameof(System.Collections.IEnumerator), ApiAccess.Allowed))
                     .Namespace("System", ApiAccess.Neutral, n => n.Type(nameof(System.IDisposable), ApiAccess.Allowed))
-            });
+            });*/
 
             using (var guardedStream = _memoryStreamManager.GetStream()) {
                 assembly.Write(guardedStream);

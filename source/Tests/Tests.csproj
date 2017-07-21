@@ -9,8 +9,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" />
 
   <ItemGroup>
-    <Compile Remove="TestCode\Execution\Exceptions.CatchDivideByZero.cs" />
+    <Compile Remove="TestCode\Execution\Exceptions.DivideByZero.Catch.cs" />
     <Compile Remove="TestCode\Execution\Exceptions.DivideByZero.cs" />
+    <Compile Remove="TestCode\Execution\Exceptions.DivideByZero.Finally.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,8 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestCode\Execution\Exceptions.DivideByZero.Finally.cs" />
     <EmbeddedResource Include="TestCode\Execution\Exceptions.DivideByZero.cs" />
-    <EmbeddedResource Include="TestCode\Execution\Exceptions.CatchDivideByZero.cs" />
+    <EmbeddedResource Include="TestCode\Execution\Exceptions.DivideByZero.Catch.cs" />
     <EmbeddedResource Include="TestCode\Variable.FromArgumentToCall.cs2cs" />
   </ItemGroup>
 

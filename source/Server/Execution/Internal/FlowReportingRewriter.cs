@@ -48,7 +48,7 @@ namespace SharpLab.Server.Execution.Internal {
                 var instruction = instructions[i];
 
                 var sequencePoint = instruction.SequencePoint;
-                if (sequencePoint != null  && sequencePoint.StartLine != HiddenLine && sequencePoint.StartLine != lastLine) {
+                if (sequencePoint != null && sequencePoint.StartLine != HiddenLine && sequencePoint.StartLine != lastLine) {
                     InsertBefore(il, instruction, il.Create(OpCodes.Ldc_I4, sequencePoint.StartLine));
                     InsertBefore(il, instruction, il.Create(OpCodes.Call, flow.ReportLineStart));
                     i += 2;
@@ -71,13 +71,48 @@ namespace SharpLab.Server.Execution.Internal {
                 }));
             }
 
-            foreach (var handler in il.Body.ExceptionHandlers) {
-                if (handler.HandlerType != ExceptionHandlerType.Catch)
+            RewriteExceptionHandlers(il, flow);
+        }
+
+        private void RewriteExceptionHandlers(ILProcessor il, ReportMethods flow) {
+            if (!il.Body.HasExceptionHandlers)
+                return;
+
+            var handlers = il.Body.ExceptionHandlers;
+            for (var i = 0; i < handlers.Count; i++) {
+                if (handlers[i].HandlerType == ExceptionHandlerType.Catch) {
+                    var start = handlers[i].HandlerStart;
+                    InsertBefore(il, start, il.Create(OpCodes.Dup));
+                    InsertBefore(il, start, il.Create(OpCodes.Call, flow.ReportException));
                     continue;
-                var start = handler.HandlerStart;
-                InsertBefore(il, start, il.Create(OpCodes.Dup));
-                InsertBefore(il, start, il.Create(OpCodes.Call, flow.ReportException));
+                }
+
+                if (handlers[i].HandlerType == ExceptionHandlerType.Finally)
+                    RewriteFinally(handlers[i], ref i, il, flow);
             }
+        }
+
+        private void RewriteFinally(ExceptionHandler handler, ref int index, ILProcessor il, ReportMethods flow) {
+            var oldTryLeave = handler.TryEnd.Previous;
+
+            var newTryLeave = il.Create(OpCodes.Leave_S, (Instruction)oldTryLeave.Operand);
+            var reportCall = il.Create(OpCodes.Call, flow.ReportException);
+            var catchHandler = il.Create(OpCodes.Pop);
+
+            il.InsertBefore(oldTryLeave, newTryLeave);
+            il.InsertBefore(oldTryLeave, reportCall);
+            il.InsertBefore(oldTryLeave, il.Create(OpCodes.Ldc_I4_0));
+            il.InsertBefore(oldTryLeave, il.Create(OpCodes.Endfilter));
+            il.InsertBefore(oldTryLeave, catchHandler);
+
+            il.Body.ExceptionHandlers.Insert(index, new ExceptionHandler(ExceptionHandlerType.Filter) {
+                TryStart = handler.TryStart,
+                TryEnd = reportCall,
+                FilterStart = reportCall,
+                HandlerStart = catchHandler,
+                HandlerEnd = oldTryLeave.Next
+            });
+            index += 1;
         }
 
         private void InsertAfter(ILProcessor il, ref Instruction target, ref int index, Instruction instruction) {
