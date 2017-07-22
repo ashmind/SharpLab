@@ -2,9 +2,9 @@ import Vue from 'vue';
 import './mixins/format-date.js';
 import hooks from './hooks/registry.js';
 
-import './components/app-mirrorsharp.js';
-import './components/app-mirrorsharp-diagnostic.js';
-import './components/app-mirrorsharp-readonly.js';
+import './components/app-code-edit.js';
+import './components/app-diagnostic.js';
+import './components/app-code-view.js';
 import './components/app-ast-view.js';
 import './components/app-run-view.js';
 import './directives/app-class-toggle.js';

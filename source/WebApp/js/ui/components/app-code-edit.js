@@ -4,11 +4,11 @@ import 'codemirror/mode/mllike/mllike';
 import '../codemirror/addon-jump-arrows.js';
 import groupToMap from '../../helpers/group-to-map.js';
 
-Vue.component('app-mirrorsharp', {
+Vue.component('app-code-edit', {
     props: {
         initialText:      String,
-        serverOptions:    Object,
         serviceUrl:       String,
+        serverOptions:    Object,
         highlightedRange: Object,
         executionFlow:    Array
     },
@@ -62,50 +62,51 @@ Vue.component('app-mirrorsharp', {
             });
 
             const bookmarks = [];
-            this.$watch('executionFlow', steps => {
-                while (bookmarks.length > 0) {
-                    bookmarks.pop().clear();
-                }
-
-                const cm = instance.getCodeMirror();
-                cm.clearJumpArrows();
-                if (!steps)
-                    return;
-
-                let lastLineNumber;
-                let lastException;
-                for (const step of steps) {
-                    let lineNumber = step;
-                    let exception = null;
-                    if (typeof step === 'object') {
-                        lineNumber = step.line;
-                        exception = step.exception;
-                    }
-
-                    const important = (lastLineNumber != null && (lineNumber < lastLineNumber || lineNumber - lastLineNumber > 2)) || lastException;
-                    if (important)
-                        cm.addJumpArrow(lastLineNumber - 1, lineNumber - 1, { throw: !!lastException });
-                    lastLineNumber = lineNumber;
-                    lastException = exception;
-                }
-
-                const detailsByLine = groupToMap(steps.filter(s => typeof s === 'object'), s => s.line);
-                for (const [lineNumber, details] of detailsByLine) {
-                    const cmLineNumber = lineNumber - 1;
-                    const end = cm.getLine(cmLineNumber).length;
-                    for (const partName of ['notes', 'exception']) {
-                        const parts = details.map(s => s[partName]).filter(p => p);
-                        if (!parts.length)
-                            continue;
-                        const widget = createFlowLineEndWidget(parts, partName);
-                        bookmarks.push(cm.setBookmark({ line: cmLineNumber, ch: end }, { widget }));
-                    }
-                }
-            });
+            this.$watch('executionFlow', steps => renderExecutionFlow(steps, instance.getCodeMirror(), bookmarks));
         });
     },
     template: '<textarea></textarea>'
 });
+
+function renderExecutionFlow(steps, cm, bookmarks) {
+    while (bookmarks.length > 0) {
+        bookmarks.pop().clear();
+    }
+
+    cm.clearJumpArrows();
+    if (!steps)
+        return;
+
+    let lastLineNumber;
+    let lastException;
+    for (const step of steps) {
+        let lineNumber = step;
+        let exception = null;
+        if (typeof step === 'object') {
+            lineNumber = step.line;
+            exception = step.exception;
+        }
+
+        const important = (lastLineNumber != null && (lineNumber < lastLineNumber || lineNumber - lastLineNumber > 2)) || lastException;
+        if (important)
+            cm.addJumpArrow(lastLineNumber - 1, lineNumber - 1, { throw: !!lastException });
+        lastLineNumber = lineNumber;
+        lastException = exception;
+    }
+
+    const detailsByLine = groupToMap(steps.filter(s => typeof s === 'object'), s => s.line);
+    for (const [lineNumber, details] of detailsByLine) {
+        const cmLineNumber = lineNumber - 1;
+        const end = cm.getLine(cmLineNumber).length;
+        for (const partName of ['notes', 'exception']) {
+            const parts = details.map(s => s[partName]).filter(p => p);
+            if (!parts.length)
+                continue;
+            const widget = createFlowLineEndWidget(parts, partName);
+            bookmarks.push(cm.setBookmark({ line: cmLineNumber, ch: end }, { widget }));
+        }
+    }
+}
 
 function createFlowLineEndWidget(contents, kind) {
     const widget = document.createElement('span');

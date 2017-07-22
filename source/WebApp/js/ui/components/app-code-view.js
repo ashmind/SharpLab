@@ -8,7 +8,7 @@ import '../codemirror/mode-asm.js';
 import '../codemirror/addon-infotip.js';
 import '../codemirror/addon-cil-infotip.js';
 
-Vue.component('app-mirrorsharp-readonly', {
+Vue.component('app-code-view', {
     props: {
         value:    String,
         language: String

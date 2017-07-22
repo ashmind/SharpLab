@@ -48,15 +48,15 @@
             <div class="mobile-menu"></div>
           </header>
           <div class="content">
-            <app-mirrorsharp v-bind:initial-text="lastLoadedCode"
-                             v-bind:service-url="serviceUrl"
-                             v-bind:server-options="serverOptions"
-                             v-bind:highlighted-range="highlightedCodeRange"
-                             v-bind:execution-flow="result.type === 'run' ? result.value.flow : null"
-                             v-on:text-change="code = arguments[0]()"
-                             v-on:slow-update-result="applyUpdateResult"
-                             v-on:server-error="applyServerError"
-                             v-on:connection-change="applyConnectionChange"></app-mirrorsharp>
+            <app-code-edit v-bind:initial-text="lastLoadedCode"
+                           v-bind:service-url="serviceUrl"
+                           v-bind:server-options="serverOptions"
+                           v-bind:highlighted-range="highlightedCodeRange"
+                           v-bind:execution-flow="result.type === 'run' ? result.value.flow : null"
+                           v-on:text-change="code = arguments[0]()"
+                           v-on:slow-update-result="applyUpdateResult"
+                           v-on:server-error="applyServerError"
+                           v-on:connection-change="applyConnectionChange"></app-code-edit>
           </div>
         </section>
 
@@ -110,10 +110,10 @@
                           v-if="lastResultOfType.run"
                           v-show="result.type === 'run'"
                           v-bind:output="lastResultOfType.run.value.output"></app-run-view>
-            <app-mirrorsharp-readonly v-if="lastResultOfType.code"
-                                      v-show="result.type === 'code'"
-                                      v-bind:value="lastResultOfType.code.value"
-                                      v-bind:language="options.target"></app-mirrorsharp-readonly>
+            <app-code-view v-if="lastResultOfType.code"
+                           v-show="result.type === 'code'"
+                           v-bind:value="lastResultOfType.code.value"
+                           v-bind:language="options.target"></app-code-view>
             <app-ast-view class="ast"
                           v-if="lastResultOfType.ast"
                           v-show="result.type === 'ast'"
@@ -131,7 +131,7 @@
             <div class="loader"></div>
             <ul>
               <li v-for="error in result.errors">
-                <app-mirrorsharp-diagnostic v-bind:model="error" severity="error"></app-mirrorsharp-diagnostic>
+                <app-diagnostic v-bind:model="error" severity="error"></app-diagnostic>
               </li>
             </ul>
           </div>
@@ -145,7 +145,7 @@
           <div class="content">
             <ul>
               <li v-for="warning in result.warnings">
-                <app-mirrorsharp-diagnostic v-bind:model="warning" severity="warning"></app-mirrorsharp-diagnostic>
+                <app-diagnostic v-bind:model="warning" severity="warning"></app-diagnostic>
               </li>
             </ul>
           </div>
