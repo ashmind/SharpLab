@@ -13,6 +13,7 @@ using MirrorSharp.Testing;
 using SharpLab.Server;
 using SharpLab.Server.MirrorSharp.Internal;
 using System;
+using MirrorSharp.Testing.Results;
 
 namespace SharpLab.Tests {
     public class ExecutionTests {
@@ -28,12 +29,11 @@ namespace SharpLab.Tests {
             var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName));
 
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
-            var errors = result.JoinErrors();
             var steps = result.ExtensionResult.Flow
                 .Select(s => new { s.Line, s.Exception })
                 .ToArray();
 
-            Assert.True(errors.IsNullOrEmpty(), errors);
+            AssertIsSuccess(result, allowRuntimeException: true);
             Assert.Contains(new { Line = expectedLineNumber, Exception = expectedExceptionTypeName }, steps);
         }
 
@@ -46,7 +46,6 @@ namespace SharpLab.Tests {
             var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName));
 
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
-            var errors = result.JoinErrors();
 
             var notes = string.Join(
                 "; ",
@@ -55,7 +54,7 @@ namespace SharpLab.Tests {
                     .Select(s => s.Notes)
             );
 
-            Assert.True(errors.IsNullOrEmpty(), errors);
+            AssertIsSuccess(result);
             Assert.Equal(expectedNotes, notes);
         }
 
@@ -64,7 +63,7 @@ namespace SharpLab.Tests {
         [InlineData("(1, 2, 3).Inspect();", "Inspect: (1, 2, 3)")]
         [InlineData("new[] { 1, 2, 3 }.Inspect();", "Inspect: { 1, 2, 3 }")]
         [InlineData("3.Dump();", "Dump: 3")]
-        public async Task SlowUpdate_IncludesExpectedOutput_ForInspectAndDump(string code, string expectedOutput) {
+        public async Task SlowUpdate_IncludesExpectedInspectAndDumpOutput(string code, string expectedOutput) {
             var driver = await NewTestDriverAsync(@"
                 public class C {
                     public void M() { " + code + @" }
@@ -72,10 +71,41 @@ namespace SharpLab.Tests {
             ");
 
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
-            var errors = result.JoinErrors();
 
-            Assert.True(errors.IsNullOrEmpty(), errors);
+            AssertIsSuccess(result);
             Assert.Equal(expectedOutput, result.ExtensionResult.GetOutputAsString());
+        }
+
+        [Theory]
+        [InlineData("Console.Write(\"abc\");", "abc")]
+        [InlineData("Console.WriteLine(\"abc\");", "abc{newline}")]
+        [InlineData("Console.Write('a');", "a")]
+        [InlineData("Console.Write(3);", "3")]
+        [InlineData("Console.Write(3.1);", "3.1")]
+        [InlineData("Console.Write(new object());", "System.Object")]
+        public async Task SlowUpdate_IncludesConsoleOutput(string code, string expectedOutput) {
+            var driver = await NewTestDriverAsync(@"
+                using System;
+                public class C {
+                    public void M() { " + code + @" }
+                }
+            ");
+
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+
+            AssertIsSuccess(result);
+            Assert.Equal(
+                expectedOutput.Replace("{newline}", Environment.NewLine),
+                result.ExtensionResult.GetOutputAsString()
+            );
+        }
+
+        private static void AssertIsSuccess(SlowUpdateResult<ExecutionResultData> result, bool allowRuntimeException = false) {
+            var errors = result.JoinErrors();
+            Assert.True(errors.IsNullOrEmpty(), errors);
+            if (allowRuntimeException)
+                return;
+            Assert.Equal(null, result.ExtensionResult.Exception);
         }
 
         private static string LoadCodeFromResource(string resourceName) {
@@ -107,6 +137,17 @@ namespace SharpLab.Tests {
                     return token.Value<string>();
                 }));
             }
+
+            //public string GetOutputAsString() {
+            //    var valueGroupKey = new object();
+            //    var groups = Output.GroupAdjacentBy(token => (token is JValue) ? valueGroupKey : token);
+
+            //    return string.Join("\n", groups.Select(g => string.Join("", g.Select(token => {
+            //        if (token is JObject @object)
+            //            return @object.Value<string>("title") + ": " + @object.Value<string>("value");
+            //        return token.Value<string>();
+            //    }))));
+            //}
 
             [OnDeserialized]
             private void OnDeserialized(StreamingContext context) {

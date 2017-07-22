@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using AppDomainToolkit;
@@ -58,9 +59,7 @@ namespace SharpLab.Server.Execution {
             if (result.Exception != null)
                 writer.WriteProperty("exception", result.Exception.ToString());
             writer.WritePropertyStartArray("output");
-            foreach (var item in result.Output) {
-                SerializeOutput(item, writer);
-            }
+            SerializeOutput(result.Output, writer);
             writer.WriteEndArray();
 
             writer.WritePropertyStartArray("flow");
@@ -86,30 +85,50 @@ namespace SharpLab.Server.Execution {
             writer.WriteEndObject();
         }
 
-        private void SerializeOutput(object item, IFastJsonWriter writer) {
-            switch (item) {
-                case InspectionResult inspection:
-                    writer.WriteStartObject();
-                    writer.WriteProperty("type", "inspection");
-                    writer.WriteProperty("title", inspection.Title);
-                    writer.WriteProperty("value", inspection.Value);
-                    writer.WriteEndObject();
-                    break;
-                case string s:
-                    writer.WriteValue(s);
-                    break;
-                case null:
-                    writer.WriteValue("null");
-                    break;
-                default:
-                    writer.WriteValue("Unsupported output object type: " + item.GetType().Name);
-                    break;
+        private void SerializeOutput(IReadOnlyList<object> output, IFastJsonWriter writer) {
+            TextWriter openStringWriter = null;
+            foreach (var item in output) {
+                switch (item) {
+                    case InspectionResult inspection:
+                        if (openStringWriter != null) {
+                            openStringWriter.Close();
+                            openStringWriter = null;
+                        }
+                        writer.WriteStartObject();
+                        writer.WriteProperty("type", "inspection");
+                        writer.WriteProperty("title", inspection.Title);
+                        writer.WriteProperty("value", inspection.Value);
+                        writer.WriteEndObject();
+                        break;
+                    case string @string:
+                        if (openStringWriter == null)
+                            openStringWriter = openStringWriter ?? writer.OpenString();
+                        openStringWriter.Write(@string);
+                        break;
+                    case char[] chars:
+                        if (openStringWriter == null)
+                            openStringWriter = writer.OpenString();
+                        openStringWriter.Write(chars);
+                        break;
+                    case null:
+                        break;
+                    default:
+                        if (openStringWriter != null) {
+                            openStringWriter.Close();
+                            openStringWriter = null;
+                        }
+                        writer.WriteValue("Unsupported output object type: " + item.GetType().Name);
+                        break;
+                }
             }
+            openStringWriter?.Close();
         }
 
         private static class Remote {
             public static ExecutionResult Execute(Stream assemblyStream, RuntimeGuardToken guardToken) {
                 try {
+                    Console.SetOut(Output.Writer);
+
                     var assembly = Assembly.Load(ReadAllBytes(assemblyStream));
                     var c = assembly.GetType("C");
                     var m = c.GetMethod("M");
