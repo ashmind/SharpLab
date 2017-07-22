@@ -26,12 +26,12 @@
     return element;
   }
 
-  class FlowLayer {
+  class ArrowLayer {
     constructor(cm) {
       const sizer = cm.getWrapperElement()
         .querySelector(".CodeMirror-sizer");
       const svg = createSVG("svg", {
-        "class": "CodeMirror-flow-layer",
+        "class": "CodeMirror-jump-arrow-layer",
         width:  sizer.offsetWidth,
         height: sizer.offsetHeight
       });
@@ -70,20 +70,21 @@
       const fromY = from.y + offsetY;
       const toY = to.y - offsetY;
 
-      const g = this.renderSVG("g", {
-        "class": "CodeMirror-flow-jump" + (up ? " CodeMirror-flow-jump-up" : "") + (options.throw ? " CodeMirror-flow-jump-throw" : ""),
-        "data-debug": key
-      });
+      const groupClassName = "CodeMirror-jump-arrow"
+        + (up ? " CodeMirror-jump-arrow-up" : "")
+        + (options.throw ? " CodeMirror-jump-arrow-throw" : "");
+
+      const g = this.renderSVG("g", { class: groupClassName });
       this.renderSVG(g, "path", {
-        "class": "CodeMirror-flow-jump-line",
+        class: "CodeMirror-jump-arrow-line",
         d: `M ${from.x} ${fromY} H ${left} V ${toY} H ${to.x}`
       });
       this.renderSVG(g, "circle", {
-        "class": "CodeMirror-flow-jump-start",
+        class: "CodeMirror-jump-arrow-start",
         cx: from.x, cy: fromY, r: 1.5
       });
       this.renderSVG(g, "path", {
-        "class": "CodeMirror-flow-jump-arrow",
+        class: "CodeMirror-jump-arrow-end",
         d: `M ${to.x} ${toY} l -2 -1 v 2 z`
       });
       this.rendered[key] = true;
@@ -136,21 +137,22 @@
     }
   }
 
-  CodeMirror.defineExtension("addFlowJump", function(fromLine, toLine, options) {
+  const STATE_KEY = "jumpArrowLayer";
+  CodeMirror.defineExtension("addJumpArrow", function(fromLine, toLine, options) {
     /* eslint-disable no-invalid-this */
-    let flow = this.state.flow;
-    if (!flow) {
-      flow = new FlowLayer(this);
-      this.state.flow = flow;
+    let layer = this.state[STATE_KEY];
+    if (!layer) {
+      layer = new ArrowLayer(this);
+      this.state[STATE_KEY] = layer;
     }
-    flow.renderJump(fromLine, toLine, options);
+    layer.renderJump(fromLine, toLine, options);
   });
 
-  CodeMirror.defineExtension("clearFlowPoints", function() {
+  CodeMirror.defineExtension("clearJumpArrows", function() {
     /* eslint-disable no-invalid-this */
-    const flow = this.state.flow;
-    if (!flow)
+    const layer = this.state[STATE_KEY];
+    if (!layer)
       return;
-    flow.clear();
+    layer.clear();
   });
 });

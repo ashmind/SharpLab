@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import mirrorsharp from 'mirrorsharp';
 import 'codemirror/mode/mllike/mllike';
-import '../codemirror/addon-flow.js';
+import '../codemirror/addon-jump-arrows.js';
 import groupToMap from '../../helpers/group-to-map.js';
 
 Vue.component('app-mirrorsharp', {
@@ -68,7 +68,7 @@ Vue.component('app-mirrorsharp', {
                 }
 
                 const cm = instance.getCodeMirror();
-                cm.clearFlowPoints();
+                cm.clearJumpArrows();
                 if (!steps)
                     return;
 
@@ -84,7 +84,7 @@ Vue.component('app-mirrorsharp', {
 
                     const important = (lastLineNumber != null && (lineNumber < lastLineNumber || lineNumber - lastLineNumber > 2)) || lastException;
                     if (important)
-                        cm.addFlowJump(lastLineNumber - 1, lineNumber - 1, { throw: !!lastException });
+                        cm.addJumpArrow(lastLineNumber - 1, lineNumber - 1, { throw: !!lastException });
                     lastLineNumber = lineNumber;
                     lastException = exception;
                 }
