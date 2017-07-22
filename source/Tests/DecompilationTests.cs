@@ -11,6 +11,7 @@ using MirrorSharp.Testing;
 using Newtonsoft.Json.Linq;
 using Pedantic.IO;
 using SharpLab.Server;
+using SharpLab.Tests.Internal;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -27,12 +28,15 @@ namespace SharpLab.Tests {
         // Tuples, https://github.com/ashmind/SharpLab/issues/139
         [InlineData("class C { void M((int, string) t) {} }")]
         public async Task SlowUpdate_DecompilesSimpleCodeWithoutErrors(string code) {
-            var driver = MirrorSharpTestDriver.New().SetText(code);
+            var driver = MirrorSharpTestDriver.New(MirrorSharpOptions).SetText(code);
+            await driver.SendSetOptionsAsync(LanguageNames.CSharp, LanguageNames.CSharp);
 
             var result = await driver.SendSlowUpdateAsync<string>();
             var errors = result.JoinErrors();
 
             Assert.True(errors.IsNullOrEmpty(), errors);
+            Assert.NotNull(result.ExtensionResult);
+            Assert.NotEmpty(result.ExtensionResult);
         }
 
         [Theory]
@@ -149,11 +153,7 @@ namespace SharpLab.Tests {
 
         private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestData data, OptimizationLevel optimizationLevel = OptimizationLevel.Release) {
             var driver = MirrorSharpTestDriver.New(MirrorSharpOptions);
-            await driver.SendSetOptionsAsync(new Dictionary<string, string> {
-                {"language", data.SourceLanguageName},
-                {"optimize", optimizationLevel.ToString().ToLowerInvariant()},
-                {"x-target", data.TargetLanguageName}
-            });
+            await driver.SendSetOptionsAsync(data.SourceLanguageName, data.TargetLanguageName, optimizationLevel);
             driver.SetText(data.Original);
             return driver;
         }
