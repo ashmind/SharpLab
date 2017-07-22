@@ -55,12 +55,14 @@ namespace SharpLab.Server.Execution {
 
         public void Serialize(ExecutionResult result, IFastJsonWriter writer) {
             writer.WriteStartObject();
-            if (result.Exception == null) {
-                writer.WriteProperty("returnValue", result.ReturnValue);
-            }
-            else {
+            if (result.Exception != null)
                 writer.WriteProperty("exception", result.Exception.ToString());
+            writer.WritePropertyStartArray("output");
+            foreach (var item in result.Output) {
+                SerializeOutput(item, writer);
             }
+            writer.WriteEndArray();
+
             writer.WritePropertyStartArray("flow");
             foreach (var step in result.Flow) {
                 SerializeFlowStep(step, writer);
@@ -84,6 +86,27 @@ namespace SharpLab.Server.Execution {
             writer.WriteEndObject();
         }
 
+        private void SerializeOutput(object item, IFastJsonWriter writer) {
+            switch (item) {
+                case InspectionResult inspection:
+                    writer.WriteStartObject();
+                    writer.WriteProperty("type", "inspection");
+                    writer.WriteProperty("title", inspection.Title);
+                    writer.WriteProperty("value", inspection.Value);
+                    writer.WriteEndObject();
+                    break;
+                case string s:
+                    writer.WriteValue(s);
+                    break;
+                case null:
+                    writer.WriteValue("null");
+                    break;
+                default:
+                    writer.WriteValue("Unsupported output object type: " + item.GetType().Name);
+                    break;
+            }
+        }
+
         private static class Remote {
             public static ExecutionResult Execute(Stream assemblyStream, RuntimeGuardToken guardToken) {
                 try {
@@ -93,7 +116,9 @@ namespace SharpLab.Server.Execution {
 
                     using (guardToken.Scope()) {
                         var result = m.Invoke(Activator.CreateInstance(c), null);
-                        return new ExecutionResult(result?.ToString(), Flow.Steps);
+                        if (m.ReturnType != typeof(void))
+                            result.Inspect("Return");
+                        return new ExecutionResult(Output.Stream, Flow.Steps);
                     }
                 }
                 catch (Exception ex) {
@@ -101,7 +126,7 @@ namespace SharpLab.Server.Execution {
                         ex = invocationEx.InnerException;
 
                     Flow.ReportException(ex);
-                    return new ExecutionResult(ex, Flow.Steps);
+                    return new ExecutionResult(ex, Output.Stream, Flow.Steps);
                 }
             }
 

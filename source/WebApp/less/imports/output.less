@@ -1,0 +1,49 @@
+@import 'common.less';
+
+@inspection-border-color: #aaa;
+@inspection-header-color: #aaa;
+
+.output {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 2px 4px;
+    overflow: auto;
+}
+
+.output > * + * {
+    margin-top: 2px;
+}
+
+.inspection {
+    border: 1px solid @inspection-border-color;
+}
+
+.inspection-value-only {
+    display: flex;
+    flex-direction: row;
+
+    h3 {
+        min-width: 4.2em;
+    }
+}
+
+.inspection h3 {
+    font-size: inherit;
+    background-color: @inspection-header-color;
+    border-bottom: 1px solid @inspection-border-color;
+    color: #fff;
+    margin: 0;
+    padding: 2px 4px;
+    font-weight: normal;
+}
+
+.inspection-value {
+    text-align: right;
+    padding: 2px 4px;
+}

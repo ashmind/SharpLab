@@ -2,6 +2,9 @@
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using AshMind.Extensions;
 using Pedantic.IO;
@@ -9,8 +12,7 @@ using MirrorSharp;
 using MirrorSharp.Testing;
 using SharpLab.Server;
 using SharpLab.Server.MirrorSharp.Internal;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System;
 
 namespace SharpLab.Tests {
     public class ExecutionTests {
@@ -57,8 +59,23 @@ namespace SharpLab.Tests {
             Assert.Equal(expectedNotes, notes);
         }
 
-        private static int LineNumberFromFlowStep(JToken step) {
-            return (step as JObject)?.Value<int>("line") ?? step.Value<int>();
+        [Theory]
+        [InlineData("3.Inspect();", "Inspect: 3")]
+        [InlineData("(1, 2, 3).Inspect();", "Inspect: (1, 2, 3)")]
+        [InlineData("new[] { 1, 2, 3 }.Inspect();", "Inspect: { 1, 2, 3 }")]
+        [InlineData("3.Dump();", "Dump: 3")]
+        public async Task SlowUpdate_IncludesExpectedOutput_ForInspectAndDump(string code, string expectedOutput) {
+            var driver = await NewTestDriverAsync(@"
+                public class C {
+                    public void M() { " + code + @" }
+                }
+            ");
+
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            var errors = result.JoinErrors();
+
+            Assert.True(errors.IsNullOrEmpty(), errors);
+            Assert.Equal(expectedOutput, result.ExtensionResult.GetOutputAsString());
         }
 
         private static string LoadCodeFromResource(string resourceName) {
@@ -80,6 +97,16 @@ namespace SharpLab.Tests {
             public IList<FlowStepData> Flow { get; } = new List<FlowStepData>();
             [JsonProperty("flow")]
             private IList<JToken> FlowRaw { get; } = new List<JToken>();
+            [JsonProperty]
+            private IList<JToken> Output { get; } = new List<JToken>();
+
+            public string GetOutputAsString() {
+                return string.Join("\n", Output.Select(token => {
+                    if (token is JObject @object)
+                        return @object.Value<string>("title") + ": " + @object.Value<string>("value");
+                    return token.Value<string>();
+                }));
+            }
 
             [OnDeserialized]
             private void OnDeserialized(StreamingContext context) {

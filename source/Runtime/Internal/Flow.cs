@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace SharpLab.Runtime.Internal {
@@ -61,9 +59,9 @@ namespace SharpLab.Runtime.Internal {
                 return;
             }
 
-            AppendString(notes, name, ReportLimits.MaxVariableNameLength);
+            ObjectAppender.AppendString(notes, name, ReportLimits.MaxVariableNameLength);
             notes.Append(": ");
-            AppendValue(notes, value);
+            ObjectAppender.Append(notes, value, ReportLimits.MaxEnumerableItems, ReportLimits.MaxVariableValueLength);
             // Have to reassign in case we set Notes
             _steps[_steps.Count - 1] = step;
         }
@@ -72,48 +70,6 @@ namespace SharpLab.Runtime.Internal {
             var step = _steps[_steps.Count - 1];
             step.Exception = exception;
             _steps[_steps.Count - 1] = step;
-        }
-
-        private static StringBuilder AppendValue<T>(StringBuilder builder, T value) {
-            if (value == null)
-                return builder.Append("null");
-
-            switch (value) {
-                case IList<int> e: return AppendEnumerable(builder, e);
-                case ICollection e: return AppendEnumerable(builder, e.Cast<object>());
-                default: return AppendString(builder, value.ToString(), ReportLimits.MaxVariableValueLength);
-            }
-        }
-
-        private static StringBuilder AppendEnumerable<T>(StringBuilder builder, IEnumerable<T> enumerable) {
-            builder.Append("{ ");
-            var index = 0;
-            foreach (var item in enumerable) {
-                if (index > 0)
-                    builder.Append(", ");
-
-                if (index > ReportLimits.MaxEnumerableItems) {
-                    builder.Append("…");
-                    break;
-                }
-
-                AppendValue(builder, item);
-                index += 1;
-            }
-            builder.Append(" }");
-            return builder;
-        }
-
-        private static StringBuilder AppendString(StringBuilder builder, string value, int limit) {
-            if (value.Length <= limit) {
-                builder.Append(value);
-            }
-            else {
-                builder.Append(value, 0, limit - 1);
-                builder.Append("…");
-            }
-
-            return builder;
         }
 
         [Serializable]

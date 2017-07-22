@@ -106,14 +106,14 @@
           </header>
           <div class="content">
             <div class="loader"></div>
+            <app-run-view class="output"
+                          v-if="lastResultOfType.run"
+                          v-show="result.type === 'run'"
+                          v-bind:output="lastResultOfType.run.value.output"></app-run-view>
             <app-mirrorsharp-readonly v-if="lastResultOfType.code"
                                       v-show="result.type === 'code'"
                                       v-bind:value="lastResultOfType.code.value"
                                       v-bind:language="options.target"></app-mirrorsharp-readonly>
-            <app-run-view class="run-result"
-                          v-if="lastResultOfType.run"
-                          v-show="result.type === 'run'"
-                          v-bind:model="lastResultOfType.run.value"></app-run-view>
             <app-ast-view class="ast"
                           v-if="lastResultOfType.ast"
                           v-show="result.type === 'ast'"
