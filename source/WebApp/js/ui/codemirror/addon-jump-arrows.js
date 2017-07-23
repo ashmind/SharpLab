@@ -28,18 +28,20 @@
 
   class ArrowLayer {
     constructor(cm) {
-      const sizer = cm.getWrapperElement()
-        .querySelector(".CodeMirror-sizer");
+      const wrapper = cm.getWrapperElement();
+      const scroll = wrapper.querySelector(".CodeMirror-scroll");
+      const sizer = wrapper.querySelector(".CodeMirror-sizer");
       const svg = createSVG("svg", {
         "class": "CodeMirror-jump-arrow-layer",
         width:  sizer.offsetWidth,
         height: sizer.offsetHeight
       });
-      sizer.appendChild(svg);
+      scroll.appendChild(svg);
 
       cm.on("update", debounce(() => this.resize(), 100));
       this.cm = cm;
       this.sizer = sizer;
+      this.sizerLeftMargin = parseInt(sizer.style.marginLeft);
       this.root = svg;
       this.rendered = {};
     }
@@ -47,6 +49,7 @@
     resize() {
       this.root.setAttribute("width", this.sizer.offsetWidth);
       this.root.setAttribute("height", this.sizer.offsetHeight);
+      this.sizerLeftMargin = parseInt(this.sizer.style.marginLeft);
     }
 
     renderJump(fromLine, toLine, options) {
@@ -65,6 +68,9 @@
         left -= 8;
         up = true;
       }
+
+      if (left < 1)
+        left = 1;
 
       const offsetY = 4;
       const fromY = from.y + offsetY;
@@ -112,14 +118,16 @@
         if (lineStart < leftmost.ch)
           leftmost = { line, ch: lineStart };
       }
-      return this.cm.cursorCoords(leftmost, "local").left - 15;
+      const coords =  this.cm.cursorCoords(leftmost, "local");
+      return (coords.left + this.sizerLeftMargin) - 15;
     }
 
     getJumpCoordinates(line) {
       const start = this.getLineStart(line);
       const coords = this.cm.cursorCoords({ ch: start, line }, "local");
+      const left = coords.left + this.sizerLeftMargin;
       return {
-        x: Math.round(100 * (coords.left - 5)) / 100,
+        x: Math.round(100 * (left - 5)) / 100,
         y: Math.round(100 * (coords.top + ((coords.bottom - coords.top) / 2))) / 100
       };
     }
