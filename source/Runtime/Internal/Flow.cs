@@ -21,6 +21,9 @@ namespace SharpLab.Runtime.Internal {
         }
 
         public static void ReportVariable<T>(string name, T value) {
+            if (_steps.Count == 0)
+                return;
+
             var step = _steps[_steps.Count - 1];
             if (!_stepNotesCountPerLine.TryGetValue(step.LineNumber, out int countPerLine))
                 countPerLine = 0;
@@ -67,6 +70,8 @@ namespace SharpLab.Runtime.Internal {
         }
 
         public static void ReportException(object exception) {
+            if (_steps.Count == 0)
+                return;
             var step = _steps[_steps.Count - 1];
             step.Exception = exception;
             _steps[_steps.Count - 1] = step;
