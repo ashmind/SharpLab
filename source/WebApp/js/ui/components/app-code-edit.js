@@ -16,6 +16,7 @@ Vue.component('app-code-edit', {
         Vue.nextTick(() => {
             const textarea = this.$el;
             textarea.value = this.initialText;
+            let instance;
             const options = {
                 serviceUrl: this.serviceUrl,
                 on: {
@@ -25,7 +26,7 @@ Vue.component('app-code-edit', {
                     serverError: message => this.$emit('server-error', message)
                 }
             };
-            let instance = mirrorsharp(textarea, options);
+            instance = mirrorsharp(textarea, options);
             if (this.serverOptions)
                 instance.sendServerOptions(this.serverOptions);
 
@@ -73,10 +74,7 @@ function renderExecutionFlow(steps, cm, bookmarks) {
         bookmarks.pop().clear();
     }
 
-    cm.clearJumpArrows();
-    if (!steps)
-        return;
-
+    const jumpArrows = [];
     let lastLineNumber;
     let lastException;
     for (const step of steps) {
@@ -89,10 +87,14 @@ function renderExecutionFlow(steps, cm, bookmarks) {
 
         const important = (lastLineNumber != null && (lineNumber < lastLineNumber || lineNumber - lastLineNumber > 2)) || lastException;
         if (important)
-            cm.addJumpArrow(lastLineNumber - 1, lineNumber - 1, { throw: !!lastException });
+            jumpArrows.push({ fromLine: lastLineNumber - 1, toLine: lineNumber - 1, options: { throw: !!lastException } });
         lastLineNumber = lineNumber;
         lastException = exception;
     }
+    cm.setJumpArrows(jumpArrows);
+
+    if (steps.length === 0)
+        return;
 
     const detailsByLine = groupToMap(steps.filter(s => typeof s === 'object'), s => s.line);
     for (const [lineNumber, details] of detailsByLine) {
