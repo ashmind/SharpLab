@@ -4,7 +4,7 @@ using Mono.Cecil.Cil;
 using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Server.Execution.Internal {
-    public class FlowReportingRewriter {
+    public class FlowReportingRewriter : IFlowReportingRewriter {
         private const int HiddenLine = 0xFEEFEE;
 
         private static readonly MethodInfo ReportLineStartMethod =
@@ -129,7 +129,7 @@ namespace SharpLab.Server.Execution.Internal {
             index += 1;
         }
 
-        public void InsertBefore(ILProcessor il, Instruction target, Instruction instruction) {
+        private void InsertBefore(ILProcessor il, Instruction target, Instruction instruction) {
             il.InsertBefore(target, instruction);
             foreach (var other in il.Body.Instructions) {
                 if (other.Operand == target)

@@ -15,11 +15,11 @@ using Unbreakable;
 using Unbreakable.Rules.Rewriters;
 
 namespace SharpLab.Server.Execution {
-    public class Executor {
-        private readonly FlowReportingRewriter _rewriter;
+    public class Executor : IExecutor {
+        private readonly IFlowReportingRewriter _rewriter;
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;
 
-        public Executor(FlowReportingRewriter rewriter, RecyclableMemoryStreamManager memoryStreamManager) {
+        public Executor(IFlowReportingRewriter rewriter, RecyclableMemoryStreamManager memoryStreamManager) {
             _rewriter = rewriter;
             _memoryStreamManager = memoryStreamManager;
         }

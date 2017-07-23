@@ -22,14 +22,14 @@ namespace SharpLab.Server.MirrorSharp {
         private readonly ICompiler _compiler;
         private readonly IReadOnlyDictionary<string, IDecompiler> _decompilers;
         private readonly IReadOnlyDictionary<string, IAstTarget> _astTargets;
-        private readonly Executor _executor;
+        private readonly IExecutor _executor;
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;
 
         public SlowUpdate(
             ICompiler compiler,
             IReadOnlyCollection<IDecompiler> decompilers,
             IReadOnlyCollection<IAstTarget> astTargets,
-            Executor executor,
+            IExecutor executor,
             RecyclableMemoryStreamManager memoryStreamManager
         ) {
             _compiler = compiler;

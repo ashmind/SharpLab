@@ -55,8 +55,12 @@ namespace SharpLab.Server {
             builder.RegisterType<ILDecompiler>().As<IDecompiler>().SingleInstance();
             builder.RegisterType<JitAsmDecompiler>().As<IDecompiler>().SingleInstance();
 
-            builder.RegisterType<Executor>().AsSelf().SingleInstance();
-            builder.RegisterType<FlowReportingRewriter>().AsSelf().SingleInstance();
+            builder.RegisterType<Executor>()
+                   .As<IExecutor>()
+                   .SingleInstance();
+            builder.RegisterType<FlowReportingRewriter>()
+                   .As<IFlowReportingRewriter>()
+                   .SingleInstance();
 
             builder.RegisterInstance(new RecyclableMemoryStreamManager())
                    .AsSelf();
