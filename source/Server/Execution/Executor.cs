@@ -56,8 +56,6 @@ namespace SharpLab.Server.Execution {
 
         public void Serialize(ExecutionResult result, IFastJsonWriter writer) {
             writer.WriteStartObject();
-            if (result.Exception != null)
-                writer.WriteProperty("exception", result.Exception.ToString());
             writer.WritePropertyStartArray("output");
             SerializeOutput(result.Output, writer);
             writer.WriteEndArray();
@@ -145,7 +143,8 @@ namespace SharpLab.Server.Execution {
                         ex = invocationEx.InnerException;
 
                     Flow.ReportException(ex);
-                    return new ExecutionResult(ex, Output.Stream, Flow.Steps);
+                    ex.Inspect("Exception");
+                    return new ExecutionResult(Output.Stream, Flow.Steps);
                 }
             }
 

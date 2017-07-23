@@ -58,12 +58,40 @@ namespace SharpLab.Tests {
             Assert.Equal(expectedNotes, notes);
         }
 
+        [Fact]
+        public async Task SlowUpdate_IncludesReturnValueInOutput() {
+            var driver = await NewTestDriverAsync(@"
+                public class C {
+                    public int M() { return 3; }
+                }
+            ");
+
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+
+            AssertIsSuccess(result);
+            Assert.Equal("Return: 3", result.ExtensionResult.GetOutputAsString());
+        }
+
+        [Fact]
+        public async Task SlowUpdate_IncludesExceptionInOutput() {
+            var driver = await NewTestDriverAsync(@"
+                public class C {
+                    public int M() { throw new System.Exception(""Test""); }
+                }
+            ");
+
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+
+            AssertIsSuccess(result, allowRuntimeException: true);
+            Assert.Matches("^Exception: System.Exception: Test", result.ExtensionResult.GetOutputAsString());
+        }
+
         [Theory]
         [InlineData("3.Inspect();", "Inspect: 3")]
         [InlineData("(1, 2, 3).Inspect();", "Inspect: (1, 2, 3)")]
         [InlineData("new[] { 1, 2, 3 }.Inspect();", "Inspect: { 1, 2, 3 }")]
         [InlineData("3.Dump();", "Dump: 3")]
-        public async Task SlowUpdate_IncludesExpectedInspectAndDumpOutput(string code, string expectedOutput) {
+        public async Task SlowUpdate_IncludesInspectAndDumpInOutput(string code, string expectedOutput) {
             var driver = await NewTestDriverAsync(@"
                 public class C {
                     public void M() { " + code + @" }
@@ -83,7 +111,7 @@ namespace SharpLab.Tests {
         [InlineData("Console.Write(3);", "3")]
         [InlineData("Console.Write(3.1);", "3.1")]
         [InlineData("Console.Write(new object());", "System.Object")]
-        public async Task SlowUpdate_IncludesConsoleOutput(string code, string expectedOutput) {
+        public async Task SlowUpdate_IncludesConsoleInOutput(string code, string expectedOutput) {
             var driver = await NewTestDriverAsync(@"
                 using System;
                 public class C {
@@ -105,7 +133,7 @@ namespace SharpLab.Tests {
             Assert.True(errors.IsNullOrEmpty(), errors);
             if (allowRuntimeException)
                 return;
-            Assert.Equal(null, result.ExtensionResult.Exception);
+            Assert.DoesNotMatch("Exception:", result.ExtensionResult.GetOutputAsString());
         }
 
         private static string LoadCodeFromResource(string resourceName) {
@@ -122,7 +150,6 @@ namespace SharpLab.Tests {
         }
 
         private class ExecutionResultData {
-            public string Exception { get; set; }
             [JsonIgnore]
             public IList<FlowStepData> Flow { get; } = new List<FlowStepData>();
             [JsonProperty("flow")]

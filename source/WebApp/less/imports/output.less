@@ -45,22 +45,39 @@
 
 .inspection {
     .code-text();
-    border: 1px solid @inspection-border-color;
-    h3 {
-        font-size: inherit;
-        background-color: @inspection-header-color;
-        margin: 0;
-        padding: 2px 4px;
-        font-weight: normal;
-    }
-}
-
-.inspection-value-only {
     display: flex;
     flex-direction: row;
+    border: 1px solid @inspection-border-color;
+    header {
+        background-color: @inspection-header-color;
+        padding: 2px 4px;
+
+        &::after {
+            content: ':';
+        }
+    }
 }
 
 .inspection-value {
     text-align: right;
     padding: 2px 4px;
+    white-space: pre-wrap;
+}
+
+.inspection-multiline {
+    flex-direction: column;
+    header::after {
+        content: '';
+    }
+    .inspection-value {
+        text-align: left;
+    }
+}
+
+.inspection-exception {
+    border-color: @error-color;
+    header {
+        background-color: @error-color;
+        color: #fff;
+    }
 }
