@@ -8,6 +8,7 @@ Vue.component('app-run-view', {
       <small class="output-disclaimer">
         This is a new feature — might be unstable/too strict. Please <a href="https://github.com/ashmind/SharpLab/issues">report</a> any issues.
       </small>
+      <div class="output-empty" v-show="output.length === 0">Completed — no output.</div>
       <template v-for="item in output">
         <pre v-if="typeof item === 'string'">{{item}}</pre>
         <div v-if="typeof item === 'object' && item.type === 'inspection' && item.value" class="inspection inspection-value-only">
