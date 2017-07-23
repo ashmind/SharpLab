@@ -2,7 +2,7 @@
 using System.Text;
 using SharpLab.Runtime.Internal;
 
-public static class ObjectExtensions {
+public static class SharpLabObjectExtensions {
     // LinqPad/etc compatibility only
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static void Dump<T>(this T value) {

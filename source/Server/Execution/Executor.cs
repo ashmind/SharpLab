@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using AppDomainToolkit;
 using AshMind.Extensions;
 using Microsoft.IO;
@@ -10,6 +11,7 @@ using Mono.Cecil;
 using SharpLab.Runtime.Internal;
 using SharpLab.Server.Execution.Internal;
 using Unbreakable;
+using Unbreakable.Rules.Rewriters;
 
 namespace SharpLab.Server.Execution {
     public class Executor {
@@ -31,12 +33,7 @@ namespace SharpLab.Server.Execution {
                 });
             }
             _rewriter.Rewrite(assembly);
-            var guardToken = new RuntimeGuardToken(); /*AssemblyGuard.Rewrite(assembly, new AssemblyGuardSettings {
-                ApiRules = ApiRules.SafeDefaults()
-                    .Namespace("SharpLab.Runtime.Internal", ApiAccess.Allowed)
-                    .Namespace("System.Collections", ApiAccess.Neutral, n => n.Type(nameof(System.Collections.IEnumerator), ApiAccess.Allowed))
-                    .Namespace("System", ApiAccess.Neutral, n => n.Type(nameof(System.IDisposable), ApiAccess.Allowed))
-            });*/
+            var guardToken = AssemblyGuard.Rewrite(assembly, GuardSettings);
 
             using (var guardedStream = _memoryStreamManager.GetStream()) {
                 assembly.Write(guardedStream);
@@ -165,5 +162,26 @@ namespace SharpLab.Server.Execution {
                 return bytes;
             }
         }
+
+        private static readonly AssemblyGuardSettings GuardSettings = new AssemblyGuardSettings {
+            ApiRules = ApiRules.SafeDefaults()
+                .Namespace("System", ApiAccess.Neutral,
+                    n => n.Type(typeof(Console), ApiAccess.Neutral,
+                        t => t.Member(nameof(Console.Write), ApiAccess.Allowed)
+                              .Member(nameof(Console.WriteLine), ApiAccess.Allowed)
+                    )
+                )
+                .Namespace("SharpLab.Runtime.Internal", ApiAccess.Neutral,
+                    n => n.Type(typeof(Flow), ApiAccess.Neutral,
+                        t => t.Member(nameof(Flow.ReportException), ApiAccess.Allowed, NoGuardRewriter.Default)
+                              .Member(nameof(Flow.ReportLineStart), ApiAccess.Allowed, NoGuardRewriter.Default)
+                              .Member(nameof(Flow.ReportVariable), ApiAccess.Allowed, NoGuardRewriter.Default)
+                    )
+                )
+                .Namespace("", ApiAccess.Neutral,
+                    n => n.Type(typeof(SharpLabObjectExtensions), ApiAccess.Allowed)
+                ),
+            AllowExplicitLayoutInTypesMatchingPattern = new Regex("<PrivateImplementationDetails>", RegexOptions.Compiled)
+        };
     }
 }
