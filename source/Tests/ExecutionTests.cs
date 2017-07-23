@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using System.Text;
+using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -10,10 +11,10 @@ using AshMind.Extensions;
 using Pedantic.IO;
 using MirrorSharp;
 using MirrorSharp.Testing;
+using MirrorSharp.Testing.Results;
 using SharpLab.Server;
 using SharpLab.Server.MirrorSharp.Internal;
-using System;
-using MirrorSharp.Testing.Results;
+using SharpLab.Tests.Internal;
 
 namespace SharpLab.Tests {
     public class ExecutionTests {
@@ -128,6 +129,20 @@ namespace SharpLab.Tests {
             );
         }
 
+        [Fact]
+        public async Task SlowUpdate_ExecutesFSharp() {
+            var driver = await NewTestDriverAsync(@"
+                open System
+                type C() =
+                    member this.M() = 5
+            ", "F#");
+
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+
+            AssertIsSuccess(result);
+            Assert.Equal("Return: 5", result.ExtensionResult.GetOutputAsString());
+        }
+
         private static void AssertIsSuccess(SlowUpdateResult<ExecutionResultData> result, bool allowRuntimeException = false) {
             var errors = result.JoinErrors();
             Assert.True(errors.IsNullOrEmpty(), errors);
@@ -140,12 +155,9 @@ namespace SharpLab.Tests {
             return EmbeddedResource.ReadAllText(typeof(ExecutionTests), "TestCode.Execution." + resourceName);
         }
 
-        private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(string code) {
+        private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(string code, string languageName = LanguageNames.CSharp) {
             var driver = MirrorSharpTestDriver.New(MirrorSharpOptions).SetText(code);
-            await driver.SendSetOptionsAsync(new Dictionary<string, string> {
-                { "optimize", "debug" },
-                { "x-target", TargetNames.Run }
-            });
+            await driver.SendSetOptionsAsync(languageName, TargetNames.Run, OptimizationLevel.Debug);
             return driver;
         }
 
@@ -164,17 +176,6 @@ namespace SharpLab.Tests {
                     return token.Value<string>();
                 }));
             }
-
-            //public string GetOutputAsString() {
-            //    var valueGroupKey = new object();
-            //    var groups = Output.GroupAdjacentBy(token => (token is JValue) ? valueGroupKey : token);
-
-            //    return string.Join("\n", groups.Select(g => string.Join("", g.Select(token => {
-            //        if (token is JObject @object)
-            //            return @object.Value<string>("title") + ": " + @object.Value<string>("value");
-            //        return token.Value<string>();
-            //    }))));
-            //}
 
             [OnDeserialized]
             private void OnDeserialized(StreamingContext context) {

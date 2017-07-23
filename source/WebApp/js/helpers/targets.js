@@ -1,10 +1,13 @@
+import features from './features.js';
 import languages from './languages.js';
 
-export default Object.freeze({
+const targets = {
     csharp: languages.csharp,
     vb:     languages.vb,
     il:     'IL',
     asm:    'JIT ASM',
-    ast:    'AST',
-    run:    'Run'
-});
+    ast:    'AST'
+};
+if (features.run)
+    targets.run = 'Run';
+export default Object.freeze(targets);

@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using AppDomainToolkit;
 using AshMind.Extensions;
+using Microsoft.FSharp.Core;
 using Microsoft.IO;
 using MirrorSharp.Advanced;
 using Mono.Cecil;
@@ -125,8 +126,11 @@ namespace SharpLab.Server.Execution {
                     Console.SetOut(Output.Writer);
 
                     var assembly = Assembly.Load(ReadAllBytes(assemblyStream));
-                    var c = assembly.GetType("C");
-                    var m = c.GetMethod("M");
+                    var c = assembly.GetType("C")
+                         ?? assembly.GetType("_")?.GetNestedType("C")
+                         ?? throw new NotSupportedException("Class 'C' was not found (currently only C.M() can be executed).");
+                    var m = c.GetMethod("M")
+                         ?? throw new NotSupportedException("Method 'M' was not found (currently only C.M() can be executed).");
 
                     using (guardToken.Scope()) {
                         var result = m.Invoke(Activator.CreateInstance(c), null);
@@ -180,6 +184,9 @@ namespace SharpLab.Server.Execution {
                 )
                 .Namespace("", ApiAccess.Neutral,
                     n => n.Type(typeof(SharpLabObjectExtensions), ApiAccess.Allowed)
+                )
+                .Namespace("Microsoft.FSharp.Core", ApiAccess.Neutral,
+                    n => n.Type(typeof(CompilationMappingAttribute), ApiAccess.Allowed)
                 ),
             AllowExplicitLayoutInTypesMatchingPattern = new Regex("<PrivateImplementationDetails>", RegexOptions.Compiled)
         };

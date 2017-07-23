@@ -83,7 +83,7 @@
 
             <div class="select-wrapper option-target-language option">
               <select v-model="options.target">
-                <option v-bind:value="targets.run">[Run]</option>
+                <option v-if="features.run" v-bind:value="targets.run">[Run]</option>
                 <optgroup label="Decompiled">
                   <option v-bind:value="targets.csharp">C#</option>
                   <option v-bind:value="targets.vb">Visual Basic</option>

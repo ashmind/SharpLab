@@ -1,5 +1,6 @@
 import './polyfills/iterable-dom.js';
 
+import features from './helpers/features.js';
 import languages from './helpers/languages.js';
 import targets from './helpers/targets.js';
 import getBranchesAsync from './server/get-branches-async.js';
@@ -71,6 +72,7 @@ function applyAstHover(item) {
 
 async function createAppAsync() {
     const data = Object.assign({
+        features,
         languages,
         targets,
 
