@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using SharpLab.Runtime.Internal;
@@ -49,8 +48,8 @@ namespace SharpLab.Server.Execution.Internal {
 
                 var sequencePoint = instruction.SequencePoint;
                 if (sequencePoint != null && sequencePoint.StartLine != HiddenLine && sequencePoint.StartLine != lastLine) {
-                    InsertBefore(il, instruction, il.Create(OpCodes.Ldc_I4, sequencePoint.StartLine));
-                    InsertBefore(il, instruction, il.Create(OpCodes.Call, flow.ReportLineStart));
+                    InsertBefore(il, instruction, il.CreateLdcI4Best(sequencePoint.StartLine));
+                    InsertBefore(il, instruction, il.CreateCall(flow.ReportLineStart));
                     i += 2;
                     lastLine = sequencePoint.StartLine;
                 }
@@ -65,8 +64,8 @@ namespace SharpLab.Server.Execution.Internal {
 
                 var insertTarget = instruction;
                 InsertAfter(il, ref insertTarget, ref i, il.Create(OpCodes.Ldstr, variable.Name));
-                InsertAfter(il, ref insertTarget, ref i, il.Create(OpCodes.Ldloc, localIndex.Value));
-                InsertAfter(il, ref insertTarget, ref i, il.Create(OpCodes.Call, new GenericInstanceMethod(flow.ReportVariable) {
+                InsertAfter(il, ref insertTarget, ref i, il.CreateLdlocBest(variable));
+                InsertAfter(il, ref insertTarget, ref i, il.CreateCall(new GenericInstanceMethod(flow.ReportVariable) {
                     GenericArguments = { variable.VariableType }
                 }));
             }
@@ -98,14 +97,14 @@ namespace SharpLab.Server.Execution.Internal {
 
         private void RewriteCatch(Instruction start, ILProcessor il, ReportMethods flow) {
             InsertBefore(il, start, il.Create(OpCodes.Dup));
-            InsertBefore(il, start, il.Create(OpCodes.Call, flow.ReportException));
+            InsertBefore(il, start, il.CreateCall(flow.ReportException));
         }
 
         private void RewriteFinally(ExceptionHandler handler, ref int index, ILProcessor il, ReportMethods flow) {
             var oldTryLeave = handler.TryEnd.Previous;
 
             var newTryLeave = il.Create(OpCodes.Leave_S, (Instruction)oldTryLeave.Operand);
-            var reportCall = il.Create(OpCodes.Call, flow.ReportException);
+            var reportCall = il.CreateCall(flow.ReportException);
             var catchHandler = il.Create(OpCodes.Pop);
 
             il.InsertBefore(oldTryLeave, newTryLeave);
