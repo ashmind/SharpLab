@@ -63,7 +63,7 @@ Vue.component('app-code-edit', {
             });
 
             const bookmarks = [];
-            this.$watch('executionFlow', steps => renderExecutionFlow(steps, instance.getCodeMirror(), bookmarks));
+            this.$watch('executionFlow', steps => renderExecutionFlow(steps || [], instance.getCodeMirror(), bookmarks));
         });
     },
     template: '<textarea></textarea>'

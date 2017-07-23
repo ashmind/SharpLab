@@ -52,7 +52,7 @@
                            v-bind:service-url="serviceUrl"
                            v-bind:server-options="serverOptions"
                            v-bind:highlighted-range="highlightedCodeRange"
-                           v-bind:execution-flow="result.type === 'run' ? result.value.flow : null"
+                           v-bind:execution-flow="result.type === 'run' && result.value ? result.value.flow : null"
                            v-on:text-change="code = arguments[0]()"
                            v-on:slow-update-result="applyUpdateResult"
                            v-on:server-error="applyServerError"
@@ -108,7 +108,7 @@
             <div class="loader"></div>
             <app-run-view v-if="lastResultOfType.run"
                           v-show="result.type === 'run'"
-                          v-bind:output="lastResultOfType.run.value.output"></app-run-view>
+                          v-bind:output="lastResultOfType.run.value ? lastResultOfType.run.value.output : []"></app-run-view>
             <app-code-view v-if="lastResultOfType.code"
                            v-show="result.type === 'code'"
                            v-bind:value="lastResultOfType.code.value"
