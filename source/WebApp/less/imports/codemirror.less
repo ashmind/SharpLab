@@ -55,4 +55,9 @@ textarea, .CodeMirror {
 .flow-line-end-exception {
     background: @error-color;
     color: #fff;
+
+    .root-status-offline & {
+        background: @offline-color;
+        color: #fff !important;
+    }
 }
