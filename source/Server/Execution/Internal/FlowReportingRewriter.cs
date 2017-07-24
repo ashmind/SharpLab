@@ -65,6 +65,7 @@ namespace SharpLab.Server.Execution.Internal {
                 var insertTarget = instruction;
                 InsertAfter(il, ref insertTarget, ref i, il.Create(OpCodes.Ldstr, variable.Name));
                 InsertAfter(il, ref insertTarget, ref i, il.CreateLdlocBest(variable));
+                InsertAfter(il, ref insertTarget, ref i, il.CreateLdcI4Best(sequencePoint?.StartLine ?? lastLine ?? Flow.UnknownLineNumber));
                 InsertAfter(il, ref insertTarget, ref i, il.CreateCall(new GenericInstanceMethod(flow.ReportVariable) {
                     GenericArguments = { variable.VariableType }
                 }));

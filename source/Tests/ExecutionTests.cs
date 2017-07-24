@@ -39,6 +39,20 @@ namespace SharpLab.Tests {
         }
 
         [Theory]
+        [InlineData("Variable.AssignCall.cs", 3, "x: 0")]
+        public async Task SlowUpdate_ReportsVariableNotesInCorrectLocations(string resourceName, int expectedLineNumber, string expectedNotes) {
+            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName));
+
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            var steps = result.ExtensionResult.Flow
+                .Select(s => new { s.Line, s.Notes })
+                .ToArray();
+
+            AssertIsSuccess(result);
+            Assert.Contains(new { Line = expectedLineNumber, Notes = expectedNotes }, steps);
+        }
+
+        [Theory]
         [InlineData("Loop.For.10Iterations.cs", 3, "i: 0; i: 1; i: 2; …")]
         [InlineData("Variable.MultipleDeclarationsOnTheSameLine.cs", 3, "a: 0, b: 0, c: 0, …")]
         [InlineData("Variable.LongName.cs", 3, "abcdefghi…: 0")]

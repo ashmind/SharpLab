@@ -4,6 +4,8 @@ using System.Text;
 
 namespace SharpLab.Runtime.Internal {
     public static class Flow {
+        public const int UnknownLineNumber = -1;
+
         private static class ReportLimits {
             public const int MaxVariableNameLength = 10;
             public const int MaxVariableValueLength = 10;
@@ -20,11 +22,10 @@ namespace SharpLab.Runtime.Internal {
             _steps.Add(new Step(lineNumber));
         }
 
-        public static void ReportVariable<T>(string name, T value) {
-            if (_steps.Count == 0)
+        public static void ReportVariable<T>(string name, T value, int lineNumber) {
+            if (!TryFindLastStepAtLineNumber(lineNumber, out var step))
                 return;
 
-            var step = _steps[_steps.Count - 1];
             if (!_stepNotesCountPerLine.TryGetValue(step.LineNumber, out int countPerLine))
                 countPerLine = 0;
 
@@ -67,6 +68,16 @@ namespace SharpLab.Runtime.Internal {
             ObjectAppender.Append(notes, value, ReportLimits.MaxEnumerableItems, ReportLimits.MaxVariableValueLength);
             // Have to reassign in case we set Notes
             _steps[_steps.Count - 1] = step;
+        }
+
+        private static bool TryFindLastStepAtLineNumber(int lineNumber, out Step step) {
+            for (var i = _steps.Count - 1; i >= 0; i--) {
+                step = _steps[i];
+                if (step.LineNumber == lineNumber || lineNumber == UnknownLineNumber)
+                    return true;
+            }
+            step = default(Step);
+            return false;
         }
 
         public static void ReportException(object exception) {
