@@ -56,37 +56,43 @@
 
     repositionJumps() {
       for (const [key, jump] of Object.entries(this.jumps)) {
-        const newFrom = jump.from.bookmark.find();
-        const newTo = jump.to.bookmark.find();
+        const newFrom = jump.bookmarks.from.find();
+        const newTo = jump.bookmarks.to.find();
         if (!newFrom || !newTo) {
-          this.removeJump(jump, key);
+          this.clearJump(jump);
+          delete this.jumps[jump.key];
           continue;
         }
 
-        const unchanged = newFrom.line === jump.from.saved.line
-                       && newFrom.ch === jump.from.saved.ch
-                       && newTo.ch === jump.to.saved.ch
-                       && newTo.line === jump.to.saved.line;
+        const unchanged = newFrom.line === jump.from.line
+                       && newFrom.ch === jump.from.ch
+                       && newTo.ch === jump.to.ch
+                       && newTo.line === jump.to.line;
         if (unchanged)
           continue;
         delete this.jumps[key];
-        this.renderJump(newFrom.line, newTo.line, {
-          throw: jump.throw,
-          existing: jump
+        const rendered = this.renderJump(newFrom.line, newTo.line, {
+          options: jump.options,
+          svgToReuse: jump.svg,
+          bookmarksToReuse: jump.bookmarks
         });
+        if (!rendered)
+          this.clearJump(jump);
       }
     }
 
-    renderJump(fromLine, toLine, options) {
+    renderJump(fromLine, toLine, {options, svgToReuse, bookmarksToReuse}) {
       const key = fromLine + "->" + toLine;
       if (this.jumps[key])
-        return;
+        return false;
 
-      const fromPos = { line: fromLine, ch: this.getLineStart(fromLine) };
-      const toPos = { line: toLine, ch: this.getLineStart(toLine) };
+      const positions = {
+        from: { line: fromLine, ch: this.getLineStart(fromLine) },
+        to: { line: toLine, ch: this.getLineStart(toLine) }
+      };
 
-      const from = this.getJumpCoordinates(fromPos);
-      const to = this.getJumpCoordinates(toPos);
+      const from = this.getJumpCoordinates(positions.from);
+      const to = this.getJumpCoordinates(positions.to);
 
       const leftmost = this.getLeftmostBound(fromLine, toLine);
       let left = leftmost;
@@ -108,8 +114,7 @@
         + (up ? " CodeMirror-jump-arrow-up" : "")
         + (options.throw ? " CodeMirror-jump-arrow-throw" : "");
 
-      const existing = options.existing;
-      const {g, path, start, end} = existing ? existing.svg : {
+      const {g, path, start, end} = svgToReuse || {
         g:     createSVGElement("g"),
         path:  createSVGElement("path"),
         start: createSVGElement("circle"),
@@ -128,32 +133,34 @@
         class: "CodeMirror-jump-arrow-end",
         d: `M ${to.x} ${toY} l -2 -1 v 2 z`
       });
-      if (!existing) {
+      if (!svgToReuse) {
         g.appendChild(path);
         g.appendChild(start);
         g.appendChild(end);
         this.root.appendChild(g);
       }
       this.jumps[key] = {
-        from: {
-          saved: fromPos,
-          bookmark: this.cm.setBookmark(fromPos)
+        key,
+        from: positions.from,
+        to: positions.to,
+        bookmarks: {
+          from: bookmarksToReuse ? bookmarksToReuse.from : this.cm.setBookmark(positions.from),
+          to: bookmarksToReuse ? bookmarksToReuse.to : this.cm.setBookmark(positions.to)
         },
-        to: {
-          saved: toPos,
-          bookmark: this.cm.setBookmark(toPos)
-        },
-        throw: options.throw,
+        options,
         svg: { g, path, start, end }
       };
+      return true;
     }
 
-    removeJump(jump, key) {
-      jump.from.bookmark.clear();
-      jump.to.bookmark.clear();
+    clearJump(jump) {
+      this.clearBookmarks(jump);
       this.root.removeChild(jump.svg.g);
-      if (key)
-        delete this.jumps[key];
+    }
+
+    clearBookmarks(jump) {
+      jump.bookmarks.from.clear();
+      jump.bookmarks.to.clear();
     }
 
     getLeftmostBound(fromLine, toLine) {
@@ -187,16 +194,21 @@
     replaceJumps(data) {
       const existing = Object.values(this.jumps);
       this.jumps = {};
-      for (let i = 0; i < data.length; i++) {
-        const jumpData = data[i];
-        this.renderJump(jumpData.fromLine, jumpData.toLine, {
-          throw: (jumpData.options || {}).throw,
-          existing: existing[i]
+      let nextIndexToReuse = 0;
+      for (const jumpData of data) {
+        const jumpToReuse = existing[nextIndexToReuse];
+        if (jumpToReuse)
+          this.clearBookmarks(jumpToReuse);
+        const rendered = this.renderJump(jumpData.fromLine, jumpData.toLine, {
+          options: jumpData.options || {},
+          svgToReuse: jumpToReuse ? jumpToReuse.svg : null
         });
+        if (rendered)
+          nextIndexToReuse += 1;
       }
 
-      for (let i = data.length; i < existing.length; i++) {
-        this.removeJump(existing[i]);
+      for (let i = nextIndexToReuse; i < existing.length; i++) {
+        this.clearJump(existing[i]);
       }
     }
   }
@@ -209,7 +221,7 @@
       layer = new ArrowLayer(this);
       this.state[STATE_KEY] = layer;
     }
-    layer.renderJump(fromLine, toLine, options || {});
+    layer.renderJump(fromLine, toLine, { options: options || {} });
   });
 
   CodeMirror.defineExtension("setJumpArrows", function(arrows) {
