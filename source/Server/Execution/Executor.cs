@@ -36,10 +36,10 @@ namespace SharpLab.Server.Execution {
             _rewriter.Rewrite(assembly);
             var guardToken = AssemblyGuard.Rewrite(assembly, GuardSettings);
 
-            using (var guardedStream = _memoryStreamManager.GetStream()) {
-                assembly.Write(guardedStream);
+            using (var rewrittenStream = _memoryStreamManager.GetStream()) {
+                assembly.Write(rewrittenStream);
                 //assembly.Write(@"d:\Temp\assembly\" + DateTime.Now.Ticks + ".dll");
-                guardedStream.Seek(0, SeekOrigin.Begin);
+                rewrittenStream.Seek(0, SeekOrigin.Begin);
 
                 var currentSetup = AppDomain.CurrentDomain.SetupInformation;
                 using (var context = AppDomainContext.Create(new AppDomainSetup {
@@ -47,7 +47,7 @@ namespace SharpLab.Server.Execution {
                     PrivateBinPath = currentSetup.PrivateBinPath
                 })) {
                     context.LoadAssembly(LoadMethod.LoadFrom, Assembly.GetExecutingAssembly().GetAssemblyFile().FullName);
-                    return RemoteFunc.Invoke(context.Domain, guardedStream, guardToken, Remote.Execute);
+                    return RemoteFunc.Invoke(context.Domain, rewrittenStream, guardToken, Remote.Execute);
                 }
             }
         }

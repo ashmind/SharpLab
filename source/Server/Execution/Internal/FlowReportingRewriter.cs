@@ -48,8 +48,8 @@ namespace SharpLab.Server.Execution.Internal {
 
                 var sequencePoint = instruction.SequencePoint;
                 if (sequencePoint != null && sequencePoint.StartLine != HiddenLine && sequencePoint.StartLine != lastLine) {
-                    InsertBefore(il, instruction, il.CreateLdcI4Best(sequencePoint.StartLine));
-                    InsertBefore(il, instruction, il.CreateCall(flow.ReportLineStart));
+                    InsertBeforeAndRetargetAll(il, instruction, il.CreateLdcI4Best(sequencePoint.StartLine));
+                    il.InsertBefore(instruction, il.CreateCall(flow.ReportLineStart));
                     i += 2;
                     lastLine = sequencePoint.StartLine;
                 }
@@ -97,31 +97,31 @@ namespace SharpLab.Server.Execution.Internal {
         }
 
         private void RewriteCatch(Instruction start, ILProcessor il, ReportMethods flow) {
-            InsertBefore(il, start, il.Create(OpCodes.Dup));
-            InsertBefore(il, start, il.CreateCall(flow.ReportException));
+            InsertBeforeAndRetargetAll(il, start, il.Create(OpCodes.Dup));
+            il.InsertBefore(start, il.CreateCall(flow.ReportException));
         }
 
-        private void RewriteFinally(ExceptionHandler handler, ref int index, ILProcessor il, ReportMethods flow) {
+        private void RewriteFinally(ExceptionHandler handler, ref int handlerIndex, ILProcessor il, ReportMethods flow) {
             var oldTryLeave = handler.TryEnd.Previous;
 
             var newTryLeave = il.Create(OpCodes.Leave_S, (Instruction)oldTryLeave.Operand);
             var reportCall = il.CreateCall(flow.ReportException);
             var catchHandler = il.Create(OpCodes.Pop);
 
-            il.InsertBefore(oldTryLeave, newTryLeave);
+            InsertBeforeAndRetargetAll(il, oldTryLeave, newTryLeave);
             il.InsertBefore(oldTryLeave, reportCall);
             il.InsertBefore(oldTryLeave, il.Create(OpCodes.Ldc_I4_0));
             il.InsertBefore(oldTryLeave, il.Create(OpCodes.Endfilter));
             il.InsertBefore(oldTryLeave, catchHandler);
 
-            il.Body.ExceptionHandlers.Insert(index, new ExceptionHandler(ExceptionHandlerType.Filter) {
+            il.Body.ExceptionHandlers.Insert(handlerIndex, new ExceptionHandler(ExceptionHandlerType.Filter) {
                 TryStart = handler.TryStart,
                 TryEnd = reportCall,
                 FilterStart = reportCall,
                 HandlerStart = catchHandler,
                 HandlerEnd = oldTryLeave.Next
             });
-            index += 1;
+            handlerIndex += 1;
         }
 
         private void InsertAfter(ILProcessor il, ref Instruction target, ref int index, Instruction instruction) {
@@ -130,7 +130,7 @@ namespace SharpLab.Server.Execution.Internal {
             index += 1;
         }
 
-        private void InsertBefore(ILProcessor il, Instruction target, Instruction instruction) {
+        private void InsertBeforeAndRetargetAll(ILProcessor il, Instruction target, Instruction instruction) {
             il.InsertBefore(target, instruction);
             foreach (var other in il.Body.Instructions) {
                 if (other.Operand == target)

@@ -26,6 +26,7 @@ namespace SharpLab.Tests {
         [InlineData("Exception.DivideByZero.Catch.When.True.cs", 5, "DivideByZeroException")]
         [InlineData("Exception.DivideByZero.Catch.When.False.cs", 5, "DivideByZeroException")]
         [InlineData("Exception.DivideByZero.Finally.cs", 5, "DivideByZeroException")]
+        [InlineData("Exception.DivideByZero.Catch.Finally.cs", 5, "DivideByZeroException")]
         public async Task SlowUpdate_ReportsExceptionInFlow(string resourceName, int expectedLineNumber, string expectedExceptionTypeName) {
             var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName));
 
@@ -160,9 +161,12 @@ namespace SharpLab.Tests {
         private static void AssertIsSuccess(SlowUpdateResult<ExecutionResultData> result, bool allowRuntimeException = false) {
             var errors = result.JoinErrors();
             Assert.True(errors.IsNullOrEmpty(), errors);
+            var output = result.ExtensionResult.GetOutputAsString();
+            Assert.DoesNotMatch("InvalidProgramException", output);
+
             if (allowRuntimeException)
                 return;
-            Assert.DoesNotMatch("Exception:", result.ExtensionResult.GetOutputAsString());
+            Assert.DoesNotMatch("Exception:", output);
         }
 
         private static string LoadCodeFromResource(string resourceName) {
