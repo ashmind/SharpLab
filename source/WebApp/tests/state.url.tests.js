@@ -27,7 +27,10 @@ describe('v2', () => {
         });
     }
 
-    for (const code of ['public void M() {\r\n}']) {
+    for (const code of [
+        'public void M() {\r\n}',
+        'a || b || c',
+    ]) {
         test(`save/load preserves code '${code}'`, async () => {
             url.save(code, {});
             const { code: loaded } = await url.loadAsync();
