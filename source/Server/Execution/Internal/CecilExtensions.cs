@@ -55,5 +55,18 @@ namespace SharpLab.Server.Execution.Internal {
         public static Instruction CreateCall(this ILProcessor il, MethodReference method) {
             return il.Create(OpCodes.Call, method);
         }
+
+        public static void RetargetAll(this ExceptionHandler handler, Instruction from, Instruction to) {
+            if (handler.TryStart == from)
+                handler.TryStart = to;
+            if (handler.TryEnd == from)
+                handler.TryEnd = to;
+            if (handler.FilterStart == from)
+                handler.FilterStart = to;
+            if (handler.HandlerStart == from)
+                handler.HandlerStart = to;
+            if (handler.HandlerEnd == from)
+                handler.HandlerEnd = to;
+        }
     }
 }

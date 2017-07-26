@@ -27,8 +27,10 @@ namespace SharpLab.Tests {
         [InlineData("Exception.DivideByZero.Catch.When.False.cs", 5, "DivideByZeroException")]
         [InlineData("Exception.DivideByZero.Finally.cs", 5, "DivideByZeroException")]
         [InlineData("Exception.DivideByZero.Catch.Finally.cs", 5, "DivideByZeroException")]
-        public async Task SlowUpdate_ReportsExceptionInFlow(string resourceName, int expectedLineNumber, string expectedExceptionTypeName) {
-            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName));
+        [InlineData("Exception.DivideByZero.Catch.Finally.WriteLine.cs", 5, "DivideByZeroException", OptimizationLevel.Debug)]
+        [InlineData("Exception.DivideByZero.Catch.Finally.WriteLine.cs", 5, "DivideByZeroException", OptimizationLevel.Release)]
+        public async Task SlowUpdate_ReportsExceptionInFlow(string resourceName, int expectedLineNumber, string expectedExceptionTypeName, OptimizationLevel optimizationLevel = OptimizationLevel.Debug) {
+            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), optimizationLevel: optimizationLevel);
 
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
             var steps = result.ExtensionResult.Flow
@@ -173,9 +175,13 @@ namespace SharpLab.Tests {
             return EmbeddedResource.ReadAllText(typeof(ExecutionTests), "TestCode.Execution." + resourceName);
         }
 
-        private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(string code, string languageName = LanguageNames.CSharp) {
+        private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(
+            string code,
+            string languageName = LanguageNames.CSharp,
+            OptimizationLevel optimizationLevel = OptimizationLevel.Debug
+        ) {
             var driver = MirrorSharpTestDriver.New(MirrorSharpOptions).SetText(code);
-            await driver.SendSetOptionsAsync(languageName, TargetNames.Run, OptimizationLevel.Debug);
+            await driver.SendSetOptionsAsync(languageName, TargetNames.Run, optimizationLevel);
             return driver;
         }
 

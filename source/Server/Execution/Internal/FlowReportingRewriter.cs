@@ -113,6 +113,10 @@ namespace SharpLab.Server.Execution.Internal {
             il.InsertBefore(oldTryLeave, il.Create(OpCodes.Ldc_I4_0));
             il.InsertBefore(oldTryLeave, il.Create(OpCodes.Endfilter));
             il.InsertBefore(oldTryLeave, catchHandler);
+            
+            for (var i = 0; i < handlerIndex; i++) {
+                il.Body.ExceptionHandlers[i].RetargetAll(oldTryLeave.Next, newTryLeave.Next);
+            }
 
             il.Body.ExceptionHandlers.Insert(handlerIndex, new ExceptionHandler(ExceptionHandlerType.Filter) {
                 TryStart = handler.TryStart,
@@ -132,25 +136,20 @@ namespace SharpLab.Server.Execution.Internal {
 
         private void InsertBeforeAndRetargetAll(ILProcessor il, Instruction target, Instruction instruction) {
             il.InsertBefore(target, instruction);
+            RetargetAll(il, target, instruction);
+        }
+
+        private static void RetargetAll(ILProcessor il, Instruction from, Instruction to) {
             foreach (var other in il.Body.Instructions) {
-                if (other.Operand == target)
-                    other.Operand = instruction;
+                if (other.Operand == from)
+                    other.Operand = to;
             }
 
             if (!il.Body.HasExceptionHandlers)
                 return;
 
             foreach (var handler in il.Body.ExceptionHandlers) {
-                if (handler.TryStart == target)
-                    handler.TryStart = instruction;
-                if (handler.TryEnd == target)
-                    handler.TryEnd = instruction;
-                if (handler.FilterStart == target)
-                    handler.FilterStart = instruction;
-                if (handler.HandlerStart == target)
-                    handler.HandlerStart = instruction;
-                if (handler.HandlerEnd == target)
-                    handler.HandlerEnd = instruction;
+                handler.RetargetAll(from, to);
             }
         }
 
