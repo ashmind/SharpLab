@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Cors;
+using System.Web.Hosting;
 using Autofac;
 using Microsoft.Owin;
 using Microsoft.Owin.Cors;
@@ -38,6 +40,9 @@ namespace SharpLab.Server {
                 c.Response.ContentType = "text/plain";
                 return c.Response.WriteAsync("OK");
             }));
+
+            Trace.TraceInformation("Application started.");
+            HostingEnvironment.RegisterObject(new ShutdownTracer());
         }
 
         public static MirrorSharpOptions CreateMirrorSharpOptions() {
@@ -61,6 +66,19 @@ namespace SharpLab.Server {
             builder.RegisterAssemblyModules(assembly);
 
             return builder.Build();
+        }
+
+        private class ShutdownTracer : IRegisteredObject {
+            public void Stop(bool immediate) {
+                if (immediate)
+                    return;
+                try {
+                    Trace.TraceInformation("Application shutdown: {0}.", HostingEnvironment.ShutdownReason);
+                }
+                catch (Exception ex) {
+                    Trace.TraceError(ex.ToString());
+                }
+            }
         }
     }
 }

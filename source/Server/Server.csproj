@@ -57,6 +57,7 @@
       <HintPath>..\#libraries\Microsoft.Diagnostics.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System.Web" />
   </ItemGroup>
 
   <Import Project="FSharpCore.targets" />
