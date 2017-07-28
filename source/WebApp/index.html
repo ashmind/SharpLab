@@ -106,9 +106,9 @@
           </header>
           <div class="content">
             <div class="loader"></div>
-            <app-run-view v-if="lastResultOfType.run"
-                          v-show="result.type === 'run'"
-                          v-bind:output="lastResultOfType.run.value ? lastResultOfType.run.value.output : []"></app-run-view>
+            <app-output v-if="lastResultOfType.run"
+                        v-show="result.type === 'run'"
+                        v-bind:output="lastResultOfType.run.value ? lastResultOfType.run.value.output : []"></app-output>
             <app-code-view v-if="lastResultOfType.code"
                            v-show="result.type === 'code'"
                            v-bind:value="lastResultOfType.code.value"

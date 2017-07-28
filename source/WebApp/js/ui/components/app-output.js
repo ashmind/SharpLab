@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-Vue.component('app-run-view', {
+Vue.component('app-output', {
     props: {
         output: Array
     },

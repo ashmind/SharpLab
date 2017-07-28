@@ -9,9 +9,6 @@
     top: 0;
     right: 0;
     bottom: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
     padding: 2px 4px;
     overflow: auto;
 
@@ -27,6 +24,7 @@
 }
 
 .output-disclaimer {
+    display: block;
     width: 100%;
     background-color: #ffeb90;
     padding: 2px 4px;
@@ -46,7 +44,7 @@
 .inspection {
     .code-text();
     display: flex;
-    flex-direction: row;
+    width: fit-content;
     border: 1px solid @inspection-border-color;
     header {
         background-color: @inspection-header-color;
