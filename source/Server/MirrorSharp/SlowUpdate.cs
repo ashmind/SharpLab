@@ -18,7 +18,6 @@ using SharpLab.Server.MirrorSharp.Internal;
 namespace SharpLab.Server.MirrorSharp {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class SlowUpdate : ISlowUpdateExtension {
-
         private readonly ICompiler _compiler;
         private readonly IReadOnlyDictionary<string, IDecompiler> _decompilers;
         private readonly IReadOnlyDictionary<string, IAstTarget> _astTargets;
@@ -69,7 +68,7 @@ namespace SharpLab.Server.MirrorSharp {
                 assemblyStream.Seek(0, SeekOrigin.Begin);
                 symbolStream?.Seek(0, SeekOrigin.Begin);
                 if (targetName == TargetNames.Run)
-                    return _executor.Execute(assemblyStream, symbolStream);
+                    return _executor.Execute(assemblyStream, symbolStream, session);
 
                 // it's fine not to Dispose() here -- MirrorSharp will dispose it after calling WriteResult()
                 return assemblyStream;

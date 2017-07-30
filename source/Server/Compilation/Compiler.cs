@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -38,7 +39,7 @@ namespace SharpLab.Server.Compilation {
                     "_", virtualAssemblyFile.Name,
                     fsharp.AssemblyReferencePathsAsFSharpList,
                     pdbFile: null,
-                    executable: false,
+                    executable: false,//fsharp.ProjectOptions.OtherOptions.Contains("--target:exe"),
                     noframework: true
                 ), null, cancellationToken).ConfigureAwait(false);
                 foreach (var error in compiled.Item1) {

@@ -123,7 +123,7 @@ async function createAppAsync() {
             serverOptions: function() {
                 return {
                     language: this.options.language,
-                    optimize: this.options.release ? 'release' : 'debug',
+                    'x-optimize': this.options.release ? 'release' : 'debug',
                     'x-target': this.options.target
                 };
             },
@@ -153,9 +153,18 @@ async function createAppAsync() {
     });
 
     ui.watch('options.language', (newLanguage, oldLanguage) => {
-        if (data.code !== defaults.getCode(oldLanguage))
+        const target = data.options.target;
+        if (data.code !== defaults.getCode(oldLanguage, target))
             return;
-        data.code = defaults.getCode(newLanguage);
+        data.code = defaults.getCode(newLanguage, target);
+        data.lastLoadedCode = data.code;
+    });
+
+    ui.watch('options.target', (newTarget, oldTarget) => {
+        const language = data.options.language;
+        if (data.code !== defaults.getCode(language, oldTarget))
+            return;
+        data.code = defaults.getCode(language, newTarget);
         data.lastLoadedCode = data.code;
     });
 

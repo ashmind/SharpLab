@@ -6,12 +6,13 @@ using Microsoft.IO;
 using MirrorSharp.Advanced;
 using SharpLab.Server.Compilation;
 using SharpLab.Server.Compilation.Internal;
-using SharpLab.Server.Compilation.Setups;
 using SharpLab.Server.Decompilation;
 using SharpLab.Server.Decompilation.AstOnly;
 using SharpLab.Server.Execution;
 using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.MirrorSharp;
+using SharpLab.Server.MirrorSharp.Internal;
+using SharpLab.Server.MirrorSharp.Internal.Languages;
 
 namespace SharpLab.Server {
     [UsedImplicitly]
@@ -29,18 +30,18 @@ namespace SharpLab.Server {
                    .Keyed<IFeatureDiscovery>(LanguageNames.VisualBasic)
                    .SingleInstance();
 
-            builder.RegisterType<CSharpSetup>()
-                   .As<IMirrorSharpSetup>()
+            builder.RegisterType<CSharpIntegration>()
+                   .As<ILanguageIntegration>()
                    .WithParameter(ResolvedParameter.ForKeyed<IFeatureDiscovery>(LanguageNames.CSharp))
                    .SingleInstance();
 
-            builder.RegisterType<VisualBasicSetup>()
-                   .As<IMirrorSharpSetup>()
+            builder.RegisterType<VisualBasicIntegration>()
+                   .As<ILanguageIntegration>()
                    .WithParameter(ResolvedParameter.ForKeyed<IFeatureDiscovery>(LanguageNames.VisualBasic))
                    .SingleInstance();
 
-            builder.RegisterType<FSharpSetup>()
-                   .As<IMirrorSharpSetup>()
+            builder.RegisterType<FSharpIntegration>()
+                   .As<ILanguageIntegration>()
                    .SingleInstance();
 
             builder.RegisterType<Compiler>()
@@ -59,7 +60,10 @@ namespace SharpLab.Server {
                    .As<IExecutor>()
                    .SingleInstance();
             builder.RegisterType<FlowReportingRewriter>()
-                   .As<IFlowReportingRewriter>()
+                   .As<IAssemblyRewriter>()
+                   .SingleInstance();
+            builder.RegisterType<FSharpEntryPointRewriter>()
+                   .As<IAssemblyRewriter>()
                    .SingleInstance();
 
             builder.RegisterInstance(new RecyclableMemoryStreamManager())

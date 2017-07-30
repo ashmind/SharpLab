@@ -11,6 +11,7 @@ using MirrorSharp.Testing;
 using Newtonsoft.Json.Linq;
 using Pedantic.IO;
 using SharpLab.Server;
+using SharpLab.Server.MirrorSharp.Internal;
 using SharpLab.Tests.Internal;
 using Xunit;
 using Xunit.Abstractions;
@@ -59,7 +60,7 @@ namespace SharpLab.Tests {
             var errors = result.JoinErrors();
 
             var decompiledText = result.ExtensionResult?.Trim();
-            _output.WriteLine(decompiledText);
+            _output.WriteLine(decompiledText ?? "<null>");
             Assert.True(errors.IsNullOrEmpty(), errors);
             Assert.Equal(data.Expected, decompiledText);
         }
@@ -71,13 +72,13 @@ namespace SharpLab.Tests {
         [InlineData("Variable.FromArgumentToCall.cs2cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_InDebug(string resourceName) {
             var data = TestData.FromResource(resourceName);
-            var driver = await NewTestDriverAsync(data, OptimizationLevel.Debug);
+            var driver = await NewTestDriverAsync(data, Optimize.Debug);
 
             var result = await driver.SendSlowUpdateAsync<string>();
             var errors = result.JoinErrors();
 
             var decompiledText = result.ExtensionResult?.Trim();
-            _output.WriteLine(decompiledText);
+            _output.WriteLine(decompiledText ?? "<null>");
             Assert.True(errors.IsNullOrEmpty(), errors);
             Assert.Equal(data.Expected, decompiledText);
         }
@@ -95,7 +96,7 @@ namespace SharpLab.Tests {
             var errors = result.JoinErrors();
 
             var decompiledText = result.ExtensionResult?.Trim();
-            _output.WriteLine(decompiledText);
+            _output.WriteLine(decompiledText ?? "<null>");
             Assert.True(errors.IsNullOrEmpty(), errors);
             Assert.Equal(data.Expected, decompiledText);
         }
@@ -118,7 +119,7 @@ namespace SharpLab.Tests {
             var errors = result.JoinErrors();
 
             var decompiledText = MakeJitAsmComparable(result.ExtensionResult?.Trim());
-            _output.WriteLine(decompiledText ?? "");
+            _output.WriteLine(decompiledText ?? "<null>");
             Assert.True(errors.IsNullOrEmpty(), errors);
             Assert.Equal(data.Expected, decompiledText);
         }
@@ -151,9 +152,9 @@ namespace SharpLab.Tests {
             );
         }
 
-        private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestData data, OptimizationLevel optimizationLevel = OptimizationLevel.Release) {
+        private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestData data, string optimize = Optimize.Release) {
             var driver = MirrorSharpTestDriver.New(MirrorSharpOptions);
-            await driver.SendSetOptionsAsync(data.SourceLanguageName, data.TargetLanguageName, optimizationLevel);
+            await driver.SendSetOptionsAsync(data.SourceLanguageName, data.TargetLanguageName, optimize);
             driver.SetText(data.Original);
             return driver;
         }

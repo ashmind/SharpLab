@@ -18,7 +18,7 @@ export default {
             if (options[key] == null)
                 options[key] = defaultOptions[key];
         }
-        const code = fromUrl.code || defaults.getCode(options.language);
+        const code = fromUrl.code || defaults.getCode(options.language, options.target);
 
         state.options = options;
         state.code = code;

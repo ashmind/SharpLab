@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Cors;
@@ -13,7 +12,7 @@ using MirrorSharp.Advanced;
 using MirrorSharp.Owin;
 using Owin;
 using SharpLab.Server;
-using SharpLab.Server.MirrorSharp;
+using SharpLab.Server.MirrorSharp.Internal;
 
 [assembly: OwinStartup(typeof(Startup), nameof(Startup.Configuration))]
 
@@ -52,9 +51,9 @@ namespace SharpLab.Server {
                 SlowUpdate = container.Resolve<ISlowUpdateExtension>(),
                 IncludeExceptionDetails = true
             };
-            var setups = container.Resolve<IMirrorSharpSetup[]>();
-            foreach (var setup in setups) {
-                setup.SlowApplyTo(options);
+            var languages = container.Resolve<ILanguageIntegration[]>();
+            foreach (var language in languages) {
+                language.SlowSetup(options);
             }
             return options;
         }

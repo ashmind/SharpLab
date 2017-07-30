@@ -27,10 +27,10 @@ namespace SharpLab.Tests {
         [InlineData("Exception.DivideByZero.Catch.When.False.cs", 5, "DivideByZeroException")]
         [InlineData("Exception.DivideByZero.Finally.cs", 5, "DivideByZeroException")]
         [InlineData("Exception.DivideByZero.Catch.Finally.cs", 5, "DivideByZeroException")]
-        [InlineData("Exception.DivideByZero.Catch.Finally.WriteLine.cs", 5, "DivideByZeroException", OptimizationLevel.Debug)]
-        [InlineData("Exception.DivideByZero.Catch.Finally.WriteLine.cs", 5, "DivideByZeroException", OptimizationLevel.Release)]
-        public async Task SlowUpdate_ReportsExceptionInFlow(string resourceName, int expectedLineNumber, string expectedExceptionTypeName, OptimizationLevel optimizationLevel = OptimizationLevel.Debug) {
-            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), optimizationLevel: optimizationLevel);
+        [InlineData("Exception.DivideByZero.Catch.Finally.WriteLine.cs", 5, "DivideByZeroException", Optimize.Debug)]
+        [InlineData("Exception.DivideByZero.Catch.Finally.WriteLine.cs", 5, "DivideByZeroException", Optimize.Release)]
+        public async Task SlowUpdate_ReportsExceptionInFlow(string resourceName, int expectedLineNumber, string expectedExceptionTypeName, string optimize = Optimize.Debug) {
+            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), optimize: optimize);
 
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
             var steps = result.ExtensionResult.Flow
@@ -79,8 +79,8 @@ namespace SharpLab.Tests {
         [Fact]
         public async Task SlowUpdate_IncludesReturnValueInOutput() {
             var driver = await NewTestDriverAsync(@"
-                public class C {
-                    public int M() { return 3; }
+                public static class Program {
+                    public static int Main() { return 3; }
                 }
             ");
 
@@ -93,8 +93,8 @@ namespace SharpLab.Tests {
         [Fact]
         public async Task SlowUpdate_IncludesExceptionInOutput() {
             var driver = await NewTestDriverAsync(@"
-                public class C {
-                    public int M() { throw new System.Exception(""Test""); }
+                public static class Program {
+                    public static int Main() { throw new System.Exception(""Test""); }
                 }
             ");
 
@@ -111,8 +111,8 @@ namespace SharpLab.Tests {
         [InlineData("3.Dump();", "Dump: 3")]
         public async Task SlowUpdate_IncludesInspectAndDumpInOutput(string code, string expectedOutput) {
             var driver = await NewTestDriverAsync(@"
-                public class C {
-                    public void M() { " + code + @" }
+                public static class Program {
+                    public static void Main() { " + code + @" }
                 }
             ");
 
@@ -132,8 +132,8 @@ namespace SharpLab.Tests {
         public async Task SlowUpdate_IncludesConsoleInOutput(string code, string expectedOutput) {
             var driver = await NewTestDriverAsync(@"
                 using System;
-                public class C {
-                    public void M() { " + code + @" }
+                public static class Program {
+                    public static void Main() { " + code + @" }
                 }
             ");
 
@@ -147,17 +147,50 @@ namespace SharpLab.Tests {
         }
 
         [Fact]
+        public async Task SlowUpdate_ExecutesVisualBasic() {
+            var driver = await NewTestDriverAsync(@"
+                Imports System
+                Public Module Program
+                    Public Sub Main()
+                        Console.Write(""Test"")
+                    End Sub
+                End Module
+            ", LanguageNames.VisualBasic);
+
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+
+            AssertIsSuccess(result);
+            Assert.Equal("Test", result.ExtensionResult.GetOutputAsString());
+        }
+
+        [Fact]
         public async Task SlowUpdate_ExecutesFSharp() {
             var driver = await NewTestDriverAsync(@"
                 open System
-                type C() =
-                    member this.M() = 5
+                printf ""Test""
             ", "F#");
 
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
 
             AssertIsSuccess(result);
-            Assert.Equal("Return: 5", result.ExtensionResult.GetOutputAsString());
+            Assert.Equal("Test", result.ExtensionResult.GetOutputAsString());
+        }
+
+        [Fact]
+        public async Task SlowUpdate_ExecutesFSharp_WithExplicitEntryPoint() {
+            var driver = await NewTestDriverAsync(@"
+                open System
+
+                [<EntryPoint>]
+                let main argv = 
+                    printf ""Test""
+                    0
+            ", "F#");
+
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+
+            AssertIsSuccess(result);
+            Assert.Equal("Test\nReturn: 0", result.ExtensionResult.GetOutputAsString());
         }
 
         private static void AssertIsSuccess(SlowUpdateResult<ExecutionResultData> result, bool allowRuntimeException = false) {
@@ -178,10 +211,10 @@ namespace SharpLab.Tests {
         private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(
             string code,
             string languageName = LanguageNames.CSharp,
-            OptimizationLevel optimizationLevel = OptimizationLevel.Debug
+            string optimize = Optimize.Debug
         ) {
             var driver = MirrorSharpTestDriver.New(MirrorSharpOptions).SetText(code);
-            await driver.SendSetOptionsAsync(languageName, TargetNames.Run, optimizationLevel);
+            await driver.SendSetOptionsAsync(languageName, TargetNames.Run, optimize);
             return driver;
         }
 

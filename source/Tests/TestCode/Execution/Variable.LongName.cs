@@ -1,5 +1,5 @@
-﻿public class C {
-    public void M() {
+﻿public static class Program {
+    public static void Main() {
         var abcdefghijklmnoprstquvwxyz = 0;
     }
 }

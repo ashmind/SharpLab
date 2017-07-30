@@ -2,25 +2,28 @@
 using System.Collections.Immutable;
 using System.Linq;
 using JetBrains.Annotations;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using MirrorSharp;
+using MirrorSharp.Advanced;
 using SharpLab.Runtime;
 using SharpLab.Server.Compilation.Internal;
-using SharpLab.Server.MirrorSharp;
 
-namespace SharpLab.Server.Compilation.Setups {
+namespace SharpLab.Server.MirrorSharp.Internal.Languages {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-    public class VisualBasicSetup : IMirrorSharpSetup {
+    public class VisualBasicIntegration : ILanguageIntegration {
         private readonly IMetadataReferenceCollector _referenceCollector;
         private readonly IFeatureDiscovery _featureDiscovery;
 
-        public VisualBasicSetup(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
+        public VisualBasicIntegration(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
             _referenceCollector = referenceCollector;
             _featureDiscovery = featureDiscovery;
         }
 
-        public void SlowApplyTo(MirrorSharpOptions options) {
+        public string LanguageName => LanguageNames.VisualBasic;
+
+        public void SlowSetup(MirrorSharpOptions options) {
             // ReSharper disable HeapView.ObjectAllocation.Evident
             // ReSharper disable HeapView.DelegateAllocation
             options.EnableVisualBasic(o => {
@@ -38,6 +41,22 @@ namespace SharpLab.Server.Compilation.Setups {
             });
             // ReSharper restore HeapView.DelegateAllocation
             // ReSharper restore HeapView.ObjectAllocation.Evident
+        }
+
+        public void SetOptimize([NotNull] IWorkSession session, [NotNull] string optimize) {
+            var project = session.Roslyn.Project;
+            var options = ((VisualBasicCompilationOptions)project.CompilationOptions);
+            session.Roslyn.Project = project.WithCompilationOptions(
+                options.WithOptimizationLevel(optimize == Optimize.Debug ? OptimizationLevel.Debug : OptimizationLevel.Release)
+            );
+        }
+
+        public void SetOptionsForTarget([NotNull] IWorkSession session, [NotNull] string target) {
+            var outputKind = target != TargetNames.Run ? OutputKind.DynamicallyLinkedLibrary : OutputKind.ConsoleApplication;
+
+            var project = session.Roslyn.Project;
+            var options = ((VisualBasicCompilationOptions)project.CompilationOptions);
+            session.Roslyn.Project = project.WithCompilationOptions(options.WithOutputKind(outputKind));
         }
     }
 }

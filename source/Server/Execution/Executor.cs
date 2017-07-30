@@ -7,6 +7,7 @@ using AppDomainToolkit;
 using AshMind.Extensions;
 using Microsoft.FSharp.Core;
 using Microsoft.IO;
+using Microsoft.VisualBasic.CompilerServices;
 using MirrorSharp.Advanced;
 using Mono.Cecil;
 using SharpLab.Runtime.Internal;
@@ -16,15 +17,15 @@ using Unbreakable.Rules.Rewriters;
 
 namespace SharpLab.Server.Execution {
     public class Executor : IExecutor {
-        private readonly IFlowReportingRewriter _rewriter;
+        private readonly IReadOnlyCollection<IAssemblyRewriter> _rewriters;
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;
 
-        public Executor(IFlowReportingRewriter rewriter, RecyclableMemoryStreamManager memoryStreamManager) {
-            _rewriter = rewriter;
+        public Executor(IReadOnlyCollection<IAssemblyRewriter> rewriters, RecyclableMemoryStreamManager memoryStreamManager) {
+            _rewriters = rewriters;
             _memoryStreamManager = memoryStreamManager;
         }
 
-        public ExecutionResult Execute(Stream assemblyStream, Stream symbolStream) {
+        public ExecutionResult Execute(Stream assemblyStream, Stream symbolStream, IWorkSession session) {
             AssemblyDefinition assembly;
             using (assemblyStream)
             using (symbolStream) {
@@ -33,7 +34,13 @@ namespace SharpLab.Server.Execution {
                     SymbolStream = symbolStream
                 });
             }
-            _rewriter.Rewrite(assembly);
+            //assembly.Write(@"d:\Temp\assembly\" + DateTime.Now.Ticks + "-before-rewrite.dll");
+            foreach (var rewriter in _rewriters) {
+                rewriter.Rewrite(assembly, session);
+            }
+            if (assembly.EntryPoint == null)
+                throw new ArgumentException("Failed to find an entry point (Main?) in assembly.", nameof(assemblyStream));
+
             var guardToken = AssemblyGuard.Rewrite(assembly, GuardSettings);
 
             using (var rewrittenStream = _memoryStreamManager.GetStream()) {
@@ -126,15 +133,11 @@ namespace SharpLab.Server.Execution {
                     Console.SetOut(Output.Writer);
 
                     var assembly = Assembly.Load(ReadAllBytes(assemblyStream));
-                    var c = assembly.GetType("C")
-                         ?? assembly.GetType("_")?.GetNestedType("C")
-                         ?? throw new NotSupportedException("Class 'C' was not found (currently only C.M() can be executed).");
-                    var m = c.GetMethod("M")
-                         ?? throw new NotSupportedException("Method 'M' was not found (currently only C.M() can be executed).");
-
+                    var main = assembly.EntryPoint;
                     using (guardToken.Scope()) {
-                        var result = m.Invoke(Activator.CreateInstance(c), null);
-                        if (m.ReturnType != typeof(void))
+                        var args = main.GetParameters().Length > 0 ? new object[] { new string[0] } : null;
+                        var result = main.Invoke(null, args);
+                        if (main.ReturnType != typeof(void))
                             result.Inspect("Return");
                         return new ExecutionResult(Output.Stream, Flow.Steps);
                     }
@@ -171,22 +174,42 @@ namespace SharpLab.Server.Execution {
             ApiRules = ApiRules.SafeDefaults()
                 .Namespace("System", ApiAccess.Neutral,
                     n => n.Type(typeof(Console), ApiAccess.Neutral,
-                        t => t.Member(nameof(Console.Write), ApiAccess.Allowed)
-                              .Member(nameof(Console.WriteLine), ApiAccess.Allowed)
-                    )
+                             t => t.Member(nameof(Console.Write), ApiAccess.Allowed)
+                                   .Member(nameof(Console.WriteLine), ApiAccess.Allowed)
+                                   // required by F#'s printf
+                                   .Getter(nameof(Console.Out), ApiAccess.Allowed)
+                         ).Type(typeof(STAThreadAttribute), ApiAccess.Allowed)
+                )
+                .Namespace("System.IO", ApiAccess.Neutral,
+                    // required by F#'s printf
+                    n => n.Type(typeof(TextWriter), ApiAccess.Neutral)
                 )
                 .Namespace("SharpLab.Runtime.Internal", ApiAccess.Neutral,
                     n => n.Type(typeof(Flow), ApiAccess.Neutral,
-                        t => t.Member(nameof(Flow.ReportException), ApiAccess.Allowed, NoGuardRewriter.Default)
-                              .Member(nameof(Flow.ReportLineStart), ApiAccess.Allowed, NoGuardRewriter.Default)
-                              .Member(nameof(Flow.ReportVariable), ApiAccess.Allowed, NoGuardRewriter.Default)
-                    )
+                             t => t.Member(nameof(Flow.ReportException), ApiAccess.Allowed, NoGuardRewriter.Default)
+                                   .Member(nameof(Flow.ReportLineStart), ApiAccess.Allowed, NoGuardRewriter.Default)
+                                   .Member(nameof(Flow.ReportVariable), ApiAccess.Allowed, NoGuardRewriter.Default)
+                         )
                 )
                 .Namespace("", ApiAccess.Neutral,
                     n => n.Type(typeof(SharpLabObjectExtensions), ApiAccess.Allowed)
                 )
                 .Namespace("Microsoft.FSharp.Core", ApiAccess.Neutral,
                     n => n.Type(typeof(CompilationMappingAttribute), ApiAccess.Allowed)
+                          .Type(typeof(EntryPointAttribute), ApiAccess.Allowed)
+                          .Type(typeof(FSharpOption<>), ApiAccess.Allowed)
+                          .Type(typeof(PrintfFormat<,,,>), ApiAccess.Allowed)
+                          .Type(typeof(PrintfFormat<,,,,>), ApiAccess.Allowed)
+                          .Type(typeof(PrintfModule), ApiAccess.Neutral,
+                              t => t.Member(nameof(PrintfModule.PrintFormat), ApiAccess.Allowed)
+                                    .Member(nameof(PrintfModule.PrintFormatLine), ApiAccess.Allowed)
+                                    .Member(nameof(PrintfModule.PrintFormatToTextWriter), ApiAccess.Allowed)
+                                    .Member(nameof(PrintfModule.PrintFormatLineToTextWriter), ApiAccess.Allowed)
+                          )
+                          .Type(typeof(Unit), ApiAccess.Allowed)
+                )
+                .Namespace("Microsoft.VisualBasic.CompilerServices", ApiAccess.Neutral,
+                    n => n.Type(typeof(StandardModuleAttribute), ApiAccess.Allowed)
                 ),
             AllowExplicitLayoutInTypesMatchingPattern = new Regex("<PrivateImplementationDetails>", RegexOptions.Compiled)
         };

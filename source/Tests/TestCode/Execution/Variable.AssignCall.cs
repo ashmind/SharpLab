@@ -1,9 +1,9 @@
-﻿public class C {
-    public void M() {
+﻿public static class Program {
+    public static void Main() {
         var x = MFunc();
     }
 
-    public int MFunc() {
+    public static int MFunc() {
         return 0;
     }
 }

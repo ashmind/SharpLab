@@ -1,10 +1,11 @@
 ﻿using System.Reflection;
+using MirrorSharp.Advanced;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Server.Execution.Internal {
-    public class FlowReportingRewriter : IFlowReportingRewriter {
+    public class FlowReportingRewriter : IAssemblyRewriter {
         private const int HiddenLine = 0xFEEFEE;
 
         private static readonly MethodInfo ReportLineStartMethod =
@@ -14,7 +15,7 @@ namespace SharpLab.Server.Execution.Internal {
         private static readonly MethodInfo ReportExceptionMethod =
             typeof(Flow).GetMethod(nameof(Flow.ReportException));
 
-        public void Rewrite(AssemblyDefinition assembly) {
+        public void Rewrite(AssemblyDefinition assembly, IWorkSession session) {
             foreach (var module in assembly.Modules) {
                 var flow = new ReportMethods {
                     ReportLineStart = module.ImportReference(ReportLineStartMethod),
