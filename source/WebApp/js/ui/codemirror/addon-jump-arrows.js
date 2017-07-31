@@ -127,11 +127,11 @@
       });
       setAttributes(start, {
         class: "CodeMirror-jump-arrow-start",
-        cx: from.x, cy: fromY, r: 1.5
+        cx: from.x, cy: fromY, r: 2
       });
       setAttributes(end, {
         class: "CodeMirror-jump-arrow-end",
-        d: `M ${to.x} ${toY} l -2 -1 v 2 z`
+        d: `M ${to.x} ${toY} l -3 -2 v 4 z`
       });
       if (!svgToReuse) {
         g.appendChild(path);
