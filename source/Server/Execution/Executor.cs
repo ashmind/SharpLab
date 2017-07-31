@@ -188,7 +188,7 @@ namespace SharpLab.Server.Execution {
                     n => n.Type(typeof(Flow), ApiAccess.Neutral,
                              t => t.Member(nameof(Flow.ReportException), ApiAccess.Allowed, NoGuardRewriter.Default)
                                    .Member(nameof(Flow.ReportLineStart), ApiAccess.Allowed, NoGuardRewriter.Default)
-                                   .Member(nameof(Flow.ReportVariable), ApiAccess.Allowed, NoGuardRewriter.Default)
+                                   .Member(nameof(Flow.ReportValue), ApiAccess.Allowed, NoGuardRewriter.Default)
                          )
                 )
                 .Namespace("", ApiAccess.Neutral,

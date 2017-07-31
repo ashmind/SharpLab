@@ -22,8 +22,8 @@ namespace SharpLab.Runtime.Internal {
             _steps.Add(new Step(lineNumber));
         }
 
-        public static void ReportVariable<T>(string name, T value, int lineNumber) {
-            if (!TryFindLastStepAtLineNumber(lineNumber, out var step))
+        public static void ReportValue<T>(T value, string name, int lineNumber) {
+            if (!TryFindLastStepAtLineNumber(lineNumber, out var step, out var stepIndex))
                 return;
 
             if (!_stepNotesCountPerLine.TryGetValue(step.LineNumber, out int countPerLine))
@@ -35,7 +35,7 @@ namespace SharpLab.Runtime.Internal {
 
                 if (countPerLine == ReportLimits.MaxStepNotesPerLine + 1) {
                     step.Notes = new StringBuilder("…");
-                    _steps[_steps.Count - 1] = step;
+                    _steps[stepIndex] = step;
                     return;
                 }
             }
@@ -45,7 +45,7 @@ namespace SharpLab.Runtime.Internal {
 
             step.VariableCount += 1;
             if (step.VariableCount > ReportLimits.MaxVariablesPerStep + 1) {
-                _steps[_steps.Count - 1] = step;
+                _steps[stepIndex] = step;
                 return;
             }
 
@@ -67,16 +67,19 @@ namespace SharpLab.Runtime.Internal {
             notes.Append(": ");
             ObjectAppender.Append(notes, value, ReportLimits.MaxEnumerableItems, ReportLimits.MaxVariableValueLength);
             // Have to reassign in case we set Notes
-            _steps[_steps.Count - 1] = step;
+            _steps[stepIndex] = step;
         }
 
-        private static bool TryFindLastStepAtLineNumber(int lineNumber, out Step step) {
+        private static bool TryFindLastStepAtLineNumber(int lineNumber, out Step step, out int stepIndex) {
             for (var i = _steps.Count - 1; i >= 0; i--) {
                 step = _steps[i];
-                if (step.LineNumber == lineNumber || lineNumber == UnknownLineNumber)
+                if (step.LineNumber == lineNumber || lineNumber == UnknownLineNumber) {
+                    stepIndex = i;
                     return true;
+                }
             }
             step = default(Step);
+            stepIndex = -1;
             return false;
         }
 

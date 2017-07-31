@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using MirrorSharp.Advanced;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -10,8 +11,8 @@ namespace SharpLab.Server.Execution.Internal {
 
         private static readonly MethodInfo ReportLineStartMethod =
             typeof(Flow).GetMethod(nameof(Flow.ReportLineStart));
-        private static readonly MethodInfo ReportVariableMethod =
-            typeof(Flow).GetMethod(nameof(Flow.ReportVariable));
+        private static readonly MethodInfo ReportValueMethod =
+            typeof(Flow).GetMethod(nameof(Flow.ReportValue));
         private static readonly MethodInfo ReportExceptionMethod =
             typeof(Flow).GetMethod(nameof(Flow.ReportException));
 
@@ -19,7 +20,7 @@ namespace SharpLab.Server.Execution.Internal {
             foreach (var module in assembly.Modules) {
                 var flow = new ReportMethods {
                     ReportLineStart = module.ImportReference(ReportLineStartMethod),
-                    ReportVariable = module.ImportReference(ReportVariableMethod),
+                    ReportValue = module.ImportReference(ReportValueMethod),
                     ReportException = module.ImportReference(ReportExceptionMethod),
                 };
                 foreach (var type in module.Types) {
@@ -55,24 +56,40 @@ namespace SharpLab.Server.Execution.Internal {
                     lastLine = sequencePoint.StartLine;
                 }
 
-                var localIndex = GetIndexIfStloc(instruction);
-                if (localIndex == null)
-                    continue;
-
-                var variable = il.Body.Variables[localIndex.Value];
-                if (string.IsNullOrEmpty(variable.Name))
+                var value = GetValueToReport(instruction, il);
+                if (value.name == null)
                     continue;
 
                 var insertTarget = instruction;
-                InsertAfter(il, ref insertTarget, ref i, il.Create(OpCodes.Ldstr, variable.Name));
-                InsertAfter(il, ref insertTarget, ref i, il.CreateLdlocBest(variable));
-                InsertAfter(il, ref insertTarget, ref i, il.CreateLdcI4Best(sequencePoint?.StartLine ?? lastLine ?? Flow.UnknownLineNumber));
-                InsertAfter(il, ref insertTarget, ref i, il.CreateCall(new GenericInstanceMethod(flow.ReportVariable) {
-                    GenericArguments = { variable.VariableType }
+                il.InsertBefore(instruction, il.Create(OpCodes.Dup));
+                il.InsertBefore(instruction, il.Create(OpCodes.Ldstr, value.name));
+                il.InsertBefore(instruction, il.CreateLdcI4Best(sequencePoint?.StartLine ?? lastLine ?? Flow.UnknownLineNumber));
+                il.InsertBefore(instruction, il.CreateCall(new GenericInstanceMethod(flow.ReportValue) {
+                    GenericArguments = { value.type }
                 }));
+                i += 4;
             }
 
             RewriteExceptionHandlers(il, flow);
+        }
+
+        private (string name, TypeReference type) GetValueToReport(Instruction instruction, ILProcessor il) {
+            var localIndex = GetIndexIfStloc(instruction);
+            if (localIndex != null) {
+                var variable = il.Body.Variables[localIndex.Value];
+                if (string.IsNullOrEmpty(variable.Name))
+                    return (null, null);
+
+                return (variable.Name, variable.VariableType);
+            }
+
+            var code = instruction.OpCode.Code;
+            if (code == Code.Stsfld || code == Code.Stfld) {
+                var field = (FieldReference)instruction.Operand;
+                return (field.Name, field.FieldType);
+            }
+
+            return (null, null);
         }
 
         private void RewriteExceptionHandlers(ILProcessor il, ReportMethods flow) {
@@ -167,7 +184,7 @@ namespace SharpLab.Server.Execution.Internal {
 
         private struct ReportMethods {
             public MethodReference ReportLineStart { get; set; }
-            public MethodReference ReportVariable { get; set; }
+            public MethodReference ReportValue { get; set; }
             public MethodReference ReportException { get; set; }
         }
     }
