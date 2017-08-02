@@ -81,14 +81,15 @@ function loadAsync() {
 
     hash = hash.substring('v2:'.length);
     try {
-        const parts = LZString.decompressFromBase64(hash).split('|', 2);
-        const optionsPacked = parts[0].split(',').reduce((result, p) => {
+        const decompressed = LZString.decompressFromBase64(hash);
+        const [, optionsPart, codePart] = /^([^|]*)\|([\s\S]*)$/.exec(decompressed);
+        const optionsPacked = optionsPart.split(',').reduce((result, p) => {
             const [key, value] = p.split(':', 2);
             result[key] = value;
             return result;
         }, {});
         const language = languageAndTargetMapReverse[optionsPacked.l || 'cs'];
-        const code = precompressor.decompress(parts[1], language);
+        const code = precompressor.decompress(codePart, language);
         return {
             options: {
                 branchId: optionsPacked.b,
