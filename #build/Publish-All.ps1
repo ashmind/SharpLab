@@ -52,7 +52,7 @@ try {
         }
         $azureConfig = ConvertFrom-Json (Get-Content $azureConfigPath -Raw)
         Login-ToAzure $azureConfig
-    }  
+    }
 
     $branchesJson = @()
     Get-ChildItem $sitesRoot | ? { $_ -is [IO.DirectoryInfo] } | % {
@@ -69,7 +69,7 @@ try {
         $siteRoslynArtifactsRoot = Resolve-Path "$roslynArtifactsRoot\$($_.Name)"
         $branchInfo = ConvertFrom-Json ([IO.File]::ReadAllText("$siteRoslynArtifactsRoot\BranchInfo.json"))
 
-        $webAppName = "tr-b-$($branchFsName.ToLowerInvariant())"
+        $webAppName = "sl-b-$($branchFsName.ToLowerInvariant())"
         if ($webAppName.Length -gt 60) {
              $webAppName = $webAppName.Substring(0, 57) + "-01"; # no uniqueness check at the moment, we can add later
              Write-Output "[WARNING] Name is too long, using '$webAppName'."
@@ -134,7 +134,7 @@ try {
             -FtpushExe $ftpushExe `
             -ResourceGroupName $($azureConfig.ResourceGroupName) `
             -AppServicePlanName $($azureConfig.AppServicePlanName) `
-            -WebAppName "tryroslyn" `
+            -WebAppName "sharplab" `
             -SourcePath "$sitesRoot\$branchesFileName" `
             -TargetPath "wwwroot/$branchesFileName"
     }
