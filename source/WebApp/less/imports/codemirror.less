@@ -41,11 +41,16 @@ textarea, .CodeMirror {
     background-color: @highlight-color;
 }
 
+.CodeMirror-widget[cm-ignore-events=true] {
+    pointer-events: none;
+}
+
 .flow-line-end {
     display: inline-block;
     padding: 0px 5px;
     margin-left: 5px;
     font-size: 90%;
+    pointer-events: none;
 }
 
 .flow-line-end-notes {
