@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.WebSockets;
 using MirrorSharp.Advanced;
 
 namespace SharpLab.Server.Monitoring {
@@ -11,6 +12,8 @@ namespace SharpLab.Server.Monitoring {
         }
 
         public void LogException(Exception exception, IWorkSession session) {
+            if (exception is WebSocketException)
+                return;
             _monitor.Exception(exception, session);
         }
     }
