@@ -25,6 +25,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\Azure\Server.Azure.csproj" />
     <ProjectReference Include="..\Server\Server.csproj" />
   </ItemGroup>
 

@@ -13,15 +13,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Server\Server.csproj" />
   </ItemGroup>
-
-  <Target Name="CopyToServerBin" AfterTargets="Build">
-    <ItemGroup>
-      <_FilesToCopy Include="$(OutDir)\Microsoft.ApplicationInsights.*" />
-      <_FilesToCopy Include="$(OutDir)\$(AssemblyName).*" />
-    </ItemGroup>
-    
-    <Copy SourceFiles="@(_FilesToCopy)" DestinationFolder="$(MSBuildProjectDirectory)\..\Server\bin\$(Configuration)" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="@(_FilesToCopy)" DestinationFolder="$(MSBuildProjectDirectory)\..\WebApp\bin" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="@(_FilesToCopy)" DestinationFolder="$(MSBuildProjectDirectory)\..\Tests\bin\$(Configuration)" SkipUnchangedFiles="true" />
-  </Target>
 </Project>

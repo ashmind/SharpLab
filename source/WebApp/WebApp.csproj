@@ -36,6 +36,7 @@
     <ProjectReference Include="..\#external\ILSpy\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
       <SetConfiguration>Configuration=net_4_5_$(Configuration)</SetConfiguration>
     </ProjectReference>
+    <ProjectReference Include="..\Azure\Server.Azure.csproj" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Server\Server.csproj" />
