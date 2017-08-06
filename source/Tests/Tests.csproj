@@ -9,72 +9,19 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" />
 
   <ItemGroup>
-    <None Remove="TestCode\Ast\EmptyClass.cs2ast" />
-    <None Remove="TestCode\Ast\StructuredTrivia.cs2ast" />
-    <None Remove="TestCode\Constructor.BaseCall.cs2cs" />
-    <None Remove="TestCode\FSharp\EmptyType.fs2il" />
-    <None Remove="TestCode\FSharp\NotNull.fs2cs" />
-    <None Remove="TestCode\FSharp\SimpleMethod.fs2cs" />
-    <None Remove="TestCode\Goto.TryWhile.cs2cs" />
-    <None Remove="TestCode\JitAsm\ArrayElement.cs2asm" />
-    <None Remove="TestCode\JitAsm\AsyncRegression.cs2asm" />
-    <None Remove="TestCode\JitAsm\ConsoleWrite.cs2asm" />
-    <None Remove="TestCode\JitAsm\MultipleReturns.cs2asm" />
-    <None Remove="TestCode\JitAsm\Simple.cs2asm" />
-    <None Remove="TestCode\Lambda.CallInArray.cs2cs" />
-    <None Remove="TestCode\Module.vb2vb" />
-    <None Remove="TestCode\NullPropagation.ToTernary.cs2cs" />
-    <None Remove="TestCode\Simple.cs2il" />
-    <None Remove="TestCode\Simple.vb2vb" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="TestCode\Variable.FromArgumentToCall.cs2cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="TestCode\Condition.SimpleSwitch.cs2cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="TestCode\Cast.ExplicitOperatorOnNull.cs2cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="TestCode\Ast\EmptyType.fs2ast" />
-    <EmbeddedResource Include="TestCode\Ast\LiteralTokens.fs2ast" />
-    <EmbeddedResource Include="TestCode\Ast\LiteralTokens.cs2ast" />
-    <EmbeddedResource Include="TestCode\Ast\EmptyClass.cs2ast" />
-    <EmbeddedResource Include="TestCode\Ast\StructuredTrivia.cs2ast" />
-    <EmbeddedResource Include="TestCode\Constructor.BaseCall.cs2cs" />
-    <EmbeddedResource Include="TestCode\FSharp\EmptyType.fs2il" />
-    <EmbeddedResource Include="TestCode\FSharp\NotNull.fs2cs" />
-    <EmbeddedResource Include="TestCode\FSharp\SimpleMethod.fs2cs" />
-    <EmbeddedResource Include="TestCode\Goto.TryWhile.cs2cs" />
-    <EmbeddedResource Include="TestCode\JitAsm\GenericMethodWithAttribute.fs2asm" />
-    <EmbeddedResource Include="TestCode\JitAsm\OpenGenerics.cs2asm" />
-    <EmbeddedResource Include="TestCode\JitAsm\GenericMethodWithAttribute.cs2asm" />
-    <EmbeddedResource Include="TestCode\JitAsm\GenericClassWithAttribute.cs2asm" />
-    <EmbeddedResource Include="TestCode\JitAsm\ArrayElement.cs2asm" />
-    <EmbeddedResource Include="TestCode\JitAsm\AsyncRegression.cs2asm" />
-    <EmbeddedResource Include="TestCode\JitAsm\ConsoleWrite.cs2asm" />
-    <EmbeddedResource Include="TestCode\JitAsm\MultipleReturns.cs2asm" />
-    <EmbeddedResource Include="TestCode\JitAsm\Simple.cs2asm" />
-    <EmbeddedResource Include="TestCode\Lambda.CallInArray.cs2cs" />
-    <EmbeddedResource Include="TestCode\Module.vb2vb" />
-    <EmbeddedResource Include="TestCode\NullPropagation.ToTernary.cs2cs" />
-    <EmbeddedResource Include="TestCode\Simple.cs2il" />
-    <EmbeddedResource Include="TestCode\Simple.vb2vb" />
+    <Compile Remove="TestCode\**\*.cs" />
+    <None Remove="TestCode\**\*.*" />
+    <EmbeddedResource Include="TestCode\**\*.*" />
   </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="AshMind.Extensions" Version="2.0.0-pre-20160719" />
     <PackageReference Include="FSharp.Core" Version="4.1.17" />
-    <PackageReference Include="MirrorSharp.FSharp" version="0.9.0-pre-20170620" />
-    <PackageReference Include="MirrorSharp.Testing" version="0.9.0-pre-20170527" />
+    <PackageReference Include="MirrorSharp.FSharp" version="0.9.0-pre-20170731" />
+    <PackageReference Include="MirrorSharp.Testing" version="0.9.0-pre-20170722" />
     <PackageReference Include="Pedantic.IO.EmbeddedResource" version="0.9.0-pre-02" />
-    <PackageReference Include="xunit" version="2.1.0" />
-    <PackageReference Include="xunit.runner.visualstudio" version="2.1.0" />
+    <PackageReference Include="xunit" version="2.2.0" />
+    <PackageReference Include="xunit.runner.visualstudio" version="2.2.0" />
   </ItemGroup>
   
   <ItemGroup>

@@ -7,14 +7,14 @@ using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MirrorSharp;
+using MirrorSharp.Advanced;
 using SharpLab.Runtime;
 using SharpLab.Server.Compilation.Internal;
-using SharpLab.Server.MirrorSharp;
 using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
-namespace SharpLab.Server.Compilation.Setups {
+namespace SharpLab.Server.MirrorSharp.Internal.Languages {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-    public class CSharpSetup : IMirrorSharpSetup {
+    public class CSharpIntegration : ILanguageIntegration {
         private static readonly LanguageVersion MaxLanguageVersion = Enum
             .GetValues(typeof (LanguageVersion))
             .Cast<LanguageVersion>()
@@ -24,7 +24,7 @@ namespace SharpLab.Server.Compilation.Setups {
         private readonly ImmutableList<MetadataReference> _references;
         private readonly IReadOnlyDictionary<string, string> _features;
 
-        public CSharpSetup(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
+        public CSharpIntegration(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
             _references = referenceCollector.SlowGetMetadataReferencesRecursive(
                 // Essential
                 typeof(Binder).Assembly,
@@ -39,14 +39,35 @@ namespace SharpLab.Server.Compilation.Setups {
             _features = featureDiscovery.SlowDiscoverAll().ToDictionary(f => f, f => (string)null);
         }
 
-        public void SlowApplyTo(MirrorSharpOptions options) {
+        public string LanguageName => LanguageNames.CSharp;
+
+        public void SlowSetup(MirrorSharpOptions options) {
             // ReSharper disable HeapView.ObjectAllocation.Evident
 
             options.CSharp.ParseOptions = new CSharpParseOptions(MaxLanguageVersion, preprocessorSymbols: PreprocessorSymbols).WithFeatures(_features);
-            options.CSharp.CompilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: true);
+            options.CSharp.CompilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
             options.CSharp.MetadataReferences = _references;
 
             // ReSharper restore HeapView.ObjectAllocation.Evident
+        }
+
+        public void SetOptimize([NotNull] IWorkSession session, [NotNull] string optimize) {
+            var project = session.Roslyn.Project;
+            var options = ((CSharpCompilationOptions)project.CompilationOptions);
+            session.Roslyn.Project = project.WithCompilationOptions(
+                options.WithOptimizationLevel(optimize == Optimize.Debug ? OptimizationLevel.Debug : OptimizationLevel.Release)
+            );
+        }
+
+        public void SetOptionsForTarget(IWorkSession session, string target) {
+            var outputKind = target != TargetNames.Run ? OutputKind.DynamicallyLinkedLibrary : OutputKind.ConsoleApplication;
+            var allowUnsafe = target != TargetNames.Run;
+
+            var project = session.Roslyn.Project;
+            var options = ((CSharpCompilationOptions)project.CompilationOptions);
+            session.Roslyn.Project = project.WithCompilationOptions(
+                options.WithOutputKind(outputKind).WithAllowUnsafe(allowUnsafe)
+            );
         }
     }
 }

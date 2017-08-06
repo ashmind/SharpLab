@@ -18,7 +18,7 @@ gulp.task('less', () => {
         .pipe(g.sourcemaps.init())
         .pipe(g.less())
         .pipe(g.autoprefixer({ cascade: false }))
-        .pipe(g.cleanCss({ processImport: false }))
+        //.pipe(g.cleanCss({ processImport: false }))
         .pipe(g.rename('app.min.css'))
         .pipe(g.sourcemaps.write('.'))
         .pipe(gulp.dest('wwwroot'));
@@ -77,7 +77,7 @@ gulp.task('html', ['js', 'less'], () => {
 });
 
 gulp.task('watch', ['default'], () => {
-    gulp.watch('less/**/*.less', ['less', 'html']);
+    gulp.watch('less/**/*.*', ['less', 'html']);
     gulp.watch('js/**/*.js', ['js', 'html']);
     gulp.watch('favicon*.svg', ['favicons']);
     gulp.watch('index.html', ['html']);

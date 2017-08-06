@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -11,12 +12,12 @@ using MirrorSharp.FSharp.Advanced;
 
 namespace SharpLab.Server.Compilation {
     public class Compiler : ICompiler {
-        public async Task<bool> TryCompileToStreamAsync(MemoryStream assemblyStream, IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
+        public async Task<bool> TryCompileToStreamAsync(MemoryStream assemblyStream, MemoryStream symbolStream, IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
             if (session.IsFSharp())
                 return await TryCompileFSharpToStreamAsync(assemblyStream, session, diagnostics, cancellationToken);
 
             var compilation = await session.Roslyn.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false);
-            var emitResult = compilation.Emit(assemblyStream);
+            var emitResult = compilation.Emit(assemblyStream, pdbStream: symbolStream);
             if (!emitResult.Success) {
                 foreach (var diagnostic in emitResult.Diagnostics) {
                     diagnostics.Add(diagnostic);
@@ -38,7 +39,7 @@ namespace SharpLab.Server.Compilation {
                     "_", virtualAssemblyFile.Name,
                     fsharp.AssemblyReferencePathsAsFSharpList,
                     pdbFile: null,
-                    executable: false,
+                    executable: false,//fsharp.ProjectOptions.OtherOptions.Contains("--target:exe"),
                     noframework: true
                 ), null, cancellationToken).ConfigureAwait(false);
                 foreach (var error in compiled.Item1) {

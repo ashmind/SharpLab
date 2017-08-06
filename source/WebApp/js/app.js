@@ -12,10 +12,18 @@ import uiAsync from './ui/index.js';
 
 /* eslint-disable no-invalid-this */
 
+function getResultType(target) {
+    switch (target) {
+        case targets.ast: return 'ast';
+        case targets.run: return 'run';
+        default: return 'code';
+    }
+}
+
 function applyUpdateResult(updateResult) {
     const result = {
         success: true,
-        type: this.options.target !== targets.ast ? 'code' : 'ast',
+        type: getResultType(this.options.target),
         value: updateResult.x,
         errors: [],
         warnings: []
@@ -79,7 +87,7 @@ async function createAppAsync() {
             errors: [],
             warnings: []
         },
-        lastResultOfType: { code: null, ast: null },
+        lastResultOfType: { run: null, code: null, ast: null },
 
         highlightedCodeRange: null
     });
@@ -113,7 +121,7 @@ async function createAppAsync() {
             serverOptions: function() {
                 return {
                     language: this.options.language,
-                    optimize: this.options.release ? 'release' : 'debug',
+                    'x-optimize': this.options.release ? 'release' : 'debug',
                     'x-target': this.options.target
                 };
             },
@@ -143,9 +151,18 @@ async function createAppAsync() {
     });
 
     ui.watch('options.language', (newLanguage, oldLanguage) => {
-        if (data.code !== defaults.getCode(oldLanguage))
+        const target = data.options.target;
+        if (data.code !== defaults.getCode(oldLanguage, target))
             return;
-        data.code = defaults.getCode(newLanguage);
+        data.code = defaults.getCode(newLanguage, target);
+        data.lastLoadedCode = data.code;
+    });
+
+    ui.watch('options.target', (newTarget, oldTarget) => {
+        const language = data.options.language;
+        if (data.code !== defaults.getCode(language, oldTarget))
+            return;
+        data.code = defaults.getCode(language, newTarget);
         data.lastLoadedCode = data.code;
     });
 

@@ -6,6 +6,7 @@
 @import (inline) '../../node_modules/codemirror-addon-lint-fix/dist/lint-fix.css';
 @import (inline) '../../node_modules/mirrorsharp/mirrorsharp.css';
 @import (inline) 'codemirror/addon-infotip.css';
+@import (inline) 'codemirror/addon-jump-arrows.css';
 
 textarea, .CodeMirror {
     .code-text();
@@ -38,4 +39,30 @@ textarea, .CodeMirror {
 
 .highlighted {
     background-color: @highlight-color;
+}
+
+.CodeMirror-widget[cm-ignore-events=true] {
+    pointer-events: none;
+}
+
+.flow-line-end {
+    display: inline-block;
+    padding: 0px 5px;
+    margin-left: 5px;
+    font-size: 90%;
+    pointer-events: none;
+}
+
+.flow-line-end-notes {
+    background: #eee;
+}
+
+.flow-line-end-exception {
+    background: @error-color;
+    color: #fff;
+
+    .root-status-offline & {
+        background: @offline-color;
+        color: #fff !important;
+    }
 }

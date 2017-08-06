@@ -6,10 +6,14 @@ using Microsoft.IO;
 using MirrorSharp.Advanced;
 using SharpLab.Server.Compilation;
 using SharpLab.Server.Compilation.Internal;
-using SharpLab.Server.Compilation.Setups;
 using SharpLab.Server.Decompilation;
 using SharpLab.Server.Decompilation.AstOnly;
+using SharpLab.Server.Execution;
+using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.MirrorSharp;
+using SharpLab.Server.MirrorSharp.Internal;
+using SharpLab.Server.MirrorSharp.Internal.Languages;
+using SharpLab.Server.Monitoring;
 
 namespace SharpLab.Server {
     [UsedImplicitly]
@@ -27,18 +31,18 @@ namespace SharpLab.Server {
                    .Keyed<IFeatureDiscovery>(LanguageNames.VisualBasic)
                    .SingleInstance();
 
-            builder.RegisterType<CSharpSetup>()
-                   .As<IMirrorSharpSetup>()
+            builder.RegisterType<CSharpIntegration>()
+                   .As<ILanguageIntegration>()
                    .WithParameter(ResolvedParameter.ForKeyed<IFeatureDiscovery>(LanguageNames.CSharp))
                    .SingleInstance();
 
-            builder.RegisterType<VisualBasicSetup>()
-                   .As<IMirrorSharpSetup>()
+            builder.RegisterType<VisualBasicIntegration>()
+                   .As<ILanguageIntegration>()
                    .WithParameter(ResolvedParameter.ForKeyed<IFeatureDiscovery>(LanguageNames.VisualBasic))
                    .SingleInstance();
 
-            builder.RegisterType<FSharpSetup>()
-                   .As<IMirrorSharpSetup>()
+            builder.RegisterType<FSharpIntegration>()
+                   .As<ILanguageIntegration>()
                    .SingleInstance();
 
             builder.RegisterType<Compiler>()
@@ -53,8 +57,27 @@ namespace SharpLab.Server {
             builder.RegisterType<ILDecompiler>().As<IDecompiler>().SingleInstance();
             builder.RegisterType<JitAsmDecompiler>().As<IDecompiler>().SingleInstance();
 
+            builder.RegisterType<Executor>()
+                   .As<IExecutor>()
+                   .SingleInstance();
+            builder.RegisterType<FlowReportingRewriter>()
+                   .As<IAssemblyRewriter>()
+                   .SingleInstance();
+            builder.RegisterType<FSharpEntryPointRewriter>()
+                   .As<IAssemblyRewriter>()
+                   .SingleInstance();
+
             builder.RegisterInstance(new RecyclableMemoryStreamManager())
                    .AsSelf();
+
+            builder.RegisterType<DefaultTraceMonitor>()
+                   .As<IMonitor>()
+                   .SingleInstance()
+                   .PreserveExistingDefaults();
+
+            builder.RegisterType<MonitorExceptionLogger>()
+                   .As<IExceptionLogger>()
+                   .SingleInstance();
 
             builder.RegisterType<SlowUpdate>()
                    .As<ISlowUpdateExtension>()

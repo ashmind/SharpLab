@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "prepare": "git apply ./patches/codemirror+5.27.2.patch --verbose",
     "test": "jest"
   },
   "jest": {
@@ -18,7 +19,7 @@
     "gulp-autoprefixer": "^3.1.0",
     "gulp-babili": "0.0.2",
     "gulp-better-rollup": "^1.1.1",
-    "gulp-clean-css": "^2.0.6",
+    "gulp-clean-css": "^3.7.0",
     "gulp-concat": "^2.6.0",
     "gulp-debug": "^3.0.0",
     "gulp-html-replace": "^1.5.5",
@@ -36,6 +37,7 @@
     "jest": "^20.0.4",
     "md5-file": "^3.1.1",
     "multipipe": "^1.0.1",
+    "patch-package": "^3.3.1",
     "rimraf": "^2.5.4",
     "rollup": "^0.41.6",
     "rollup-plugin-commonjs": "^8.0.2",

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-Vue.component('app-mirrorsharp-diagnostic', {
+Vue.component('app-diagnostic', {
     props: {
         model: Object
     },

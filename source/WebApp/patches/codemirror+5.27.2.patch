@@ -1,0 +1,14 @@
+,diff --git a/node_modules/codemirror/lib/codemirror.js b/node_modules/codemirror/lib/codemirror.js
+index 0a7ab7b..e094a48 100644
+--- a/node_modules/codemirror/lib/codemirror.js
++++ b/node_modules/codemirror/lib/codemirror.js
+@@ -8895,7 +8895,7 @@ function domTextBetween(cm, from, to, fromLine, toLine) {
+       var markerID = node.getAttribute("cm-marker"), range$$1;
+       if (markerID) {
+         var found = cm.findMarks(Pos(fromLine, 0), Pos(toLine + 1, 0), recognizeMarker(+markerID));
+-        if (found.length && (range$$1 = found[0].find()))
++        if (found.length && (range$$1 = found[0].find(0)))
+           { addText(getBetween(cm.doc, range$$1.from, range$$1.to).join(lineSep)); }
+         return
+       }
+,

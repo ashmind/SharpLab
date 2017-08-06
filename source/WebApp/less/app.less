@@ -85,7 +85,7 @@ section {
     display: flex;
     flex-direction: column;
 
-    header {
+    > header {
         position: relative;
         display: flex;
         padding: 5px;
@@ -110,7 +110,7 @@ section {
     }
 }
 
-.results section header {
+.results section > header {
     border-left: 1px solid #fff;
 }
 
@@ -209,4 +209,5 @@ section.info-only {
 @import 'imports/mobile.less';
 @import 'imports/ast.less';
 @import 'imports/codemirror.less';
+@import 'imports/output.less';
 @import 'imports/offline.less';

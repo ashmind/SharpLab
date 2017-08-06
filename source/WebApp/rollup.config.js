@@ -13,7 +13,7 @@ const plugins = [
         browser: true
     }),
     commonjs({
-        include: ['node_modules/**', 'js/ui/codemirror/**']
+        include: ['node_modules/**', 'js/ui/codemirror/**', 'js/ui/helpers/**']
     })
 ];
 

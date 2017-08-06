@@ -1,0 +1,92 @@
+@import 'common.less';
+
+@inspection-border-color: #cecece;
+@inspection-header-color: #ececec;
+
+.output {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    padding: 2px 4px;
+    overflow: auto;
+
+    pre {
+        .code-text();
+        margin: 0;
+    }
+
+    > * + *,
+    > * + pre {
+        margin-top: 4px;
+    }
+}
+
+.output-disclaimer {
+    display: block;
+    width: 100%;
+    background-color: #ffeb90;
+    padding: 2px 4px;
+
+    a {
+        color: inherit;
+        text-decoration: underline;
+    }
+}
+
+.output-empty {
+    color: #666;
+    padding: 0px 4px;
+    font-size: 90%;
+}
+
+.inspection {
+    .code-text();
+    display: flex;
+    width: fit-content;
+    border: 1px solid @inspection-border-color;
+    header {
+        background-color: @inspection-header-color;
+        padding: 2px 4px;
+
+        &::after {
+            content: ':';
+        }
+    }
+}
+
+.inspection-value {
+    text-align: right;
+    padding: 2px 4px;
+    white-space: pre-wrap;
+}
+
+.inspection-multiline {
+    flex-direction: column;
+    header::after {
+        content: '';
+    }
+    .inspection-value {
+        text-align: left;
+    }
+}
+
+.inspection-exception {
+    border-color: @error-color;
+    header {
+        background-color: @error-color;
+        color: #fff;
+    }
+}
+
+.root-status-offline {
+    .output-disclaimer {
+        background-color: @offline-color;
+        color: #fff;
+    }
+
+    .inspection {
+        border-color: @offline-color;
+    }
+}

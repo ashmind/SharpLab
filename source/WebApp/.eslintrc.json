@@ -81,7 +81,6 @@
         "no-void": "warn",
         "no-warning-comments": ["error", { "terms": ["jshint"], "location": "anywhere" }],
         "no-with": "error",
-        "radix": "warn",
         "require-await": "warn",
         "wrap-iife": ["warn", "inside"],
         "yoda": ["warn", "never"],
