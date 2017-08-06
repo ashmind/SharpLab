@@ -223,10 +223,14 @@ namespace SharpLab.Server.Execution {
                     n => n.Type(typeof(SharpLabObjectExtensions), ApiAccess.Allowed)
                 )
                 .Namespace("Microsoft.FSharp.Core", ApiAccess.Neutral,
-                    n => n.Type(typeof(CompilationMappingAttribute), ApiAccess.Allowed)
+                    n => n.Type(typeof(CompilationArgumentCountsAttribute), ApiAccess.Allowed)
+                          .Type(typeof(CompilationMappingAttribute), ApiAccess.Allowed)
                           .Type(typeof(EntryPointAttribute), ApiAccess.Allowed)
                           .Type(typeof(FSharpFunc<,>), ApiAccess.Allowed)
                           .Type(typeof(FSharpOption<>), ApiAccess.Allowed)
+                          .Type(typeof(OptimizedClosures.FSharpFunc<,,>), ApiAccess.Allowed)
+                          .Type(typeof(OptimizedClosures.FSharpFunc<,,,>), ApiAccess.Allowed)
+                          .Type(typeof(OptimizedClosures.FSharpFunc<,,,,>), ApiAccess.Allowed)
                           .Type(typeof(PrintfFormat<,,,>), ApiAccess.Allowed)
                           .Type(typeof(PrintfFormat<,,,,>), ApiAccess.Allowed)
                           .Type(typeof(PrintfModule), ApiAccess.Neutral,
