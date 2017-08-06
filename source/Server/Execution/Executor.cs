@@ -225,6 +225,7 @@ namespace SharpLab.Server.Execution {
                 .Namespace("Microsoft.FSharp.Core", ApiAccess.Neutral,
                     n => n.Type(typeof(CompilationMappingAttribute), ApiAccess.Allowed)
                           .Type(typeof(EntryPointAttribute), ApiAccess.Allowed)
+                          .Type(typeof(FSharpFunc<,>), ApiAccess.Allowed)
                           .Type(typeof(FSharpOption<>), ApiAccess.Allowed)
                           .Type(typeof(PrintfFormat<,,,>), ApiAccess.Allowed)
                           .Type(typeof(PrintfFormat<,,,,>), ApiAccess.Allowed)

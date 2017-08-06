@@ -27,7 +27,7 @@
     <PackageReference Include="MirrorSharp.Owin" Version="0.9.0-pre-20170523" />
     <PackageReference Include="MirrorSharp.VisualBasic" Version="0.9.0-pre-20170523" />
     <PackageReference Include="SharpDisasm" Version="1.1.5" />
-    <PackageReference Include="Unbreakable" Version="0.1.4-unproven" />
+    <PackageReference Include="Unbreakable" Version="0.1.5-unproven" />
   </ItemGroup>
 
   <ItemGroup>
