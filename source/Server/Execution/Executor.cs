@@ -12,17 +12,21 @@ using MirrorSharp.Advanced;
 using Mono.Cecil;
 using SharpLab.Runtime.Internal;
 using SharpLab.Server.Execution.Internal;
+using SharpLab.Server.Monitoring;
 using Unbreakable;
 using Unbreakable.Rules.Rewriters;
+using Unbreakable.Runtime;
 
 namespace SharpLab.Server.Execution {
     public class Executor : IExecutor {
         private readonly IReadOnlyCollection<IAssemblyRewriter> _rewriters;
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;
+        private readonly IMonitor _monitor;
 
-        public Executor(IReadOnlyCollection<IAssemblyRewriter> rewriters, RecyclableMemoryStreamManager memoryStreamManager) {
+        public Executor(IReadOnlyCollection<IAssemblyRewriter> rewriters, RecyclableMemoryStreamManager memoryStreamManager, IMonitor monitor) {
             _rewriters = rewriters;
             _memoryStreamManager = memoryStreamManager;
+            _monitor = monitor;
         }
 
         public ExecutionResult Execute(Stream assemblyStream, Stream symbolStream, IWorkSession session) {
@@ -54,9 +58,17 @@ namespace SharpLab.Server.Execution {
                     PrivateBinPath = currentSetup.PrivateBinPath
                 })) {
                     context.LoadAssembly(LoadMethod.LoadFrom, Assembly.GetExecutingAssembly().GetAssemblyFile().FullName);
-                    return RemoteFunc.Invoke(context.Domain, rewrittenStream, guardToken, Remote.Execute);
+                    var (result, exception) = RemoteFunc.Invoke(context.Domain, rewrittenStream, guardToken, Remote.Execute);
+                    if (ShouldMonitorException(exception))
+                        _monitor.Exception(exception, session);
+                    return result;
                 }
             }
+        }
+
+        private static bool ShouldMonitorException(Exception exception) {
+            return exception is GuardException
+                || exception is InvalidProgramException;
         }
 
         public void Serialize(ExecutionResult result, IFastJsonWriter writer) {
@@ -128,7 +140,7 @@ namespace SharpLab.Server.Execution {
         }
 
         private static class Remote {
-            public static ExecutionResult Execute(Stream assemblyStream, RuntimeGuardToken guardToken) {
+            public static ExecutionResultWrapper Execute(Stream assemblyStream, RuntimeGuardToken guardToken) {
                 try {
                     Console.SetOut(Output.Writer);
 
@@ -139,7 +151,7 @@ namespace SharpLab.Server.Execution {
                         var result = main.Invoke(null, args);
                         if (main.ReturnType != typeof(void))
                             result.Inspect("Return");
-                        return new ExecutionResult(Output.Stream, Flow.Steps);
+                        return new ExecutionResultWrapper(new ExecutionResult(Output.Stream, Flow.Steps), null);
                     }
                 }
                 catch (Exception ex) {
@@ -148,7 +160,7 @@ namespace SharpLab.Server.Execution {
 
                     Flow.ReportException(ex);
                     ex.Inspect("Exception");
-                    return new ExecutionResult(Output.Stream, Flow.Steps);
+                    return new ExecutionResultWrapper(new ExecutionResult(Output.Stream, Flow.Steps), ex);
                 }
             }
 
@@ -167,6 +179,22 @@ namespace SharpLab.Server.Execution {
                     throw new NotSupportedException();
 
                 return bytes;
+            }
+
+            [Serializable]
+            public struct ExecutionResultWrapper {
+                public ExecutionResultWrapper(ExecutionResult result, Exception exception = null) {
+                    Result = result;
+                    Exception = exception;
+                }
+
+                public void Deconstruct(out ExecutionResult result, out Exception exception) {
+                    result = Result;
+                    exception = Exception;
+                }
+
+                public ExecutionResult Result { get; }
+                public Exception Exception { get; }
             }
         }
 

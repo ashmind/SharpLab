@@ -13,6 +13,7 @@ using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.MirrorSharp;
 using SharpLab.Server.MirrorSharp.Internal;
 using SharpLab.Server.MirrorSharp.Internal.Languages;
+using SharpLab.Server.Monitoring;
 
 namespace SharpLab.Server {
     [UsedImplicitly]
@@ -68,6 +69,15 @@ namespace SharpLab.Server {
 
             builder.RegisterInstance(new RecyclableMemoryStreamManager())
                    .AsSelf();
+
+            builder.RegisterType<DefaultTraceMonitor>()
+                   .As<IMonitor>()
+                   .SingleInstance()
+                   .PreserveExistingDefaults();
+
+            builder.RegisterType<MonitorExceptionLogger>()
+                   .As<IExceptionLogger>()
+                   .SingleInstance();
 
             builder.RegisterType<SlowUpdate>()
                    .As<ISlowUpdateExtension>()

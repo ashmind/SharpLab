@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+    <AssemblyName>SharpLab.Server.Azure</AssemblyName>
+    <RootNamespace>SharpLab.Server.Azure</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Server\Server.csproj" />
+  </ItemGroup>
+
+  <Target Name="CopyToServerBin" AfterTargets="Build">
+    <ItemGroup>
+      <_FilesToCopy Include="$(OutDir)\Microsoft.ApplicationInsights.*" />
+      <_FilesToCopy Include="$(OutDir)\$(AssemblyName).*" />
+    </ItemGroup>
+    
+    <Copy SourceFiles="@(_FilesToCopy)" DestinationFolder="$(MSBuildProjectDirectory)\..\Server\bin\$(Configuration)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_FilesToCopy)" DestinationFolder="$(MSBuildProjectDirectory)\..\WebApp\bin" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_FilesToCopy)" DestinationFolder="$(MSBuildProjectDirectory)\..\Tests\bin\$(Configuration)" SkipUnchangedFiles="true" />
+  </Target>
+</Project>

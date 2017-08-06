@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Cors;
 using System.Web.Hosting;
 using Autofac;
+using Autofac.Extras.FileSystemRegistration;
 using Microsoft.Owin;
 using Microsoft.Owin.Cors;
 using MirrorSharp;
@@ -13,6 +14,7 @@ using MirrorSharp.Owin;
 using Owin;
 using SharpLab.Server;
 using SharpLab.Server.MirrorSharp.Internal;
+using SharpLab.Server.Monitoring;
 
 [assembly: OwinStartup(typeof(Startup), nameof(Startup.Configuration))]
 
@@ -32,7 +34,8 @@ namespace SharpLab.Server {
             };
             app.UseCors(corsOptions);
 
-            var mirrorSharpOptions = CreateMirrorSharpOptions();
+            var container = CreateContainer();
+            var mirrorSharpOptions = CreateMirrorSharpOptions(container);
             app.UseMirrorSharp(mirrorSharpOptions);
 
             app.Map("/status", a => a.Use((c, next) => {
@@ -40,16 +43,17 @@ namespace SharpLab.Server {
                 return c.Response.WriteAsync("OK");
             }));
 
-            Trace.TraceInformation("Application started.");
-            HostingEnvironment.RegisterObject(new ShutdownTracer());
+            var monitor = container.Resolve<IMonitor>();
+            monitor.Event("Application Startup", null);
+            HostingEnvironment.RegisterObject(new ShutdownMonitor(monitor));
         }
 
-        public static MirrorSharpOptions CreateMirrorSharpOptions() {
-            var container = CreateContainer();
+        public static MirrorSharpOptions CreateMirrorSharpOptions(IContainer container) {
             var options = new MirrorSharpOptions {
                 SetOptionsFromClient = container.Resolve<ISetOptionsFromClientExtension>(),
                 SlowUpdate = container.Resolve<ISlowUpdateExtension>(),
-                IncludeExceptionDetails = true
+                IncludeExceptionDetails = true,
+                ExceptionLogger = container.Resolve<IExceptionLogger>()
             };
             var languages = container.Resolve<ILanguageIntegration[]>();
             foreach (var language in languages) {
@@ -58,24 +62,32 @@ namespace SharpLab.Server {
             return options;
         }
 
-        private static IContainer CreateContainer() {
+        public static IContainer CreateContainer() {
             var builder = new ContainerBuilder();
             var assembly = Assembly.GetExecutingAssembly();
 
-            builder.RegisterAssemblyModules(assembly);
+            builder.RegisterAssemblyModulesInDirectoryOf(assembly);
 
             return builder.Build();
         }
 
-        private class ShutdownTracer : IRegisteredObject {
+        private class ShutdownMonitor : IRegisteredObject {
+            private readonly IMonitor _monitor;
+
+            public ShutdownMonitor(IMonitor monitor) {
+                _monitor = monitor;
+            }
+
             public void Stop(bool immediate) {
                 if (immediate)
                     return;
                 try {
-                    Trace.TraceInformation("Application shutdown: {0}.", HostingEnvironment.ShutdownReason);
+                    _monitor.Event("Application Shutdown", null, new Dictionary<string, string> {
+                        { "Reason", HostingEnvironment.ShutdownReason.ToString() }
+                    });
                 }
                 catch (Exception ex) {
-                    Trace.TraceError(ex.ToString());
+                    _monitor.Exception(ex, null);
                 }
             }
         }

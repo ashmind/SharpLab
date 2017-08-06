@@ -3,6 +3,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using MirrorSharp.Advanced;
 using SharpLab.Server.MirrorSharp.Internal;
+using SharpLab.Server.Monitoring;
 
 namespace SharpLab.Server.MirrorSharp {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]

@@ -18,7 +18,7 @@ using Xunit.Abstractions;
 
 namespace SharpLab.Tests {
     public class DecompilationTests {
-        private static readonly MirrorSharpOptions MirrorSharpOptions = Startup.CreateMirrorSharpOptions();
+        private static readonly MirrorSharpOptions MirrorSharpOptions = Startup.CreateMirrorSharpOptions(Startup.CreateContainer());
         private readonly ITestOutputHelper _output;
 
         public DecompilationTests(ITestOutputHelper output) {

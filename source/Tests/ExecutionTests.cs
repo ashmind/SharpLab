@@ -18,7 +18,7 @@ using SharpLab.Tests.Internal;
 
 namespace SharpLab.Tests {
     public class ExecutionTests {
-        private static readonly MirrorSharpOptions MirrorSharpOptions = Startup.CreateMirrorSharpOptions();
+        private static readonly MirrorSharpOptions MirrorSharpOptions = Startup.CreateMirrorSharpOptions(Startup.CreateContainer());
 
         [Theory]
         [InlineData("Exception.DivideByZero.cs", 4, "DivideByZeroException")]
