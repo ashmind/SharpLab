@@ -195,6 +195,15 @@ namespace SharpLab.Tests {
             Assert.Equal("Test\nReturn: 0", result.ExtensionResult.GetOutputAsString());
         }
 
+        [Theory]
+        [InlineData("Regression.CertainLoop.cs")]
+        [InlineData("Regression.FSharpNestedLambda.fs", LanguageNames.FSharp)]
+        public async Task SlowUpdate_DoesNotFail(string resourceName, string languageName = LanguageNames.CSharp) {
+            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), languageName);
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            AssertIsSuccess(result);
+        }
+
         private static void AssertIsSuccess(SlowUpdateResult<ExecutionResultData> result, bool allowRuntimeException = false) {
             var errors = result.JoinErrors();
             Assert.True(errors.IsNullOrEmpty(), errors);
