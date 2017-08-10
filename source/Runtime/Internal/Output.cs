@@ -5,20 +5,33 @@ using System.Text;
 
 namespace SharpLab.Runtime.Internal {
     public static class Output {
+        private const int MaxStreamDataCount = 50;
+
         private static readonly List<object> _stream = new List<object>();
         public static IReadOnlyList<object> Stream => _stream;
 
         public static TextWriter Writer { get; } = new OutputWriter();
 
         public static void Write(InspectionResult data) {
-            _stream.Add(data);
+            WriteObject(data);
         }
 
         public static void Write(string value) {
-            _stream.Add(value);
+            WriteObject(value);
         }
 
         public static void Write(char[] value) {
+            WriteObject(value);
+        }
+
+        private static void WriteObject(object value) {
+            if (_stream.Count == MaxStreamDataCount - 1) {
+                _stream.Add(new InspectionResult("System", new StringBuilder("Reached output limit")));
+                return;
+            }
+
+            if (_stream.Count > MaxStreamDataCount - 1)
+                return;
             _stream.Add(value);
         }
 

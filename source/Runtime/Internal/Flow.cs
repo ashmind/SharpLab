@@ -7,6 +7,7 @@ namespace SharpLab.Runtime.Internal {
         public const int UnknownLineNumber = -1;
 
         private static class ReportLimits {
+            public const int MaxStepCount = 50;
             public const int MaxVariableNameLength = 10;
             public const int MaxVariableValueLength = 10;
             public const int MaxEnumerableItems = 3;
@@ -19,6 +20,8 @@ namespace SharpLab.Runtime.Internal {
         public static IReadOnlyList<Step> Steps => _steps;
 
         public static void ReportLineStart(int lineNumber) {
+            if (_steps.Count >= ReportLimits.MaxStepCount)
+                return;
             _steps.Add(new Step(lineNumber));
         }
 
