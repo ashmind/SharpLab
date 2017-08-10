@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "prepare": "git apply ./patches/codemirror+5.27.2.patch --verbose",
+    "prepare": "patch-package",
     "test": "jest"
   },
   "jest": {
@@ -37,7 +37,7 @@
     "jest": "^20.0.4",
     "md5-file": "^3.1.1",
     "multipipe": "^1.0.1",
-    "patch-package": "^3.3.1",
+    "patch-package": "^3.3.3",
     "rimraf": "^2.5.4",
     "rollup": "^0.41.6",
     "rollup-plugin-commonjs": "^8.0.2",
