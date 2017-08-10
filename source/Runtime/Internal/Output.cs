@@ -26,7 +26,7 @@ namespace SharpLab.Runtime.Internal {
 
         private static void WriteObject(object value) {
             if (_stream.Count == MaxStreamDataCount - 1) {
-                _stream.Add(new InspectionResult("System", new StringBuilder("Reached output limit")));
+                _stream.Add(new InspectionResult("System", new StringBuilder("Output limit reached")));
                 return;
             }
 
