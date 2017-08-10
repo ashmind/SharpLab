@@ -97,8 +97,15 @@
     }
 
     var token = cm.getTokenAt(coords);
+    // this means that we are actually beyond the token, e.g.
+    // coordsChar() to the right of eol still returns last char
+    // on the line, but xRel will be 1 (to the right)
+    if (token.end === coords.ch && coords.xRel === 1) {
+      tooltip.hide();
+      return;
+    }
     if (token === tooltip.token)
-        return;
+      return;
 
     tooltip.token = token;
     var content = getTipContent(cm, token);
