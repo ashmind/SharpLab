@@ -78,12 +78,12 @@ try {
 
     ${env:$HOME} = $PSScriptRoot
     Invoke-Git . --version
-    
+
     Write-Output "Building SharpLab..."
     Write-Output "  Restoring packages..."
     dotnet restore "$sourceRoot\SharpLab.sln"
-    Write-Output "  Server.csproj"
-    dotnet build "$sourceRoot\Server\Server.csproj" `
+    Write-Output "  Server.Azure.csproj"
+    dotnet build "$sourceRoot\Server.Azure\Server.Azure.csproj" `
         /p:AllowedReferenceRelatedFileExtensions=.pdb `
         /p:Configuration=Release
     if ($LastExitCode -ne 0) {
@@ -105,7 +105,7 @@ try {
         Write-Output "Deleting $failedListPath..."
         Remove-Item $failedListPath
     }
-    
+
     $buildConfig.RoslynRepositories | % {
         Write-Output "Building repository '$($_.Name)' ($($_.Url))..."
         $repositorySourceRoot = Ensure-ResolvedPath "$roslynSourcesRoot\$($_.Name)"
@@ -191,7 +191,7 @@ try {
             Write-Output "Resolving and copying assemblies..."
             $resolverLogPath = "$branchArtifactsRoot\AssemblyResolver.log"
             $resolverCommand = "&""$assemblyResolver""" +
-              " --source-bin ""$sourceRoot\Server\bin\Release"" " +
+              " --source-bin ""$sourceRoot\Server.Azure\bin\Release"" " +
               " --roslyn-bin ""$branchBinariesPath""" +
               " --target ""$(Ensure-ResolvedPath $siteRoot\bin)""" +
               " --target-app-config ""$siteRoot\Web.config""" +

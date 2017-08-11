@@ -4,6 +4,7 @@
     <TargetFramework>net46</TargetFramework>
     <AssemblyName>SharpLab.Runtime</AssemblyName>
     <RootNamespace>SharpLab.Runtime</RootNamespace>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
 </Project>
