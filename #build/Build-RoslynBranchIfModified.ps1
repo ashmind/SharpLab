@@ -9,7 +9,6 @@ Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue" # https://www.amido.com/powershell-win32-error-handle-invalid-0x6/
 
-# Note: Write-Host, Write-Error and Write-Warning do not function properly in Azure
 ."$PSScriptRoot\Setup-Build.ps1"
 
 $branchFsName = $branchName -replace '[/\\:_]', '-'
@@ -37,13 +36,6 @@ if (Test-Path "$sourceRoot\Binaries") {
     Remove-Item "$sourceRoot\Binaries" -Recurse -Force
 }
 
-Write-Output "Building '$branchName'..."
-
-$buildLogPath = "$(Resolve-Path "$sourceRoot\..")\$([IO.Path]::GetFileName($sourceRoot))-$branchFsName.build.log"
-if (Test-Path $buildLogPath) {
-    Remove-Item $buildLogPath
-}
-
 function Build-Project(
     [Parameter(Mandatory=$true)][string[]] $candidateProjectPaths,
     [string] $msbuildArgs
@@ -52,33 +44,42 @@ function Build-Project(
     if (!$projectPath) {
         throw New-Object BranchBuildException("Project not found: none of @($candidateProjectPaths) matched.", $buildLogPath)
     }
-    "  $projectPath $msbuildArgs" | Out-Default
-
-    $projectPath = "$sourceRoot\$projectPath"
-    "    dotnet restore" | Out-Default
-    dotnet restore "$projectPath" >> "$buildLogPath"
-    "    dotnet build" | Out-Default
-    Invoke-Expression ("dotnet build `"$projectPath`" $msbuildArgs >> `"$buildLogPath`"")
+    "  msbuild $projectPath $msbuildArgs" | Out-Default
+    &$MSBuild $projectPath /m /p:Configuration=Release /p:DelaySign=false /p:SignAssembly=false /p:NeedsFakeSign=false /p:SolutionDir="$sourceRoot\Src" >> "$buildLogPath"
     if ($LastExitCode -ne 0) {
         throw New-Object BranchBuildException("Build failed, see $buildLogPath", $buildLogPath)
     }
 }
 
-$standardArgs = "/p:RestorePackages=false /p:Configuration=Debug /p:DelaySign=false /p:SignAssembly=false /p:NeedsFakeSign=false /p:SolutionDir=`"$sourceRoot\Src`""
-Build-Project "Src\Compilers\Core\Portable\CodeAnalysis.csproj" $standardArgs
-Build-Project "Src\Compilers\CSharp\Portable\CSharpCodeAnalysis.csproj" $standardArgs
-Build-Project "src\Features\CSharp\Portable\CSharpFeatures.csproj" $standardArgs
-Build-Project "Src\Tools\Source\CompilerGeneratorTools\Source\VisualBasicSyntaxGenerator\VisualBasicSyntaxGenerator.vbproj" $standardArgs
-Build-Project "Src\Compilers\VisualBasic\Portable\BasicCodeAnalysis.vbproj" "$standardArgs /p:IldasmPath=`"$(Resolve-Path "$sourceRoot\..\..\!tools\ildasm.exe")`""
-Build-Project "src\Features\VisualBasic\Portable\BasicFeatures.vbproj" $standardArgs
+Write-Output "Building '$branchName'..."
 
-if (Test-Path "$sourceRoot\NuGet.config") {
-    Remove-Item "$sourceRoot\NuGet.config"
+$buildLogPath = "$(Resolve-Path "$sourceRoot\..")\$([IO.Path]::GetFileName($sourceRoot))-$branchFsName.build.log"
+if (Test-Path $buildLogPath) {
+    Remove-Item $buildLogPath
 }
 
-robocopy "$sourceRoot\Binaries\Debug" "$artifactsRoot\Binaries\Debug" `
-    /xd "$sourceRoot\Binaries\Debug\Exes" `
-    /xd "$sourceRoot\Binaries\Debug\CompilerGeneratorTools" `
+Push-Location $sourceRoot
+try {
+    if (!(Test-Path '.\Restore.cmd')) {
+        throw New-Object BranchBuildException("Build failed: Restore.cmd not found.", $buildLogPath)
+    }
+    Write-Output "  .\Restore.cmd"
+    .\Restore.cmd >> "$buildLogPath"
+        
+    Build-Project "Src\Compilers\Core\Portable\CodeAnalysis.csproj"
+    Build-Project "Src\Compilers\CSharp\Portable\CSharpCodeAnalysis.csproj"
+    Build-Project "src\Features\CSharp\Portable\CSharpFeatures.csproj"
+    Build-Project "Src\Tools\Source\CompilerGeneratorTools\Source\VisualBasicSyntaxGenerator\VisualBasicSyntaxGenerator.vbproj"
+    Build-Project "Src\Compilers\VisualBasic\Portable\BasicCodeAnalysis.vbproj"
+    Build-Project "src\Features\VisualBasic\Portable\BasicFeatures.vbproj"
+}
+finally {
+    Pop-Location
+}
+
+robocopy "$sourceRoot\Binaries\Release" "$artifactsRoot\Binaries\Release" `
+    /xd "$sourceRoot\Binaries\Release\Exes" `
+    /xd "$sourceRoot\Binaries\Release\CompilerGeneratorTools" `
     /xd "runtimes" `
     /mir /np
 

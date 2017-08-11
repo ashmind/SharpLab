@@ -17,8 +17,10 @@ namespace SharpLab.Server.Azure {
             builder.RegisterInstance(new TelemetryClient(configuration))
                    .AsSelf();
 
+            var webAppName = Environment.GetEnvironmentVariable("SHARPLAB_WEBAPP_NAME");
             builder.RegisterType<ApplicationInsightsMonitor>()
                    .As<IMonitor>()
+                   .WithParameter("webAppName", webAppName)
                    .SingleInstance();
         }
     }

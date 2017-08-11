@@ -10,9 +10,11 @@ using SharpLab.Server.Monitoring;
 namespace SharpLab.Server.Azure {
     public class ApplicationInsightsMonitor : IMonitor {
         private readonly TelemetryClient _client;
+        private readonly string _webAppName;
 
-        public ApplicationInsightsMonitor(TelemetryClient client) {
+        public ApplicationInsightsMonitor(TelemetryClient client, string webAppName) {
             _client = client;
+            _webAppName = webAppName;
         }
 
         public void Event(string name, IWorkSession session, IDictionary<string, string> extras = null) {
@@ -31,10 +33,11 @@ namespace SharpLab.Server.Azure {
             _client.TrackException(telemetry);
         }
 
-        private static void AddDefaultDetails<TTelemetry>(TTelemetry telemetry, IWorkSession session, IDictionary<string, string> extras)
+        private void AddDefaultDetails<TTelemetry>(TTelemetry telemetry, IWorkSession session, IDictionary<string, string> extras)
             where TTelemetry: ITelemetry, ISupportProperties
         {
             telemetry.Context.Session.Id = session?.GetSessionId();
+            telemetry.Context.Properties.Add("Web App", _webAppName);
             if (extras == null)
                 return;
 

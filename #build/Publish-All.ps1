@@ -123,7 +123,7 @@ try {
     Write-Output "Updating $branchesFileName..."
     Set-Content "$sitesRoot\$branchesFileName" $(ConvertTo-Json $branchesJson -Depth 100)
 
-    $brachesJsLocalRoot = "$sourceRoot\Web\wwwroot"
+    $brachesJsLocalRoot = "$sourceRoot\WebApp\wwwroot"
     if (!(Test-Path $brachesJsLocalRoot)) {
         New-Item -ItemType Directory -Path $brachesJsLocalRoot | Out-Null    
     }

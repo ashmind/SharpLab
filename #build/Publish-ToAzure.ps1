@@ -37,6 +37,13 @@ if (!$webApp) {
         -ResourceGroupName $resourceGroupName `
         -Name $webAppName `
         -WebSocketsEnabled $true | Out-Null
+    Set-AzureRmWebApp `
+        -ResourceGroupName $resourceGroupName `
+        -Name $webAppName `
+        -AppSettings @{
+            SHARPLAB_WEBAPP_NAME = $webAppName
+            SHARPLAB_TELEMETRY_KEY = $env:SHARPLAB_TELEMETRY_KEY
+        } | Out-Null
 }
 else {
     Write-Output "  Found web app $($webApp.Name)"

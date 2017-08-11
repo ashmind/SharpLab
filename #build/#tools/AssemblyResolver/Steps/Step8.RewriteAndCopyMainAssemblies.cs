@@ -28,7 +28,7 @@ namespace AssemblyResolver.Steps {
                     rewritten = true;
                 }
                 if (rewritten) {
-                    WriteAssembly(assembly, targetPath);
+                    WriteAssembly(assembly, targetPath, mainAssemblies);
                 }
                 else {
                     Copy.File(assembly.Path, targetPath);
@@ -37,7 +37,7 @@ namespace AssemblyResolver.Steps {
             }
         }
 
-        private static void WriteAssembly(AssemblyDetails assembly, string targetPath) {
+        private static void WriteAssembly(AssemblyDetails assembly, string targetPath, IImmutableDictionary<AssemblyShortName, AssemblyDetails> mainAssemblies) {
             var assemblyName = assembly.Definition.Name;
             assemblyName.PublicKey = new byte[0];
             assemblyName.PublicKeyToken = new byte[0];
@@ -49,6 +49,12 @@ namespace AssemblyResolver.Steps {
                 resolver.RemoveSearchDirectory(defaultPath);
             }
             resolver.AddSearchDirectory(targetDirectoryPath);
+            resolver.ResolveFailure += (sender, reference) => {
+                var mainAssembly = mainAssemblies.GetValueOrDefault(reference.Name);
+                if (mainAssembly == null)
+                    return null;
+                return mainAssembly.Definition;
+            };
             assembly.Definition.Write(targetPath);
         }
 
