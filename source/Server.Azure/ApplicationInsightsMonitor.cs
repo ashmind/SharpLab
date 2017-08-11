@@ -37,7 +37,7 @@ namespace SharpLab.Server.Azure {
             where TTelemetry: ITelemetry, ISupportProperties
         {
             telemetry.Context.Session.Id = session?.GetSessionId();
-            telemetry.Context.Properties.Add("Web App", _webAppName);
+            telemetry.Properties.Add("Web App", _webAppName);
             if (extras == null)
                 return;
 
