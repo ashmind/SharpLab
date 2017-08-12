@@ -63,6 +63,7 @@ namespace SharpLab.Runtime.Internal {
 
             if (step.VariableCount == ReportLimits.MaxVariablesPerStep + 1) {
                 notes.Append("…");
+                _steps[stepIndex] = step;
                 return;
             }
 

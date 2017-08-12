@@ -177,7 +177,11 @@ namespace SharpLab.Server.Execution.Internal {
                 case Code.Stloc_1: return 1;
                 case Code.Stloc_2: return 2;
                 case Code.Stloc_3: return 3;
-                case Code.Stloc: return (int)instruction.Operand;
+
+                case Code.Stloc_S:
+                case Code.Stloc:
+                    return ((VariableReference)instruction.Operand).Index;
+
                 default: return null;
             }
         }

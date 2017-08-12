@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace SharpLab.Runtime.Internal {
-    public static class ObjectAppender {
+    internal static class ObjectAppender {
         public static void Append<T>(StringBuilder builder, T value, int? maxEnumerableItemCount = null, int? maxValueLength = null) {
             if (value == null) {
                 builder.Append("null");
