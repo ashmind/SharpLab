@@ -44,7 +44,7 @@ li {
 
 main {
     display: flex;
-    flex: 1 0 auto;
+    flex: 1 0 0;
 
     > * {
         flex: 1 0 50%;
@@ -155,23 +155,53 @@ section.info-only {
 }
 
 .branch-info,
-.warnings {
+.warnings,
+.root-status-default .errors {
     flex-shrink: 0;
     max-height: 20%;
 
     .content {
-        overflow: auto;
         flex-shrink: 1;
     }
 }
 
-.errors header,
-.root-status-error .code header {
+.errors header {
     background-color: @error-color;
 }
 
 .warnings header {
     background-color: @warning-color;
+}
+
+.root-status-error {
+    .code header,
+    .result header {
+        background-color: @error-color;
+    }
+
+    .result {
+        flex: 0 1 auto;
+        .content {
+            display: none;
+        }
+    }
+
+    .errors {
+        flex: 1 1 auto;
+        header {
+            display: none;
+        }
+        .content {
+            flex-basis: 0;
+        }
+        &.collapsed .content {
+            display: block;
+        }
+    }
+
+    .warnings {
+        display: none;
+    }
 }
 
 .root-status-offline  {
@@ -193,15 +223,12 @@ section.info-only {
 .errors, .warnings {
     .content {
         .code-text();
+        overflow: auto;
     }
 
     li {
         padding: 5px 10px;
     }
-}
-
-.errors {
-    flex: 1 1 auto;
 }
 
 @import 'imports/loader.less';

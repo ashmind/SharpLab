@@ -60,8 +60,6 @@
     }
 
     section {
-        position: relative;
-
         header {
             z-index: 10;
             position: static;
@@ -74,6 +72,16 @@
 
     .option-language {
         position: static;
+    }
+
+    .code,
+    .root-status-default .result,
+    .root-status-error .results {
+        position: relative;
+    }
+
+    .results {
+        max-height: 50%;
     }
 
     .result .CodeMirror {
@@ -95,6 +103,11 @@
 
         .CodeMirror {
             left: @menu-width;
+        }
+
+        .ast,
+        .root-status-error & .errors .content {
+            padding-left: @menu-width;
         }
 
         header .option {

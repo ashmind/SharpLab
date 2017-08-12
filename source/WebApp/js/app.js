@@ -30,7 +30,8 @@ function applyUpdateResult(updateResult) {
     };
     for (const diagnostic of updateResult.diagnostics) {
         if (diagnostic.severity === 'error') {
-            result.success = false;
+            if (result.type !== 'ast')
+                result.success = false;
             result.errors.push(diagnostic);
         }
         else if (diagnostic.severity === 'warning') {

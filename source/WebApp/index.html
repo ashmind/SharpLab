@@ -76,9 +76,9 @@
       </div>
 
       <div class="section-group results" v-bind:class="{loading: loading}">
-        <section v-show="result.success" class="result">
+        <section class="result">
           <header>
-            <button class="mobile-menu-button" v-app-class-toggle="{ target: '.result', class: 'mobile-menu-open' }"></button>
+            <button class="mobile-menu-button" v-app-class-toggle="{ target: '.results', class: 'mobile-menu-open' }"></button>
             <h1>Results</h1>
 
             <div class="select-wrapper option-target-language option">
@@ -125,8 +125,8 @@
 
         <section class="errors" v-show="result.errors.length > 0">
           <header>
+            <button class="expander" v-app-class-toggle="{ target: '.errors', class: 'collapsed' }"></button>
             <h1>Errors</h1>
-            <div class="select-wrapper spacer"><select></select></div>
           </header>
           <div class="content">
             <div class="loader"></div>
@@ -138,7 +138,7 @@
           </div>
         </section>
 
-        <section class="warnings collapsed" v-show="result.success && result.warnings.length > 0">
+        <section class="warnings collapsed" v-show="result.warnings.length > 0">
           <header>
             <button class="expander" v-app-class-toggle="{ target: '.warnings', class: 'collapsed' }"></button>
             <h1>Warnings</h1>
