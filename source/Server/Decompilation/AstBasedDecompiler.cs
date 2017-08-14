@@ -29,7 +29,8 @@ namespace SharpLab.Server.Decompilation {
                     AutomaticProperties = false,
                     ExpressionTrees = false,
                     ArrayInitializers = false,
-                    ObjectOrCollectionInitializers = false
+                    ObjectOrCollectionInitializers = false,
+                    LiftedOperators = false
                 }
             };
 

@@ -26,8 +26,7 @@ namespace SharpLab.Tests {
         }
 
         [Theory]
-        // Tuples, https://github.com/ashmind/SharpLab/issues/139
-        [InlineData("class C { void M((int, string) t) {} }")]
+        [InlineData("class C { void M((int, string) t) {} }")] // Tuples, https://github.com/ashmind/SharpLab/issues/139
         public async Task SlowUpdate_DecompilesSimpleCodeWithoutErrors(string code) {
             var driver = MirrorSharpTestDriver.New(MirrorSharpOptions).SetText(code);
             await driver.SendSetOptionsAsync(LanguageNames.CSharp, LanguageNames.CSharp);
@@ -45,13 +44,11 @@ namespace SharpLab.Tests {
         [InlineData("NullPropagation.ToTernary.cs2cs")]
         [InlineData("Simple.cs2il")]
         [InlineData("Simple.vb2vb")]
-        [InlineData("Module.vb2vb")]
-        // https://github.com/ashmind/SharpLab/issues/9
-        [InlineData("Lambda.CallInArray.cs2cs")]
-        // https://github.com/ashmind/SharpLab/issues/20
-        [InlineData("Cast.ExplicitOperatorOnNull.cs2cs")]
-        // https://github.com/ashmind/SharpLab/issues/123
-        [InlineData("Goto.TryWhile.cs2cs")]
+        [InlineData("Module.vb2vb")]        
+        [InlineData("Lambda.CallInArray.cs2cs")] // https://github.com/ashmind/SharpLab/issues/9        
+        [InlineData("Cast.ExplicitOperatorOnNull.cs2cs")] // https://github.com/ashmind/SharpLab/issues/20        
+        [InlineData("Goto.TryWhile.cs2cs")] // https://github.com/ashmind/SharpLab/issues/123        
+        [InlineData("Nullable.OperatorLifting.cs2cs")] // https://github.com/ashmind/SharpLab/issues/159
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string resourceName) {
             var data = TestData.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);
@@ -66,10 +63,8 @@ namespace SharpLab.Tests {
         }
 
         [Theory]
-        // https://github.com/ashmind/SharpLab/issues/25
-        [InlineData("Condition.SimpleSwitch.cs2cs")]
-        // https://github.com/ashmind/SharpLab/issues/128
-        [InlineData("Variable.FromArgumentToCall.cs2cs")]
+        [InlineData("Condition.SimpleSwitch.cs2cs")] // https://github.com/ashmind/SharpLab/issues/25        
+        [InlineData("Variable.FromArgumentToCall.cs2cs")] // https://github.com/ashmind/SharpLab/issues/128
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_InDebug(string resourceName) {
             var data = TestData.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data, Optimize.Debug);
@@ -85,8 +80,7 @@ namespace SharpLab.Tests {
 
         [Theory]
         [InlineData("FSharp.EmptyType.fs2il")]
-        [InlineData("FSharp.SimpleMethod.fs2cs")]
-        // https://github.com/ashmind/SharpLab/issues/119
+        [InlineData("FSharp.SimpleMethod.fs2cs")] // https://github.com/ashmind/SharpLab/issues/119
         [InlineData("FSharp.NotNull.fs2cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForFSharp(string resourceName) {
             var data = TestData.FromResource(resourceName);
