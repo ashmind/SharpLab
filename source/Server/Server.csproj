@@ -27,7 +27,8 @@
     <PackageReference Include="MirrorSharp.Owin" Version="0.9.0-pre-20170523" />
     <PackageReference Include="MirrorSharp.VisualBasic" Version="0.9.0-pre-20170523" />
     <PackageReference Include="SharpDisasm" Version="1.1.5" />
-    <PackageReference Include="Unbreakable" Version="0.1.8-unproven" />
+    <PackageReference Include="Unbreakable" Version="0.2.0-unproven" />
+    <PackageReference Include="Unbreakable.Build.PolicyReport" Version="0.0.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -59,6 +60,13 @@
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System.Web" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Update="Execution\Internal\ApiPolicySetup.cs">
+      <UnbreakablePolicyTypeName>SharpLab.Server.Execution.ApiPolicySetup</UnbreakablePolicyTypeName>
+      <UnbreakablePolicyMethodName>CreatePolicy</UnbreakablePolicyMethodName>
+    </Compile>
   </ItemGroup>
 
   <Import Project="FSharpCore.targets" />

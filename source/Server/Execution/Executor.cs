@@ -5,16 +5,13 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using AppDomainToolkit;
 using AshMind.Extensions;
-using Microsoft.FSharp.Core;
 using Microsoft.IO;
-using Microsoft.VisualBasic.CompilerServices;
 using MirrorSharp.Advanced;
 using Mono.Cecil;
 using SharpLab.Runtime.Internal;
 using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.Monitoring;
 using Unbreakable;
-using Unbreakable.Rules.Rewriters;
 using Unbreakable.Runtime;
 
 namespace SharpLab.Server.Execution {
@@ -199,7 +196,7 @@ namespace SharpLab.Server.Execution {
         }
 
         private static readonly AssemblyGuardSettings GuardSettings = new AssemblyGuardSettings {
-            ApiRules = ApiRulesSetup.CreateRules(),
+            ApiPolicy = ApiPolicySetup.CreatePolicy(),
             AllowExplicitLayoutInTypesMatchingPattern = new Regex("<PrivateImplementationDetails>", RegexOptions.Compiled)
         };
     }

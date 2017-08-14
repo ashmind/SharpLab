@@ -149,6 +149,15 @@ namespace SharpLab.Tests {
             );
         }
 
+        [Theory]
+        [InlineData("Api.Expressions.Simple.cs")]
+        public async Task SlowUpdate_AllowsExpectedApis(string resourceName) {
+            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName));
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+
+            AssertIsSuccess(result);
+        }
+
         [Fact]
         public async Task SlowUpdate_ExecutesVisualBasic() {
             var driver = await NewTestDriverAsync(@"
