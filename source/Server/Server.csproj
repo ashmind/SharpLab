@@ -9,6 +9,10 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <UnbreakablePolicyReportEnabled>false</UnbreakablePolicyReportEnabled>    
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="AppDomainToolkit" Version="1.0.4.3" />
     <PackageReference Include="AshMind.Extensions" Version="2.0.0-pre-20160719" />
