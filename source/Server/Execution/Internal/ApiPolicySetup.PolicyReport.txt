@@ -1,6 +1,6 @@
 
   Argument: Denied
-  Extensible: Denied
+  Argument+Extensible: Denied
   SharpLabObjectExtensions: Allowed
      Dump: Allowed
      Equals: Allowed
@@ -13,6 +13,7 @@ Microsoft.FSharp.Collections
   Array3DModule: Denied
   Array4DModule: Denied
   ArrayModule: Denied
+  ArrayModule+Parallel: Denied
   ComparisonIdentity: Denied
   FSharpList`1: Allowed
      CompareTo: Allowed
@@ -32,49 +33,19 @@ Microsoft.FSharp.Collections
      GetSlice: Allowed
      GetType: Allowed
      ToString: Allowed
+  FSharpList`1+Tags: Denied
   FSharpMap`2: Denied
   FSharpSet`1: Denied
   HashIdentity: Denied
   ListModule: Denied
   MapModule: Denied
-  Parallel: Denied
   SeqModule: Denied
   SetModule: Denied
-  Tags: Denied
 Microsoft.FSharp.Core
   AbstractClassAttribute: Denied
   AllowNullLiteralAttribute: Denied
   AutoOpenAttribute: Denied
   AutoSerializableAttribute: Denied
-  Checked: Denied
-  Checked: Denied
-  Choice1Of2: Denied
-  Choice1Of3: Denied
-  Choice1Of4: Denied
-  Choice1Of5: Denied
-  Choice1Of6: Denied
-  Choice1Of7: Denied
-  Choice2Of2: Denied
-  Choice2Of3: Denied
-  Choice2Of4: Denied
-  Choice2Of5: Denied
-  Choice2Of6: Denied
-  Choice2Of7: Denied
-  Choice3Of3: Denied
-  Choice3Of4: Denied
-  Choice3Of5: Denied
-  Choice3Of6: Denied
-  Choice3Of7: Denied
-  Choice4Of4: Denied
-  Choice4Of5: Denied
-  Choice4Of6: Denied
-  Choice4Of7: Denied
-  Choice5Of5: Denied
-  Choice5Of6: Denied
-  Choice5Of7: Denied
-  Choice6Of6: Denied
-  Choice6Of7: Denied
-  Choice7Of7: Denied
   ClassAttribute: Denied
   CLIEventAttribute: Denied
   CLIMutableAttribute: Denied
@@ -120,9 +91,39 @@ Microsoft.FSharp.Core
      Match: Allowed
      ToString: Allowed
   EqualityConditionalOnAttribute: Denied
-  ErrorStrings: Denied
   ExperimentalAttribute: Denied
-  ExtraTopLevelOperators: Denied
+  ExtraTopLevelOperators: Allowed
+     CreateArray2D: Denied
+     CreateDictionary: Allowed
+     CreateSet: Allowed
+     Equals: Denied
+     get_DefaultAsyncBuilder: Denied
+     get_query: Denied
+     GetHashCode: Denied
+     GetType: Denied
+     LazyPattern: Allowed
+     PrintFormat: Allowed
+     PrintFormatLine: Allowed
+     PrintFormatLineToError: Denied
+     PrintFormatLineToTextWriter: Allowed
+     PrintFormatToError: Denied
+     PrintFormatToString: Allowed
+     PrintFormatToStringThenFail: Denied
+     PrintFormatToTextWriter: Allowed
+     SpliceExpression: Allowed
+     SpliceUntypedExpression: Allowed
+     ToByte: Allowed
+     ToDouble: Allowed
+     ToSByte: Allowed
+     ToSingle: Allowed
+     ToString: Denied
+  ExtraTopLevelOperators+Checked: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToByte: Allowed
+     ToSByte: Allowed
+     ToString: Allowed
   FSharpChoice`2: Allowed
      CompareTo: Allowed
      Equals: Allowed
@@ -134,11 +135,44 @@ Microsoft.FSharp.Core
      NewChoice1Of2: Allowed
      NewChoice2Of2: Allowed
      ToString: Allowed
+  FSharpChoice`2+Choice1Of2: Denied
+  FSharpChoice`2+Choice2Of2: Denied
+  FSharpChoice`2+Tags: Denied
   FSharpChoice`3: Denied
+  FSharpChoice`3+Choice1Of3: Denied
+  FSharpChoice`3+Choice2Of3: Denied
+  FSharpChoice`3+Choice3Of3: Denied
+  FSharpChoice`3+Tags: Denied
   FSharpChoice`4: Denied
+  FSharpChoice`4+Choice1Of4: Denied
+  FSharpChoice`4+Choice2Of4: Denied
+  FSharpChoice`4+Choice3Of4: Denied
+  FSharpChoice`4+Choice4Of4: Denied
+  FSharpChoice`4+Tags: Denied
   FSharpChoice`5: Denied
+  FSharpChoice`5+Choice1Of5: Denied
+  FSharpChoice`5+Choice2Of5: Denied
+  FSharpChoice`5+Choice3Of5: Denied
+  FSharpChoice`5+Choice4Of5: Denied
+  FSharpChoice`5+Choice5Of5: Denied
+  FSharpChoice`5+Tags: Denied
   FSharpChoice`6: Denied
+  FSharpChoice`6+Choice1Of6: Denied
+  FSharpChoice`6+Choice2Of6: Denied
+  FSharpChoice`6+Choice3Of6: Denied
+  FSharpChoice`6+Choice4Of6: Denied
+  FSharpChoice`6+Choice5Of6: Denied
+  FSharpChoice`6+Choice6Of6: Denied
+  FSharpChoice`6+Tags: Denied
   FSharpChoice`7: Denied
+  FSharpChoice`7+Choice1Of7: Denied
+  FSharpChoice`7+Choice2Of7: Denied
+  FSharpChoice`7+Choice3Of7: Denied
+  FSharpChoice`7+Choice4Of7: Denied
+  FSharpChoice`7+Choice5Of7: Denied
+  FSharpChoice`7+Choice6Of7: Denied
+  FSharpChoice`7+Choice7Of7: Denied
+  FSharpChoice`7+Tags: Denied
   FSharpFunc`2: Allowed
      Equals: Allowed
      FromConverter: Allowed
@@ -149,10 +183,6 @@ Microsoft.FSharp.Core
      op_Implicit: Allowed
      ToConverter: Allowed
      ToString: Allowed
-  FSharpFunc`3: Denied
-  FSharpFunc`4: Denied
-  FSharpFunc`5: Denied
-  FSharpFunc`6: Denied
   FSharpInterfaceDataVersionAttribute: Denied
   FSharpOption`1: Allowed
      CompareTo: Allowed
@@ -167,16 +197,19 @@ Microsoft.FSharp.Core
      op_Implicit: Allowed
      Some: Allowed
      ToString: Allowed
+  FSharpOption`1+Tags: Denied
   FSharpRef`1: Denied
   FSharpResult`2: Denied
+  FSharpResult`2+Tags: Denied
   FSharpTypeFunc: Denied
   FuncConvert: Denied
   GeneralizableValueAttribute: Denied
-  HashCompare: Denied
   InterfaceAttribute: Denied
-  IntrinsicFunctions: Denied
-  IntrinsicOperators: Denied
   LanguagePrimitives: Denied
+  LanguagePrimitives+ErrorStrings: Denied
+  LanguagePrimitives+HashCompare: Denied
+  LanguagePrimitives+IntrinsicFunctions: Denied
+  LanguagePrimitives+IntrinsicOperators: Denied
   LiteralAttribute: Denied
   MatchFailureException: Denied
   MeasureAnnotatedAbbreviationAttribute: Denied
@@ -184,12 +217,153 @@ Microsoft.FSharp.Core
   NoComparisonAttribute: Denied
   NoDynamicInvocationAttribute: Denied
   NoEqualityAttribute: Denied
-  NonStructuralComparison: Denied
-  NumericLiteralI: Denied
   NumericLiterals: Denied
-  OperatorIntrinsics: Denied
-  Operators: Denied
+  NumericLiterals+NumericLiteralI: Denied
+  Operators: Allowed
+     Abs: Allowed
+     Acos: Allowed
+     Asin: Allowed
+     Atan: Allowed
+     Atan2: Allowed
+     Box: Allowed
+     Ceiling: Allowed
+     Compare: Allowed
+     ConsoleError: Denied
+     ConsoleIn: Denied
+     ConsoleOut: Denied
+     Cos: Allowed
+     Cosh: Allowed
+     CreateSequence: Allowed
+     Decrement: Allowed
+     DefaultArg: Allowed
+     Equals: Allowed
+     Exit: Allowed
+     Exp: Allowed
+     Failure: Allowed
+     FailurePattern: Allowed
+     FailWith: Allowed
+     Floor: Allowed
+     Fst: Allowed
+     get_Infinity: Allowed
+     get_InfinitySingle: Allowed
+     get_NaN: Allowed
+     get_NaNSingle: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     Hash: Allowed
+     Identity: Allowed
+     Ignore: Allowed
+     Increment: Allowed
+     InvalidArg: Allowed
+     InvalidOp: Allowed
+     IsNull: Allowed
+     KeyValuePattern: Allowed
+     limitedHash: Allowed
+     Lock: Denied
+     Log: Allowed
+     Log10: Allowed
+     Max: Allowed
+     Min: Allowed
+     Not: Allowed
+     NullArg: Allowed
+     op_Addition: Allowed
+     op_Append: Allowed
+     op_BitwiseAnd: Allowed
+     op_BitwiseOr: Allowed
+     op_ColonEquals: Allowed
+     op_ComposeLeft: Allowed
+     op_ComposeRight: Allowed
+     op_Concatenate: Allowed
+     op_Dereference: Allowed
+     op_Division: Allowed
+     op_Equality: Allowed
+     op_ExclusiveOr: Allowed
+     op_Exponentiation: Allowed
+     op_GreaterThan: Allowed
+     op_GreaterThanOrEqual: Allowed
+     op_Inequality: Allowed
+     op_LeftShift: Allowed
+     op_LessThan: Allowed
+     op_LessThanOrEqual: Allowed
+     op_LogicalNot: Allowed
+     op_Modulus: Allowed
+     op_Multiply: Allowed
+     op_PipeLeft: Allowed
+     op_PipeLeft2: Allowed
+     op_PipeLeft3: Allowed
+     op_PipeRight: Allowed
+     op_PipeRight2: Allowed
+     op_PipeRight3: Allowed
+     op_Range: Allowed
+     op_RangeStep: Allowed
+     op_RightShift: Allowed
+     op_Subtraction: Allowed
+     op_UnaryNegation: Allowed
+     op_UnaryPlus: Allowed
+     PowInteger: Allowed
+     Raise: Allowed
+     Ref: Allowed
+     Reraise: Allowed
+     Rethrow: Allowed
+     Round: Allowed
+     Sign: Allowed
+     Sin: Allowed
+     Sinh: Allowed
+     SizeOf: Allowed
+     Snd: Allowed
+     Sqrt: Allowed
+     Tan: Allowed
+     Tanh: Allowed
+     ToByte: Allowed
+     ToChar: Allowed
+     ToDecimal: Allowed
+     ToDouble: Allowed
+     ToEnum: Allowed
+     ToInt: Allowed
+     ToInt16: Allowed
+     ToInt32: Allowed
+     ToInt64: Allowed
+     ToIntPtr: Allowed
+     ToSByte: Allowed
+     ToSingle: Allowed
+     ToString: Allowed
+     ToUInt16: Allowed
+     ToUInt32: Allowed
+     ToUInt64: Allowed
+     ToUIntPtr: Allowed
+     Truncate: Allowed
+     TryUnbox: Allowed
+     TypeDefOf: Allowed
+     TypeOf: Allowed
+     Unbox: Allowed
+     Using: Allowed
+  Operators+Checked: Denied
+  Operators+NonStructuralComparison: Denied
+  Operators+OperatorIntrinsics: Denied
+  Operators+Unchecked: Denied
   OptimizedClosures: Denied
+  OptimizedClosures+FSharpFunc`3: Allowed
+     Adapt: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     Invoke: Allowed
+     ToString: Allowed
+  OptimizedClosures+FSharpFunc`4: Allowed
+     Adapt: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     Invoke: Allowed
+     ToString: Allowed
+  OptimizedClosures+FSharpFunc`5: Allowed
+     Adapt: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     Invoke: Allowed
+     ToString: Allowed
+  OptimizedClosures+FSharpFunc`6: Denied
   OptionalArgumentAttribute: Denied
   OptionModule: Denied
   PrintfFormat`4: Allowed
@@ -234,15 +408,6 @@ Microsoft.FSharp.Core
   StructuralComparisonAttribute: Denied
   StructuralEqualityAttribute: Denied
   StructuredFormatDisplayAttribute: Denied
-  Tags: Denied
-  Tags: Denied
-  Tags: Denied
-  Tags: Denied
-  Tags: Denied
-  Tags: Denied
-  Tags: Denied
-  Tags: Denied
-  Unchecked: Denied
   Unit: Allowed
      Equals: Allowed
      GetHashCode: Allowed
@@ -262,7 +427,6 @@ Microsoft.VisualBasic.CompilerServices
   DoubleType: Denied
   ExceptionUtils: Denied
   FlowControl: Denied
-  ForLoopControl: Denied
   HostServices: Denied
   IncompleteInitialization: Denied
   IntegerType: Denied
@@ -274,6 +438,7 @@ Microsoft.VisualBasic.CompilerServices
   LongType: Denied
   NewLateBinding: Denied
   ObjectFlowControl: Denied
+  ObjectFlowControl+ForLoopControl: Denied
   ObjectType: Denied
   Operators: Denied
   OptionCompareAttribute: Denied
@@ -303,9 +468,9 @@ SharpLab.Runtime.Internal
      ReportLineStart: Allowed
      ReportValue: Allowed
      ToString: Denied
+  Flow+Step: Denied
   InspectionResult: Denied
   Output: Denied
-  Step: Denied
 System
   _AppDomain: Denied
   AccessViolationException: Denied
@@ -444,8 +609,8 @@ System
      ToString: Denied
   Action`9: Denied
   ActivationContext: Denied
+  ActivationContext+ContextForm: Denied
   Activator: Denied
-  AdjustmentRule: Denied
   AggregateException: Denied
   AppContext: Denied
   AppDomain: Denied
@@ -787,7 +952,6 @@ System
   ConsoleModifiers: Denied
   ConsoleSpecialKey: Denied
   ContextBoundObject: Denied
-  ContextForm: Denied
   ContextMarshalException: Denied
   ContextStaticAttribute: Denied
   Convert: Allowed
@@ -1128,6 +1292,8 @@ System
      set_ExitCode: Denied
      SetEnvironmentVariable: Denied
      ToString: Denied
+  Environment+SpecialFolder: Denied
+  Environment+SpecialFolderOption: Denied
   EnvironmentVariableTarget: Denied
   EventArgs: Denied
   EventHandler: Allowed
@@ -1651,8 +1817,6 @@ System
      Parse: Allowed
      ToString: Allowed
      TryParse: Allowed
-  SpecialFolder: Denied
-  SpecialFolderOption: Denied
   StackOverflowException: Denied
   STAThreadAttribute: Allowed
      Equals: Allowed
@@ -1789,19 +1953,107 @@ System
      IsInvalidTime: Allowed
      ToSerializedString: Allowed
      ToString: Allowed
+  TimeZoneInfo+AdjustmentRule: Denied
+  TimeZoneInfo+TransitionTime: Denied
   TimeZoneNotFoundException: Denied
-  TransitionTime: Denied
-  Tuple: Denied
-  Tuple`1: Denied
-  Tuple`2: Denied
-  Tuple`3: Denied
-  Tuple`4: Denied
-  Tuple`5: Denied
-  Tuple`6: Denied
-  Tuple`7: Denied
-  Tuple`8: Denied
-  TupleExtensions: Denied
-  TupleExtensions: Denied
+  Tuple: Allowed
+     Create: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  Tuple`1: Allowed
+     Equals: Allowed
+     get_Item1: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  Tuple`2: Allowed
+     Equals: Allowed
+     get_Item1: Allowed
+     get_Item2: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  Tuple`3: Allowed
+     Equals: Allowed
+     get_Item1: Allowed
+     get_Item2: Allowed
+     get_Item3: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  Tuple`4: Allowed
+     Equals: Allowed
+     get_Item1: Allowed
+     get_Item2: Allowed
+     get_Item3: Allowed
+     get_Item4: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  Tuple`5: Allowed
+     Equals: Allowed
+     get_Item1: Allowed
+     get_Item2: Allowed
+     get_Item3: Allowed
+     get_Item4: Allowed
+     get_Item5: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  Tuple`6: Allowed
+     Equals: Allowed
+     get_Item1: Allowed
+     get_Item2: Allowed
+     get_Item3: Allowed
+     get_Item4: Allowed
+     get_Item5: Allowed
+     get_Item6: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  Tuple`7: Allowed
+     Equals: Allowed
+     get_Item1: Allowed
+     get_Item2: Allowed
+     get_Item3: Allowed
+     get_Item4: Allowed
+     get_Item5: Allowed
+     get_Item6: Allowed
+     get_Item7: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  Tuple`8: Allowed
+     Equals: Allowed
+     get_Item1: Allowed
+     get_Item2: Allowed
+     get_Item3: Allowed
+     get_Item4: Allowed
+     get_Item5: Allowed
+     get_Item6: Allowed
+     get_Item7: Allowed
+     get_Rest: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  TupleExtensions: Allowed
+     Deconstruct: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+     ToTuple: Allowed
+     ToValueTuple: Allowed
+  TupleExtensions: Allowed
+     Deconstruct: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+     ToTuple: Allowed
+     ToValueTuple: Allowed
   Type: Allowed
      Equals: Denied
      FindInterfaces: Denied
@@ -2222,18 +2474,32 @@ System.Collections.Generic
      set_Item: Allowed
      ToString: Allowed
      TryGetValue: Allowed
-  Enumerator: Denied
-  Enumerator: Denied
-  Enumerator: Denied
-  Enumerator: Denied
-  Enumerator: Denied
-  Enumerator: Denied
-  Enumerator: Denied
-  Enumerator: Denied
-  Enumerator: Denied
-  Enumerator: Denied
-  Enumerator: Denied
-  Enumerator: Denied
+  Dictionary`2+Enumerator: Allowed
+     Dispose: Allowed
+     Equals: Allowed
+     get_Current: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     MoveNext: Allowed
+     ToString: Allowed
+  Dictionary`2+KeyCollection: Allowed
+     CopyTo: Allowed
+     Equals: Allowed
+     get_Count: Allowed
+     GetEnumerator: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  Dictionary`2+KeyCollection+Enumerator: Denied
+  Dictionary`2+ValueCollection: Allowed
+     CopyTo: Allowed
+     Equals: Allowed
+     get_Count: Allowed
+     GetEnumerator: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  Dictionary`2+ValueCollection+Enumerator: Denied
   EqualityComparer`1: Allowed
      Equals: Allowed
      get_Default: Allowed
@@ -2268,6 +2534,14 @@ System.Collections.Generic
      ToString: Allowed
      TrimExcess: Allowed
      UnionWith: Allowed
+  HashSet`1+Enumerator: Allowed
+     Dispose: Allowed
+     Equals: Allowed
+     get_Current: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     MoveNext: Allowed
+     ToString: Allowed
   ICollection`1: Allowed
      Add: Allowed
      Clear: Allowed
@@ -2322,8 +2596,6 @@ System.Collections.Generic
      SetEquals: Allowed
      SymmetricExceptWith: Allowed
      UnionWith: Allowed
-  KeyCollection: Denied
-  KeyCollection: Denied
   KeyNotFoundException: Allowed
      Equals: Allowed
      get_Data: Allowed
@@ -2370,6 +2642,14 @@ System.Collections.Generic
      Remove: Allowed
      RemoveFirst: Allowed
      RemoveLast: Allowed
+     ToString: Allowed
+  LinkedList`1+Enumerator: Allowed
+     Dispose: Allowed
+     Equals: Allowed
+     get_Current: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     MoveNext: Allowed
      ToString: Allowed
   LinkedListNode`1: Allowed
      Equals: Allowed
@@ -2421,6 +2701,14 @@ System.Collections.Generic
      ToString: Allowed
      TrimExcess: Allowed
      TrueForAll: Allowed
+  List`1+Enumerator: Allowed
+     Dispose: Allowed
+     Equals: Allowed
+     get_Current: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     MoveNext: Allowed
+     ToString: Allowed
   Queue`1: Allowed
      Clear: Allowed
      Contains: Allowed
@@ -2436,6 +2724,14 @@ System.Collections.Generic
      ToArray: Allowed
      ToString: Allowed
      TrimExcess: Allowed
+  Queue`1+Enumerator: Allowed
+     Dispose: Allowed
+     Equals: Allowed
+     get_Current: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     MoveNext: Allowed
+     ToString: Allowed
   SortedDictionary`2: Allowed
      Add: Allowed
      Clear: Allowed
@@ -2455,6 +2751,18 @@ System.Collections.Generic
      set_Item: Allowed
      ToString: Allowed
      TryGetValue: Allowed
+  SortedDictionary`2+Enumerator: Allowed
+     Dispose: Allowed
+     Equals: Allowed
+     get_Current: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     MoveNext: Allowed
+     ToString: Allowed
+  SortedDictionary`2+KeyCollection: Denied
+  SortedDictionary`2+KeyCollection+Enumerator: Denied
+  SortedDictionary`2+ValueCollection: Denied
+  SortedDictionary`2+ValueCollection+Enumerator: Denied
   SortedList`2: Allowed
      Add: Allowed
      Clear: Allowed
@@ -2508,6 +2816,14 @@ System.Collections.Generic
      SymmetricExceptWith: Allowed
      ToString: Allowed
      UnionWith: Allowed
+  SortedSet`1+Enumerator: Allowed
+     Dispose: Allowed
+     Equals: Allowed
+     get_Current: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     MoveNext: Allowed
+     ToString: Allowed
   Stack`1: Allowed
      Clear: Allowed
      Contains: Allowed
@@ -2523,8 +2839,14 @@ System.Collections.Generic
      ToArray: Allowed
      ToString: Allowed
      TrimExcess: Allowed
-  ValueCollection: Denied
-  ValueCollection: Denied
+  Stack`1+Enumerator: Allowed
+     Dispose: Allowed
+     Equals: Allowed
+     get_Current: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     MoveNext: Allowed
+     ToString: Allowed
 System.ComponentModel
   AddingNewEventArgs: Denied
   AddingNewEventHandler: Denied
@@ -2687,7 +3009,6 @@ System.ComponentModel
   SByteConverter: Denied
   SettingsBindableAttribute: Denied
   SingleConverter: Denied
-  StandardValuesCollection: Denied
   StringConverter: Denied
   SyntaxCheck: Denied
   TimeSpanConverter: Denied
@@ -2715,6 +3036,7 @@ System.ComponentModel
      GetType: Denied
      IsValid: Denied
      ToString: Denied
+  TypeConverter+StandardValuesCollection: Denied
   TypeConverterAttribute: Denied
   TypeDescriptionProvider: Denied
   TypeDescriptionProviderAttribute: Denied
@@ -2776,6 +3098,7 @@ System.Diagnostics
   DataReceivedEventHandler: Denied
   Debug: Denied
   DebuggableAttribute: Denied
+  DebuggableAttribute+DebuggingModes: Denied
   Debugger: Denied
   DebuggerBrowsableAttribute: Denied
   DebuggerBrowsableState: Denied
@@ -2807,7 +3130,6 @@ System.Diagnostics
      ToString: Allowed
   DebuggerTypeProxyAttribute: Denied
   DebuggerVisualizerAttribute: Denied
-  DebuggingModes: Denied
   DefaultTraceListener: Denied
   DelimitedListTraceListener: Denied
   DiagnosticsConfigurationHandler: Denied
@@ -4431,7 +4753,6 @@ System.Runtime.CompilerServices
   CallSiteBinder: Denied
   CallSiteHelpers: Denied
   CallSiteOps: Denied
-  CleanupCode: Denied
   Closure: Denied
   CompilationRelaxations: Denied
   CompilationRelaxationsAttribute: Denied
@@ -4446,14 +4767,14 @@ System.Runtime.CompilerServices
   CompilerGlobalScopeAttribute: Denied
   CompilerMarshalOverride: Denied
   ConditionalWeakTable`2: Denied
+  ConditionalWeakTable`2+CreateValueCallback: Denied
   ConfiguredTaskAwaitable: Denied
   ConfiguredTaskAwaitable`1: Denied
-  ConfiguredTaskAwaiter: Denied
-  ConfiguredTaskAwaiter: Denied
+  ConfiguredTaskAwaitable`1+ConfiguredTaskAwaiter: Denied
+  ConfiguredTaskAwaitable+ConfiguredTaskAwaiter: Denied
   ConfiguredValueTaskAwaitable`1: Denied
-  ConfiguredValueTaskAwaiter: Denied
+  ConfiguredValueTaskAwaitable`1+ConfiguredValueTaskAwaiter: Denied
   ContractHelper: Denied
-  CreateValueCallback: Denied
   CustomConstantAttribute: Denied
   DateTimeConstantAttribute: Denied
   DebugInfoGenerator: Denied
@@ -4534,6 +4855,8 @@ System.Runtime.CompilerServices
      RunClassConstructor: Denied
      RunModuleConstructor: Denied
      ToString: Denied
+  RuntimeHelpers+CleanupCode: Denied
+  RuntimeHelpers+TryCode: Denied
   RuntimeOps: Denied
   RuntimeWrappedException: Denied
   ScopelessEnumAttribute: Denied
@@ -4544,7 +4867,6 @@ System.Runtime.CompilerServices
   SuppressIldasmAttribute: Denied
   TaskAwaiter: Denied
   TaskAwaiter`1: Denied
-  TryCode: Denied
   TupleElementNamesAttribute: Denied
   TupleElementNamesAttribute: Denied
   TypeForwardedFromAttribute: Denied
@@ -4552,7 +4874,7 @@ System.Runtime.CompilerServices
   UnsafeValueTypeAttribute: Denied
   ValueTaskAwaiter`1: Denied
   YieldAwaitable: Denied
-  YieldAwaiter: Denied
+  YieldAwaitable+YieldAwaiter: Denied
 System.Runtime.InteropServices
 System.Text
   ASCIIEncoding: Denied
