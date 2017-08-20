@@ -1,0 +1,47 @@
+﻿#if DEBUG
+    printfn "Debug"
+#else
+    printfn "Release"
+#endif
+
+#=>
+
+using <StartupCode$_>;
+using Microsoft.FSharp.Core;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+
+[assembly: AssemblyVersion("0.0.0.0")]
+[assembly: FSharpInterfaceDataVersion(2, 0, 0)]
+[CompilationMapping(SourceConstructFlags.Module)]
+public static class _
+{
+    [CompilationMapping(SourceConstructFlags.Value)]
+    internal static PrintfFormat<Unit, TextWriter, Unit, Unit> fp@1
+    {
+        get
+        {
+            return $_.fp@1;
+        }
+    }
+}
+namespace <StartupCode$_>
+{
+    internal static class $_
+    {
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal static readonly PrintfFormat<Unit, TextWriter, Unit, Unit> fp@1;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never), DebuggerNonUserCode, CompilerGenerated]
+        internal static int init@;
+
+        static $_()
+        {
+            $_.fp@1 = new PrintfFormat<Unit, TextWriter, Unit, Unit, Unit>("Debug");
+            PrintfModule.PrintFormatLineToTextWriter<Unit>(Console.Out, _.fp@1);
+        }
+    }
+}

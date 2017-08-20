@@ -19,7 +19,8 @@ namespace SharpLab.Server.MirrorSharp.Internal.Languages {
             .GetValues(typeof (LanguageVersion))
             .Cast<LanguageVersion>()
             .Max();
-        private static readonly IReadOnlyCollection<string> PreprocessorSymbols = new[] { "__DEMO_EXPERIMENTAL__" };
+        private static readonly ImmutableArray<string> ReleasePreprocessorSymbols = ImmutableArray.Create("__DEMO_EXPERIMENTAL__");
+        private static readonly ImmutableArray<string> DebugPreprocessorSymbols = ReleasePreprocessorSymbols.Add("DEBUG");
         
         private readonly ImmutableList<MetadataReference> _references;
         private readonly IReadOnlyDictionary<string, string> _features;
@@ -44,7 +45,7 @@ namespace SharpLab.Server.MirrorSharp.Internal.Languages {
         public void SlowSetup(MirrorSharpOptions options) {
             // ReSharper disable HeapView.ObjectAllocation.Evident
 
-            options.CSharp.ParseOptions = new CSharpParseOptions(MaxLanguageVersion, preprocessorSymbols: PreprocessorSymbols).WithFeatures(_features);
+            options.CSharp.ParseOptions = new CSharpParseOptions(MaxLanguageVersion, preprocessorSymbols: DebugPreprocessorSymbols).WithFeatures(_features);
             options.CSharp.CompilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
             options.CSharp.MetadataReferences = _references;
 
@@ -53,10 +54,11 @@ namespace SharpLab.Server.MirrorSharp.Internal.Languages {
 
         public void SetOptimize([NotNull] IWorkSession session, [NotNull] string optimize) {
             var project = session.Roslyn.Project;
-            var options = ((CSharpCompilationOptions)project.CompilationOptions);
-            session.Roslyn.Project = project.WithCompilationOptions(
-                options.WithOptimizationLevel(optimize == Optimize.Debug ? OptimizationLevel.Debug : OptimizationLevel.Release)
-            );
+            var parseOptions = ((CSharpParseOptions)project.ParseOptions);
+            var compilationOptions = ((CSharpCompilationOptions)project.CompilationOptions);
+            session.Roslyn.Project = project
+                .WithParseOptions(parseOptions.WithPreprocessorSymbols(optimize == Optimize.Debug ? DebugPreprocessorSymbols : ReleasePreprocessorSymbols))
+                .WithCompilationOptions(compilationOptions.WithOptimizationLevel(optimize == Optimize.Debug ? OptimizationLevel.Debug : OptimizationLevel.Release));
         }
 
         public void SetOptionsForTarget(IWorkSession session, string target) {

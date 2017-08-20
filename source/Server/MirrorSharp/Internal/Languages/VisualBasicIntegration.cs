@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using JetBrains.Annotations;
@@ -15,6 +16,9 @@ namespace SharpLab.Server.MirrorSharp.Internal.Languages {
     public class VisualBasicIntegration : ILanguageIntegration {
         private readonly IMetadataReferenceCollector _referenceCollector;
         private readonly IFeatureDiscovery _featureDiscovery;
+
+        private static readonly ImmutableArray<KeyValuePair<string, object>> DebugPreprocessorSymbols = ImmutableArray.Create(new KeyValuePair<string,object>("DEBUG", true));
+        private static readonly ImmutableArray<KeyValuePair<string, object>> ReleasePreprocessorSymbols = ImmutableArray<KeyValuePair<string, object>>.Empty;
 
         public VisualBasicIntegration(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
             _referenceCollector = referenceCollector;
@@ -45,10 +49,11 @@ namespace SharpLab.Server.MirrorSharp.Internal.Languages {
 
         public void SetOptimize([NotNull] IWorkSession session, [NotNull] string optimize) {
             var project = session.Roslyn.Project;
-            var options = ((VisualBasicCompilationOptions)project.CompilationOptions);
-            session.Roslyn.Project = project.WithCompilationOptions(
-                options.WithOptimizationLevel(optimize == Optimize.Debug ? OptimizationLevel.Debug : OptimizationLevel.Release)
-            );
+            var parseOptions = ((VisualBasicParseOptions)project.ParseOptions);
+            var compilationOptions = ((VisualBasicCompilationOptions)project.CompilationOptions);
+            session.Roslyn.Project = project
+                .WithParseOptions(parseOptions.WithPreprocessorSymbols(optimize == Optimize.Debug ? DebugPreprocessorSymbols : ReleasePreprocessorSymbols))
+                .WithCompilationOptions(compilationOptions.WithOptimizationLevel(optimize == Optimize.Debug ? OptimizationLevel.Debug : OptimizationLevel.Release));
         }
 
         public void SetOptionsForTarget([NotNull] IWorkSession session, [NotNull] string target) {

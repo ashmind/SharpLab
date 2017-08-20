@@ -32,7 +32,8 @@ namespace SharpLab.Server.MirrorSharp.Internal.Languages {
             var fsharp = session.FSharp();
             fsharp.ProjectOptions = fsharp.ProjectOptions
                 .WithOtherOptionDebug(debug)
-                .WithOtherOptionOptimize(!debug);
+                .WithOtherOptionOptimize(!debug)
+                .WithOtherOptionDefine("DEBUG", debug);
         }
 
         public void SetOptionsForTarget([NotNull] IWorkSession session, [NotNull] string target) {
