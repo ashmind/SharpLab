@@ -56,13 +56,14 @@ namespace SharpLab.Server.Execution.Internal {
                     lastLine = sequencePoint.StartLine;
                 }
 
-                var value = GetValueToReport(instruction, il);
-                if (value.name == null)
+                var valueOrNull = GetValueToReport(instruction, il);
+                if (valueOrNull == null)
                     continue;
 
+                var value = valueOrNull.Value;
                 var insertTarget = instruction;
                 il.InsertBefore(instruction, il.Create(OpCodes.Dup));
-                il.InsertBefore(instruction, il.Create(OpCodes.Ldstr, value.name));
+                il.InsertBefore(instruction, value.name != null ? il.Create(OpCodes.Ldstr, value.name) : il.Create(OpCodes.Ldnull));
                 il.InsertBefore(instruction, il.CreateLdcI4Best(sequencePoint?.StartLine ?? lastLine ?? Flow.UnknownLineNumber));
                 il.InsertBefore(instruction, il.CreateCall(new GenericInstanceMethod(flow.ReportValue) {
                     GenericArguments = { value.type }
@@ -73,23 +74,34 @@ namespace SharpLab.Server.Execution.Internal {
             RewriteExceptionHandlers(il, flow);
         }
 
-        private (string name, TypeReference type) GetValueToReport(Instruction instruction, ILProcessor il) {
+        private (string name, TypeReference type)? GetValueToReport(Instruction instruction, ILProcessor il) {
             var localIndex = GetIndexIfStloc(instruction);
             if (localIndex != null) {
                 var variable = il.Body.Variables[localIndex.Value];
                 if (string.IsNullOrEmpty(variable.Name))
-                    return (null, null);
+                    return null;
 
                 return (variable.Name, variable.VariableType);
             }
 
             var code = instruction.OpCode.Code;
-            if (code == Code.Stsfld || code == Code.Stfld) {
-                var field = (FieldReference)instruction.Operand;
-                return (field.Name, field.FieldType);
-            }
+            switch (code) {
+                case Code.Stfld:
+                case Code.Stsfld:
+                    var field = (FieldReference)instruction.Operand;
+                    return (field.Name, field.FieldType);
 
-            return (null, null);
+                case Code.Ret:
+                    if (instruction.Previous?.Previous?.OpCode.Code == Code.Tail)
+                        return null;
+                    var returnType = il.Body.Method.ReturnType;
+                    if (returnType.IsVoid())
+                        return null;
+                    return (null, returnType);
+
+                default:
+                    return null;
+            }
         }
 
         private void RewriteExceptionHandlers(ILProcessor il, ReportMethods flow) {

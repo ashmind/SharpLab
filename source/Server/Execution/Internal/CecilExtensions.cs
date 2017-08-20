@@ -1,4 +1,5 @@
-﻿using Mono.Cecil;
+﻿using JetBrains.Annotations;
+using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 namespace SharpLab.Server.Execution.Internal {
@@ -67,6 +68,10 @@ namespace SharpLab.Server.Execution.Internal {
                 handler.HandlerStart = to;
             if (handler.HandlerEnd == from)
                 handler.HandlerEnd = to;
+        }
+
+        public static bool IsVoid([NotNull] this TypeReference type) {
+            return type.Name == "Void" && type.Namespace == "System";
         }
     }
 }
