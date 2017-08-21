@@ -17,7 +17,11 @@ const dictionaries = {
         'Action',
         'IEnumerable',
         'System.Collections.Generic',
-        'System.Threading.Tasks'
+        'System.Threading.Tasks',
+        'static',
+        'Program',
+        'Main',
+        'Console.WriteLine'
     )
 };
 
