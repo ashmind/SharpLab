@@ -119,14 +119,14 @@ async function createAppAsync() {
     return {
         data,
         computed: {
-            serverOptions: function() {
+            serverOptions() {
                 return {
                     language: this.options.language,
                     'x-optimize': this.options.release ? 'release' : 'debug',
                     'x-target': this.options.target
                 };
             },
-            status: function() {
+            status() {
                 if (!this.online)
                     return { name: 'offline', color: '#aaa' };
                 if (!this.result.success)
@@ -152,6 +152,9 @@ async function createAppAsync() {
     });
 
     ui.watch('options.language', (newLanguage, oldLanguage) => {
+        if (newLanguage === languages.fsharp)
+            data.branch = null;
+
         const target = data.options.target;
         if (data.code !== defaults.getCode(oldLanguage, target))
             return;

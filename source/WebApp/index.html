@@ -6,7 +6,7 @@
 
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
     <meta name="theme-color" content="#4684ee">
-    <meta name="description" content="C#/VB/F# compiler playground (doesn't run code). Not a shark lab." />
+    <meta name="description" content="C#/VB/F# compiler playground. Not a Shark lab." />
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,{build:favicon-svg}">
     <link rel="icon" type="image/png" href="favicon-256.png" sizes="256x256">
@@ -36,9 +36,9 @@
             </div>
             <div class="offline-only">[connection lost, reconnecting…]</div>
 
-            <div class="select-wrapper option-branch option">
+            <div class="select-wrapper option-branch option" v-show="options.language !== languages.fsharp">
               <select v-model="branch">
-                <option v-bind:value="null">Release (NuGet)</option>
+                <option v-bind:value="null">Default</option>
                 <optgroup v-bind:label="group.name" v-for="group in branchGroups">
                   <option v-for="branch in group.branches" v-bind:value="branch">{{branch.name}} ({{formatDate(branch.commits[0].date, 'd mmm yyyy')}})</option>
                 </optgroup>
@@ -75,7 +75,7 @@
         </section>
       </div>
 
-      <div class="section-group results" v-bind:class="{loading: loading}">
+      <div class="section-group results" v-bind:class="{ loading: loading }">
         <section class="result">
           <header>
             <button class="mobile-menu-button" v-app-class-toggle="{ target: '.results', class: 'mobile-menu-open' }"></button>
