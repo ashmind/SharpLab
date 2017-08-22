@@ -20,6 +20,7 @@ Vue.component('app-code-edit', {
             const options = {
                 serviceUrl: this.serviceUrl,
                 on: {
+                    slowUpdateWait: () => this.$emit('slow-update-wait'),
                     slowUpdateResult: result => this.$emit('slow-update-result', result),
                     connectionChange: type => this.$emit('connection-change', type),
                     textChange: getText => this.$emit('text-change', getText),

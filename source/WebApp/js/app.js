@@ -20,6 +20,24 @@ function getResultType(target) {
     }
 }
 
+function resetLoading() {
+    if (this.loadingDelay) {
+        clearTimeout(this.loadingDelay);
+        this.loadingDelay = null;
+    }
+    this.loading = false;
+}
+
+function applyUpdateWait() {
+    if (this.loadingDelay)
+        return;
+
+    this.loadingDelay = setTimeout(() => {
+        this.loading = true;
+        this.loadingDelay = null;
+    }, 300);
+}
+
 function applyUpdateResult(updateResult) {
     const result = {
         success: true,
@@ -40,7 +58,7 @@ function applyUpdateResult(updateResult) {
     }
     this.result = result;
     this.lastResultOfType[result.type] = result;
-    this.loading = false;
+    resetLoading.apply(this);
 }
 
 function applyServerError(message) {
@@ -49,7 +67,7 @@ function applyServerError(message) {
         errors: [{ message }],
         warnings: []
     };
-    this.loading = false;
+    resetLoading.apply(this);
 }
 
 function applyConnectionChange(connectionState) {
@@ -134,7 +152,7 @@ async function createAppAsync() {
                 return { name: 'default', color: '#4684ee' };
             }
         },
-        methods: { applyUpdateResult, applyServerError, applyConnectionChange, applyAstHover }
+        methods: { applyUpdateWait, applyUpdateResult, applyServerError, applyConnectionChange, applyAstHover }
     };
 }
 
