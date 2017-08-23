@@ -16,14 +16,6 @@ const documentReadyPromise = new Promise(resolve => {
     document.addEventListener('DOMContentLoaded', () => resolve());
 });
 
-function wrap(vue) {
-    return {
-        watch: (name, callback, options) => {
-            vue.$watch(name, callback, options);
-        }
-    };
-}
-
 function createUIAsync(app) {
     return new Promise((resolve, reject) => {
         try {
@@ -38,6 +30,7 @@ function createUIAsync(app) {
                         for (const hook of hooks.ready) {
                             hook(this);
                         }
+                        attachToFooter();
                         const ui = wrap(this);
                         resolve(ui);
                     });
@@ -48,6 +41,21 @@ function createUIAsync(app) {
             reject(e);
         }
     });
+}
+
+function wrap(vue) {
+    return {
+        watch: (name, callback, options) => {
+            vue.$watch(name, callback, options);
+        }
+    };
+}
+
+function attachToFooter() {
+    // since footer is outside of <main>, I have to handle the events manually
+    const body = document.querySelector('body');
+    const themeToggle = document.querySelector('body > footer [data-manual-role=toggle-theme]');
+    themeToggle.addEventListener('click', () => body.classList.toggle('theme-dark'));
 }
 
 export default async function(app) {
