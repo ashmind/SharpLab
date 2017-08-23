@@ -20,7 +20,7 @@ namespace SharpLab.Server.Azure {
         public void Event(string name, IWorkSession session, IDictionary<string, string> extras = null) {
             var telemetry = new EventTelemetry(name);
             AddDefaultDetails(telemetry, session, extras);
-            _client.TrackEvent(name, extras);
+            _client.TrackEvent(telemetry);
         }
 
         public void Exception(Exception exception, IWorkSession session, IDictionary<string, string> extras = null) {
@@ -37,7 +37,7 @@ namespace SharpLab.Server.Azure {
             where TTelemetry: ITelemetry, ISupportProperties
         {
             telemetry.Context.Session.Id = session?.GetSessionId();
-            telemetry.Properties.Add("WebApp", _webAppName);
+            telemetry.Properties.Add("Web App", _webAppName);
             if (extras == null)
                 return;
 
