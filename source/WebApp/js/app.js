@@ -1,4 +1,5 @@
 import './polyfills/iterable-dom.js';
+import trackFeature from './helpers/track-feature.js';
 
 import languages from './helpers/languages.js';
 import targets from './helpers/targets.js';
@@ -165,11 +166,14 @@ async function createAppAsync() {
     ui.watch('code', () => state.save(data));
     ui.watch('branch', value => {
         data.options.branchId = value ? value.id : null;
+        if (value)
+            trackFeature('Branch: ' + value.id);
         data.loading = true;
         data.serviceUrl = getServiceUrl(value);
     });
 
     ui.watch('options.language', (newLanguage, oldLanguage) => {
+        trackFeature('Language: ' + newLanguage);
         if (newLanguage === languages.fsharp)
             data.branch = null;
 
@@ -181,6 +185,7 @@ async function createAppAsync() {
     });
 
     ui.watch('options.target', (newTarget, oldTarget) => {
+        trackFeature('Target: ' + newTarget);
         const language = data.options.language;
         if (data.code !== defaults.getCode(language, oldTarget))
             return;
