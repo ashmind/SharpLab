@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -12,6 +12,10 @@ namespace SharpLab.Runtime.Internal {
 
         public static TextWriter Writer { get; } = new OutputWriter();
 
+        public static void WriteWarning(string message) {
+            WriteObject(new InspectionResult("Warning", new StringBuilder(message)));
+        }
+        
         public static void Write(InspectionResult data) {
             WriteObject(data);
         }

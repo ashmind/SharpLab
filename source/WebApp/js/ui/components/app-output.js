@@ -11,6 +11,10 @@ Vue.component('app-output', {
 
         isException(inspection) {
             return inspection.title === 'Exception';
+        },
+
+        isWarning(inspection) {
+            return inspection.title === 'Warning';
         }
     },
     template: `<div class="output">
@@ -22,7 +26,7 @@ Vue.component('app-output', {
         <pre v-if="typeof item === 'string'">{{item}}</pre>
         <div v-if="item.type === 'inspection'"
              class="inspection"
-             v-bind:class="{ 'inspection-multiline': isMultiline(item), 'inspection-exception': isException(item) }">
+             v-bind:class="{ 'inspection-multiline': isMultiline(item), 'inspection-exception': isException(item), 'inspection-warning': isWarning(item) }">
           <header>{{item.title}}</header>
           <div class="inspection-value">{{item.value}}</div>
         </div>

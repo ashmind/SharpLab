@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Diagnostics;
 using System.IO;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
@@ -11,7 +12,7 @@ using Unbreakable;
 using Unbreakable.Policy;
 using Unbreakable.Policy.Rewriters;
 
-namespace SharpLab.Server.Execution {
+namespace SharpLab.Server.Execution.Internal {
     using static ApiAccess;
 
     public static class ApiPolicySetup {
@@ -24,6 +25,7 @@ namespace SharpLab.Server.Execution {
                               .Getter(nameof(Console.Out), Allowed)
                      ).Type(typeof(STAThreadAttribute), Allowed)
             )
+            .Namespace("System.Diagnostics", Neutral, SetupSystemDiagnostics)
             .Namespace("System.Reflection", Neutral, SetupSystemReflection)
             .Namespace("System.Linq.Expressions", Neutral, SetupSystemLinqExpressions)
             .Namespace("System.IO", Neutral,
@@ -90,6 +92,21 @@ namespace SharpLab.Server.Execution {
                 n => n.Type(typeof(StandardModuleAttribute), Allowed)
             );
 
+        private static void SetupSystemDiagnostics(NamespacePolicy namespacePolicy) {
+            namespacePolicy
+                .Type(typeof(Stopwatch), Allowed, typePolicy => {
+                    foreach (var property in typeof(Stopwatch).GetProperties()) {
+                        if (!property.Name.Contains("Elapsed"))
+                            continue;
+                        typePolicy.Getter(property.Name, Allowed, new WarningMemberRewriter(
+                            "Please do not rely on Stopwatch results in SharpLab.\r\n\r\n" +
+                            "There are many checks and reports added to your code before it runs,\r\n" +
+                            "so the performance might be completely unrelated to the original code."
+                        ));
+                    }
+                });
+        }
+
         private static void SetupSystemLinqExpressions(NamespacePolicy namespacePolicy) {
             ForEachTypeInNamespaceOf<Expression>(type => {
                 if (type.IsEnum) {
@@ -100,10 +117,10 @@ namespace SharpLab.Server.Execution {
                 if (!type.IsSameAsOrSubclassOf<Expression>())
                     return;
 
-                namespacePolicy.Type(type, Allowed, typeRule => {
+                namespacePolicy.Type(type, Allowed, typePolicy => {
                     foreach (var method in type.GetMethods()) {
                         if (method.Name.Contains("Compile"))
-                            typeRule.Member(method.Name, Denied);
+                            typePolicy.Member(method.Name, Denied);
                     }
                 });
             });
@@ -119,15 +136,15 @@ namespace SharpLab.Server.Execution {
                 if (!type.IsSameAsOrSubclassOf<MemberInfo>())
                     return;
 
-                namespacePolicy.Type(type, Neutral, typeRule => {
+                namespacePolicy.Type(type, Neutral, typePolicy => {
                     foreach (var property in type.GetProperties()) {
                         if (property.Name.Contains("Handle"))
                             continue;
-                        typeRule.Getter(property.Name, Allowed);
+                        typePolicy.Getter(property.Name, Allowed);
                     }
                     foreach (var method in type.GetMethods()) {
                         if (method.ReturnType.IsSameAsOrSubclassOf<MemberInfo>())
-                            typeRule.Member(method.Name, Allowed);
+                            typePolicy.Member(method.Name, Allowed);
                     }
                 });
             });

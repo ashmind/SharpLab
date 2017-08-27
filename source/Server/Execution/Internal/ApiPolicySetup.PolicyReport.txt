@@ -16,6 +16,7 @@ Microsoft.FSharp.Collections
   ArrayModule+Parallel: Denied
   ComparisonIdentity: Denied
   FSharpList`1: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Cons: Allowed
      Equals: Allowed
@@ -51,6 +52,7 @@ Microsoft.FSharp.Core
   CLIMutableAttribute: Denied
   ComparisonConditionalOnAttribute: Denied
   CompilationArgumentCountsAttribute: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_Counts: Allowed
      get_TypeId: Allowed
@@ -60,6 +62,7 @@ Microsoft.FSharp.Core
      Match: Allowed
      ToString: Allowed
   CompilationMappingAttribute: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_ResourceName: Allowed
      get_SequenceNumber: Allowed
@@ -83,6 +86,7 @@ Microsoft.FSharp.Core
   DefaultAugmentationAttribute: Denied
   DefaultValueAttribute: Denied
   EntryPointAttribute: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_TypeId: Allowed
      GetHashCode: Allowed
@@ -94,8 +98,8 @@ Microsoft.FSharp.Core
   ExperimentalAttribute: Denied
   ExtraTopLevelOperators: Allowed
      CreateArray2D: Denied
-     CreateDictionary: Allowed
-     CreateSet: Allowed
+     CreateDictionary: Allowed (CollectedEnumerableArgumentRewriter)
+     CreateSet: Allowed (CollectedEnumerableArgumentRewriter)
      Equals: Denied
      get_DefaultAsyncBuilder: Denied
      get_query: Denied
@@ -174,6 +178,7 @@ Microsoft.FSharp.Core
   FSharpChoice`7+Choice7Of7: Denied
   FSharpChoice`7+Tags: Denied
   FSharpFunc`2: Allowed
+     .ctor: Allowed
      Equals: Allowed
      FromConverter: Allowed
      GetHashCode: Allowed
@@ -185,6 +190,7 @@ Microsoft.FSharp.Core
      ToString: Allowed
   FSharpInterfaceDataVersionAttribute: Denied
   FSharpOption`1: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      get_IsNone: Allowed
@@ -343,6 +349,7 @@ Microsoft.FSharp.Core
   Operators+Unchecked: Denied
   OptimizedClosures: Denied
   OptimizedClosures+FSharpFunc`3: Allowed
+     .ctor: Allowed
      Adapt: Allowed
      Equals: Allowed
      GetHashCode: Allowed
@@ -350,6 +357,7 @@ Microsoft.FSharp.Core
      Invoke: Allowed
      ToString: Allowed
   OptimizedClosures+FSharpFunc`4: Allowed
+     .ctor: Allowed
      Adapt: Allowed
      Equals: Allowed
      GetHashCode: Allowed
@@ -357,6 +365,7 @@ Microsoft.FSharp.Core
      Invoke: Allowed
      ToString: Allowed
   OptimizedClosures+FSharpFunc`5: Allowed
+     .ctor: Allowed
      Adapt: Allowed
      Equals: Allowed
      GetHashCode: Allowed
@@ -367,12 +376,14 @@ Microsoft.FSharp.Core
   OptionalArgumentAttribute: Denied
   OptionModule: Denied
   PrintfFormat`4: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_Value: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
   PrintfFormat`5: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_Value: Allowed
      GetHashCode: Allowed
@@ -447,6 +458,7 @@ Microsoft.VisualBasic.CompilerServices
   ShortType: Denied
   SingleType: Denied
   StandardModuleAttribute: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_TypeId: Allowed
      GetHashCode: Allowed
@@ -464,9 +476,9 @@ SharpLab.Runtime.Internal
      get_Steps: Denied
      GetHashCode: Denied
      GetType: Denied
-     ReportException: Allowed
-     ReportLineStart: Allowed
-     ReportValue: Allowed
+     ReportException: Allowed (NoGuardRewriter)
+     ReportLineStart: Allowed (NoGuardRewriter)
+     ReportValue: Allowed (NoGuardRewriter)
      ToString: Denied
   Flow+Step: Denied
   InspectionResult: Denied
@@ -475,6 +487,7 @@ System
   _AppDomain: Denied
   AccessViolationException: Denied
   Action: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -489,6 +502,7 @@ System
      Invoke: Allowed
      ToString: Denied
   Action`1: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -510,6 +524,7 @@ System
   Action`15: Denied
   Action`16: Denied
   Action`2: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -524,6 +539,7 @@ System
      Invoke: Allowed
      ToString: Denied
   Action`3: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -538,6 +554,7 @@ System
      Invoke: Allowed
      ToString: Denied
   Action`4: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -552,6 +569,7 @@ System
      Invoke: Allowed
      ToString: Denied
   Action`5: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -566,6 +584,7 @@ System
      Invoke: Allowed
      ToString: Denied
   Action`6: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -580,6 +599,7 @@ System
      Invoke: Allowed
      ToString: Denied
   Action`7: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -594,6 +614,7 @@ System
      Invoke: Allowed
      ToString: Denied
   Action`8: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -615,6 +636,7 @@ System
   AppContext: Denied
   AppDomain: Denied
   AppDomainInitializer: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -637,6 +659,7 @@ System
   ApplicationIdentity: Denied
   ArgIterator: Denied
   ArgumentException: Allowed
+     .ctor: Allowed
      Equals: Denied
      get_Data: Denied
      get_HelpLink: Denied
@@ -655,6 +678,7 @@ System
      set_Source: Denied
      ToString: Denied
   ArgumentNullException: Allowed
+     .ctor: Allowed
      Equals: Denied
      get_Data: Denied
      get_HelpLink: Denied
@@ -673,6 +697,7 @@ System
      set_Source: Denied
      ToString: Denied
   ArgumentOutOfRangeException: Allowed
+     .ctor: Allowed
      Equals: Denied
      get_ActualValue: Denied
      get_Data: Denied
@@ -739,6 +764,7 @@ System
   ArrayTypeMismatchException: Denied
   AssemblyLoadEventArgs: Denied
   AssemblyLoadEventHandler: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -753,6 +779,7 @@ System
      Invoke: Allowed
      ToString: Denied
   AsyncCallback: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -779,6 +806,7 @@ System
      ToString: Allowed
   AttributeTargets: Denied
   AttributeUsageAttribute: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_AllowMultiple: Allowed
      get_Inherited: Allowed
@@ -849,6 +877,7 @@ System
   CharEnumerator: Denied
   CLSCompliantAttribute: Denied
   Comparison`1: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -933,6 +962,7 @@ System
      WriteLine: Allowed
   ConsoleCancelEventArgs: Denied
   ConsoleCancelEventHandler: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -981,6 +1011,7 @@ System
      ToUInt32: Allowed
      ToUInt64: Allowed
   Converter`2: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -995,6 +1026,7 @@ System
      Invoke: Allowed
      ToString: Denied
   CrossAppDomainDelegate: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -1010,6 +1042,7 @@ System
      ToString: Denied
   DataMisalignedException: Denied
   DateTime: Allowed
+     .ctor: Allowed
      Add: Allowed
      AddDays: Allowed
      AddHours: Allowed
@@ -1083,6 +1116,7 @@ System
      HasFlag: Allowed
      ToString: Allowed
   DateTimeOffset: Allowed
+     .ctor: Allowed
      Add: Allowed
      AddDays: Allowed
      AddHours: Allowed
@@ -1150,6 +1184,7 @@ System
      GetTypeCode: Allowed
      ToString: Allowed
   Decimal: Allowed
+     .ctor: Allowed
      Add: Allowed
      Ceiling: Allowed
      Compare: Allowed
@@ -1297,6 +1332,7 @@ System
   EnvironmentVariableTarget: Denied
   EventArgs: Denied
   EventHandler: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -1311,6 +1347,7 @@ System
      Invoke: Allowed
      ToString: Denied
   EventHandler`1: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -1325,6 +1362,7 @@ System
      Invoke: Allowed
      ToString: Denied
   Exception: Allowed
+     .ctor: Allowed
      Equals: Denied
      get_Data: Denied
      get_HelpLink: Denied
@@ -1345,6 +1383,7 @@ System
   FieldAccessException: Denied
   FileStyleUriParser: Denied
   FlagsAttribute: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_TypeId: Allowed
      GetHashCode: Allowed
@@ -1356,6 +1395,7 @@ System
   FormattableString: Denied
   FtpStyleUriParser: Denied
   Func`1: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -1378,6 +1418,7 @@ System
   Func`16: Denied
   Func`17: Denied
   Func`2: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -1392,6 +1433,7 @@ System
      Invoke: Allowed
      ToString: Denied
   Func`3: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -1406,6 +1448,7 @@ System
      Invoke: Allowed
      ToString: Denied
   Func`4: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -1420,6 +1463,7 @@ System
      Invoke: Allowed
      ToString: Denied
   Func`5: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -1434,6 +1478,7 @@ System
      Invoke: Allowed
      ToString: Denied
   Func`6: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -1448,6 +1493,7 @@ System
      Invoke: Allowed
      ToString: Denied
   Func`7: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -1462,6 +1508,7 @@ System
      Invoke: Allowed
      ToString: Denied
   Func`8: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -1476,6 +1523,7 @@ System
      Invoke: Allowed
      ToString: Denied
   Func`9: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -1517,6 +1565,7 @@ System
   GenericUriParserOptions: Denied
   GopherStyleUriParser: Denied
   Guid: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      GetHashCode: Allowed
@@ -1593,6 +1642,7 @@ System
      TryParse: Allowed
   IntPtr: Denied
   InvalidCastException: Allowed
+     .ctor: Allowed
      Equals: Denied
      get_Data: Denied
      get_HelpLink: Denied
@@ -1610,6 +1660,7 @@ System
      set_Source: Denied
      ToString: Denied
   InvalidOperationException: Allowed
+     .ctor: Allowed
      Equals: Denied
      get_Data: Denied
      get_HelpLink: Denied
@@ -1687,6 +1738,7 @@ System
   NotFiniteNumberException: Denied
   NotImplementedException: Denied
   NotSupportedException: Allowed
+     .ctor: Allowed
      Equals: Denied
      get_Data: Denied
      get_HelpLink: Denied
@@ -1711,6 +1763,7 @@ System
      GetUnderlyingType: Allowed
      ToString: Allowed
   Nullable`1: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_HasValue: Allowed
      get_Value: Allowed
@@ -1722,6 +1775,7 @@ System
      ToString: Allowed
   NullReferenceException: Denied
   Object: Allowed
+     .ctor: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
@@ -1729,6 +1783,7 @@ System
      ToString: Allowed
   ObjectDisposedException: Denied
   ObsoleteAttribute: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_IsError: Allowed
      get_Message: Allowed
@@ -1746,6 +1801,7 @@ System
   PlatformID: Denied
   PlatformNotSupportedException: Denied
   Predicate`1: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -1761,6 +1817,7 @@ System
      ToString: Denied
   Progress`1: Denied
   Random: Allowed
+     .ctor: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
@@ -1771,6 +1828,7 @@ System
   RankException: Denied
   ResolveEventArgs: Denied
   ResolveEventHandler: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -1819,6 +1877,7 @@ System
      TryParse: Allowed
   StackOverflowException: Denied
   STAThreadAttribute: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_TypeId: Allowed
      GetHashCode: Allowed
@@ -1827,11 +1886,12 @@ System
      Match: Allowed
      ToString: Allowed
   String: Allowed
+     .ctor: Allowed (CountArgumentRewriter(count))
      Clone: Allowed
      Compare: Allowed
      CompareOrdinal: Allowed
      CompareTo: Allowed
-     Concat: Allowed
+     Concat: Allowed (CollectedEnumerableArgumentRewriter)
      Contains: Allowed
      Copy: Allowed
      CopyTo: Allowed
@@ -1852,7 +1912,7 @@ System
      IsNormalized: Allowed
      IsNullOrEmpty: Allowed
      IsNullOrWhiteSpace: Allowed
-     Join: Allowed
+     Join: Allowed (CollectedEnumerableArgumentRewriter)
      LastIndexOf: Allowed
      LastIndexOfAny: Allowed
      Normalize: Allowed
@@ -1881,6 +1941,7 @@ System
   ThreadStaticAttribute: Denied
   TimeoutException: Denied
   TimeSpan: Allowed
+     .ctor: Allowed
      Add: Allowed
      Compare: Allowed
      CompareTo: Allowed
@@ -1963,12 +2024,14 @@ System
      GetType: Allowed
      ToString: Allowed
   Tuple`1: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_Item1: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
   Tuple`2: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_Item1: Allowed
      get_Item2: Allowed
@@ -1976,6 +2039,7 @@ System
      GetType: Allowed
      ToString: Allowed
   Tuple`3: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_Item1: Allowed
      get_Item2: Allowed
@@ -1984,6 +2048,7 @@ System
      GetType: Allowed
      ToString: Allowed
   Tuple`4: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_Item1: Allowed
      get_Item2: Allowed
@@ -1993,6 +2058,7 @@ System
      GetType: Allowed
      ToString: Allowed
   Tuple`5: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_Item1: Allowed
      get_Item2: Allowed
@@ -2003,6 +2069,7 @@ System
      GetType: Allowed
      ToString: Allowed
   Tuple`6: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_Item1: Allowed
      get_Item2: Allowed
@@ -2014,6 +2081,7 @@ System
      GetType: Allowed
      ToString: Allowed
   Tuple`7: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_Item1: Allowed
      get_Item2: Allowed
@@ -2026,6 +2094,7 @@ System
      GetType: Allowed
      ToString: Allowed
   Tuple`8: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_Item1: Allowed
      get_Item2: Allowed
@@ -2218,6 +2287,7 @@ System
   UnauthorizedAccessException: Denied
   UnhandledExceptionEventArgs: Denied
   UnhandledExceptionEventHandler: Allowed
+     .ctor: Allowed
      BeginInvoke: Denied
      Clone: Denied
      DynamicInvoke: Denied
@@ -2232,6 +2302,7 @@ System
      Invoke: Allowed
      ToString: Denied
   Uri: Allowed
+     .ctor: Allowed
      CheckHostName: Allowed
      CheckSchemeName: Allowed
      Compare: Allowed
@@ -2292,96 +2363,112 @@ System
   ValueTuple: Denied
   ValueTuple: Denied
   ValueTuple`1: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
   ValueTuple`1: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
   ValueTuple`2: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
   ValueTuple`2: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
   ValueTuple`3: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
   ValueTuple`3: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
   ValueTuple`4: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
   ValueTuple`4: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
   ValueTuple`5: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
   ValueTuple`5: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
   ValueTuple`6: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
   ValueTuple`6: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
   ValueTuple`7: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
   ValueTuple`7: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
   ValueTuple`8: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
   ValueTuple`8: Allowed
+     .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
      GetHashCode: Allowed
@@ -2389,6 +2476,7 @@ System
      ToString: Allowed
   ValueType: Denied
   Version: Allowed
+     .ctor: Allowed
      Clone: Allowed
      CompareTo: Allowed
      Equals: Allowed
@@ -2424,20 +2512,59 @@ System.Collections
   CollectionBase: Denied
   Comparer: Denied
   DictionaryBase: Denied
-  DictionaryEntry: Denied
+  DictionaryEntry: Allowed
+     .ctor: Allowed
+     Equals: Allowed
+     get_Key: Allowed
+     get_Value: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     set_Key: Allowed
+     set_Value: Allowed
+     ToString: Allowed
   Hashtable: Denied
-  ICollection: Denied
+  ICollection: Allowed
+     CopyTo: Allowed
+     get_Count: Allowed
+     get_IsSynchronized: Allowed
+     get_SyncRoot: Allowed
   IComparer: Denied
-  IDictionary: Denied
-  IDictionaryEnumerator: Denied
-  IEnumerable: Denied
+  IDictionary: Allowed
+     Add: Allowed (AddCallRewriter)
+     Clear: Allowed
+     Contains: Allowed
+     get_IsFixedSize: Allowed
+     get_IsReadOnly: Allowed
+     get_Item: Allowed
+     get_Keys: Allowed
+     get_Values: Allowed
+     GetEnumerator: Allowed
+     Remove: Allowed
+     set_Item: Allowed
+  IDictionaryEnumerator: Allowed
+     get_Entry: Allowed
+     get_Key: Allowed
+     get_Value: Allowed
+  IEnumerable: Allowed
+     GetEnumerator: Allowed
   IEnumerator: Allowed
      get_Current: Allowed
      MoveNext: Allowed
      Reset: Allowed
   IEqualityComparer: Denied
   IHashCodeProvider: Denied
-  IList: Denied
+  IList: Allowed
+     Add: Allowed (AddCallRewriter)
+     Clear: Allowed
+     Contains: Allowed
+     get_IsFixedSize: Allowed
+     get_IsReadOnly: Allowed
+     get_Item: Allowed
+     IndexOf: Allowed
+     Insert: Allowed (AddCallRewriter)
+     Remove: Allowed
+     RemoveAt: Allowed
+     set_Item: Allowed
   IStructuralComparable: Denied
   IStructuralEquatable: Denied
   Queue: Denied
@@ -2455,7 +2582,8 @@ System.Collections.Generic
      GetType: Allowed
      ToString: Allowed
   Dictionary`2: Allowed
-     Add: Allowed
+     .ctor: Allowed (CountArgumentRewriter(capacity))
+     Add: Allowed (AddCallRewriter)
      Clear: Allowed
      ContainsKey: Allowed
      ContainsValue: Allowed
@@ -2483,6 +2611,7 @@ System.Collections.Generic
      MoveNext: Allowed
      ToString: Allowed
   Dictionary`2+KeyCollection: Allowed
+     .ctor: Allowed
      CopyTo: Allowed
      Equals: Allowed
      get_Count: Allowed
@@ -2492,6 +2621,7 @@ System.Collections.Generic
      ToString: Allowed
   Dictionary`2+KeyCollection+Enumerator: Denied
   Dictionary`2+ValueCollection: Allowed
+     .ctor: Allowed
      CopyTo: Allowed
      Equals: Allowed
      get_Count: Allowed
@@ -2507,7 +2637,8 @@ System.Collections.Generic
      GetType: Allowed
      ToString: Allowed
   HashSet`1: Allowed
-     Add: Allowed
+     .ctor: Allowed (CountArgumentRewriter(capacity), CollectedEnumerableArgumentRewriter)
+     Add: Allowed (AddCallRewriter)
      Clear: Allowed
      Contains: Allowed
      CopyTo: Allowed
@@ -2533,7 +2664,7 @@ System.Collections.Generic
      SymmetricExceptWith: Allowed
      ToString: Allowed
      TrimExcess: Allowed
-     UnionWith: Allowed
+     UnionWith: Allowed (CollectedEnumerableArgumentRewriter)
   HashSet`1+Enumerator: Allowed
      Dispose: Allowed
      Equals: Allowed
@@ -2543,7 +2674,7 @@ System.Collections.Generic
      MoveNext: Allowed
      ToString: Allowed
   ICollection`1: Allowed
-     Add: Allowed
+     Add: Allowed (AddCallRewriter)
      Clear: Allowed
      Contains: Allowed
      CopyTo: Allowed
@@ -2553,7 +2684,7 @@ System.Collections.Generic
   IComparer`1: Allowed
      Compare: Allowed
   IDictionary`2: Allowed
-     Add: Allowed
+     Add: Allowed (AddCallRewriter)
      ContainsKey: Allowed
      get_Item: Allowed
      get_Keys: Allowed
@@ -2571,7 +2702,7 @@ System.Collections.Generic
   IList`1: Allowed
      get_Item: Allowed
      IndexOf: Allowed
-     Insert: Allowed
+     Insert: Allowed (AddCallRewriter)
      RemoveAt: Allowed
      set_Item: Allowed
   IReadOnlyCollection`1: Allowed
@@ -2585,7 +2716,7 @@ System.Collections.Generic
   IReadOnlyList`1: Allowed
      get_Item: Allowed
   ISet`1: Allowed
-     Add: Allowed
+     Add: Allowed (AddCallRewriter)
      ExceptWith: Allowed
      IntersectWith: Allowed
      IsProperSubsetOf: Allowed
@@ -2595,8 +2726,9 @@ System.Collections.Generic
      Overlaps: Allowed
      SetEquals: Allowed
      SymmetricExceptWith: Allowed
-     UnionWith: Allowed
+     UnionWith: Allowed (CollectedEnumerableArgumentRewriter)
   KeyNotFoundException: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_Data: Allowed
      get_HelpLink: Allowed
@@ -2614,6 +2746,7 @@ System.Collections.Generic
      set_Source: Allowed
      ToString: Allowed
   KeyValuePair`2: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_Key: Allowed
      get_Value: Allowed
@@ -2621,6 +2754,7 @@ System.Collections.Generic
      GetType: Allowed
      ToString: Allowed
   LinkedList`1: Allowed
+     .ctor: Allowed (CountArgumentRewriter(capacity), CollectedEnumerableArgumentRewriter)
      AddAfter: Allowed
      AddBefore: Allowed
      AddFirst: Allowed
@@ -2652,6 +2786,7 @@ System.Collections.Generic
      MoveNext: Allowed
      ToString: Allowed
   LinkedListNode`1: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_List: Allowed
      get_Next: Allowed
@@ -2662,8 +2797,9 @@ System.Collections.Generic
      set_Value: Allowed
      ToString: Allowed
   List`1: Allowed
-     Add: Allowed
-     AddRange: Allowed
+     .ctor: Allowed (CountArgumentRewriter(capacity), CollectedEnumerableArgumentRewriter)
+     Add: Allowed (AddCallRewriter)
+     AddRange: Allowed (CollectedEnumerableArgumentRewriter)
      AsReadOnly: Allowed
      BinarySearch: Allowed
      Clear: Allowed
@@ -2686,8 +2822,8 @@ System.Collections.Generic
      GetRange: Allowed
      GetType: Allowed
      IndexOf: Allowed
-     Insert: Allowed
-     InsertRange: Allowed
+     Insert: Allowed (AddCallRewriter)
+     InsertRange: Allowed (CollectedEnumerableArgumentRewriter)
      LastIndexOf: Allowed
      Remove: Allowed
      RemoveAll: Allowed
@@ -2710,11 +2846,12 @@ System.Collections.Generic
      MoveNext: Allowed
      ToString: Allowed
   Queue`1: Allowed
+     .ctor: Allowed (CountArgumentRewriter(capacity), CollectedEnumerableArgumentRewriter)
      Clear: Allowed
      Contains: Allowed
      CopyTo: Allowed
      Dequeue: Allowed
-     Enqueue: Allowed
+     Enqueue: Allowed (AddCallRewriter)
      Equals: Allowed
      get_Count: Allowed
      GetEnumerator: Allowed
@@ -2733,7 +2870,8 @@ System.Collections.Generic
      MoveNext: Allowed
      ToString: Allowed
   SortedDictionary`2: Allowed
-     Add: Allowed
+     .ctor: Allowed (CountArgumentRewriter(capacity))
+     Add: Allowed (AddCallRewriter)
      Clear: Allowed
      ContainsKey: Allowed
      ContainsValue: Allowed
@@ -2764,7 +2902,8 @@ System.Collections.Generic
   SortedDictionary`2+ValueCollection: Denied
   SortedDictionary`2+ValueCollection+Enumerator: Denied
   SortedList`2: Allowed
-     Add: Allowed
+     .ctor: Allowed (CountArgumentRewriter(capacity))
+     Add: Allowed (AddCallRewriter)
      Clear: Allowed
      ContainsKey: Allowed
      ContainsValue: Allowed
@@ -2788,7 +2927,8 @@ System.Collections.Generic
      TrimExcess: Allowed
      TryGetValue: Allowed
   SortedSet`1: Allowed
-     Add: Allowed
+     .ctor: Allowed (CountArgumentRewriter(capacity), CollectedEnumerableArgumentRewriter)
+     Add: Allowed (AddCallRewriter)
      Clear: Allowed
      Contains: Allowed
      CopyTo: Allowed
@@ -2815,7 +2955,7 @@ System.Collections.Generic
      SetEquals: Allowed
      SymmetricExceptWith: Allowed
      ToString: Allowed
-     UnionWith: Allowed
+     UnionWith: Allowed (CollectedEnumerableArgumentRewriter)
   SortedSet`1+Enumerator: Allowed
      Dispose: Allowed
      Equals: Allowed
@@ -2825,6 +2965,7 @@ System.Collections.Generic
      MoveNext: Allowed
      ToString: Allowed
   Stack`1: Allowed
+     .ctor: Allowed (CountArgumentRewriter(capacity), CollectedEnumerableArgumentRewriter)
      Clear: Allowed
      Contains: Allowed
      CopyTo: Allowed
@@ -2835,7 +2976,7 @@ System.Collections.Generic
      GetType: Allowed
      Peek: Allowed
      Pop: Allowed
-     Push: Allowed
+     Push: Allowed (AddCallRewriter)
      ToArray: Allowed
      ToString: Allowed
      TrimExcess: Allowed
@@ -3016,6 +3157,7 @@ System.ComponentModel
   ToolboxItemFilterAttribute: Denied
   ToolboxItemFilterType: Denied
   TypeConverter: Allowed
+     .ctor: Denied
      CanConvertFrom: Allowed
      CanConvertTo: Allowed
      ConvertFrom: Allowed
@@ -3104,6 +3246,7 @@ System.Diagnostics
   DebuggerBrowsableState: Denied
   DebuggerDisplayAttribute: Denied
   DebuggerHiddenAttribute: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_TypeId: Allowed
      GetHashCode: Allowed
@@ -3112,6 +3255,7 @@ System.Diagnostics
      Match: Allowed
      ToString: Allowed
   DebuggerNonUserCodeAttribute: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_TypeId: Allowed
      GetHashCode: Allowed
@@ -3121,6 +3265,7 @@ System.Diagnostics
      ToString: Allowed
   DebuggerStepperBoundaryAttribute: Denied
   DebuggerStepThroughAttribute: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_TypeId: Allowed
      GetHashCode: Allowed
@@ -3180,7 +3325,31 @@ System.Diagnostics
   SourceSwitch: Denied
   StackFrame: Denied
   StackTrace: Denied
-  Stopwatch: Denied
+  Stopwatch: Allowed
+     .ctor: Allowed
+     Equals: Allowed
+     get_Elapsed: Allowed (WarningMemberRewriter("Please do not rely on Stopwatch results in SharpLab.
+
+There are many checks and reports added to your code before it runs,
+so the performance might be completely unrelated to the original code."))
+     get_ElapsedMilliseconds: Allowed (WarningMemberRewriter("Please do not rely on Stopwatch results in SharpLab.
+
+There are many checks and reports added to your code before it runs,
+so the performance might be completely unrelated to the original code."))
+     get_ElapsedTicks: Allowed (WarningMemberRewriter("Please do not rely on Stopwatch results in SharpLab.
+
+There are many checks and reports added to your code before it runs,
+so the performance might be completely unrelated to the original code."))
+     get_IsRunning: Allowed
+     GetHashCode: Allowed
+     GetTimestamp: Allowed
+     GetType: Allowed
+     Reset: Allowed
+     Restart: Allowed
+     Start: Allowed
+     StartNew: Allowed
+     Stop: Allowed
+     ToString: Allowed
   Switch: Denied
   SwitchAttribute: Denied
   SwitchLevelAttribute: Denied
@@ -3210,6 +3379,7 @@ System.Globalization
   CompareInfo: Denied
   CompareOptions: Denied
   CultureInfo: Allowed
+     .ctor: Denied
      ClearCachedData: Denied
      Clone: Denied
      CreateSpecificCulture: Denied
@@ -3371,34 +3541,34 @@ System.Linq
      Contains: Allowed
      Count: Allowed
      DefaultIfEmpty: Allowed
-     Distinct: Allowed
+     Distinct: Allowed (CollectedEnumerableArgumentRewriter)
      ElementAt: Allowed
      ElementAtOrDefault: Allowed
      Empty: Allowed
      Equals: Denied
-     Except: Allowed
+     Except: Allowed (CollectedEnumerableArgumentRewriter)
      First: Allowed
      FirstOrDefault: Allowed
      GetHashCode: Denied
      GetType: Denied
-     GroupBy: Allowed
-     GroupJoin: Allowed
-     Intersect: Allowed
-     Join: Allowed
+     GroupBy: Allowed (CollectedEnumerableArgumentRewriter)
+     GroupJoin: Allowed (CollectedEnumerableArgumentRewriter)
+     Intersect: Allowed (CollectedEnumerableArgumentRewriter)
+     Join: Allowed (CollectedEnumerableArgumentRewriter)
      Last: Allowed
      LastOrDefault: Allowed
      LongCount: Allowed
      Max: Allowed
      Min: Allowed
      OfType: Allowed
-     OrderBy: Allowed
-     OrderByDescending: Allowed
-     Range: Allowed
-     Repeat: Allowed
-     Reverse: Allowed
+     OrderBy: Allowed (CollectedEnumerableArgumentRewriter)
+     OrderByDescending: Allowed (CollectedEnumerableArgumentRewriter)
+     Range: Allowed (CountArgumentRewriter(count))
+     Repeat: Allowed (CountArgumentRewriter(count))
+     Reverse: Allowed (CollectedEnumerableArgumentRewriter)
      Select: Allowed
      SelectMany: Allowed
-     SequenceEqual: Allowed
+     SequenceEqual: Allowed (CollectedEnumerableArgumentRewriter)
      Single: Allowed
      SingleOrDefault: Allowed
      Skip: Allowed
@@ -3406,14 +3576,14 @@ System.Linq
      Sum: Allowed
      Take: Allowed
      TakeWhile: Allowed
-     ThenBy: Allowed
-     ThenByDescending: Allowed
-     ToArray: Allowed
-     ToDictionary: Allowed
-     ToList: Allowed
-     ToLookup: Allowed
+     ThenBy: Allowed (CollectedEnumerableArgumentRewriter)
+     ThenByDescending: Allowed (CollectedEnumerableArgumentRewriter)
+     ToArray: Allowed (CollectedEnumerableArgumentRewriter)
+     ToDictionary: Allowed (CollectedEnumerableArgumentRewriter)
+     ToList: Allowed (CollectedEnumerableArgumentRewriter)
+     ToLookup: Allowed (CollectedEnumerableArgumentRewriter)
      ToString: Denied
-     Union: Allowed
+     Union: Allowed (CollectedEnumerableArgumentRewriter)
      Where: Allowed
      Zip: Allowed
   EnumerableExecutor: Denied
@@ -4480,6 +4650,7 @@ System.Reflection
      HasFlag: Allowed
      ToString: Allowed
   TypeDelegator: Allowed
+     .ctor: Denied
      AsType: Allowed
      Equals: Denied
      FindInterfaces: Denied
@@ -4757,6 +4928,7 @@ System.Runtime.CompilerServices
   CompilationRelaxations: Denied
   CompilationRelaxationsAttribute: Denied
   CompilerGeneratedAttribute: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_TypeId: Allowed
      GetHashCode: Allowed
@@ -4786,6 +4958,7 @@ System.Runtime.CompilerServices
   DynamicAttribute: Denied
   ExecutionScope: Denied
   ExtensionAttribute: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_TypeId: Allowed
      GetHashCode: Allowed
@@ -4818,6 +4991,7 @@ System.Runtime.CompilerServices
   IsUdtReturn: Denied
   IsVolatile: Denied
   IteratorStateMachineAttribute: Allowed
+     .ctor: Allowed
      Equals: Allowed
      get_StateMachineType: Allowed
      get_TypeId: Allowed
@@ -4899,12 +5073,13 @@ System.Text
   EncodingProvider: Denied
   NormalizationForm: Denied
   StringBuilder: Allowed
-     Append: Allowed
-     AppendFormat: Allowed
-     AppendLine: Allowed
+     .ctor: Allowed (CountArgumentRewriter(capacity))
+     Append: Allowed (AddCallRewriter, CountArgumentRewriter(count), CountArgumentRewriter(repeatCount))
+     AppendFormat: Allowed (AddCallRewriter)
+     AppendLine: Allowed (AddCallRewriter)
      Clear: Allowed
      CopyTo: Denied
-     EnsureCapacity: Allowed
+     EnsureCapacity: Allowed (CountArgumentRewriter(capacity))
      Equals: Denied
      get_Capacity: Denied
      get_Chars: Denied
