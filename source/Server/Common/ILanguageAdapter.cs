@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using JetBrains.Annotations;
 using MirrorSharp;
 using MirrorSharp.Advanced;
@@ -10,6 +11,6 @@ namespace SharpLab.Server.Common {
         void SetOptimize([NotNull] IWorkSession session, [NotNull] string optimize);
         void SetOptionsForTarget([NotNull] IWorkSession session, [NotNull] string target);
 
-        [CanBeNull] int? GetMethodStartLine(IWorkSession session, int lineInMethod, int columnInMethod);
+        ImmutableArray<int> GetMethodParameterLines([NotNull] IWorkSession session, int lineInMethod, int columnInMethod);
     }
 }

@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Immutable;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
@@ -40,8 +40,8 @@ namespace SharpLab.Server.Common.Languages {
             // I don't use `exe` for Run, see FSharpEntryPointRewriter
         }
 
-        public int? GetMethodStartLine(IWorkSession session, int lineInMethod, int columnInMethod) {
-            return null; // not supported yet
+        public ImmutableArray<int> GetMethodParameterLines(IWorkSession session, int lineInMethod, int columnInMethod) {
+            return ImmutableArray<int>.Empty; // not supported yet
         }
     }
 }

@@ -88,9 +88,9 @@ namespace SharpLab.Server.Execution.Internal {
             if (!method.HasParameters)
                 return;
 
-            var startLine = _languages[session.LanguageName].GetMethodStartLine(session, instruction.SequencePoint.StartLine, instruction.SequencePoint.StartColumn);
-            if (startLine == null)
-                return;
+            var sequencePoint = instruction.SequencePoint;
+            var parameterLines = _languages[session.LanguageName]
+                .GetMethodParameterLines(session, sequencePoint.StartLine, sequencePoint.StartColumn);
 
             foreach (var parameter in method.Parameters) {
                 if (parameter.ParameterType.IsByReference)
@@ -98,7 +98,7 @@ namespace SharpLab.Server.Execution.Internal {
                 InsertReportValue(
                     il, instruction,
                     il.CreateLdargBest(parameter), parameter.ParameterType, parameter.Name,
-                    startLine.Value, flow
+                    parameterLines[parameter.Index], flow
                 );
             }
         }

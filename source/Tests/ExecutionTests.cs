@@ -64,12 +64,12 @@ namespace SharpLab.Tests {
         [InlineData("void M(int a) {\r\n}", "M(1)", 1, "a: 1")]
         [InlineData("void M(int a)\r\n{}", "M(1)", 1, "a: 1", true)]
         [InlineData("void M(int a\r\n) {}", "M(1)", 1, "a: 1", true)]
-        [InlineData("void M(\r\nint a\r\n) {}", "M(1)", 1, "a: 1", true)]
+        [InlineData("void M(\r\nint a\r\n) {}", "M(1)", 2, "a: 1", true)]
         [InlineData("void M(int a) {\r\n\r\nConsole.WriteLine();}", "M(1)", 1, "a: 1")]
         [InlineData("void M(int a, int b) {}", "M(1, 2)", 1, "a: 1, b: 2")]
         [InlineData("void M(int a, out int b) { b = 1; }", "M(1, out var _)", 1, "a: 1")]
         [InlineData("void M(int a, int b = 0) {}", "M(1)", 1, "a: 1, b: 0")]
-        public async Task SlowUpdate_ReportsValueNotes_ForCSharpMethodArguments(string methodCode, string methodCallCode, int expectedMethodLineNumber, string expectedNotes, bool expectedSkipped = false) {
+        public async Task SlowUpdate_ReportsValueNotes_ForCSharpStaticMethodArguments(string methodCode, string methodCallCode, int expectedMethodLineNumber, string expectedNotes, bool expectedSkipped = false) {
             var driver = await NewTestDriverAsync(@"
                 using System;
                 public static class Program {
@@ -86,6 +86,25 @@ namespace SharpLab.Tests {
 
             AssertIsSuccess(result);
             Assert.Contains(new { Line = methodStartLine + expectedMethodLineNumber, Notes = expectedNotes, Skipped = expectedSkipped }, steps);
+        }
+
+        [Fact]
+        public async Task SlowUpdate_ReportsValueNotes_ForCSharpInstanceMethodArguments() {
+            var driver = await NewTestDriverAsync(@"
+                using System;
+                public class Program {
+                    public static void Main() { new Program().M(1); }
+                    public void M(int a) {}
+                }
+            ");
+
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            var steps = result.ExtensionResult?.Flow
+                .Select(s => new { s.Line, s.Notes })
+                .ToArray();
+
+            AssertIsSuccess(result);
+            Assert.Contains(new { Line = 5, Notes = "a: 1" }, steps);
         }
 
         [Theory]

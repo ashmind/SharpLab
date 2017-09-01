@@ -5,15 +5,18 @@ using Mono.Cecil.Cil;
 namespace SharpLab.Server.Execution.Internal {
     internal static class CecilExtensions {
         public static Instruction CreateLdargBest(this ILProcessor il, ParameterReference parameter) {
-            switch (parameter.Index) {
+            var index = parameter.Index;
+            if (il.Body.Method.HasThis)
+                index += 1;
+            switch (index) {
                 case 0: return il.Create(OpCodes.Ldarg_0);
                 case 1: return il.Create(OpCodes.Ldarg_1);
                 case 2: return il.Create(OpCodes.Ldarg_2);
                 case 3: return il.Create(OpCodes.Ldarg_3);
                 default:
-                    if (IsSByte(parameter.Index))
-                        return il.Create(OpCodes.Ldarg_S, (sbyte)parameter.Index);
-                    return il.Create(OpCodes.Ldarg, parameter.Index);
+                    if (IsSByte(index))
+                        return il.Create(OpCodes.Ldarg_S, (sbyte)index);
+                    return il.Create(OpCodes.Ldarg, index);
             }
         }
 

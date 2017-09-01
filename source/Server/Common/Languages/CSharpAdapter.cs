@@ -73,14 +73,20 @@ namespace SharpLab.Server.Common.Languages {
             );
         }
 
-        public int? GetMethodStartLine(IWorkSession session, int lineInMethod, int columnInMethod) {
+        public ImmutableArray<int> GetMethodParameterLines(IWorkSession session, int lineInMethod, int columnInMethod) {
             var declaration = RoslynAdapterHelper.FindSyntaxNodeInSession(session, lineInMethod, columnInMethod)
                 ?.Ancestors()
                 .OfType<MemberDeclarationSyntax>()
                 .FirstOrDefault();
             if (!(declaration is BaseMethodDeclarationSyntax method))
-                return null;
-            return method.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+                return ImmutableArray<int>.Empty;
+
+            var parameters = method.ParameterList.Parameters;
+            var results = new int[parameters.Count];
+            for (int i = 0; i < parameters.Count; i++) {
+                results[i] = parameters[i].GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+            }
+            return ImmutableArray.Create(results);
         }
     }
 }
