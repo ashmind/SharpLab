@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,11 +9,11 @@ using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.IO;
 using MirrorSharp.Advanced;
+using SharpLab.Server.Common;
 using SharpLab.Server.Compilation;
 using SharpLab.Server.Decompilation;
 using SharpLab.Server.Decompilation.AstOnly;
 using SharpLab.Server.Execution;
-using SharpLab.Server.MirrorSharp.Internal;
 
 namespace SharpLab.Server.MirrorSharp {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]

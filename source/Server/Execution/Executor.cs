@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -35,7 +35,11 @@ namespace SharpLab.Server.Execution {
                     SymbolStream = symbolStream
                 });
             }
-            //assembly.Write(@"d:\Temp\assembly\" + DateTime.Now.Ticks + "-before-rewrite.dll");
+            /*
+            #if DEBUG
+            assembly.Write(@"d:\Temp\assembly\" + DateTime.Now.Ticks + "-before-rewrite.dll");
+            #endif
+            */
             foreach (var rewriter in _rewriters) {
                 rewriter.Rewrite(assembly, session);
             }
@@ -46,7 +50,11 @@ namespace SharpLab.Server.Execution {
 
             using (var rewrittenStream = _memoryStreamManager.GetStream()) {
                 assembly.Write(rewrittenStream);
-                //assembly.Write(@"d:\Temp\assembly\" + DateTime.Now.Ticks + ".dll");
+                /*
+                #if DEBUG
+                assembly.Write(@"d:\Temp\assembly\" + DateTime.Now.Ticks + ".dll");
+                #endif
+                */
                 rewrittenStream.Seek(0, SeekOrigin.Begin);
 
                 var currentSetup = AppDomain.CurrentDomain.SetupInformation;
@@ -90,6 +98,8 @@ namespace SharpLab.Server.Execution {
 
             writer.WriteStartObject();
             writer.WriteProperty("line", step.LineNumber);
+            if (step.LineSkipped)
+                writer.WriteProperty("skipped", true);
             if (step.Notes != null)
                 writer.WriteProperty("notes", step.Notes);
             if (step.Exception != null)

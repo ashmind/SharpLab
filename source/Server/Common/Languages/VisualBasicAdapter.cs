@@ -1,26 +1,27 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Microsoft.VisualBasic.CompilerServices;
 using MirrorSharp;
 using MirrorSharp.Advanced;
 using SharpLab.Runtime;
 using SharpLab.Server.Compilation.Internal;
 
-namespace SharpLab.Server.MirrorSharp.Internal.Languages {
+namespace SharpLab.Server.Common.Languages {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-    public class VisualBasicIntegration : ILanguageIntegration {
+    public class VisualBasicAdapter : ILanguageAdapter {
         private readonly IMetadataReferenceCollector _referenceCollector;
         private readonly IFeatureDiscovery _featureDiscovery;
 
         private static readonly ImmutableArray<KeyValuePair<string, object>> DebugPreprocessorSymbols = ImmutableArray.Create(new KeyValuePair<string,object>("DEBUG", true));
         private static readonly ImmutableArray<KeyValuePair<string, object>> ReleasePreprocessorSymbols = ImmutableArray<KeyValuePair<string, object>>.Empty;
 
-        public VisualBasicIntegration(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
+        public VisualBasicAdapter(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
             _referenceCollector = referenceCollector;
             _featureDiscovery = featureDiscovery;
         }
@@ -62,6 +63,14 @@ namespace SharpLab.Server.MirrorSharp.Internal.Languages {
             var project = session.Roslyn.Project;
             var options = ((VisualBasicCompilationOptions)project.CompilationOptions);
             session.Roslyn.Project = project.WithCompilationOptions(options.WithOutputKind(outputKind));
+        }
+
+        public int? GetMethodStartLine(IWorkSession session, int lineInMethod, int columnInMethod) {
+            var method = RoslynAdapterHelper.FindSyntaxNodeInSession(session, lineInMethod, columnInMethod)
+                ?.Ancestors()
+                .OfType<MethodBlockBaseSyntax>()
+                .FirstOrDefault();
+            return method?.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
         }
     }
 }

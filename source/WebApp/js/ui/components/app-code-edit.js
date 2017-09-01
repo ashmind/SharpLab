@@ -79,6 +79,8 @@ function renderExecutionFlow(steps, cm, bookmarks) {
     let lastLineNumber;
     let lastException;
     for (const step of steps) {
+        if (step.skipped)
+            continue;
         let lineNumber = step;
         let exception = null;
         if (typeof step === 'object') {

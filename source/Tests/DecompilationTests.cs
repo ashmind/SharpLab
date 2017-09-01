@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,11 +10,11 @@ using MirrorSharp;
 using MirrorSharp.Testing;
 using Newtonsoft.Json.Linq;
 using Pedantic.IO;
-using SharpLab.Server;
-using SharpLab.Server.MirrorSharp.Internal;
-using SharpLab.Tests.Internal;
 using Xunit;
 using Xunit.Abstractions;
+using SharpLab.Server;
+using SharpLab.Server.Common;
+using SharpLab.Tests.Internal;
 
 namespace SharpLab.Tests {
     public class DecompilationTests {

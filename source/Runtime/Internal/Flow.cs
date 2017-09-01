@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -20,14 +20,28 @@ namespace SharpLab.Runtime.Internal {
         public static IReadOnlyList<Step> Steps => _steps;
 
         public static void ReportLineStart(int lineNumber) {
+            if (_steps.Count > 0) {
+                var lastStep = _steps[_steps.Count - 1];
+                if (lastStep.LineNumber == lineNumber & lastStep.LineSkipped) {
+                    lastStep.LineSkipped = false;
+                    _steps[_steps.Count - 1] = lastStep;
+                    return;
+                }
+            }
             if (_steps.Count >= ReportLimits.MaxStepCount)
                 return;
+
             _steps.Add(new Step(lineNumber));
         }
 
         public static void ReportValue<T>(T value, string name, int lineNumber) {
-            if (!TryFindLastStepAtLineNumber(lineNumber, out var step, out var stepIndex))
-                return;
+            if (!TryFindLastStepAtLineNumber(lineNumber, out var step, out var stepIndex)) {
+                if (_steps.Count >= ReportLimits.MaxStepCount)
+                    return;
+                step = new Step(lineNumber) { LineSkipped = true };
+                _steps.Add(step);
+                stepIndex = _steps.Count - 1;
+            }
 
             if (!_stepNotesCountPerLine.TryGetValue(step.LineNumber, out int countPerLine))
                 countPerLine = 0;
@@ -104,11 +118,13 @@ namespace SharpLab.Runtime.Internal {
                 Notes = null;
                 Exception = null;
                 VariableCount = 0;
+                LineSkipped = false;
             }
 
-            public int LineNumber { get; }
+            public int LineNumber { get; }            
             public object Exception { get; internal set; }
             public StringBuilder Notes { get; internal set; }
+            public bool LineSkipped { get; internal set; }
 
             internal int VariableCount { get; set; }
         }

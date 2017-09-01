@@ -1,9 +1,11 @@
-﻿using Autofac;
+using Autofac;
 using Autofac.Core;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.IO;
 using MirrorSharp.Advanced;
+using SharpLab.Server.Common;
+using SharpLab.Server.Common.Languages;
 using SharpLab.Server.Compilation;
 using SharpLab.Server.Compilation.Internal;
 using SharpLab.Server.Decompilation;
@@ -11,8 +13,6 @@ using SharpLab.Server.Decompilation.AstOnly;
 using SharpLab.Server.Execution;
 using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.MirrorSharp;
-using SharpLab.Server.MirrorSharp.Internal;
-using SharpLab.Server.MirrorSharp.Internal.Languages;
 using SharpLab.Server.Monitoring;
 
 namespace SharpLab.Server {
@@ -31,18 +31,18 @@ namespace SharpLab.Server {
                    .Keyed<IFeatureDiscovery>(LanguageNames.VisualBasic)
                    .SingleInstance();
 
-            builder.RegisterType<CSharpIntegration>()
-                   .As<ILanguageIntegration>()
+            builder.RegisterType<CSharpAdapter>()
+                   .As<ILanguageAdapter>()
                    .WithParameter(ResolvedParameter.ForKeyed<IFeatureDiscovery>(LanguageNames.CSharp))
                    .SingleInstance();
 
-            builder.RegisterType<VisualBasicIntegration>()
-                   .As<ILanguageIntegration>()
+            builder.RegisterType<VisualBasicAdapter>()
+                   .As<ILanguageAdapter>()
                    .WithParameter(ResolvedParameter.ForKeyed<IFeatureDiscovery>(LanguageNames.VisualBasic))
                    .SingleInstance();
 
-            builder.RegisterType<FSharpIntegration>()
-                   .As<ILanguageIntegration>()
+            builder.RegisterType<FSharpAdapter>()
+                   .As<ILanguageAdapter>()
                    .SingleInstance();
 
             builder.RegisterType<Compiler>()

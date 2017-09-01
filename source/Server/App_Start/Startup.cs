@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -13,7 +13,7 @@ using MirrorSharp.Advanced;
 using MirrorSharp.Owin;
 using Owin;
 using SharpLab.Server;
-using SharpLab.Server.MirrorSharp.Internal;
+using SharpLab.Server.Common;
 using SharpLab.Server.Monitoring;
 
 [assembly: OwinStartup(typeof(Startup), nameof(Startup.Configuration))]
@@ -55,7 +55,7 @@ namespace SharpLab.Server {
                 IncludeExceptionDetails = true,
                 ExceptionLogger = container.Resolve<IExceptionLogger>()
             };
-            var languages = container.Resolve<ILanguageIntegration[]>();
+            var languages = container.Resolve<ILanguageAdapter[]>();
             foreach (var language in languages) {
                 language.SlowSetup(options);
             }

@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using MirrorSharp.Advanced;
-using SharpLab.Server.MirrorSharp.Internal;
-using SharpLab.Server.Monitoring;
+using SharpLab.Server.Common;
 
 namespace SharpLab.Server.MirrorSharp {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
@@ -11,9 +10,9 @@ namespace SharpLab.Server.MirrorSharp {
         private const string Optimize = "x-optimize";
         private const string Target = "x-target";
 
-        private readonly IDictionary<string, ILanguageIntegration> _languages;
+        private readonly IDictionary<string, ILanguageAdapter> _languages;
 
-        public SetOptionsFromClient(IReadOnlyList<ILanguageIntegration> languages) {
+        public SetOptionsFromClient(IReadOnlyList<ILanguageAdapter> languages) {
             _languages = languages.ToDictionary(l => l.LanguageName);
         }
 

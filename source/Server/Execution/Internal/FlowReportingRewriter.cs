@@ -1,9 +1,11 @@
-﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using MirrorSharp.Advanced;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using SharpLab.Runtime.Internal;
+using SharpLab.Server.Common;
 
 namespace SharpLab.Server.Execution.Internal {
     public class FlowReportingRewriter : IAssemblyRewriter {
@@ -16,6 +18,12 @@ namespace SharpLab.Server.Execution.Internal {
         private static readonly MethodInfo ReportExceptionMethod =
             typeof(Flow).GetMethod(nameof(Flow.ReportException));
 
+        private readonly IReadOnlyDictionary<string, ILanguageAdapter> _languages;
+
+        public FlowReportingRewriter(IReadOnlyList<ILanguageAdapter> languages) {
+            _languages = languages.ToDictionary(l => l.LanguageName);
+        }
+
         public void Rewrite(AssemblyDefinition assembly, IWorkSession session) {
             foreach (var module in assembly.Modules) {
                 var flow = new ReportMethods {
@@ -24,21 +32,21 @@ namespace SharpLab.Server.Execution.Internal {
                     ReportException = module.ImportReference(ReportExceptionMethod),
                 };
                 foreach (var type in module.Types) {
-                    Rewrite(type, flow);
+                    Rewrite(type, flow, session);
                     foreach (var nested in type.NestedTypes) {
-                        Rewrite(nested, flow);
+                        Rewrite(nested, flow, session);
                     }
                 }
             }
         }
 
-        private void Rewrite(TypeDefinition type, ReportMethods flow) {
+        private void Rewrite(TypeDefinition type, ReportMethods flow, IWorkSession session) {
             foreach (var method in type.Methods) {
-                Rewrite(method, flow);
+                Rewrite(method, flow, session);
             }
         }
 
-        private void Rewrite(MethodDefinition method, ReportMethods flow) {
+        private void Rewrite(MethodDefinition method, ReportMethods flow, IWorkSession session) {
             if (!method.HasBody || method.Body.Instructions.Count == 0)
                 return;
 
@@ -50,6 +58,9 @@ namespace SharpLab.Server.Execution.Internal {
 
                 var sequencePoint = instruction.SequencePoint;
                 if (sequencePoint != null && sequencePoint.StartLine != HiddenLine && sequencePoint.StartLine != lastLine) {
+                    if (i == 0)
+                        TryInsertReportMethodArguments(il, instruction, method, flow, session);
+
                     InsertBeforeAndRetargetAll(il, instruction, il.CreateLdcI4Best(sequencePoint.StartLine));
                     il.InsertBefore(instruction, il.CreateCall(flow.ReportLineStart));
                     i += 2;
@@ -61,17 +72,35 @@ namespace SharpLab.Server.Execution.Internal {
                     continue;
 
                 var value = valueOrNull.Value;
-                var insertTarget = instruction;
-                il.InsertBefore(instruction, il.Create(OpCodes.Dup));
-                il.InsertBefore(instruction, value.name != null ? il.Create(OpCodes.Ldstr, value.name) : il.Create(OpCodes.Ldnull));
-                il.InsertBefore(instruction, il.CreateLdcI4Best(sequencePoint?.StartLine ?? lastLine ?? Flow.UnknownLineNumber));
-                il.InsertBefore(instruction, il.CreateCall(new GenericInstanceMethod(flow.ReportValue) {
-                    GenericArguments = { value.type }
-                }));
+                InsertReportValue(
+                    il, instruction,
+                    il.Create(OpCodes.Dup), value.type, value.name,
+                    sequencePoint?.StartLine ?? lastLine ?? Flow.UnknownLineNumber,
+                    flow
+                );
                 i += 4;
             }
 
             RewriteExceptionHandlers(il, flow);
+        }
+
+        private void TryInsertReportMethodArguments(ILProcessor il, Instruction instruction, MethodDefinition method, ReportMethods flow, IWorkSession session) {
+            if (!method.HasParameters)
+                return;
+
+            var startLine = _languages[session.LanguageName].GetMethodStartLine(session, instruction.SequencePoint.StartLine, instruction.SequencePoint.StartColumn);
+            if (startLine == null)
+                return;
+
+            foreach (var parameter in method.Parameters) {
+                if (parameter.ParameterType.IsByReference)
+                    continue;
+                InsertReportValue(
+                    il, instruction,
+                    il.CreateLdargBest(parameter), parameter.ParameterType, parameter.Name,
+                    startLine.Value, flow
+                );
+            }
         }
 
         private (string name, TypeReference type)? GetValueToReport(Instruction instruction, ILProcessor il) {
@@ -102,6 +131,15 @@ namespace SharpLab.Server.Execution.Internal {
                 default:
                     return null;
             }
+        }
+
+        private void InsertReportValue(ILProcessor il, Instruction instruction, Instruction getValue, TypeReference valueType, string valueName, int line, ReportMethods flow) {
+            il.InsertBefore(instruction, getValue);
+            il.InsertBefore(instruction, valueName != null ? il.Create(OpCodes.Ldstr, valueName) : il.Create(OpCodes.Ldnull));
+            il.InsertBefore(instruction, il.CreateLdcI4Best(line));
+            il.InsertBefore(instruction, il.CreateCall(new GenericInstanceMethod(flow.ReportValue) {
+                GenericArguments = { valueType }
+            }));
         }
 
         private void RewriteExceptionHandlers(ILProcessor il, ReportMethods flow) {
