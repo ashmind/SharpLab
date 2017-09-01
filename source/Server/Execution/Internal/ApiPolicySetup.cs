@@ -24,6 +24,7 @@ namespace SharpLab.Server.Execution.Internal {
                               // required by F#'s printf
                               .Getter(nameof(Console.Out), Allowed)
                      ).Type(typeof(STAThreadAttribute), Allowed)
+                      .Type(typeof(NotImplementedException), Neutral, t => t.Constructor(Allowed))
             )
             .Namespace("System.Diagnostics", Neutral, SetupSystemDiagnostics)
             .Namespace("System.Reflection", Neutral, SetupSystemReflection)
