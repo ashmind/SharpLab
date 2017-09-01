@@ -29,12 +29,8 @@ Note that C#=>VB or VB=>C# disassembly shouldn't be used to convert between lang
 
 ### Execution
 
-You can use "Run" target to execute your code and see the output.
+You can use "Run" target to execute your code and see the output.  
 Execution enables a few nice features such as flow arrows — see here:  
 https://twitter.com/ashmind/status/894058159223955456.
 
 Execution is intentionally limited, however the limits are continuously improved and corrected.
-
-### Contributing
-
-TODO
