@@ -431,7 +431,32 @@ Microsoft.VisualBasic.CompilerServices
   ByteType: Denied
   CharArrayType: Denied
   CharType: Denied
-  Conversions: Denied
+  Conversions: Allowed
+     ChangeType: Denied
+     Equals: Allowed
+     FallbackUserDefinedConversion: Denied
+     FromCharAndCount: Allowed (CountArgumentRewriter(Count))
+     FromCharArray: Denied
+     FromCharArraySubset: Denied
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToBoolean: Allowed
+     ToByte: Allowed
+     ToChar: Allowed
+     ToCharArrayRankOne: Denied
+     ToDate: Allowed
+     ToDecimal: Allowed
+     ToDouble: Allowed
+     ToGenericParameter: Allowed
+     ToInteger: Allowed
+     ToLong: Allowed
+     ToSByte: Allowed
+     ToShort: Allowed
+     ToSingle: Allowed
+     ToString: Allowed
+     ToUInteger: Allowed
+     ToULong: Allowed
+     ToUShort: Allowed
   DateType: Denied
   DecimalType: Denied
   DesignerGeneratedAttribute: Denied

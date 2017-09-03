@@ -90,7 +90,16 @@ namespace SharpLab.Server.Execution.Internal {
                 n => n.Type(typeof(FSharpList<>), Allowed)
             )
             .Namespace("Microsoft.VisualBasic.CompilerServices", Neutral,
-                n => n.Type(typeof(StandardModuleAttribute), Allowed)
+                n => n.Type(typeof(Conversions), Allowed,
+                        t => t.Member(nameof(Conversions.FromCharAndCount), Allowed, new CountArgumentRewriter("Count"))
+                              // Those need extra review
+                              .Member(nameof(Conversions.ChangeType), Denied)
+                              .Member(nameof(Conversions.FallbackUserDefinedConversion), Denied)
+                              .Member(nameof(Conversions.FromCharArray), Denied)
+                              .Member(nameof(Conversions.FromCharArraySubset), Denied)
+                              .Member(nameof(Conversions.ToCharArrayRankOne), Denied)
+                      )
+                      .Type(typeof(StandardModuleAttribute), Allowed)
             );
 
         private static void SetupSystemDiagnostics(NamespacePolicy namespacePolicy) {
