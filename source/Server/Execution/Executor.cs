@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -153,7 +154,7 @@ namespace SharpLab.Server.Execution {
 
                     var assembly = Assembly.Load(ReadAllBytes(assemblyStream));
                     var main = assembly.EntryPoint;
-                    using (guardToken.Scope()) {
+                    using (guardToken.Scope(NewRuntimeGuardSettings())) {
                         var args = main.GetParameters().Length > 0 ? new object[] { new string[0] } : null;
                         var result = main.Invoke(null, args);
                         if (main.ReturnType != typeof(void))
@@ -169,6 +170,14 @@ namespace SharpLab.Server.Execution {
                     ex.Inspect("Exception");
                     return new ExecutionResultWrapper(new ExecutionResult(Output.Stream, Flow.Steps), ex);
                 }
+            }
+
+            private static RuntimeGuardSettings NewRuntimeGuardSettings() {
+                #if DEBUG
+                if (Debugger.IsAttached)
+                    return new RuntimeGuardSettings { TimeLimit = TimeSpan.MaxValue };
+                #endif
+                return null;
             }
 
             private static byte[] ReadAllBytes(Stream stream) {

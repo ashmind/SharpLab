@@ -55,9 +55,12 @@ namespace SharpLab.Server.Execution.Internal {
             var lastLine = (int?)null;
             for (var i = 0; i < instructions.Count; i++) {
                 var instruction = instructions[i];
-
                 var sequencePoint = instruction.SequencePoint;
-                if (sequencePoint != null && sequencePoint.StartLine != HiddenLine && sequencePoint.StartLine != lastLine) {
+                var hasSequencePoint = sequencePoint != null && sequencePoint.StartLine != HiddenLine;
+                if (!hasSequencePoint && lastLine == null)
+                    continue;
+
+                if (hasSequencePoint && sequencePoint.StartLine != lastLine) {
                     if (i == 0)
                         TryInsertReportMethodArguments(il, instruction, method, flow, session);
 
@@ -115,10 +118,10 @@ namespace SharpLab.Server.Execution.Internal {
 
             var code = instruction.OpCode.Code;
             switch (code) {
-                case Code.Stfld:
-                case Code.Stsfld:
-                    var field = (FieldReference)instruction.Operand;
-                    return (field.Name, field.FieldType);
+                //case Code.Stfld:
+                //case Code.Stsfld:
+                    //var field = (FieldReference)instruction.Operand;
+                    //return (field.Name, field.FieldType);
 
                 case Code.Ret:
                     if (instruction.Previous?.Previous?.OpCode.Code == Code.Tail)
