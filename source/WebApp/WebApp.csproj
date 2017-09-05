@@ -41,7 +41,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Server\Server.csproj" />
   </ItemGroup>
-  <Import Project="..\Server\FSharpCore.targets" />
   <Target Name="Npm" BeforeTargets="Gulp" Inputs="package.json" Outputs="!package.json.installed">
     <PropertyGroup>
       <NpmPath Condition="'$(TR_BUILD_NPM_PATH)' != ''">"$(TR_BUILD_NPM_PATH)"</NpmPath>

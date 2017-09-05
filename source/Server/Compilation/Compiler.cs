@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Compiler;
+using Microsoft.FSharp.Compiler.SourceCodeServices;
 using Microsoft.FSharp.Control;
 using MirrorSharp.Advanced;
 using MirrorSharp.FSharp.Advanced;
@@ -40,7 +40,8 @@ namespace SharpLab.Server.Compilation {
                     fsharp.AssemblyReferencePathsAsFSharpList,
                     pdbFile: null,
                     executable: false,//fsharp.ProjectOptions.OtherOptions.Contains("--target:exe"),
-                    noframework: true
+                    noframework: true,
+                    userOpName: null
                 ), null, cancellationToken).ConfigureAwait(false);
                 foreach (var error in compiled.Item1) {
                     // no reason to add warnings as check would have added them anyways
