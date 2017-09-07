@@ -108,6 +108,25 @@ namespace SharpLab.Tests {
             Assert.Contains(new { Line = 5, Notes = "a: 1" }, steps);
         }
 
+        [Fact]
+        public async Task SlowUpdate_ReportsValueNotes_ForCSharpConstructorArguments() {
+            var driver = await NewTestDriverAsync(@"
+                using System;
+                public class Program {
+                    Program(int a) {}
+                    public static void Main() { new Program(1); }
+                }
+            ");
+
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            var steps = result.ExtensionResult?.Flow
+                .Select(s => new { s.Line, s.Notes })
+                .ToArray();
+
+            AssertIsSuccess(result);
+            Assert.Contains(new { Line = 4, Notes = "a: 1" }, steps);
+        }
+
         [Theory]
         [InlineData("Loop.For.10Iterations.cs", 3, "i: 0; i: 1; i: 2; …")]
         [InlineData("Variable.MultipleDeclarationsOnTheSameLine.cs", 3, "a: 0, b: 0, c: 0, …")]

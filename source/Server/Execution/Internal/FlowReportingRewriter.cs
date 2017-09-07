@@ -95,6 +95,9 @@ namespace SharpLab.Server.Execution.Internal {
             var parameterLines = _languages[session.LanguageName]
                 .GetMethodParameterLines(session, sequencePoint.StartLine, sequencePoint.StartColumn);
 
+            if (parameterLines.Length == 0)
+                return;
+
             foreach (var parameter in method.Parameters) {
                 if (parameter.ParameterType.IsByReference)
                     continue;

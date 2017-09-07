@@ -75,9 +75,10 @@ namespace SharpLab.Server.Common.Languages {
 
         public ImmutableArray<int> GetMethodParameterLines(IWorkSession session, int lineInMethod, int columnInMethod) {
             var declaration = RoslynAdapterHelper.FindSyntaxNodeInSession(session, lineInMethod, columnInMethod)
-                ?.Ancestors()
+                ?.AncestorsAndSelf()
                 .OfType<MemberDeclarationSyntax>()
                 .FirstOrDefault();
+
             if (!(declaration is BaseMethodDeclarationSyntax method))
                 return ImmutableArray<int>.Empty;
 

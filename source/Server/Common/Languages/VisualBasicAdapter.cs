@@ -67,9 +67,12 @@ namespace SharpLab.Server.Common.Languages {
 
         public ImmutableArray<int> GetMethodParameterLines(IWorkSession session, int lineInMethod, int columnInMethod) {
             var method = RoslynAdapterHelper.FindSyntaxNodeInSession(session, lineInMethod, columnInMethod)
-                ?.Ancestors()
+                ?.AncestorsAndSelf()
                 .OfType<MethodBlockBaseSyntax>()
                 .FirstOrDefault();
+
+            if (method == null)
+                return ImmutableArray<int>.Empty;
 
             var parameters = method.BlockStatement.ParameterList.Parameters;
             var results = new int[parameters.Count];
