@@ -211,7 +211,58 @@ Microsoft.FSharp.Core
   FuncConvert: Denied
   GeneralizableValueAttribute: Denied
   InterfaceAttribute: Denied
-  LanguagePrimitives: Denied
+  LanguagePrimitives: Allowed
+     AdditionDynamic: Denied
+     CheckedAdditionDynamic: Denied
+     CheckedMultiplyDynamic: Denied
+     DecimalWithMeasure: Denied
+     DivideByInt: Denied
+     DivideByIntDynamic: Denied
+     EnumOfValue: Denied
+     EnumToValue: Denied
+     Equals: Denied
+     FastGenericComparer: Denied
+     FastGenericComparerFromTable: Denied
+     FastGenericEqualityComparer: Denied
+     FastGenericEqualityComparerFromTable: Denied
+     FastLimitedGenericEqualityComparer: Denied
+     Float32WithMeasure: Denied
+     FloatWithMeasure: Denied
+     GenericComparison: Denied
+     GenericComparisonWithComparer: Denied
+     GenericEquality: Denied
+     GenericEqualityER: Denied
+     GenericEqualityWithComparer: Denied
+     GenericGreaterOrEqual: Denied
+     GenericGreaterThan: Denied
+     GenericHash: Denied
+     GenericHashWithComparer: Denied
+     GenericLessOrEqual: Denied
+     GenericLessThan: Denied
+     GenericLimitedHash: Denied
+     GenericMaximum: Denied
+     GenericMinimum: Denied
+     GenericOne: Denied
+     GenericOneDynamic: Denied
+     GenericZero: Denied
+     GenericZeroDynamic: Denied
+     get_GenericComparer: Allowed
+     get_GenericEqualityComparer: Allowed
+     get_GenericEqualityERComparer: Allowed
+     GetHashCode: Denied
+     GetType: Denied
+     Int16WithMeasure: Denied
+     Int32WithMeasure: Denied
+     Int64WithMeasure: Denied
+     MultiplyDynamic: Denied
+     ParseInt32: Denied
+     ParseInt64: Denied
+     ParseUInt32: Denied
+     ParseUInt64: Denied
+     PhysicalEquality: Denied
+     PhysicalHash: Denied
+     SByteWithMeasure: Denied
+     ToString: Denied
   LanguagePrimitives+ErrorStrings: Denied
   LanguagePrimitives+HashCompare: Denied
   LanguagePrimitives+IntrinsicFunctions: Denied
@@ -2570,7 +2621,8 @@ System.Collections
      get_Count: Allowed
      get_IsSynchronized: Allowed
      get_SyncRoot: Allowed
-  IComparer: Denied
+  IComparer: Allowed
+     Compare: Allowed
   IDictionary: Allowed
      Add: Allowed (AddCallRewriter)
      Clear: Allowed
@@ -2593,7 +2645,9 @@ System.Collections
      get_Current: Allowed
      MoveNext: Allowed
      Reset: Allowed
-  IEqualityComparer: Denied
+  IEqualityComparer: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
   IHashCodeProvider: Denied
   IList: Allowed
      Add: Allowed (AddCallRewriter)

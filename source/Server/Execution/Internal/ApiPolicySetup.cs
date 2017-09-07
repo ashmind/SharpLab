@@ -67,6 +67,11 @@ namespace SharpLab.Server.Execution.Internal {
                       .Type(typeof(FSharpChoice<,>), Allowed)
                       .Type(typeof(FSharpFunc<,>), Allowed)
                       .Type(typeof(FSharpOption<>), Allowed)
+                      .Type(typeof(LanguagePrimitives), Neutral,
+                          t => t.Getter(nameof(LanguagePrimitives.GenericComparer), Allowed)
+                                .Getter(nameof(LanguagePrimitives.GenericEqualityComparer), Allowed)
+                                .Getter(nameof(LanguagePrimitives.GenericEqualityERComparer), Allowed)
+                      )
                       .Type(typeof(OptimizedClosures.FSharpFunc<,,>), Allowed)
                       .Type(typeof(OptimizedClosures.FSharpFunc<,,,>), Allowed)
                       .Type(typeof(OptimizedClosures.FSharpFunc<,,,,>), Allowed)
