@@ -62,7 +62,7 @@ namespace SharpLab.Server.Execution.Internal {
 
                 if (hasSequencePoint && sequencePoint.StartLine != lastLine) {
                     if (i == 0)
-                        TryInsertReportMethodArguments(il, instruction, method, flow, session);
+                        TryInsertReportMethodArguments(il, instruction, method, flow, session, ref i);
 
                     InsertBeforeAndRetargetAll(il, instruction, il.CreateLdcI4Best(sequencePoint.StartLine));
                     il.InsertBefore(instruction, il.CreateCall(flow.ReportLineStart));
@@ -70,7 +70,7 @@ namespace SharpLab.Server.Execution.Internal {
                     lastLine = sequencePoint.StartLine;
                 }
 
-                var valueOrNull = GetValueToReport(instruction, il);
+                var valueOrNull = GetValueToReport(instruction, il, session);
                 if (valueOrNull == null)
                     continue;
 
@@ -79,15 +79,14 @@ namespace SharpLab.Server.Execution.Internal {
                     il, instruction,
                     il.Create(OpCodes.Dup), value.type, value.name,
                     sequencePoint?.StartLine ?? lastLine ?? Flow.UnknownLineNumber,
-                    flow
+                    flow, ref i
                 );
-                i += 4;
             }
 
             RewriteExceptionHandlers(il, flow);
         }
 
-        private void TryInsertReportMethodArguments(ILProcessor il, Instruction instruction, MethodDefinition method, ReportMethods flow, IWorkSession session) {
+        private void TryInsertReportMethodArguments(ILProcessor il, Instruction instruction, MethodDefinition method, ReportMethods flow, IWorkSession session, ref int index) {
             if (!method.HasParameters)
                 return;
 
@@ -104,12 +103,13 @@ namespace SharpLab.Server.Execution.Internal {
                 InsertReportValue(
                     il, instruction,
                     il.CreateLdargBest(parameter), parameter.ParameterType, parameter.Name,
-                    parameterLines[parameter.Index], flow
+                    parameterLines[parameter.Index], flow,
+                    ref index
                 );
             }
         }
 
-        private (string name, TypeReference type)? GetValueToReport(Instruction instruction, ILProcessor il) {
+        private (string name, TypeReference type)? GetValueToReport(Instruction instruction, ILProcessor il, IWorkSession session) {
             var localIndex = GetIndexIfStloc(instruction);
             if (localIndex != null) {
                 var variable = il.Body.Variables[localIndex.Value];
@@ -119,33 +119,26 @@ namespace SharpLab.Server.Execution.Internal {
                 return (variable.Name, variable.VariableType);
             }
 
-            var code = instruction.OpCode.Code;
-            switch (code) {
-                //case Code.Stfld:
-                //case Code.Stsfld:
-                    //var field = (FieldReference)instruction.Operand;
-                    //return (field.Name, field.FieldType);
-
-                case Code.Ret:
-                    if (instruction.Previous?.Previous?.OpCode.Code == Code.Tail)
-                        return null;
-                    var returnType = il.Body.Method.ReturnType;
-                    if (returnType.IsVoid())
-                        return null;
-                    return (null, returnType);
-
-                default:
+            if (instruction.OpCode.Code == Code.Ret) {
+                if (instruction.Previous?.Previous?.OpCode.Code == Code.Tail)
                     return null;
+                var returnType = il.Body.Method.ReturnType;
+                if (returnType.IsVoid())
+                    return null;
+                return (null, returnType);
             }
+
+            return null;
         }
 
-        private void InsertReportValue(ILProcessor il, Instruction instruction, Instruction getValue, TypeReference valueType, string valueName, int line, ReportMethods flow) {
+        private void InsertReportValue(ILProcessor il, Instruction instruction, Instruction getValue, TypeReference valueType, string valueName, int line, ReportMethods flow, ref int index) {
             il.InsertBefore(instruction, getValue);
             il.InsertBefore(instruction, valueName != null ? il.Create(OpCodes.Ldstr, valueName) : il.Create(OpCodes.Ldnull));
             il.InsertBefore(instruction, il.CreateLdcI4Best(line));
             il.InsertBefore(instruction, il.CreateCall(new GenericInstanceMethod(flow.ReportValue) {
                 GenericArguments = { valueType }
             }));
+            index += 4;
         }
 
         private void RewriteExceptionHandlers(ILProcessor il, ReportMethods flow) {

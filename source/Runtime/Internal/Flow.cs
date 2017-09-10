@@ -8,16 +8,17 @@ namespace SharpLab.Runtime.Internal {
 
         private static class ReportLimits {
             public const int MaxStepCount = 50;
-            public const int MaxVariableNameLength = 10;
-            public const int MaxVariableValueLength = 10;
+            public const int MaxValueNameLength = 10;
+            public const int MaxValueValueLength = 10;
             public const int MaxEnumerableItems = 3;
             public const int MaxStepNotesPerLine = 3;
-            public const int MaxVariablesPerStep = 3;
+            public const int MaxValuesPerStep = 3;
         }
 
         private static readonly IDictionary<int, int> _stepNotesCountPerLine = new Dictionary<int, int>();
-        private static readonly List<Step> _steps = new List<Step>();
-        public static IReadOnlyList<Step> Steps => _steps;
+        private static readonly IList<Step> _steps = new List<Step>();
+
+        public static IReadOnlyList<Step> Steps => (IReadOnlyList<Step>)_steps;
 
         public static void ReportLineStart(int lineNumber) {
             if (_steps.Count > 0) {
@@ -60,8 +61,8 @@ namespace SharpLab.Runtime.Internal {
             if (countPerLine >= ReportLimits.MaxStepNotesPerLine + 1)
                 return;
 
-            step.VariableCount += 1;
-            if (step.VariableCount > ReportLimits.MaxVariablesPerStep + 1) {
+            step.ValueCount += 1;
+            if (step.ValueCount > ReportLimits.MaxValuesPerStep + 1) {
                 _steps[stepIndex] = step;
                 return;
             }
@@ -75,17 +76,17 @@ namespace SharpLab.Runtime.Internal {
             if (notes.Length > 0)
                 notes.Append(", ");
 
-            if (step.VariableCount == ReportLimits.MaxVariablesPerStep + 1) {
+            if (step.ValueCount == ReportLimits.MaxValuesPerStep + 1) {
                 notes.Append("…");
                 _steps[stepIndex] = step;
                 return;
             }
-
+            
             if (name != null) {
-                ObjectAppender.AppendString(notes, name, ReportLimits.MaxVariableNameLength);
+                ObjectAppender.AppendString(notes, name, ReportLimits.MaxValueNameLength);
                 notes.Append(": ");
             }
-            ObjectAppender.Append(notes, value, ReportLimits.MaxEnumerableItems, ReportLimits.MaxVariableValueLength);
+            ObjectAppender.Append(notes, value, ReportLimits.MaxEnumerableItems, ReportLimits.MaxValueValueLength);
             // Have to reassign in case we set Notes
             _steps[stepIndex] = step;
         }
@@ -117,16 +118,16 @@ namespace SharpLab.Runtime.Internal {
                 LineNumber = lineNumber;
                 Notes = null;
                 Exception = null;
-                VariableCount = 0;
+                ValueCount = 0;
                 LineSkipped = false;
             }
 
-            public int LineNumber { get; }            
+            public int LineNumber { get; }
             public object Exception { get; internal set; }
             public StringBuilder Notes { get; internal set; }
             public bool LineSkipped { get; internal set; }
 
-            internal int VariableCount { get; set; }
+            internal int ValueCount { get; set; }
         }
     }
 }
