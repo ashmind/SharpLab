@@ -2285,7 +2285,7 @@ System
      get_TypeInitializer: Denied
      get_UnderlyingSystemType: Denied
      GetArrayRank: Denied
-     GetConstructor: Denied
+     GetConstructor: Allowed
      GetConstructors: Denied
      GetCustomAttributes: Denied
      GetCustomAttributesData: Denied
@@ -2295,25 +2295,25 @@ System
      GetEnumNames: Denied
      GetEnumUnderlyingType: Denied
      GetEnumValues: Denied
-     GetEvent: Denied
+     GetEvent: Allowed
      GetEvents: Denied
-     GetField: Denied
+     GetField: Allowed
      GetFields: Denied
      GetGenericArguments: Denied
      GetGenericParameterConstraints: Denied
      GetGenericTypeDefinition: Denied
      GetHashCode: Denied
-     GetInterface: Denied
+     GetInterface: Allowed
      GetInterfaceMap: Denied
      GetInterfaces: Denied
      GetMember: Denied
      GetMembers: Denied
-     GetMethod: Denied
+     GetMethod: Allowed
      GetMethods: Denied
      GetNestedType: Denied
      GetNestedTypes: Denied
      GetProperties: Denied
-     GetProperty: Denied
+     GetProperty: Allowed
      GetType: Denied
      GetTypeArray: Denied
      GetTypeCode: Denied

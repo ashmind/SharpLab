@@ -25,6 +25,7 @@ namespace SharpLab.Server.Execution.Internal {
                               .Getter(nameof(Console.Out), Allowed)
                      ).Type(typeof(STAThreadAttribute), Allowed)
                       .Type(typeof(NotImplementedException), Neutral, t => t.Constructor(Allowed))
+                      .Type(typeof(Type), Neutral, SetupSystemType)
             )
             .Namespace("System.Diagnostics", Neutral, SetupSystemDiagnostics)
             .Namespace("System.Reflection", Neutral, SetupSystemReflection)
@@ -106,6 +107,16 @@ namespace SharpLab.Server.Execution.Internal {
                       )
                       .Type(typeof(StandardModuleAttribute), Allowed)
             );
+
+        private static void SetupSystemType(TypePolicy typePolicy) {
+            typePolicy
+                .Member(nameof(Type.GetConstructor), Allowed)
+                .Member(nameof(Type.GetEvent), Allowed)
+                .Member(nameof(Type.GetField), Allowed)
+                .Member(nameof(Type.GetInterface), Allowed)
+                .Member(nameof(Type.GetMethod), Allowed)
+                .Member(nameof(Type.GetProperty), Allowed);
+        }
 
         private static void SetupSystemDiagnostics(NamespacePolicy namespacePolicy) {
             namespacePolicy
