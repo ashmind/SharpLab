@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
@@ -20,7 +20,7 @@ namespace SharpLab.Server.Decompilation {
             });
 
             var context = new DecompilerContext(module) {
-                Settings = {                    
+                Settings = {
                     CanInlineVariables = false,
                     OperatorOverloading = false,
                     AnonymousMethods = false,
@@ -30,7 +30,8 @@ namespace SharpLab.Server.Decompilation {
                     ExpressionTrees = false,
                     ArrayInitializers = false,
                     ObjectOrCollectionInitializers = false,
-                    LiftedOperators = false
+                    LiftedOperators = false,
+                    UsingStatement = false
                 }
             };
 
