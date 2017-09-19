@@ -68,7 +68,7 @@ namespace SharpLab.Tests {
         [InlineData("Preprocessor.IfDebug.cs2cs")] // https://github.com/ashmind/SharpLab/issues/161
         [InlineData("Preprocessor.IfDebug.vb2vb")] // https://github.com/ashmind/SharpLab/issues/161
         [InlineData("FSharp.Preprocessor.IfDebug.fs2cs")] // https://github.com/ashmind/SharpLab/issues/161
-        [InlineData("Condition.Using.cs2cs")] // https://github.com/ashmind/SharpLab/issues/185
+        [InlineData("Using.Simple.cs2cs")] // https://github.com/ashmind/SharpLab/issues/185
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_InDebug(string resourceName) {
             var data = TestData.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data, Optimize.Debug);
