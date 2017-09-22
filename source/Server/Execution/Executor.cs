@@ -10,6 +10,7 @@ using Microsoft.IO;
 using MirrorSharp.Advanced;
 using Mono.Cecil;
 using SharpLab.Runtime.Internal;
+using SharpLab.Server.Common;
 using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.Monitoring;
 using Unbreakable;
@@ -33,7 +34,8 @@ namespace SharpLab.Server.Execution {
             using (symbolStream) {
                 assembly = AssemblyDefinition.ReadAssembly(assemblyStream, new ReaderParameters {
                     ReadSymbols = true,
-                    SymbolStream = symbolStream
+                    SymbolStream = symbolStream,
+                    AssemblyResolver = PreCachedAssemblyResolver.Instance
                 });
             }
             /*
