@@ -9,7 +9,7 @@ static class C {
 ; Desktop CLR v<IGNORE> (clr.dll) on x86.
 
 C..cctor()
-    ; Types with static constructors are not supported by SharpLab JIT ASM decompiler.
+    ; Type C has a static constructor, which is not supported by SharpLab JIT decompiler.
 
 C.M()
-    ; Types with static constructors are not supported by SharpLab JIT ASM decompiler.
+    ; Type C has a static constructor, which is not supported by SharpLab JIT decompiler.

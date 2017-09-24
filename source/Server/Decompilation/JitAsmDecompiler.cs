@@ -88,7 +88,7 @@ namespace SharpLab.Server.Decompilation {
                     return;
 
                 case Remote.MethodJitStatus.FailedTypeWithStaticConstructor:
-                    writer.WriteLine("    ; Types with static constructors are not supported by SharpLab JIT ASM decompiler.");
+                    writer.WriteLine("    ; Type {0} has a static constructor, which is not supported by SharpLab JIT decompiler.", method.Type.Name);
                     return;
             }
 
