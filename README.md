@@ -34,3 +34,7 @@ Execution enables a few nice features such as flow arrows — see here:
 https://twitter.com/ashmind/status/894058159223955456.
 
 Execution is intentionally limited, however the limits are continuously improved and corrected.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
