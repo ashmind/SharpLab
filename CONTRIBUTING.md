@@ -12,7 +12,7 @@ Code contributions are very welcome — but please read these notes:
 
 1. It's always recommended to find or submit an issue first, and comment that you want to do it.
 This is especially important if you want to implement new feature.
-Your effort might be lost if it's already in progress, or if there is a disagremeent about approach, etc.
+Your effort might be lost if it's already in progress, or if there is a disagreement about approach, etc.
 
 2. I have very specific opinions about UI design, code structure, patterns, features, etc.
 I might adjust or rewrite the code your submitted to match these ideas.
