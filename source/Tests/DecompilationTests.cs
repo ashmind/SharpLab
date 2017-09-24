@@ -108,6 +108,8 @@ namespace SharpLab.Tests {
         [InlineData("JitAsm.OpenGenerics.cs2asm")]
         [InlineData("JitAsm.GenericMethodWithAttribute.cs2asm")]
         [InlineData("JitAsm.GenericClassWithAttribute.cs2asm")]
+        [InlineData("JitAsm.StaticConstructor.Explicit.cs2asm")]
+        [InlineData("JitAsm.StaticConstructor.Implicit.cs2asm")]
         [InlineData("JitAsm.GenericMethodWithAttribute.fs2asm")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForJitAsm(string resourceName) {
             var data = TestData.FromResource(resourceName);

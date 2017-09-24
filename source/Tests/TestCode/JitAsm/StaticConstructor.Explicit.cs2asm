@@ -1,0 +1,18 @@
+static class C {
+    private static readonly int X;
+    static C() {
+        X = 5;
+    }
+
+    static int M() => X;
+}
+
+#=>
+
+; Desktop CLR v<IGNORE> (clr.dll) on x86.
+
+C..cctor()
+    ; Types with static constructors are not supported by SharpLab JIT ASM decompiler.
+
+C.M()
+    ; Types with static constructors are not supported by SharpLab JIT ASM decompiler.
