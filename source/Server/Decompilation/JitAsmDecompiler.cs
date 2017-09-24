@@ -11,6 +11,7 @@ using Microsoft.Diagnostics.Runtime;
 using SharpDisasm;
 using SharpDisasm.Translators;
 using SharpLab.Runtime;
+using SharpLab.Server.Common;
 using SharpLab.Server.Decompilation.Internal;
 
 namespace SharpLab.Server.Decompilation {
@@ -18,7 +19,7 @@ namespace SharpLab.Server.Decompilation {
     public class JitAsmDecompiler : IDecompiler {
         private static readonly BindingFlags BindingFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
-        public string LanguageName => "JIT ASM";
+        public string LanguageName => TargetNames.JitAsm;
 
         public void Decompile(Stream assemblyStream, TextWriter codeWriter) {
             var currentSetup = AppDomain.CurrentDomain.SetupInformation;
@@ -86,10 +87,6 @@ namespace SharpLab.Server.Decompilation {
                     writer.WriteLine("    ; However you can use attribute SharpLab.Runtime.JitGeneric to specify argument types.");
                     writer.WriteLine("    ; Example: [JitGeneric(typeof(int)), JitGeneric(typeof(string))] void M<T>() { ... }.");
                     return;
-
-                case Remote.MethodJitStatus.FailedTypeWithStaticConstructor:
-                    writer.WriteLine("    ; Type {0} has a static constructor, which is not supported by SharpLab JIT decompiler.", method.Type.Name);
-                    return;
             }
 
             var info = FindNonEmptyHotColdInfo(method);
@@ -151,6 +148,13 @@ namespace SharpLab.Server.Decompilation {
         private static class Remote {
             public static IReadOnlyList<MethodJitResult> GetCompiledMethods(Stream assemblyStream) {
                 var assembly = Assembly.Load(ReadAllBytes(assemblyStream));
+                // This is a security consideration as PrepareMethod calls static ctors
+                foreach (var type in assembly.DefinedTypes) {
+                    foreach (var constructor in type.DeclaredConstructors) {
+                        if (constructor.IsStatic)
+                            throw new NotSupportedException("Type " + type + " has a static constructor, which is not supported by SharpLab JIT decompiler.");
+                    }
+                }
                 var results = new List<MethodJitResult>();
                 foreach (var type in assembly.DefinedTypes) {
                     CompileAndCollectMembers(results, type);
@@ -158,49 +162,33 @@ namespace SharpLab.Server.Decompilation {
                 return results;
             }
 
-            private static void CompileAndCollectMembers(ICollection<MethodJitResult> results, Type type) {
-                // This is a security consideration as PrepareMethod calls static ctors
-                var hasStaticConstructors = type.GetConstructors(BindingFlags.Static | BindingFlags.NonPublic).Any();
-                var typeIsGeneric = type.IsGenericTypeDefinition;
-
-                if (typeIsGeneric && !hasStaticConstructors) {
+            private static void CompileAndCollectMembers(ICollection<MethodJitResult> results, TypeInfo type) {
+                if (type.IsGenericTypeDefinition) {
                     if (TryCompileAndCollectMembersOfGeneric(results, type))
                         return;
                 }
 
-                foreach (var constructor in type.GetConstructors(BindingFlags)) {
-                    if (hasStaticConstructors) {
-                        results.Add(new MethodJitResult(constructor.MethodHandle, MethodJitStatus.FailedTypeWithStaticConstructor, typeIsGeneric));
-                        continue;
-                    }
-
+                foreach (var constructor in type.DeclaredConstructors) {
                     CollectCompiledWraps(results, constructor);
                 }
 
-                foreach (var method in type.GetMethods(BindingFlags)) {
+                foreach (var method in type.DeclaredMethods) {
                     if (method.IsAbstract)
                         continue;
-
-                    if (hasStaticConstructors) {
-                        var isGeneric = typeIsGeneric || method.IsGenericMethodDefinition;
-                        results.Add(new MethodJitResult(method.MethodHandle, MethodJitStatus.FailedTypeWithStaticConstructor, isGeneric));
-                        continue;
-                    }
-
                     CollectCompiledWraps(results, method);
                 }
             }
 
-            private static bool TryCompileAndCollectMembersOfGeneric(ICollection<MethodJitResult> results, Type type) {
+            private static bool TryCompileAndCollectMembersOfGeneric(ICollection<MethodJitResult> results, TypeInfo type) {
                 if (type.DeclaringType?.IsGenericTypeDefinition ?? false)
                     return true; // we expect to see that one separately when we visit the parent type
 
                 var hadAttribute = false;
                 foreach (var attribute in type.GetCustomAttributes<JitGenericAttribute>(false)) {
                     hadAttribute = true;
-                    var genericInstance = type.MakeGenericType(attribute.ArgumentTypes);
+                    var genericInstance = type.MakeGenericType(attribute.ArgumentTypes).GetTypeInfo();
                     CompileAndCollectMembers(results, genericInstance.GetTypeInfo());
-                    foreach (var nested in genericInstance.GetNestedTypes(BindingFlags)) {
+                    foreach (var nested in genericInstance.DeclaredNestedTypes) {
                         CompileAndCollectMembers(results, nested);
                     }
                 }
@@ -276,8 +264,7 @@ namespace SharpLab.Server.Decompilation {
             [Serializable]
             public enum MethodJitStatus {
                 Success,
-                FailedOpenGenericWithNoAttribute,
-                FailedTypeWithStaticConstructor
+                FailedOpenGenericWithNoAttribute
             }
         }
     }

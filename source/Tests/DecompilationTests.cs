@@ -108,8 +108,6 @@ namespace SharpLab.Tests {
         [InlineData("JitAsm.OpenGenerics.cs2asm")]
         [InlineData("JitAsm.GenericMethodWithAttribute.cs2asm")]
         [InlineData("JitAsm.GenericClassWithAttribute.cs2asm")]
-        [InlineData("JitAsm.StaticConstructor.Explicit.cs2asm")]
-        [InlineData("JitAsm.StaticConstructor.Implicit.cs2asm")]
         [InlineData("JitAsm.GenericMethodWithAttribute.fs2asm")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForJitAsm(string resourceName) {
             var data = TestData.FromResource(resourceName);
@@ -122,6 +120,17 @@ namespace SharpLab.Tests {
             _output.WriteLine(decompiledText ?? "<null>");
             Assert.True(errors.IsNullOrEmpty(), errors);
             Assert.Equal(data.Expected, decompiledText);
+        }
+
+        [Theory]
+        [InlineData("class C { static int F = 0; }")]
+        [InlineData("class C { static C() {} }")]
+        [InlineData("class C { class N { static N() {} } }")]
+        public async Task SlowUpdate_ReturnsNotSupportedError_ForJitAsmWithStaticConstructors(string code) {
+            var driver = MirrorSharpTestDriver.New(MirrorSharpOptions).SetText(code);
+            await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.JitAsm);
+
+            await Assert.ThrowsAsync<NotSupportedException>(() => driver.SendSlowUpdateAsync<string>());
         }
 
         [Theory]
