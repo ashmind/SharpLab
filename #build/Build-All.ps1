@@ -190,12 +190,12 @@ try {
 
             Write-Output "Resolving and copying assemblies..."
             $resolverLogPath = "$branchArtifactsRoot\AssemblyResolver.log"
-            $resolverCommand = "&""$assemblyResolver""" +
-              " --source-bin ""$sourceRoot\Server.Azure\bin\Release"" " +
-              " --roslyn-bin ""$branchBinariesPath""" +
-              " --target ""$(Ensure-ResolvedPath $siteRoot\bin)""" +
-              " --target-app-config ""$siteRoot\Web.config""" +
-              " >> ""$resolverLogPath"""
+            $resolverCommand = "&'$assemblyResolver'" +
+              " --source-bin '$sourceRoot\Server.Azure\bin\Release' " +
+              " --roslyn-bin '$branchBinariesPath'" +
+              " --target '$(Ensure-ResolvedPath $siteRoot\bin)'" +
+              " --target-app-config '$siteRoot\Web.config'" +
+              " >> '$resolverLogPath'"
             $resolverCommand | Out-File $resolverLogPath -Encoding 'Unicode'
             Invoke-Expression $resolverCommand
             if ($LastExitCode -ne 0) {
