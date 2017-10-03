@@ -216,9 +216,12 @@ namespace SharpLab.Server.Execution {
             }
         }
 
-        private static readonly AssemblyGuardSettings GuardSettings = new AssemblyGuardSettings {
-            ApiPolicy = ApiPolicySetup.CreatePolicy(),
-            AllowExplicitLayoutInTypesMatchingPattern = new Regex("<PrivateImplementationDetails>", RegexOptions.Compiled)
-        };
+        private static readonly AssemblyGuardSettings GuardSettings = ((Func<AssemblyGuardSettings>)(() => {
+            var settings = AssemblyGuardSettings.DefaultForCSharpAssembly();
+            settings.ApiPolicy = ApiPolicySetup.CreatePolicy();
+            settings.AllowExplicitLayoutInTypesMatchingPattern = new Regex(settings.AllowExplicitLayoutInTypesMatchingPattern.ToString(), RegexOptions.Compiled);
+            settings.AllowPointerOperationsInTypesMatchingPattern = new Regex(settings.AllowPointerOperationsInTypesMatchingPattern.ToString(), RegexOptions.Compiled);
+            return settings;
+        }))();
     }
 }
