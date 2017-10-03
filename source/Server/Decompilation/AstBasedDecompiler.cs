@@ -23,6 +23,7 @@ namespace SharpLab.Server.Decompilation {
                     CanInlineVariables = false,
                     OperatorOverloading = false,
                     AnonymousMethods = false,
+                    AnonymousTypes = false,
                     YieldReturn = false,
                     AsyncAwait = false,
                     AutomaticProperties = false,
