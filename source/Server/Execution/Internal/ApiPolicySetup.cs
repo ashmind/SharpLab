@@ -1,11 +1,11 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq.Expressions;
+using System.Reflection;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
 using Microsoft.VisualBasic.CompilerServices;
-using System.Linq.Expressions;
-using System.Reflection;
 using AshMind.Extensions;
 using SharpLab.Runtime.Internal;
 using Unbreakable;
@@ -13,6 +13,7 @@ using Unbreakable.Policy;
 using Unbreakable.Policy.Rewriters;
 
 namespace SharpLab.Server.Execution.Internal {
+    using System.Globalization;
     using static ApiAccess;
 
     public static class ApiPolicySetup {
@@ -28,6 +29,7 @@ namespace SharpLab.Server.Execution.Internal {
                       .Type(typeof(Type), Neutral, SetupSystemType)
             )
             .Namespace("System.Diagnostics", Neutral, SetupSystemDiagnostics)
+            .Namespace("System.Globalization", Neutral, SetupSystemGlobalization)
             .Namespace("System.Reflection", Neutral, SetupSystemReflection)
             .Namespace("System.Linq.Expressions", Neutral, SetupSystemLinqExpressions)
             .Namespace("System.IO", Neutral,
@@ -142,6 +144,18 @@ namespace SharpLab.Server.Execution.Internal {
                             "There are many checks and reports added to your code before it runs,\r\n" +
                             "so the performance might be completely unrelated to the original code."
                         ));
+                    }
+                });
+        }
+
+        private static void SetupSystemGlobalization(NamespacePolicy namespacePolicy) {
+            namespacePolicy
+                .Type(typeof(CultureInfo), Neutral, typePolicy => {
+                    typePolicy.Constructor(Allowed)
+                              .Member(nameof(CultureInfo.GetCultureInfo), Allowed)
+                              .Member(nameof(CultureInfo.GetCultureInfoByIetfLanguageTag), Allowed);
+                    foreach (var property in typeof(CultureInfo).GetProperties()) {
+                        typePolicy.Getter(property.Name, Allowed);
                     }
                 });
         }

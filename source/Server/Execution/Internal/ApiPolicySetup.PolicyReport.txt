@@ -3764,41 +3764,41 @@ System.Globalization
   CompareInfo: Denied
   CompareOptions: Denied
   CultureInfo: Allowed
-     .ctor: Denied
+     .ctor: Allowed
      ClearCachedData: Denied
      Clone: Denied
      CreateSpecificCulture: Denied
      Equals: Denied
-     get_Calendar: Denied
-     get_CompareInfo: Denied
-     get_CultureTypes: Denied
-     get_CurrentCulture: Denied
-     get_CurrentUICulture: Denied
-     get_DateTimeFormat: Denied
-     get_DefaultThreadCurrentCulture: Denied
-     get_DefaultThreadCurrentUICulture: Denied
-     get_DisplayName: Denied
-     get_EnglishName: Denied
-     get_IetfLanguageTag: Denied
-     get_InstalledUICulture: Denied
+     get_Calendar: Allowed
+     get_CompareInfo: Allowed
+     get_CultureTypes: Allowed
+     get_CurrentCulture: Allowed
+     get_CurrentUICulture: Allowed
+     get_DateTimeFormat: Allowed
+     get_DefaultThreadCurrentCulture: Allowed
+     get_DefaultThreadCurrentUICulture: Allowed
+     get_DisplayName: Allowed
+     get_EnglishName: Allowed
+     get_IetfLanguageTag: Allowed
+     get_InstalledUICulture: Allowed
      get_InvariantCulture: Allowed
-     get_IsNeutralCulture: Denied
-     get_IsReadOnly: Denied
-     get_KeyboardLayoutId: Denied
-     get_LCID: Denied
-     get_Name: Denied
-     get_NativeName: Denied
-     get_NumberFormat: Denied
-     get_OptionalCalendars: Denied
-     get_Parent: Denied
-     get_TextInfo: Denied
-     get_ThreeLetterISOLanguageName: Denied
-     get_ThreeLetterWindowsLanguageName: Denied
-     get_TwoLetterISOLanguageName: Denied
-     get_UseUserOverride: Denied
+     get_IsNeutralCulture: Allowed
+     get_IsReadOnly: Allowed
+     get_KeyboardLayoutId: Allowed
+     get_LCID: Allowed
+     get_Name: Allowed
+     get_NativeName: Allowed
+     get_NumberFormat: Allowed
+     get_OptionalCalendars: Allowed
+     get_Parent: Allowed
+     get_TextInfo: Allowed
+     get_ThreeLetterISOLanguageName: Allowed
+     get_ThreeLetterWindowsLanguageName: Allowed
+     get_TwoLetterISOLanguageName: Allowed
+     get_UseUserOverride: Allowed
      GetConsoleFallbackUICulture: Denied
-     GetCultureInfo: Denied
-     GetCultureInfoByIetfLanguageTag: Denied
+     GetCultureInfo: Allowed
+     GetCultureInfoByIetfLanguageTag: Allowed
      GetCultures: Denied
      GetFormat: Denied
      GetHashCode: Denied
@@ -5453,7 +5453,50 @@ System.Text
   EncoderFallbackException: Denied
   EncoderReplacementFallback: Denied
   EncoderReplacementFallbackBuffer: Denied
-  Encoding: Denied
+  Encoding: Allowed
+     Clone: Denied
+     Convert: Denied
+     Equals: Denied
+     get_ASCII: Allowed
+     get_BigEndianUnicode: Allowed
+     get_BodyName: Allowed
+     get_CodePage: Allowed
+     get_DecoderFallback: Denied
+     get_Default: Allowed
+     get_EncoderFallback: Denied
+     get_EncodingName: Allowed
+     get_HeaderName: Allowed
+     get_IsBrowserDisplay: Allowed
+     get_IsBrowserSave: Allowed
+     get_IsMailNewsDisplay: Allowed
+     get_IsMailNewsSave: Allowed
+     get_IsReadOnly: Allowed
+     get_IsSingleByte: Allowed
+     get_Unicode: Allowed
+     get_UTF32: Allowed
+     get_UTF7: Allowed
+     get_UTF8: Allowed
+     get_WebName: Allowed
+     get_WindowsCodePage: Allowed
+     GetByteCount: Denied
+     GetBytes: Denied
+     GetCharCount: Denied
+     GetChars: Denied
+     GetDecoder: Denied
+     GetEncoder: Denied
+     GetEncoding: Allowed
+     GetEncodings: Denied
+     GetHashCode: Denied
+     GetMaxByteCount: Denied
+     GetMaxCharCount: Denied
+     GetPreamble: Denied
+     GetString: Denied
+     GetType: Denied
+     IsAlwaysNormalized: Denied
+     RegisterProvider: Denied
+     set_DecoderFallback: Denied
+     set_EncoderFallback: Denied
+     ToString: Denied
   EncodingInfo: Denied
   EncodingProvider: Denied
   NormalizationForm: Denied
