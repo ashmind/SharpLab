@@ -33,9 +33,17 @@ namespace IL.Syntax {
             var implementsToken = String("implements");
 
             var id = OneOf(idToken, sqStringToken);
-            var dottedName = id; // TODO
+            var dottedName = id.SeparatedAtLeastOnce(Char('.'))
+                .Select(n => new MultipartIdentifier(n.ToList())); // TODO
             var slashedName = dottedName; // TODO
-            var className = slashedName; // TODO
+            var className = SkipWhitespaces.Then(OneOf(
+                Map(
+                    (assemblyName, name) => new TypeReferenceNode(name, assemblyName),
+                    dottedName.Between(Punctuation('['), Punctuation(']')),
+                    slashedName
+                ),
+                slashedName.Select(name => new TypeReferenceNode(name))
+            ).Labelled("type name")); // TODO
 
             var @class = classToken;
             var @public = publicToken;
@@ -65,25 +73,32 @@ namespace IL.Syntax {
 
             var implList = typeSpec.Separated(Char(','));
 
-            var extendsClause = extendsToken.Then(typeSpec).Optional();
-            var implClause = implementsToken.Then(implList).Optional();
+            var extendsClause = extendsToken
+                .Then(SkipWhitespaces)
+                .Then(typeSpec);
 
-            var classHeadBegin = Map(
-                (modifiers, name, x3) => (modifiers, name),
+            var implementsClause = implementsToken
+                .Then(SkipWhitespaces)
+                .Then(implList);
+            
+            var classHead = Map(
+                (modifiers, name, x1, extends, x3) => (modifiers, name, extends),
                 @class.Then(SkipWhitespaces.Then(classAttr)),
                 dottedName.Between(SkipWhitespaces).Labelled("class name"),
-                typarsClause
-            );
-            var classHead = Map(
-                (b, x2, x3) => b,
-                classHeadBegin, extendsClause, implClause
+                typarsClause,
+                extendsClause.Between(SkipWhitespaces).Optional(),
+                implementsClause.Between(SkipWhitespaces).Optional()
             );
 
             Parser<char, DeclarationNode> classDecl = null;
             var classDecls = Rec(() => classDecl).Many();
             classDecl = Map(
-                (head, x2) => (DeclarationNode)new ClassDeclarationNode(head.name, head.modifiers.ToSet()),
-                classHead, classDecls.Between(Punctuation('{'), Punctuation('}'))
+                (head, x2) => (DeclarationNode)new ClassDeclarationNode(
+                    head.name,
+                    head.modifiers.ToSet(),
+                    head.extends.HasValue ? head.extends.Value : null
+                ),
+                classHead, classDecls.Between(Punctuation('{'), Punctuation('}')).Labelled("class body")
             ).Labelled("class declaration");
 
             var decl = OneOf(classDecl); // TODO

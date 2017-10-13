@@ -4,22 +4,11 @@ using JetBrains.Annotations;
 
 namespace IL.Syntax {
     public abstract class DeclarationNode : ILSyntaxNode {
-        public DeclarationNode([NotNull] string name, [NotNull] ISet<DeclarationModifier> modifiers) {
-            Name = name;
+        protected DeclarationNode([NotNull] ISet<DeclarationModifier> modifiers) {
             Modifiers = modifiers;
         }
 
-        [NotNull] public string Name { get; set; }
         public ISet<DeclarationModifier> Modifiers { get; }
-
-        protected void AppendNameToString(StringBuilder builder) {
-            if (ShouldEscapeName()) {
-                builder.Append("'").Append(Name).Append("'");
-            }
-            else {
-                builder.Append(Name);
-            }
-        }
 
         protected void AppendModifiersToString(StringBuilder builder) {
             var first = true;
@@ -33,13 +22,13 @@ namespace IL.Syntax {
                 builder.Append(modifier.Text);
             }
         }
+    }
 
-        private bool ShouldEscapeName() {
-            foreach (var @char in Name) {
-                if (!char.IsLetterOrDigit(@char) && @char != '.')
-                    return true;
-            }
-            return false;
+    public abstract class DeclarationNode<TName> : DeclarationNode {
+        protected DeclarationNode([NotNull] TName name, [NotNull] ISet<DeclarationModifier> modifiers) : base(modifiers) {
+            Name = name;
         }
+
+        [NotNull] public TName Name { get; set; }
     }
 }

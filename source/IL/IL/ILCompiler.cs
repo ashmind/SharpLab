@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using IL.Syntax;
 using Mono.Cecil;
@@ -14,6 +15,14 @@ namespace IL {
             { DeclarationModifier.Ansi, TypeAttributes.AnsiClass },
             { DeclarationModifier.BeforeFieldInit, TypeAttributes.BeforeFieldInit }
         };
+
+        private readonly IReadOnlyDictionary<string, AssemblyDefinition> _assemblies;
+
+        public ILCompiler() {
+            _assemblies = new AssemblyDefinition[] {
+                AssemblyDefinition.ReadAssembly(typeof(object).Assembly.Location)
+            }.ToDictionary(a => a.Name.Name);
+        }
 
         public void Compile(CompilationUnitNode compilationUnit, Stream stream) {
             var assembly = AssemblyDefinition.CreateAssembly(new AssemblyNameDefinition("_", new Version(0, 0)), "_", ModuleKind.Dll);
@@ -34,8 +43,23 @@ namespace IL {
             foreach (var modifier in declaration.Modifiers) {
                 attributes |= TypeAttributeMap[modifier];
             }
-            var type = new TypeDefinition("", declaration.Name, attributes);
+            var type = new TypeDefinition("", string.Join(".", declaration.Name.Parts), attributes);
+            if (declaration.ExtendsType != null) {
+                var typeReference = ToTypeReference(declaration.ExtendsType, module);
+                type.BaseType = typeReference;
+            }
+
             module.Types.Add(type);
+        }
+
+        private TypeReference ToTypeReference(TypeReferenceNode extendsType, ModuleDefinition module) {
+            var assembly = _assemblies[extendsType.AssemblyName.ToUnescapedString()];
+            return module.ImportReference(new TypeReference(
+                string.Join(".", extendsType.Name.Parts.Take(extendsType.Name.Parts.Count - 1)),
+                extendsType.Name.Parts.Last(),
+                assembly.MainModule,
+                assembly.MainModule
+            ));
         }
     }
 }

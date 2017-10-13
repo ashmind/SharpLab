@@ -5,9 +5,16 @@ using System.Text;
 using JetBrains.Annotations;
 
 namespace IL.Syntax {
-    public class ClassDeclarationNode : DeclarationNode {
-        public ClassDeclarationNode([NotNull] string name, [NotNull] ISet<DeclarationModifier> modifiers) : base(name, modifiers) {
+    public class ClassDeclarationNode : DeclarationNode<MultipartIdentifier> {
+        public ClassDeclarationNode(
+            [NotNull] MultipartIdentifier name,
+            [NotNull] ISet<DeclarationModifier> modifiers,
+            [CanBeNull] TypeReferenceNode extendsType = null
+        ) : base(name, modifiers) {
+            ExtendsType = extendsType;
         }
+
+        [CanBeNull] public TypeReferenceNode ExtendsType { get; }
 
         public override void AppendToString(StringBuilder builder) {
             builder.Append(".class ");
@@ -15,7 +22,13 @@ namespace IL.Syntax {
                 AppendModifiersToString(builder);
                 builder.Append(" ");
             }
-            AppendNameToString(builder);
+            AppendNameToString(builder, Name);
+
+            if (ExtendsType != null) {
+                builder.Append(" extends ");
+                ExtendsType.AppendToString(builder);
+            }
+
             builder.Append(" {");
             builder.Append("}");
         }

@@ -32,6 +32,12 @@ namespace IL.Tests {
             AssertRoundtrips(code);
         }
 
+        [Theory]
+        [InlineData(".class A extends [mscorlib]System.Object {}")]
+        public void ExtendsImplements(string code) {
+            AssertRoundtrips(code);
+        }
+
         private void AssertRoundtrips(string code) {
             var parsed = TestHelper.Parse(code);
             Assert.Equal(code, parsed.ToString());

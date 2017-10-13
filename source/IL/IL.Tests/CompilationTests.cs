@@ -14,6 +14,7 @@ namespace IL.Tests {
         [InlineData(".class private auto ansi A\r\n{\r\n} // end of class A\r\n")]
         [InlineData(".class public auto ansi A\r\n{\r\n} // end of class A\r\n")]
         [InlineData(".class public auto ansi beforefieldinit A\r\n{\r\n} // end of class A\r\n")]
+        [InlineData(".class public auto ansi A\r\n\textends [mscorlib]System.Object\r\n{\r\n} // end of class A\r\n")]
         public void Declarations(string code) {
             AssertRoundtrips(code);
         }
