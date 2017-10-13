@@ -26,6 +26,7 @@ namespace IL.Tests {
         [InlineData(".class private A {}")]
         [InlineData(".class auto A {}")]
         [InlineData(".class ansi A {}")]
+        [InlineData(".class beforefieldinit A {}")]
         [InlineData(".class private auto A {}")]
         public void Modifiers(string code) {
             AssertRoundtrips(code);

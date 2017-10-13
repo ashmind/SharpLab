@@ -11,7 +11,8 @@ namespace IL {
             { DeclarationModifier.Public, TypeAttributes.Public },
             { DeclarationModifier.Private, TypeAttributes.NotPublic },
             { DeclarationModifier.Auto, TypeAttributes.AutoLayout },
-            { DeclarationModifier.Ansi, TypeAttributes.AnsiClass }
+            { DeclarationModifier.Ansi, TypeAttributes.AnsiClass },
+            { DeclarationModifier.BeforeFieldInit, TypeAttributes.BeforeFieldInit }
         };
 
         public void Compile(CompilationUnitNode compilationUnit, Stream stream) {

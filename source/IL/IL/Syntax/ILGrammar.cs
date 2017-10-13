@@ -26,6 +26,7 @@ namespace IL.Syntax {
             var privateToken = ModifierToken(DeclarationModifier.Private);
             var autoToken = ModifierToken(DeclarationModifier.Auto);
             var ansiToken = ModifierToken(DeclarationModifier.Ansi);
+            var beforeFieldInitToken = ModifierToken(DeclarationModifier.BeforeFieldInit);
             var ctorToken = String(".ctor");
             var valueTypeToken = String("valuetype");
             var extendsToken = String("extends");
@@ -43,7 +44,8 @@ namespace IL.Syntax {
                 Try(publicToken),
                 privateToken,
                 Try(autoToken),
-                ansiToken
+                ansiToken,
+                beforeFieldInitToken
             ).SeparatedAndTerminated(SkipWhitespaces); // TODO
             var typarAttrib = OneOf(
                 String("+"),
