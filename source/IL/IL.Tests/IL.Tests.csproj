@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="AshMind.Extensions" Version="1.8.1" />
+    <PackageReference Include="xunit" version="2.2.0" />
+    <PackageReference Include="xunit.runner.visualstudio" version="2.2.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\IL\IL.csproj" />
+    <ProjectReference Include="..\..\#external\ILSpy\cecil\Mono.Cecil.csproj">
+      <SetConfiguration>Configuration=net_4_5_$(Configuration)</SetConfiguration>
+    </ProjectReference>
+    <ProjectReference Include="..\..\#external\ILSpy\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj">
+      <SetConfiguration>Configuration=net_4_5_$(Configuration)</SetConfiguration>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

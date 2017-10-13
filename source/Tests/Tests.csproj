@@ -6,8 +6,6 @@
     <RootNamespace>SharpLab.Tests</RootNamespace>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" />
-
   <ItemGroup>
     <Compile Remove="TestCode\**\*.cs" />
     <None Remove="TestCode\**\*.*" />
