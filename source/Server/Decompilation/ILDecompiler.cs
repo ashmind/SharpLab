@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Threading;
 using ICSharpCode.Decompiler.Disassembler;
 using Mono.Cecil;
@@ -8,6 +8,9 @@ namespace SharpLab.Server.Decompilation {
     public class ILDecompiler : IDecompiler {
         public void Decompile(Stream assemblyStream, TextWriter codeWriter) {
             var assembly = AssemblyDefinition.ReadAssembly(assemblyStream);
+            //#if DEBUG
+            //assembly.Write(@"d:\Temp\assembly\" + System.DateTime.Now.Ticks + "-il.dll");
+            //#endif
 
             var output = new CustomizableIndentPlainTextOutput(codeWriter) {
                 IndentationString = "    "
