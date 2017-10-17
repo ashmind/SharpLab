@@ -3016,6 +3016,38 @@ System.Collections
   SortedList: Denied
   Stack: Denied
   StructuralComparisons: Denied
+System.Collections.Concurrent
+  BlockingCollection`1: Denied
+  ConcurrentBag`1: Denied
+  ConcurrentDictionary`2: Allowed
+     .ctor: Allowed (CountArgumentRewriter(capacity))
+     AddOrUpdate: Allowed (AddCallRewriter)
+     Clear: Allowed
+     ContainsKey: Allowed
+     Equals: Allowed
+     get_Count: Allowed
+     get_IsEmpty: Allowed
+     get_Item: Allowed
+     get_Keys: Allowed
+     get_Values: Allowed
+     GetEnumerator: Allowed
+     GetHashCode: Allowed
+     GetOrAdd: Allowed (AddCallRewriter)
+     GetType: Allowed
+     set_Item: Allowed
+     ToArray: Allowed
+     ToString: Allowed
+     TryAdd: Allowed (AddCallRewriter)
+     TryGetValue: Allowed
+     TryRemove: Allowed
+     TryUpdate: Allowed
+  ConcurrentQueue`1: Denied
+  ConcurrentStack`1: Denied
+  EnumerablePartitionerOptions: Denied
+  IProducerConsumerCollection`1: Denied
+  OrderablePartitioner`1: Denied
+  Partitioner: Denied
+  Partitioner`1: Denied
 System.Collections.Generic
   Comparer`1: Allowed
      Compare: Allowed

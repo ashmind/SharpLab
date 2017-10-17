@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Globalization;
@@ -29,6 +30,7 @@ namespace SharpLab.Server.Execution.Internal {
                       .Type(typeof(NotImplementedException), Neutral, t => t.Constructor(Allowed))
                       .Type(typeof(Type), Neutral, SetupSystemType)
             )
+            .Namespace("System.Collections.Concurrent", Neutral, SetupSystemCollectionsConcurrent)
             .Namespace("System.Diagnostics", Neutral, SetupSystemDiagnostics)
             .Namespace("System.Globalization", Neutral, SetupSystemGlobalization)
             .Namespace("System.Reflection", Neutral, SetupSystemReflection)
@@ -81,6 +83,15 @@ namespace SharpLab.Server.Execution.Internal {
                 .Member(nameof(Type.GetInterface), Allowed)
                 .Member(nameof(Type.GetMethod), Allowed)
                 .Member(nameof(Type.GetProperty), Allowed);
+        }
+
+        private static void SetupSystemCollectionsConcurrent(NamespacePolicy namespacePolicy) {
+            namespacePolicy.Type(typeof(ConcurrentDictionary<,>), Allowed,
+                t => t.Constructor(Allowed, CountArgumentRewriter.ForCapacity)
+                      .Member(nameof(ConcurrentDictionary<object, object>.AddOrUpdate), Allowed, AddCallRewriter.Default)
+                      .Member(nameof(ConcurrentDictionary<object, object>.GetOrAdd), Allowed, AddCallRewriter.Default)
+                      .Member(nameof(ConcurrentDictionary<object, object>.TryAdd), Allowed, AddCallRewriter.Default)
+            );
         }
 
         private static void SetupSystemDiagnostics(NamespacePolicy namespacePolicy) {
