@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Globalization;
 using System.Linq.Expressions;
+using System.Net;
 using System.Reflection;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
@@ -13,7 +15,6 @@ using Unbreakable.Policy;
 using Unbreakable.Policy.Rewriters;
 
 namespace SharpLab.Server.Execution.Internal {
-    using System.Globalization;
     using static ApiAccess;
 
     public static class ApiPolicySetup {
@@ -32,6 +33,7 @@ namespace SharpLab.Server.Execution.Internal {
             .Namespace("System.Globalization", Neutral, SetupSystemGlobalization)
             .Namespace("System.Reflection", Neutral, SetupSystemReflection)
             .Namespace("System.Linq.Expressions", Neutral, SetupSystemLinqExpressions)
+            .Namespace("System.Net", Neutral, SetupSystemNet)
             .Namespace("System.IO", Neutral,
                 // required by F#'s printf
                 n => n.Type(typeof(TextWriter), Neutral)
@@ -177,6 +179,11 @@ namespace SharpLab.Server.Execution.Internal {
                     }
                 });
             });
+        }
+
+        private static void SetupSystemNet(NamespacePolicy namespacePolicy) {
+            namespacePolicy
+                .Type(typeof(IPAddress), Allowed);
         }
 
         private static void SetupSystemReflection(NamespacePolicy namespacePolicy) {
