@@ -59,6 +59,7 @@ namespace SharpLab.Server.Execution.Internal {
                                 .Member(nameof(SeqModule.ToList), Allowed, CollectedEnumerableArgumentRewriter.Default)
                       )
             )
+            .Namespace("Microsoft.VisualBasic", Neutral, SetupMicrosoftVisualBasic)
             .Namespace("Microsoft.VisualBasic.CompilerServices", Neutral,
                 n => n.Type(typeof(Conversions), Allowed,
                         t => t.Member(nameof(Conversions.FromCharAndCount), Allowed, new CountArgumentRewriter("Count"))
@@ -71,59 +72,6 @@ namespace SharpLab.Server.Execution.Internal {
                       )
                       .Type(typeof(StandardModuleAttribute), Allowed)
             );
-
-        private static void SetupFSharpCore(NamespacePolicy namespacePolicy) {
-            namespacePolicy
-                .Type(typeof(CompilationArgumentCountsAttribute), Allowed)
-                .Type(typeof(CompilationMappingAttribute), Allowed)
-                .Type(typeof(EntryPointAttribute), Allowed)
-                .Type(typeof(ExtraTopLevelOperators), Neutral,
-                    t => t.Member(nameof(ExtraTopLevelOperators.CreateDictionary), Allowed, CollectedEnumerableArgumentRewriter.Default)
-                          .Member(nameof(ExtraTopLevelOperators.CreateSet), Allowed, CollectedEnumerableArgumentRewriter.Default)
-                          .Member(nameof(ExtraTopLevelOperators.LazyPattern), Allowed)
-                          .Member(nameof(ExtraTopLevelOperators.PrintFormat), Allowed)
-                          .Member(nameof(ExtraTopLevelOperators.PrintFormatLine), Allowed)
-                          .Member(nameof(ExtraTopLevelOperators.PrintFormatToTextWriter), Allowed)
-                          .Member(nameof(ExtraTopLevelOperators.PrintFormatLineToTextWriter), Allowed)
-                          .Member(nameof(ExtraTopLevelOperators.PrintFormatToString), Allowed)
-                          .Member(nameof(ExtraTopLevelOperators.SpliceExpression), Allowed)
-                          .Member(nameof(ExtraTopLevelOperators.SpliceUntypedExpression), Allowed)
-                          .Member(nameof(ExtraTopLevelOperators.ToByte), Allowed)
-                          .Member(nameof(ExtraTopLevelOperators.ToDouble), Allowed)
-                          .Member(nameof(ExtraTopLevelOperators.ToSByte), Allowed)
-                          .Member(nameof(ExtraTopLevelOperators.ToSingle), Allowed)
-                )
-                .Type(typeof(ExtraTopLevelOperators.Checked), Allowed)
-                .Type(typeof(FSharpChoice<,>), Allowed)
-                .Type(typeof(FSharpFunc<,>), Allowed)
-                .Type(typeof(FSharpOption<>), Allowed)
-                .Type(typeof(LanguagePrimitives), Neutral,
-                    t => t.Getter(nameof(LanguagePrimitives.GenericComparer), Allowed)
-                          .Getter(nameof(LanguagePrimitives.GenericEqualityComparer), Allowed)
-                          .Getter(nameof(LanguagePrimitives.GenericEqualityERComparer), Allowed)
-                )
-                .Type(typeof(OptimizedClosures.FSharpFunc<,,>), Allowed)
-                .Type(typeof(OptimizedClosures.FSharpFunc<,,,>), Allowed)
-                .Type(typeof(OptimizedClosures.FSharpFunc<,,,,>), Allowed)
-                .Type(typeof(Microsoft.FSharp.Core.Operators), Allowed,
-                    t => t.Member("ConsoleError", Denied)
-                          .Member("ConsoleIn", Denied)
-                          .Member("ConsoleOut", Denied)
-                          .Member("Lock", Denied)
-                )
-                .Type(typeof(Microsoft.FSharp.Core.Operators.OperatorIntrinsics), Neutral,
-                    t => t.Member("RangeInt32", Allowed)
-                )
-                .Type(typeof(PrintfFormat<,,,>), Allowed)
-                .Type(typeof(PrintfFormat<,,,,>), Allowed)
-                .Type(typeof(PrintfModule), Neutral,
-                    t => t.Member(nameof(PrintfModule.PrintFormat), Allowed)
-                          .Member(nameof(PrintfModule.PrintFormatLine), Allowed)
-                          .Member(nameof(PrintfModule.PrintFormatToTextWriter), Allowed)
-                          .Member(nameof(PrintfModule.PrintFormatLineToTextWriter), Allowed)
-                )
-                .Type(typeof(Unit), Allowed);
-        }
 
         private static void SetupSystemType(TypePolicy typePolicy) {
             typePolicy
@@ -208,6 +156,63 @@ namespace SharpLab.Server.Execution.Internal {
                     }
                 });
             });
+        }
+
+        private static void SetupFSharpCore(NamespacePolicy namespacePolicy) {
+            namespacePolicy
+                .Type(typeof(CompilationArgumentCountsAttribute), Allowed)
+                .Type(typeof(CompilationMappingAttribute), Allowed)
+                .Type(typeof(EntryPointAttribute), Allowed)
+                .Type(typeof(ExtraTopLevelOperators), Neutral,
+                    t => t.Member(nameof(ExtraTopLevelOperators.CreateDictionary), Allowed, CollectedEnumerableArgumentRewriter.Default)
+                          .Member(nameof(ExtraTopLevelOperators.CreateSet), Allowed, CollectedEnumerableArgumentRewriter.Default)
+                          .Member(nameof(ExtraTopLevelOperators.LazyPattern), Allowed)
+                          .Member(nameof(ExtraTopLevelOperators.PrintFormat), Allowed)
+                          .Member(nameof(ExtraTopLevelOperators.PrintFormatLine), Allowed)
+                          .Member(nameof(ExtraTopLevelOperators.PrintFormatToTextWriter), Allowed)
+                          .Member(nameof(ExtraTopLevelOperators.PrintFormatLineToTextWriter), Allowed)
+                          .Member(nameof(ExtraTopLevelOperators.PrintFormatToString), Allowed)
+                          .Member(nameof(ExtraTopLevelOperators.SpliceExpression), Allowed)
+                          .Member(nameof(ExtraTopLevelOperators.SpliceUntypedExpression), Allowed)
+                          .Member(nameof(ExtraTopLevelOperators.ToByte), Allowed)
+                          .Member(nameof(ExtraTopLevelOperators.ToDouble), Allowed)
+                          .Member(nameof(ExtraTopLevelOperators.ToSByte), Allowed)
+                          .Member(nameof(ExtraTopLevelOperators.ToSingle), Allowed)
+                )
+                .Type(typeof(ExtraTopLevelOperators.Checked), Allowed)
+                .Type(typeof(FSharpChoice<,>), Allowed)
+                .Type(typeof(FSharpFunc<,>), Allowed)
+                .Type(typeof(FSharpOption<>), Allowed)
+                .Type(typeof(LanguagePrimitives), Neutral,
+                    t => t.Getter(nameof(LanguagePrimitives.GenericComparer), Allowed)
+                          .Getter(nameof(LanguagePrimitives.GenericEqualityComparer), Allowed)
+                          .Getter(nameof(LanguagePrimitives.GenericEqualityERComparer), Allowed)
+                )
+                .Type(typeof(OptimizedClosures.FSharpFunc<,,>), Allowed)
+                .Type(typeof(OptimizedClosures.FSharpFunc<,,,>), Allowed)
+                .Type(typeof(OptimizedClosures.FSharpFunc<,,,,>), Allowed)
+                .Type(typeof(Microsoft.FSharp.Core.Operators), Allowed,
+                    t => t.Member("ConsoleError", Denied)
+                          .Member("ConsoleIn", Denied)
+                          .Member("ConsoleOut", Denied)
+                          .Member("Lock", Denied)
+                )
+                .Type(typeof(Microsoft.FSharp.Core.Operators.OperatorIntrinsics), Neutral,
+                    t => t.Member("RangeInt32", Allowed)
+                )
+                .Type(typeof(PrintfFormat<,,,>), Allowed)
+                .Type(typeof(PrintfFormat<,,,,>), Allowed)
+                .Type(typeof(PrintfModule), Neutral,
+                    t => t.Member(nameof(PrintfModule.PrintFormat), Allowed)
+                          .Member(nameof(PrintfModule.PrintFormatLine), Allowed)
+                          .Member(nameof(PrintfModule.PrintFormatToTextWriter), Allowed)
+                          .Member(nameof(PrintfModule.PrintFormatLineToTextWriter), Allowed)
+                )
+                .Type(typeof(Unit), Allowed);
+        }
+
+        private static void SetupMicrosoftVisualBasic(NamespacePolicy namespacePolicy) {
+            namespacePolicy.Type(nameof(Microsoft.VisualBasic.Strings), Allowed);
         }
 
         private static void ForEachTypeInNamespaceOf<T>(Action<Type> action) {

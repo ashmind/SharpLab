@@ -749,6 +749,82 @@ Microsoft.FSharp.Core
      ToString: Allowed
   UnverifiableAttribute: Denied
   VolatileFieldAttribute: Denied
+Microsoft.VisualBasic
+  AppWinStyle: Denied
+  AudioPlayMode: Denied
+  CallType: Denied
+  Collection: Denied
+  ComClassAttribute: Denied
+  CompareMethod: Denied
+  Constants: Denied
+  ControlChars: Denied
+  Conversion: Denied
+  DateAndTime: Denied
+  DateFormat: Denied
+  DateInterval: Denied
+  DueDate: Denied
+  ErrObject: Denied
+  FileAttribute: Denied
+  FileSystem: Denied
+  Financial: Denied
+  FirstDayOfWeek: Denied
+  FirstWeekOfYear: Denied
+  Globals: Denied
+  HideModuleNameAttribute: Denied
+  Information: Denied
+  Interaction: Denied
+  MsgBoxResult: Denied
+  MsgBoxStyle: Denied
+  MyGroupCollectionAttribute: Denied
+  OpenAccess: Denied
+  OpenMode: Denied
+  OpenShare: Denied
+  SpcInfo: Denied
+  Strings: Allowed
+     Asc: Allowed
+     AscW: Allowed
+     Chr: Allowed
+     ChrW: Allowed
+     Equals: Allowed
+     Filter: Allowed
+     Format: Allowed
+     FormatCurrency: Allowed
+     FormatDateTime: Allowed
+     FormatNumber: Allowed
+     FormatPercent: Allowed
+     GetChar: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     InStr: Allowed
+     InStrRev: Allowed
+     Join: Allowed
+     LCase: Allowed
+     Left: Allowed
+     Len: Allowed
+     LSet: Allowed
+     LTrim: Allowed
+     Mid: Allowed
+     Replace: Allowed
+     Right: Allowed
+     RSet: Allowed
+     RTrim: Allowed
+     Space: Allowed
+     Split: Allowed
+     StrComp: Allowed
+     StrConv: Allowed
+     StrDup: Allowed
+     StrReverse: Allowed
+     ToString: Allowed
+     Trim: Allowed
+     UCase: Allowed
+  TabInfo: Denied
+  TriState: Denied
+  VariantType: Denied
+  VBCodeProvider: Denied
+  VBFixedArrayAttribute: Denied
+  VBFixedStringAttribute: Denied
+  VBMath: Denied
+  VbStrConv: Denied
 Microsoft.VisualBasic.CompilerServices
   BooleanType: Denied
   ByteType: Denied
