@@ -4779,6 +4779,57 @@ System.Net
   WebUtility: Denied
   WriteStreamClosedEventArgs: Denied
   WriteStreamClosedEventHandler: Denied
+System.Numerics
+  BigInteger: Denied
+  Complex: Allowed
+     .ctor: Allowed
+     Abs: Allowed
+     Acos: Allowed
+     Add: Allowed
+     Asin: Allowed
+     Atan: Allowed
+     Conjugate: Allowed
+     Cos: Allowed
+     Cosh: Allowed
+     Divide: Allowed
+     Equals: Allowed
+     Exp: Allowed
+     FromPolarCoordinates: Allowed
+     get_Imaginary: Allowed
+     get_Magnitude: Allowed
+     get_Phase: Allowed
+     get_Real: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     Log: Allowed
+     Log10: Allowed
+     Multiply: Allowed
+     Negate: Allowed
+     op_Addition: Allowed
+     op_Division: Allowed
+     op_Equality: Allowed
+     op_Explicit: Allowed
+     op_Implicit: Allowed
+     op_Inequality: Allowed
+     op_Multiply: Allowed
+     op_Subtraction: Allowed
+     op_UnaryNegation: Allowed
+     Pow: Allowed
+     Reciprocal: Allowed
+     Sin: Allowed
+     Sinh: Allowed
+     Sqrt: Allowed
+     Subtract: Allowed
+     Tan: Allowed
+     Tanh: Allowed
+     ToString: Allowed
+  Matrix3x2: Denied
+  Matrix4x4: Denied
+  Plane: Denied
+  Quaternion: Denied
+  Vector2: Denied
+  Vector3: Denied
+  Vector4: Denied
 System.Reflection
   AmbiguousMatchException: Denied
   Assembly: Denied

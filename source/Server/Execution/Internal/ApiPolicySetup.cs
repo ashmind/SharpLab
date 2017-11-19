@@ -10,12 +10,13 @@ using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
 using Microsoft.VisualBasic.CompilerServices;
 using AshMind.Extensions;
-using SharpLab.Runtime.Internal;
 using Unbreakable;
 using Unbreakable.Policy;
 using Unbreakable.Policy.Rewriters;
+using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Server.Execution.Internal {
+    using System.Numerics;
     using static ApiAccess;
 
     public static class ApiPolicySetup {
@@ -36,6 +37,7 @@ namespace SharpLab.Server.Execution.Internal {
             .Namespace("System.Reflection", Neutral, SetupSystemReflection)
             .Namespace("System.Linq.Expressions", Neutral, SetupSystemLinqExpressions)
             .Namespace("System.Net", Neutral, SetupSystemNet)
+            .Namespace("System.Numerics", Neutral, SetupSystemNumerics)
             .Namespace("System.IO", Neutral,
                 // required by F#'s printf
                 n => n.Type(typeof(TextWriter), Neutral)
@@ -143,6 +145,11 @@ namespace SharpLab.Server.Execution.Internal {
         private static void SetupSystemNet(NamespacePolicy namespacePolicy) {
             namespacePolicy
                 .Type(typeof(IPAddress), Allowed);
+        }
+
+        private static void SetupSystemNumerics(NamespacePolicy namespacePolicy) {
+            namespacePolicy
+                .Type(typeof(Complex), Allowed);
         }
 
         private static void SetupSystemReflection(NamespacePolicy namespacePolicy) {
