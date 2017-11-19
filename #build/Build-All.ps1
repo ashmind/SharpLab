@@ -13,6 +13,7 @@ function Update-RoslynSource($directoryPath, $repositoryUrl) {
         Invoke-Git $directoryPath config user.email "sharplab@github.test"
         Invoke-Git $directoryPath config user.name "SharpLab"
         Invoke-Git $directoryPath fetch --prune origin
+        Invoke-Git $directoryPath checkout master
         @(Invoke-Git $directoryPath branch -vv) |
             ? { $_ -match '\s*(\S+)\s.*: gone\]' } |
             % { $matches[1] } |
