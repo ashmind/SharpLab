@@ -221,6 +221,9 @@ namespace SharpLab.Server.Execution {
             settings.ApiPolicy = ApiPolicySetup.CreatePolicy();
             settings.AllowExplicitLayoutInTypesMatchingPattern = new Regex(settings.AllowExplicitLayoutInTypesMatchingPattern.ToString(), RegexOptions.Compiled);
             settings.AllowPointerOperationsInTypesMatchingPattern = new Regex(settings.AllowPointerOperationsInTypesMatchingPattern.ToString(), RegexOptions.Compiled);
+            settings.AllowCustomTypesMatchingPatternInSystemNamespaces = new Regex(
+                settings.AllowCustomTypesMatchingPatternInSystemNamespaces.ToString() + @"|System\.Range", RegexOptions.Compiled
+            );
             return settings;
         }))();
     }
