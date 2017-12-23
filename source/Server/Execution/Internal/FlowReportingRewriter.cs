@@ -169,20 +169,29 @@ namespace SharpLab.Server.Execution.Internal {
         }
 
         private void RewriteFinally(ExceptionHandler handler, ref int handlerIndex, ILProcessor il, ReportMethods flow) {
-            var oldTryLeave = handler.TryEnd.Previous;
+            // for try/finally, the only thing we can do is to
+            // wrap internals of try into a new try+filter+catch
+            var outerTryLeave = handler.TryEnd.Previous;
+            if (!outerTryLeave.OpCode.Code.IsLeave()) {
+                // in some cases (e.g. exception throw) outer handler does
+                // not end with `leave` -- but we do need it once we wrap
+                // that throw
+                outerTryLeave = il.Create(OpCodes.Leave, handler.TryEnd);
+                il.InsertBefore(handler.TryEnd, outerTryLeave);
+            }
 
-            var newTryLeave = il.Create(OpCodes.Leave_S, (Instruction)oldTryLeave.Operand);
+            var innerTryLeave = il.Create(OpCodes.Leave_S, (Instruction)outerTryLeave.Operand);
             var reportCall = il.CreateCall(flow.ReportException);
             var catchHandler = il.Create(OpCodes.Pop);
 
-            InsertBeforeAndRetargetAll(il, oldTryLeave, newTryLeave);
-            il.InsertBefore(oldTryLeave, reportCall);
-            il.InsertBefore(oldTryLeave, il.Create(OpCodes.Ldc_I4_0));
-            il.InsertBefore(oldTryLeave, il.Create(OpCodes.Endfilter));
-            il.InsertBefore(oldTryLeave, catchHandler);
-            
+            InsertBeforeAndRetargetAll(il, outerTryLeave, innerTryLeave);
+            il.InsertBefore(outerTryLeave, reportCall);
+            il.InsertBefore(outerTryLeave, il.Create(OpCodes.Ldc_I4_0));
+            il.InsertBefore(outerTryLeave, il.Create(OpCodes.Endfilter));
+            il.InsertBefore(outerTryLeave, catchHandler);
+
             for (var i = 0; i < handlerIndex; i++) {
-                il.Body.ExceptionHandlers[i].RetargetAll(oldTryLeave.Next, newTryLeave.Next);
+                il.Body.ExceptionHandlers[i].RetargetAll(outerTryLeave.Next, innerTryLeave.Next);
             }
 
             il.Body.ExceptionHandlers.Insert(handlerIndex, new ExceptionHandler(ExceptionHandlerType.Filter) {
@@ -190,7 +199,7 @@ namespace SharpLab.Server.Execution.Internal {
                 TryEnd = reportCall,
                 FilterStart = reportCall,
                 HandlerStart = catchHandler,
-                HandlerEnd = oldTryLeave.Next
+                HandlerEnd = outerTryLeave.Next
             });
             handlerIndex += 1;
         }

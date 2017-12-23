@@ -4,6 +4,10 @@ using Mono.Cecil.Cil;
 
 namespace SharpLab.Server.Execution.Internal {
     internal static class CecilExtensions {
+        public static bool IsLeave(this Code code) {
+            return code == Code.Leave || code == Code.Leave_S;
+        }
+
         public static Instruction CreateLdargBest(this ILProcessor il, ParameterReference parameter) {
             var index = parameter.Index;
             if (il.Body.Method.HasThis)
