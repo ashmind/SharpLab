@@ -2,6 +2,7 @@ using System.IO;
 using System.Threading;
 using ICSharpCode.Decompiler.Disassembler;
 using Mono.Cecil;
+using SharpLab.Server.Common;
 using SharpLab.Server.Decompilation.Internal;
 
 namespace SharpLab.Server.Decompilation {
@@ -19,6 +20,6 @@ namespace SharpLab.Server.Decompilation {
             disassembler.WriteModuleContents(assembly.MainModule);
         }
 
-        public string LanguageName => "IL";
+        public string LanguageName => TargetNames.IL;
     }
 }

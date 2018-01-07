@@ -37,7 +37,10 @@ namespace SharpLab.Server.Common.Languages {
                 var maxLanguageVersion = Enum.GetValues(typeof(LanguageVersion)).Cast<LanguageVersion>().Max();
                 var features = _featureDiscovery.SlowDiscoverAll().ToDictionary(f => f, f => (string) null);
 
-                o.ParseOptions = new VisualBasicParseOptions(maxLanguageVersion).WithFeatures(features);
+                o.ParseOptions = new VisualBasicParseOptions(
+                    maxLanguageVersion,
+                    documentationMode: DocumentationMode.Diagnose
+                ).WithFeatures(features);
                 o.MetadataReferences = _referenceCollector.SlowGetMetadataReferencesRecursive(
                     typeof(StandardModuleAttribute).Assembly,
                     NetFrameworkRuntime.AssemblyOfValueTuple,

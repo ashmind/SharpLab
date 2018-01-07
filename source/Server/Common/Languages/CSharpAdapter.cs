@@ -46,8 +46,18 @@ namespace SharpLab.Server.Common.Languages {
         public void SlowSetup(MirrorSharpOptions options) {
             // ReSharper disable HeapView.ObjectAllocation.Evident
 
-            options.CSharp.ParseOptions = new CSharpParseOptions(MaxLanguageVersion, preprocessorSymbols: DebugPreprocessorSymbols).WithFeatures(_features);
-            options.CSharp.CompilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
+            options.CSharp.ParseOptions = new CSharpParseOptions(
+                MaxLanguageVersion,
+                preprocessorSymbols: DebugPreprocessorSymbols,
+                documentationMode: DocumentationMode.Diagnose
+            ).WithFeatures(_features);
+            options.CSharp.CompilationOptions = new CSharpCompilationOptions(
+                OutputKind.DynamicallyLinkedLibrary,
+                specificDiagnosticOptions: new Dictionary<string, ReportDiagnostic> {
+                    // CS1591: Missing XML comment for publicly visible type or member
+                    { "CS1591", ReportDiagnostic.Suppress }
+                }
+            );
             options.CSharp.MetadataReferences = _references;
 
             // ReSharper restore HeapView.ObjectAllocation.Evident
