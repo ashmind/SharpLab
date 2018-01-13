@@ -34,8 +34,8 @@ Invoke-Git $sourceRoot reset --hard origin/$branchName
 #Invoke-Git $sourceRoot clean --force
 if (Test-Path "$sourceRoot\Binaries") {
     # We have to use robocopy to ensure long file names can be deleted:
-    New-Item "$sourceRoot\Binaries_Empty"
-    robocopy "$sourceRoot\Binaries_Empty" "$sourceRoot\Binaries" /MIR
+    New-Item "$sourceRoot\Binaries_Empty" -Type Directory
+    robocopy "$sourceRoot\Binaries_Empty" "$sourceRoot\Binaries" /mir /nfl /ndl /njh /njs /np
     Remove-Item "$sourceRoot\Binaries_Empty" -Force
 }
 
