@@ -21,16 +21,7 @@ namespace SharpLab.Server.Execution.Internal {
 
     public static class ApiPolicySetup {
         public static ApiPolicy CreatePolicy() => ApiPolicy.SafeDefault()
-            .Namespace("System", Neutral,
-                n => n.Type(typeof(Console), Neutral,
-                        t => t.Member(nameof(Console.Write), Allowed)
-                              .Member(nameof(Console.WriteLine), Allowed)
-                              // required by F#'s printf
-                              .Getter(nameof(Console.Out), Allowed)
-                     ).Type(typeof(STAThreadAttribute), Allowed)
-                      .Type(typeof(NotImplementedException), Neutral, t => t.Constructor(Allowed))
-                      .Type(typeof(Type), Neutral, SetupSystemType)
-            )
+            .Namespace("System", Neutral, SetupSystem)
             .Namespace("System.Collections.Concurrent", Neutral, SetupSystemCollectionsConcurrent)
             .Namespace("System.Diagnostics", Neutral, SetupSystemDiagnostics)
             .Namespace("System.Globalization", Neutral, SetupSystemGlobalization)
@@ -76,6 +67,27 @@ namespace SharpLab.Server.Execution.Internal {
                       )
                       .Type(typeof(StandardModuleAttribute), Allowed)
             );
+
+        private static void SetupSystem(NamespacePolicy namespacePolicy) {
+            namespacePolicy
+                .Type(typeof(Console), Neutral,
+                    t => t.Member(nameof(Console.Write), Allowed)
+                          .Member(nameof(Console.WriteLine), Allowed)
+                          // required by F#'s printf
+                          .Getter(nameof(Console.Out), Allowed)
+                )
+                .Type(typeof(ReadOnlySpan<>), Allowed,
+                    t => t.Member(nameof(ReadOnlySpan<object>.DangerousCreate), Denied)
+                          .Member(nameof(ReadOnlySpan<object>.DangerousGetPinnableReference), Denied)
+                )
+                .Type(typeof(Span<>), Allowed,
+                    t => t.Member(nameof(ReadOnlySpan<object>.DangerousCreate), Denied)
+                          .Member(nameof(ReadOnlySpan<object>.DangerousGetPinnableReference), Denied)
+                )
+                .Type(typeof(STAThreadAttribute), Allowed)
+                .Type(typeof(NotImplementedException), Neutral, t => t.Constructor(Allowed))
+                .Type(typeof(Type), Neutral, SetupSystemType);
+        }
 
         private static void SetupSystemType(TypePolicy typePolicy) {
             typePolicy

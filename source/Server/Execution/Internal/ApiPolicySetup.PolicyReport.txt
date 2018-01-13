@@ -2108,7 +2108,6 @@ System
   IProgress`1: Denied
   IServiceProvider: Denied
   Lazy`1: Denied
-  Lazy`2: Denied
   LdapStyleUriParser: Denied
   LoaderOptimization: Denied
   LoaderOptimizationAttribute: Denied
@@ -2267,6 +2266,25 @@ System
      NextDouble: Allowed
      ToString: Allowed
   RankException: Denied
+  ReadOnlySpan`1: Allowed
+     .ctor: Allowed
+     CopyTo: Allowed
+     DangerousCreate: Denied
+     DangerousGetPinnableReference: Denied
+     Equals: Allowed
+     get_Empty: Allowed
+     get_IsEmpty: Allowed
+     get_Item: Allowed
+     get_Length: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     op_Equality: Allowed
+     op_Implicit: Allowed
+     op_Inequality: Allowed
+     Slice: Allowed
+     ToArray: Allowed
+     ToString: Allowed
+     TryCopyTo: Allowed
   ResolveEventArgs: Denied
   ResolveEventHandler: Allowed
      .ctor: Allowed
@@ -2316,6 +2334,28 @@ System
      Parse: Allowed
      ToString: Allowed
      TryParse: Allowed
+  Span`1: Allowed
+     .ctor: Allowed
+     Clear: Allowed
+     CopyTo: Allowed
+     DangerousCreate: Denied
+     DangerousGetPinnableReference: Denied
+     Equals: Allowed
+     Fill: Allowed
+     get_Empty: Allowed
+     get_IsEmpty: Allowed
+     get_Item: Allowed
+     get_Length: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     op_Equality: Allowed
+     op_Implicit: Allowed
+     op_Inequality: Allowed
+     Slice: Allowed
+     ToArray: Allowed
+     ToString: Allowed
+     TryCopyTo: Allowed
+  SpanExtensions: Denied
   StackOverflowException: Denied
   STAThreadAttribute: Allowed
      .ctor: Allowed
@@ -2377,6 +2417,7 @@ System
      TrimStart: Allowed
   StringComparer: Denied
   StringComparison: Denied
+  StringNormalizationExtensions: Denied
   StringSplitOptions: Denied
   SystemException: Denied
   ThreadStaticAttribute: Denied
@@ -2548,14 +2589,6 @@ System
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
-  TupleExtensions: Allowed
-     Deconstruct: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
-     ToTuple: Allowed
-     ToValueTuple: Allowed
   TupleExtensions: Allowed
      Deconstruct: Allowed
      Equals: Allowed
@@ -2802,22 +2835,7 @@ System
   UriPartial: Denied
   UriTypeConverter: Denied
   ValueTuple: Denied
-  ValueTuple: Denied
   ValueTuple`1: Allowed
-     .ctor: Allowed
-     CompareTo: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
-  ValueTuple`1: Allowed
-     .ctor: Allowed
-     CompareTo: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
-  ValueTuple`2: Allowed
      .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
@@ -2838,28 +2856,7 @@ System
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
-  ValueTuple`3: Allowed
-     .ctor: Allowed
-     CompareTo: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
   ValueTuple`4: Allowed
-     .ctor: Allowed
-     CompareTo: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
-  ValueTuple`4: Allowed
-     .ctor: Allowed
-     CompareTo: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
-  ValueTuple`5: Allowed
      .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
@@ -2880,28 +2877,7 @@ System
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
-  ValueTuple`6: Allowed
-     .ctor: Allowed
-     CompareTo: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
   ValueTuple`7: Allowed
-     .ctor: Allowed
-     CompareTo: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
-  ValueTuple`7: Allowed
-     .ctor: Allowed
-     CompareTo: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
-  ValueTuple`8: Allowed
      .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
@@ -3817,6 +3793,7 @@ System.Diagnostics
   SourceLevels: Denied
   SourceSwitch: Denied
   StackFrame: Denied
+  StackFrameExtensions: Denied
   StackTrace: Denied
   Stopwatch: Allowed
      .ctor: Allowed
@@ -3926,6 +3903,7 @@ System.Globalization
   DaylightTime: Denied
   DigitShapes: Denied
   EastAsianLunisolarCalendar: Denied
+  GlobalizationExtensions: Denied
   GregorianCalendar: Denied
   GregorianCalendarTypes: Denied
   HebrewCalendar: Denied
@@ -4027,6 +4005,7 @@ System.Linq
      Aggregate: Allowed
      All: Allowed
      Any: Allowed
+     Append: Denied
      AsEnumerable: Allowed
      Average: Allowed
      Cast: Allowed
@@ -4056,6 +4035,7 @@ System.Linq
      OfType: Allowed
      OrderBy: Allowed (CollectedEnumerableArgumentRewriter)
      OrderByDescending: Allowed (CollectedEnumerableArgumentRewriter)
+     Prepend: Denied
      Range: Allowed (CountArgumentRewriter(count))
      Repeat: Allowed (CountArgumentRewriter(count))
      Reverse: Allowed (CollectedEnumerableArgumentRewriter)
@@ -4850,9 +4830,7 @@ System.Reflection
   AssemblyDelaySignAttribute: Denied
   AssemblyDescriptionAttribute: Denied
   AssemblyFileVersionAttribute: Denied
-  AssemblyFlags: Denied
   AssemblyFlagsAttribute: Denied
-  AssemblyHashAlgorithm: Denied
   AssemblyInformationalVersionAttribute: Denied
   AssemblyKeyFileAttribute: Denied
   AssemblyKeyNameAttribute: Denied
@@ -4939,7 +4917,6 @@ System.Reflection
   CustomAttributeFormatException: Denied
   CustomAttributeNamedArgument: Denied
   CustomAttributeTypedArgument: Denied
-  DeclarativeSecurityAction: Denied
   DefaultMemberAttribute: Denied
   EventAttributes: Allowed
      CompareTo: Allowed
@@ -5063,7 +5040,6 @@ System.Reflection
   IReflect: Denied
   IReflectableType: Denied
   LocalVariableInfo: Denied
-  ManifestResourceAttributes: Denied
   ManifestResourceInfo: Denied
   MemberFilter: Denied
   MemberInfo: Allowed
@@ -5155,7 +5131,6 @@ System.Reflection
      GetTypeCode: Allowed
      HasFlag: Allowed
      ToString: Allowed
-  MethodImportAttributes: Denied
   MethodInfo: Allowed
      CreateDelegate: Denied
      Equals: Denied
@@ -5208,7 +5183,6 @@ System.Reflection
      op_Equality: Denied
      op_Inequality: Denied
      ToString: Denied
-  MethodSemanticsAttributes: Denied
   Missing: Denied
   Module: Denied
   ModuleResolveEventHandler: Denied
@@ -5571,11 +5545,9 @@ System.Reflection
 System.Runtime
 System.Runtime.CompilerServices
   AccessedThroughPropertyAttribute: Denied
-  AsyncMethodBuilderAttribute: Denied
   AsyncStateMachineAttribute: Denied
   AsyncTaskMethodBuilder: Denied
   AsyncTaskMethodBuilder`1: Denied
-  AsyncValueTaskMethodBuilder`1: Denied
   AsyncVoidMethodBuilder: Denied
   CallConvCdecl: Denied
   CallConvFastcall: Denied
@@ -5609,8 +5581,6 @@ System.Runtime.CompilerServices
   ConfiguredTaskAwaitable`1: Denied
   ConfiguredTaskAwaitable`1+ConfiguredTaskAwaiter: Denied
   ConfiguredTaskAwaitable+ConfiguredTaskAwaiter: Denied
-  ConfiguredValueTaskAwaitable`1: Denied
-  ConfiguredValueTaskAwaitable`1+ConfiguredValueTaskAwaiter: Denied
   ContractHelper: Denied
   CustomConstantAttribute: Denied
   DateTimeConstantAttribute: Denied
@@ -5643,6 +5613,7 @@ System.Runtime.CompilerServices
   InternalsVisibleToAttribute: Denied
   IRuntimeVariables: Denied
   IsBoxed: Denied
+  IsByRefLikeAttribute: Denied
   IsByValue: Denied
   IsConst: Denied
   IsCopyConstructed: Denied
@@ -5651,6 +5622,15 @@ System.Runtime.CompilerServices
   IsJitIntrinsic: Denied
   IsLong: Denied
   IsPinned: Denied
+  IsReadOnlyAttribute: Allowed
+     .ctor: Allowed
+     Equals: Allowed
+     get_TypeId: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     IsDefaultAttribute: Allowed
+     Match: Allowed
+     ToString: Allowed
   IsSignUnspecifiedByte: Denied
   IStrongBox: Denied
   IsUdtReturn: Denied
@@ -5665,6 +5645,7 @@ System.Runtime.CompilerServices
      IsDefaultAttribute: Allowed
      Match: Allowed
      ToString: Allowed
+  ITuple: Denied
   IUnknownConstantAttribute: Denied
   LoadHint: Denied
   MethodCodeType: Denied
@@ -5676,6 +5657,7 @@ System.Runtime.CompilerServices
   RequiredAttributeAttribute: Denied
   RuleCache`1: Denied
   RuntimeCompatibilityAttribute: Denied
+  RuntimeFeature: Denied
   RuntimeHelpers: Allowed
      EnsureSufficientExecutionStack: Denied
      Equals: Denied
@@ -5707,11 +5689,9 @@ System.Runtime.CompilerServices
   TaskAwaiter: Denied
   TaskAwaiter`1: Denied
   TupleElementNamesAttribute: Denied
-  TupleElementNamesAttribute: Denied
   TypeForwardedFromAttribute: Denied
   TypeForwardedToAttribute: Denied
   UnsafeValueTypeAttribute: Denied
-  ValueTaskAwaiter`1: Denied
   YieldAwaitable: Denied
   YieldAwaitable+YieldAwaiter: Denied
 System.Runtime.InteropServices

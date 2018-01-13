@@ -44,6 +44,7 @@ namespace SharpLab.Server.Common.Languages {
                 o.MetadataReferences = _referenceCollector.SlowGetMetadataReferencesRecursive(
                     typeof(StandardModuleAttribute).Assembly,
                     NetFrameworkRuntime.AssemblyOfValueTuple,
+                    NetFrameworkRuntime.AssemblyOfSpan,
                     typeof(JitGenericAttribute).Assembly
                 ).ToImmutableList();
             });

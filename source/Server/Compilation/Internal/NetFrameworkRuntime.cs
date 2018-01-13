@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 
 namespace SharpLab.Server.Compilation.Internal {
@@ -7,5 +7,7 @@ namespace SharpLab.Server.Compilation.Internal {
 
         public static Assembly AssemblyOfValueTuple { get; }
             = Mscorlib.GetType(typeof(ValueTuple).FullName) != null ? Mscorlib : typeof(ValueTuple).Assembly;
+        public static Assembly AssemblyOfSpan { get; }
+            = Mscorlib.GetType(typeof(Span<>).FullName) != null ? Mscorlib : typeof(Span<>).Assembly;
     }
 }

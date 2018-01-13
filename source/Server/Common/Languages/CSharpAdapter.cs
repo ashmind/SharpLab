@@ -31,6 +31,7 @@ namespace SharpLab.Server.Common.Languages {
                 // Essential
                 typeof(Binder).Assembly,
                 NetFrameworkRuntime.AssemblyOfValueTuple,
+                NetFrameworkRuntime.AssemblyOfSpan,
 
                 // Runtime
                 typeof(JitGenericAttribute).Assembly,
