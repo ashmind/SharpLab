@@ -33,7 +33,10 @@ Invoke-Git $sourceRoot checkout $branchName --force
 Invoke-Git $sourceRoot reset --hard origin/$branchName
 #Invoke-Git $sourceRoot clean --force
 if (Test-Path "$sourceRoot\Binaries") {
-    Remove-Item "$sourceRoot\Binaries" -Recurse -Force
+    # We have to use robocopy to ensure long file names can be deleted:
+    New-Item "$sourceRoot\Binaries_Empty"
+    robocopy "$sourceRoot\Binaries_Empty" "$sourceRoot\Binaries" /MIR
+    Remove-Item "$sourceRoot\Binaries_Empty" -Force
 }
 
 function Build-Project(
