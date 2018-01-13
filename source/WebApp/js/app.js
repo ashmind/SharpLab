@@ -1,14 +1,11 @@
 import './polyfills/iterable-dom.js';
 import trackFeature from './helpers/track-feature.js';
-
 import languages from './helpers/languages.js';
 import targets from './helpers/targets.js';
 import getBranchesAsync from './server/get-branches-async.js';
-
 import state from './state/index.js';
 import url from './state/handlers/url.js';
 import defaults from './state/handlers/defaults.js';
-
 import uiAsync from './ui/index.js';
 
 /* eslint-disable no-invalid-this */

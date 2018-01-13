@@ -1,4 +1,5 @@
 {
+    "plugins": ["import"],
     "root": true,
     "parserOptions": {
         "ecmaVersion": 8,
@@ -121,6 +122,28 @@
         "prefer-const": "warn",
         "prefer-rest-params": "warn",
         "prefer-spread": "warn",
-        "require-yield": "warn"
+        "require-yield": "warn",
+
+        "import/no-unresolved": "error",
+        "import/named": "error",
+        "import/default": "error",
+        "import/namespace": "error",
+        "import/no-absolute-path": "error",
+        "import/no-webpack-loader-syntax": "error",
+        "import/export": "error",
+        "import/no-named-as-default": "warn",
+        "import/no-named-as-default-member": "warn",
+        "import/no-deprecated": "warn",
+        "import/no-extraneous-dependencies": "error",
+        "import/no-mutable-exports": "warn",
+        "import/no-commonjs": "warn",
+        "import/no-amd": "warn",
+        "import/first": "warn",
+        "import/exports-last": "warn",
+        "import/no-duplicates": "error",
+        "import/order": ["warn", { "newlines-between": "never" }],
+        "import/newline-after-import": "warn",
+        "import/prefer-default-export": "warn",
+        "import/no-named-default": "warn"
     }
 }

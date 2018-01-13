@@ -1,10 +1,10 @@
-﻿import languages from '../../helpers/languages.js';
+﻿import LZString from 'lz-string';
+import languages from '../../helpers/languages.js';
 import targets from '../../helpers/targets.js';
 import mapObject from '../../helpers/map-object.js';
 import warn from '../../helpers/warn.js';
 import precompressor from './url/precompressor.js';
 import getGistAsync from './url/get-gist-async.js';
-import LZString from 'lz-string';
 
 const languageAndTargetMap = {
     [languages.csharp]: 'cs',
