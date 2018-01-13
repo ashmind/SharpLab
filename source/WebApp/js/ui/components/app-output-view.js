@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-Vue.component('app-output', {
+Vue.component('app-output-view', {
     props: {
         output: Array
     },
@@ -17,7 +17,7 @@ Vue.component('app-output', {
             return inspection.title === 'Warning';
         }
     },
-    template: `<div class="output">
+    template: `<div class="output result-content">
       <small class="output-disclaimer">
         This is a new feature — might be unstable/too strict. Please <a href="https://github.com/ashmind/SharpLab/issues">report</a> any issues.
       </small>

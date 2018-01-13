@@ -12,6 +12,7 @@ import uiAsync from './ui/index.js';
 
 function getResultType(target) {
     switch (target) {
+        case targets.verify: return 'verify';
         case targets.ast: return 'ast';
         case targets.run: return 'run';
         default: return 'code';

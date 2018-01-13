@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import targets from '../../helpers/targets.js';
 import CodeMirror from 'codemirror';
 import 'codemirror/mode/clike/clike';
 import 'codemirror/mode/vb/vb';
@@ -7,6 +6,7 @@ import '../codemirror/mode-cil.js';
 import '../codemirror/mode-asm.js';
 import '../codemirror/addon-infotip.js';
 import '../codemirror/addon-cil-infotip.js';
+import targets from '../../helpers/targets.js';
 
 Vue.component('app-code-view', {
     props: {

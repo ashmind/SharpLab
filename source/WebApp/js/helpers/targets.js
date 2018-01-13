@@ -6,6 +6,7 @@ const targets = {
     il:     'IL',
     asm:    'JIT ASM',
     ast:    'AST',
-    run:    'Run'
+    run:    'Run',
+    verify: 'Verify'
 };
 export default Object.freeze(targets);

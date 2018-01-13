@@ -50,6 +50,9 @@ namespace SharpLab.Server.MirrorSharp {
             if (diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error))
                 return null;
 
+            if (targetName == TargetNames.Verify)
+                return "✔️ Compilation completed.";
+
             if (targetName != TargetNames.Run && !_decompilers.ContainsKey(targetName))
                 throw new NotSupportedException($"Target '{targetName}' is not (yet?) supported by this branch.");
 
@@ -85,8 +88,13 @@ namespace SharpLab.Server.MirrorSharp {
                 writer.WriteValue((string)null);
                 return;
             }
-
+            
             var targetName = session.GetTargetName();
+            if (targetName == TargetNames.Verify) {
+                writer.WriteValue((string)result);
+                return;
+            }
+
             if (targetName == TargetNames.Ast) {
                 var astTarget = _astTargets.GetValueOrDefault(session.LanguageName);
                 astTarget.SerializeAst(result, writer, session);

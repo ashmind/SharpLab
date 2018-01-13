@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head data-theme-color-manager-bind="status.color">
     <meta charset="UTF-8">
@@ -92,6 +92,7 @@
                 </optgroup>
                 <optgroup label="Other">
                   <option v-bind:value="targets.ast">Syntax Tree</option>
+                  <option v-bind:value="targets.verify">Verify Only</option>
                 </optgroup>
                 <optgroup label="Experimental">
                   <option v-bind:value="targets.run">Run</option>
@@ -109,9 +110,6 @@
           </header>
           <div class="content">
             <div class="loader"></div>
-            <app-output v-if="lastResultOfType.run"
-                        v-show="result.type === 'run'"
-                        v-bind:output="lastResultOfType.run.value ? lastResultOfType.run.value.output : []"></app-output>
             <app-code-view v-if="lastResultOfType.code"
                            v-show="result.type === 'code'"
                            v-bind:value="lastResultOfType.code.value"
@@ -121,6 +119,12 @@
                           v-show="result.type === 'ast'"
                           v-bind:roots="lastResultOfType.ast.value"
                           v-on:item-hover="applyAstHover"></app-ast-view>
+            <app-verify-view v-if="lastResultOfType.verify"
+                             v-show="result.type === 'verify'"
+                             v-bind:value="lastResultOfType.verify.value"></app-verify-view>
+            <app-output-view v-if="lastResultOfType.run"
+                             v-show="result.type === 'run'"
+                             v-bind:output="lastResultOfType.run.value ? lastResultOfType.run.value.output : []"></app-output-view>
           </div>
         </section>
 

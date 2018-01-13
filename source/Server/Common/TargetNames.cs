@@ -10,5 +10,6 @@ namespace SharpLab.Server.Common {
         public const string Ast = "AST";
         public const string JitAsm = "JIT ASM";
         public const string Run = "Run";
+        public const string Verify = "Verify";
     }
 }
