@@ -2145,6 +2145,8 @@ System
      ToString: Allowed
      Truncate: Allowed
   MemberAccessException: Denied
+  Memory`1: Denied
+  MemoryExtensions: Denied
   MethodAccessException: Denied
   MidpointRounding: Denied
   MissingFieldException: Denied
@@ -2266,16 +2268,17 @@ System
      NextDouble: Allowed
      ToString: Allowed
   RankException: Denied
+  ReadOnlyMemory`1: Denied
   ReadOnlySpan`1: Allowed
      .ctor: Allowed
      CopyTo: Allowed
      DangerousCreate: Denied
-     DangerousGetPinnableReference: Denied
      Equals: Allowed
      get_Empty: Allowed
      get_IsEmpty: Allowed
      get_Item: Allowed
      get_Length: Allowed
+     GetEnumerator: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      op_Equality: Allowed
@@ -2285,6 +2288,13 @@ System
      ToArray: Allowed
      ToString: Allowed
      TryCopyTo: Allowed
+  ReadOnlySpan`1+Enumerator: Allowed
+     Equals: Allowed
+     get_Current: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     MoveNext: Allowed
+     ToString: Allowed
   ResolveEventArgs: Denied
   ResolveEventHandler: Allowed
      .ctor: Allowed
@@ -2339,13 +2349,13 @@ System
      Clear: Allowed
      CopyTo: Allowed
      DangerousCreate: Denied
-     DangerousGetPinnableReference: Denied
      Equals: Allowed
      Fill: Allowed
      get_Empty: Allowed
      get_IsEmpty: Allowed
      get_Item: Allowed
      get_Length: Allowed
+     GetEnumerator: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      op_Equality: Allowed
@@ -2355,7 +2365,13 @@ System
      ToArray: Allowed
      ToString: Allowed
      TryCopyTo: Allowed
-  SpanExtensions: Denied
+  Span`1+Enumerator: Allowed
+     Equals: Allowed
+     get_Current: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     MoveNext: Allowed
+     ToString: Allowed
   StackOverflowException: Denied
   STAThreadAttribute: Allowed
      .ctor: Allowed

@@ -7,6 +7,7 @@
     <Company>Andrey Shchekin</Company>
     <Authors>Andrey Shchekin</Authors>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <RestoreAdditionalProjectSources>https://dotnet.myget.org/F/dotnet-core/api/v3/index.json</RestoreAdditionalProjectSources>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -35,7 +36,7 @@
     <PackageReference Include="MirrorSharp.Owin" Version="0.9.0" />
     <PackageReference Include="MirrorSharp.VisualBasic" Version="0.9.2-roslyn-2.3.2-1" />
     <PackageReference Include="SharpDisasm" Version="1.1.5" />
-    <PackageReference Include="System.Memory" Version="4.4.0-preview1-25305-02" />
+    <PackageReference Include="System.Memory" Version="4.5.0-preview1-26113-03" />
     <PackageReference Include="Unbreakable" Version="0.6.1-unproven" />
     <PackageReference Include="Unbreakable.Build.PolicyReport" Version="0.0.10" />
     <PackageReference Include="Unbreakable.Policy" Version="0.1.2-unproven" />

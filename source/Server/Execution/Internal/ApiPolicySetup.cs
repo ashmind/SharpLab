@@ -78,12 +78,12 @@ namespace SharpLab.Server.Execution.Internal {
                 )
                 .Type(typeof(ReadOnlySpan<>), Allowed,
                     t => t.Member(nameof(ReadOnlySpan<object>.DangerousCreate), Denied)
-                          .Member(nameof(ReadOnlySpan<object>.DangerousGetPinnableReference), Denied)
                 )
+                .Type(typeof(ReadOnlySpan<>.Enumerator), Allowed)
                 .Type(typeof(Span<>), Allowed,
                     t => t.Member(nameof(ReadOnlySpan<object>.DangerousCreate), Denied)
-                          .Member(nameof(ReadOnlySpan<object>.DangerousGetPinnableReference), Denied)
                 )
+                .Type(typeof(Span<>.Enumerator), Allowed)
                 .Type(typeof(STAThreadAttribute), Allowed)
                 .Type(typeof(NotImplementedException), Neutral, t => t.Constructor(Allowed))
                 .Type(typeof(Type), Neutral, SetupSystemType);
