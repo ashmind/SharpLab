@@ -32,7 +32,7 @@ namespace SharpLab.Server.Execution.Internal {
                 case 3:  return il.Create(OpCodes.Ldloc_3);
                 default:
                     if (IsSByte(variable.Index))
-                        return il.Create(OpCodes.Ldloc_S, (sbyte)variable.Index);
+                        return il.Create(OpCodes.Ldloc_S, variable);
                     return il.Create(OpCodes.Ldloc, variable);
             }
         }
@@ -45,7 +45,7 @@ namespace SharpLab.Server.Execution.Internal {
                 case 3:  return il.Create(OpCodes.Stloc_3);
                 default:
                     if (IsSByte(variable.Index))
-                        return il.Create(OpCodes.Stloc_S, (sbyte)variable.Index);
+                        return il.Create(OpCodes.Stloc_S, variable);
                     return il.Create(OpCodes.Stloc, variable);
             }
         }

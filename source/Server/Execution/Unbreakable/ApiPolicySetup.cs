@@ -15,8 +15,10 @@ using Unbreakable.Policy;
 using Unbreakable.Policy.Rewriters;
 using SharpLab.Runtime.Internal;
 
-namespace SharpLab.Server.Execution.Internal {
+namespace SharpLab.Server.Execution.Unbreakable {
     using System.Numerics;
+    using System.Security.Cryptography;
+    using System.Text;
     using static ApiAccess;
 
     public static class ApiPolicySetup {
@@ -33,6 +35,8 @@ namespace SharpLab.Server.Execution.Internal {
                 // required by F#'s printf
                 n => n.Type(typeof(TextWriter), Neutral)
             )
+            .Namespace("System.Security.Cryptography", Neutral, SetupSystemSecurityCryptography)
+            .Namespace("System.Text", Neutral, SetupSystemText)
             .Namespace("SharpLab.Runtime.Internal", Neutral,
                 n => n.Type(typeof(Flow), Neutral,
                          t => t.Member(nameof(Flow.ReportException), Allowed, NoGuardRewriter.Default)
@@ -186,6 +190,26 @@ namespace SharpLab.Server.Execution.Internal {
                     }
                 });
             });
+        }
+
+        private static void SetupSystemSecurityCryptography(NamespacePolicy namespacePolicy) {
+            ForEachTypeInNamespaceOf<HashAlgorithm>(type => {
+                if (!type.IsSameAsOrSubclassOf<HashAlgorithm>())
+                    return;
+
+                namespacePolicy.Type(type, Neutral,
+                    t => t.Constructor(Allowed, DisposableReturnRewriter.Default)
+                          .Member(nameof(HashAlgorithm.ComputeHash), Allowed, ArrayReturnRewriter.Default)
+                );
+            });
+        }
+
+        private static void SetupSystemText(NamespacePolicy namespacePolicy) {
+            namespacePolicy
+                .Type(typeof(Encoding), Neutral,
+                    // TODO: Move to Unbreakable
+                    t => t.Member(nameof(Encoding.GetBytes), Allowed, ArrayReturnRewriter.Default)
+                );
         }
 
         private static void SetupFSharpCore(NamespacePolicy namespacePolicy) {

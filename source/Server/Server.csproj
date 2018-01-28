@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Execution\Internal\ApiPolicySetup.PolicyReport.txt" />
+    <Content Include="Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,7 +36,7 @@
     <PackageReference Include="MirrorSharp.VisualBasic" Version="0.9.2-roslyn-2.3.2-1" />
     <PackageReference Include="SharpDisasm" Version="1.1.5" />
     <PackageReference Include="System.Memory" Version="4.5.0-preview1-26113-03" />
-    <PackageReference Include="Unbreakable" Version="0.6.1-unproven" />
+    <PackageReference Include="Unbreakable" Version="0.7.2-unproven" />
     <PackageReference Include="Unbreakable.Build.PolicyReport" Version="0.0.10" />
     <PackageReference Include="Unbreakable.Policy" Version="0.1.2-unproven" />
   </ItemGroup>
@@ -73,8 +73,8 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Compile Update="Execution\Internal\ApiPolicySetup.cs">
-      <UnbreakablePolicyTypeName>SharpLab.Server.Execution.Internal.ApiPolicySetup</UnbreakablePolicyTypeName>
+    <Compile Update="Execution\Unbreakable\ApiPolicySetup.cs">
+      <UnbreakablePolicyTypeName>SharpLab.Server.Execution.Unbreakable.ApiPolicySetup</UnbreakablePolicyTypeName>
       <UnbreakablePolicyMethodName>CreatePolicy</UnbreakablePolicyMethodName>
     </Compile>
   </ItemGroup>
