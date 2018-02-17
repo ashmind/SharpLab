@@ -8,6 +8,7 @@ using MirrorSharp;
 using MirrorSharp.Advanced;
 using MirrorSharp.FSharp.Advanced;
 using SharpLab.Runtime;
+using SharpLab.Server.Compilation.Internal;
 
 namespace SharpLab.Server.Common.Languages {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
@@ -17,6 +18,7 @@ namespace SharpLab.Server.Common.Languages {
         public void SlowSetup(MirrorSharpOptions options) {
             options.EnableFSharp(o => o.AssemblyReferencePaths = o.AssemblyReferencePaths.AddRange(new[] {
                 // Essential
+                NetFrameworkRuntime.AssemblyOfValueTask.Location,
                 typeof(TaskExtensions).Assembly.Location,
 
                 // Runtime

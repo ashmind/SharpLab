@@ -42,9 +42,15 @@ namespace SharpLab.Server.Common.Languages {
                     documentationMode: DocumentationMode.Diagnose
                 ).WithFeatures(features);
                 o.MetadataReferences = _referenceCollector.SlowGetMetadataReferencesRecursive(
+                    // Visual Basic
                     typeof(StandardModuleAttribute).Assembly,
+
+                    // BCL Future
                     NetFrameworkRuntime.AssemblyOfValueTuple,
+                    NetFrameworkRuntime.AssemblyOfValueTask,
                     NetFrameworkRuntime.AssemblyOfSpan,
+
+                    // Runtime
                     typeof(JitGenericAttribute).Assembly
                 ).ToImmutableList();
             });

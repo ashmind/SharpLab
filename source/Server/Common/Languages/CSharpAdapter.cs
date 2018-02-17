@@ -30,6 +30,7 @@ namespace SharpLab.Server.Common.Languages {
             _references = referenceCollector.SlowGetMetadataReferencesRecursive(
                 // Essential
                 typeof(Binder).Assembly,
+                NetFrameworkRuntime.AssemblyOfValueTask,
                 NetFrameworkRuntime.AssemblyOfValueTuple,
                 NetFrameworkRuntime.AssemblyOfSpan,
 
