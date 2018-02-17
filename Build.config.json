@@ -6,9 +6,9 @@
       "Include": "^master$|^features"
     },
     {
-      "Name":    "ashmind",
-      "Url":     "https://github.com/ashmind/roslyn.git",
-      "Include": "coalesce-assignment"
+      "Name":    "AdamSpeight2008",
+      "Url":     "https://github.com/AdamSpeight2008/roslyn-AdamSpeight2008.git",
+      "Include": "EnumFlagExpression"
     },
     {
       "Name":    "alrz",
