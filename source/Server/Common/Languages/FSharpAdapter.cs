@@ -2,6 +2,7 @@ using System;
 using System.Collections.Immutable;
 using System.Data;
 using System.Threading.Tasks;
+using System.Web;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using MirrorSharp;
@@ -25,7 +26,8 @@ namespace SharpLab.Server.Common.Languages {
                 typeof(JitGenericAttribute).Assembly.Location,
 
                 // Requested
-                typeof(IDataReader).Assembly.Location // System.Data
+                typeof(IDataReader).Assembly.Location, // System.Data
+                typeof(HttpUtility).Assembly.Location // System.Web
             }));
         }
 

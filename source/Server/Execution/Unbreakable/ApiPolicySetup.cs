@@ -19,6 +19,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
     using System.Numerics;
     using System.Security.Cryptography;
     using System.Text;
+    using System.Web;
     using static ApiAccess;
 
     public static class ApiPolicySetup {
@@ -37,6 +38,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
             )
             .Namespace("System.Security.Cryptography", Neutral, SetupSystemSecurityCryptography)
             .Namespace("System.Text", Neutral, SetupSystemText)
+            .Namespace("System.Web", Neutral, SetupSystemWeb)
             .Namespace("SharpLab.Runtime.Internal", Neutral,
                 n => n.Type(typeof(Flow), Neutral,
                          t => t.Member(nameof(Flow.ReportException), Allowed, NoGuardRewriter.Default)
@@ -209,6 +211,25 @@ namespace SharpLab.Server.Execution.Unbreakable {
                 .Type(typeof(Encoding), Neutral,
                     // TODO: Move to Unbreakable
                     t => t.Member(nameof(Encoding.GetBytes), Allowed, ArrayReturnRewriter.Default)
+                );
+        }
+
+        private static void SetupSystemWeb(NamespacePolicy namespacePolicy) {
+            namespacePolicy
+                .Type(typeof(HttpServerUtility), Neutral,
+                    t => t.Member(nameof(HttpServerUtility.HtmlDecode), Allowed)
+                          .Member(nameof(HttpServerUtility.HtmlEncode), Allowed).Member(nameof(HttpServerUtility.UrlDecode), Allowed)
+                          .Member(nameof(HttpServerUtility.UrlEncode), Allowed)
+                          .Member(nameof(HttpServerUtility.UrlTokenDecode), Allowed, ArrayReturnRewriter.Default)
+                          .Member(nameof(HttpServerUtility.UrlTokenEncode), Allowed)
+                )
+                .Type(typeof(HttpUtility), Neutral,
+                    t => t.Member(nameof(HttpUtility.HtmlDecode), Allowed)
+                          .Member(nameof(HttpUtility.HtmlEncode), Allowed)
+                          .Member(nameof(HttpUtility.UrlDecode), Allowed)
+                          .Member(nameof(HttpUtility.UrlEncode), Allowed)
+                          .Member(nameof(HttpUtility.HtmlAttributeEncode), Allowed)
+                          .Member(nameof(HttpUtility.JavaScriptStringEncode), Allowed)
                 );
         }
 

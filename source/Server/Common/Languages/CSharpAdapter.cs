@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
+using System.Web;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -38,7 +39,8 @@ namespace SharpLab.Server.Common.Languages {
                 typeof(JitGenericAttribute).Assembly,
 
                 // Requested
-                typeof(IDataReader).Assembly // System.Data
+                typeof(IDataReader).Assembly, // System.Data
+                typeof(HttpUtility).Assembly // System.Web
             ).ToImmutableList();
             _features = featureDiscovery.SlowDiscoverAll().ToDictionary(f => f, f => (string)null);
         }

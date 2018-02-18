@@ -2613,6 +2613,14 @@ System
      ToString: Allowed
      ToTuple: Allowed
      ToValueTuple: Allowed
+  TupleExtensions: Allowed
+     Deconstruct: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+     ToTuple: Allowed
+     ToValueTuple: Allowed
   Type: Allowed
      Equals: Denied
      FindInterfaces: Denied
@@ -2851,7 +2859,22 @@ System
   UriPartial: Denied
   UriTypeConverter: Denied
   ValueTuple: Denied
+  ValueTuple: Denied
   ValueTuple`1: Allowed
+     .ctor: Allowed
+     CompareTo: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  ValueTuple`1: Allowed
+     .ctor: Allowed
+     CompareTo: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  ValueTuple`2: Allowed
      .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
@@ -2872,7 +2895,28 @@ System
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
+  ValueTuple`3: Allowed
+     .ctor: Allowed
+     CompareTo: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
   ValueTuple`4: Allowed
+     .ctor: Allowed
+     CompareTo: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  ValueTuple`4: Allowed
+     .ctor: Allowed
+     CompareTo: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  ValueTuple`5: Allowed
      .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
@@ -2893,7 +2937,28 @@ System
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
+  ValueTuple`6: Allowed
+     .ctor: Allowed
+     CompareTo: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
   ValueTuple`7: Allowed
+     .ctor: Allowed
+     CompareTo: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  ValueTuple`7: Allowed
+     .ctor: Allowed
+     CompareTo: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  ValueTuple`8: Allowed
      .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
@@ -5561,9 +5626,11 @@ System.Reflection
 System.Runtime
 System.Runtime.CompilerServices
   AccessedThroughPropertyAttribute: Denied
+  AsyncMethodBuilderAttribute: Denied
   AsyncStateMachineAttribute: Denied
   AsyncTaskMethodBuilder: Denied
   AsyncTaskMethodBuilder`1: Denied
+  AsyncValueTaskMethodBuilder`1: Denied
   AsyncVoidMethodBuilder: Denied
   CallConvCdecl: Denied
   CallConvFastcall: Denied
@@ -5597,6 +5664,8 @@ System.Runtime.CompilerServices
   ConfiguredTaskAwaitable`1: Denied
   ConfiguredTaskAwaitable`1+ConfiguredTaskAwaiter: Denied
   ConfiguredTaskAwaitable+ConfiguredTaskAwaiter: Denied
+  ConfiguredValueTaskAwaitable`1: Denied
+  ConfiguredValueTaskAwaitable`1+ConfiguredValueTaskAwaiter: Denied
   ContractHelper: Denied
   CustomConstantAttribute: Denied
   DateTimeConstantAttribute: Denied
@@ -5705,9 +5774,11 @@ System.Runtime.CompilerServices
   TaskAwaiter: Denied
   TaskAwaiter`1: Denied
   TupleElementNamesAttribute: Denied
+  TupleElementNamesAttribute: Denied
   TypeForwardedFromAttribute: Denied
   TypeForwardedToAttribute: Denied
   UnsafeValueTypeAttribute: Denied
+  ValueTaskAwaiter`1: Denied
   YieldAwaitable: Denied
   YieldAwaitable+YieldAwaiter: Denied
 System.Runtime.InteropServices
@@ -6372,5 +6443,151 @@ System.Text
   UTF7Encoding: Denied
   UTF8Encoding: Denied
 System.Threading
+System.Web
+  ApplicationShutdownReason: Denied
+  AspNetHostingPermission: Denied
+  AspNetHostingPermissionAttribute: Denied
+  AspNetHostingPermissionLevel: Denied
+  BeginEventHandler: Denied
+  DefaultHttpHandler: Denied
+  EndEventHandler: Denied
+  EventHandlerTaskAsyncHelper: Denied
+  HtmlString: Denied
+  HttpApplication: Denied
+  HttpApplicationState: Denied
+  HttpApplicationStateBase: Denied
+  HttpApplicationStateWrapper: Denied
+  HttpBrowserCapabilities: Denied
+  HttpBrowserCapabilitiesBase: Denied
+  HttpBrowserCapabilitiesWrapper: Denied
+  HttpCacheability: Denied
+  HttpCachePolicy: Denied
+  HttpCachePolicyBase: Denied
+  HttpCachePolicyWrapper: Denied
+  HttpCacheRevalidation: Denied
+  HttpCacheValidateHandler: Denied
+  HttpCacheVaryByContentEncodings: Denied
+  HttpCacheVaryByHeaders: Denied
+  HttpCacheVaryByParams: Denied
+  HttpClientCertificate: Denied
+  HttpCompileException: Denied
+  HttpContext: Denied
+  HttpContextBase: Denied
+  HttpContextWrapper: Denied
+  HttpCookie: Denied
+  HttpCookieCollection: Denied
+  HttpCookieMode: Denied
+  HttpException: Denied
+  HttpFileCollection: Denied
+  HttpFileCollectionBase: Denied
+  HttpFileCollectionWrapper: Denied
+  HttpModuleCollection: Denied
+  HttpParseException: Denied
+  HttpPostedFile: Denied
+  HttpPostedFileBase: Denied
+  HttpPostedFileWrapper: Denied
+  HttpRequest: Denied
+  HttpRequestBase: Denied
+  HttpRequestValidationException: Denied
+  HttpRequestWrapper: Denied
+  HttpResponse: Denied
+  HttpResponseBase: Denied
+  HttpResponseSubstitutionCallback: Denied
+  HttpResponseWrapper: Denied
+  HttpRuntime: Denied
+  HttpServerUtility: Allowed
+     ClearError: Denied
+     CreateObject: Denied
+     CreateObjectFromClsid: Denied
+     Equals: Denied
+     Execute: Denied
+     get_MachineName: Denied
+     get_ScriptTimeout: Denied
+     GetHashCode: Denied
+     GetLastError: Denied
+     GetType: Denied
+     HtmlDecode: Allowed
+     HtmlEncode: Allowed
+     MapPath: Denied
+     set_ScriptTimeout: Denied
+     ToString: Denied
+     Transfer: Denied
+     TransferRequest: Denied
+     UrlDecode: Allowed
+     UrlEncode: Allowed
+     UrlPathEncode: Denied
+     UrlTokenDecode: Allowed (ArrayReturnRewriter)
+     UrlTokenEncode: Allowed
+  HttpServerUtilityBase: Denied
+  HttpServerUtilityWrapper: Denied
+  HttpSessionStateBase: Denied
+  HttpSessionStateWrapper: Denied
+  HttpStaticObjectsCollection: Denied
+  HttpStaticObjectsCollectionBase: Denied
+  HttpStaticObjectsCollectionWrapper: Denied
+  HttpTaskAsyncHandler: Denied
+  HttpUnhandledException: Denied
+  HttpUtility: Allowed
+     .ctor: Denied
+     Equals: Denied
+     GetHashCode: Denied
+     GetType: Denied
+     HtmlAttributeEncode: Allowed
+     HtmlDecode: Allowed
+     HtmlEncode: Allowed
+     JavaScriptStringEncode: Allowed
+     ParseQueryString: Denied
+     ToString: Denied
+     UrlDecode: Allowed
+     UrlDecodeToBytes: Denied
+     UrlEncode: Allowed
+     UrlEncodeToBytes: Denied
+     UrlEncodeUnicode: Denied
+     UrlEncodeUnicodeToBytes: Denied
+     UrlPathEncode: Denied
+  HttpValidationStatus: Denied
+  HttpWorkerRequest: Denied
+  HttpWorkerRequest+EndOfSendNotification: Denied
+  HttpWriter: Denied
+  IHtmlString: Denied
+  IHttpAsyncHandler: Denied
+  IHttpHandler: Denied
+  IHttpHandlerFactory: Denied
+  IHttpModule: Denied
+  IisTraceListener: Denied
+  IPartitionResolver: Denied
+  ISubscriptionToken: Denied
+  ITlsTokenBindingInfo: Denied
+  MimeMapping: Denied
+  ParserError: Denied
+  ParserErrorCollection: Denied
+  PreApplicationStartMethodAttribute: Denied
+  ProcessInfo: Denied
+  ProcessModelInfo: Denied
+  ProcessShutdownReason: Denied
+  ProcessStatus: Denied
+  ReadEntityBodyMode: Denied
+  RequestNotification: Denied
+  RequestNotificationStatus: Denied
+  SiteMap: Denied
+  SiteMapNode: Denied
+  SiteMapNodeCollection: Denied
+  SiteMapProvider: Denied
+  SiteMapProviderCollection: Denied
+  SiteMapResolveEventArgs: Denied
+  SiteMapResolveEventHandler: Denied
+  StaticSiteMapProvider: Denied
+  TaskEventHandler: Denied
+  TraceContext: Denied
+  TraceContextEventArgs: Denied
+  TraceContextEventHandler: Denied
+  TraceContextRecord: Denied
+  TraceMode: Denied
+  UnvalidatedRequestValues: Denied
+  UnvalidatedRequestValuesBase: Denied
+  UnvalidatedRequestValuesWrapper: Denied
+  VirtualPathUtility: Denied
+  WebPageTraceListener: Denied
+  XmlSiteMapProvider: Denied
 Unbreakable
 Unbreakable.Runtime

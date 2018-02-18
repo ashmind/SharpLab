@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Web;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic;
@@ -51,7 +52,10 @@ namespace SharpLab.Server.Common.Languages {
                     NetFrameworkRuntime.AssemblyOfSpan,
 
                     // Runtime
-                    typeof(JitGenericAttribute).Assembly
+                    typeof(JitGenericAttribute).Assembly,
+
+                    // Requested
+                    typeof(HttpUtility).Assembly // System.Web
                 ).ToImmutableList();
             });
             // ReSharper restore HeapView.DelegateAllocation
