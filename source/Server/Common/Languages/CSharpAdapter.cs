@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
 using System.Web;
+using System.Xml.Linq;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -39,6 +40,7 @@ namespace SharpLab.Server.Common.Languages {
                 typeof(JitGenericAttribute).Assembly,
 
                 // Requested
+                typeof(XDocument).Assembly, // System.Xml.Linq
                 typeof(IDataReader).Assembly, // System.Data
                 typeof(HttpUtility).Assembly // System.Web
             ).ToImmutableList();
