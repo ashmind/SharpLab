@@ -14,6 +14,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Decompilation\JitAsmDecompiler.cs~RF384c7fbb.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt" />
   </ItemGroup>
 

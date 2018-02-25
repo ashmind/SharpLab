@@ -35,7 +35,7 @@ namespace SharpLab.Server.Decompilation {
                     SymbolResolver = (Instruction instruction, long addr, ref long offset) => 
                         ResolveSymbol(runtime, instruction, addr, currentMethodAddressRef.Value)
                 };
-               
+
                 WriteJitInfo(runtime.ClrInfo, codeWriter);
 
                 var architecture = MapArchitecture(runtime.ClrInfo.DacInfo.TargetArchitecture);
@@ -64,11 +64,23 @@ namespace SharpLab.Server.Decompilation {
         private static string ResolveSymbol(ClrRuntime runtime, Instruction instruction, long addr, ulong currentMethodAddress) {
             var operand = instruction.Operands.Length > 0 ? instruction.Operands[0] : null;
             if (operand?.PtrOffset == 0) {
+                var lvalue = GetOperandLValue(operand);
+                if (lvalue == null)
+                    return $"{operand.RawValue} ; failed to resolve lval ({operand.Size}), please report at https://github.com/ashmind/SharpLab/issues";
                 var baseOffset = instruction.PC - currentMethodAddress;
-                return $"L{baseOffset + operand.PtrSegment:x4}";
+                return $"L{baseOffset + lvalue:x4}";
             }
 
             return runtime.GetMethodByAddress(unchecked((ulong)addr))?.GetFullSignature();
+        }
+
+        private static ulong? GetOperandLValue(Operand operand) {
+            switch (operand.Size) {
+                case 8:  return (ulong)operand.LvalSByte;
+                case 16: return (ulong)operand.LvalSWord;
+                case 32: return (ulong)operand.LvalSDWord;
+                default: return null;
+            }
         }
 
         private static ClrMethod GetMethod(ClrRuntime runtime, Remote.MethodJitResult result) {

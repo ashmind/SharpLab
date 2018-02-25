@@ -1,0 +1,27 @@
+// https://github.com/ashmind/SharpLab/issues/229
+public class C
+{
+    public int M(int a) {
+        back:
+        a += 1;
+        if (a == 0)
+            goto back;
+        return a;
+    }
+}
+
+#=>
+
+; Desktop CLR v<IGNORE> (clr.dll) on x86.
+
+C..ctor()
+    L0000: ret
+
+C.M(Int32)
+    L0000: push ebp
+    L0001: mov ebp, esp
+    L0003: mov eax, edx
+    L0005: inc eax
+    L0006: jz L0005
+    L0008: pop ebp
+    L0009: ret

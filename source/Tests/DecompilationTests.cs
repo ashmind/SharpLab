@@ -44,9 +44,9 @@ namespace SharpLab.Tests {
         [InlineData("NullPropagation.ToTernary.cs2cs")]
         [InlineData("Simple.cs2il")]
         [InlineData("Simple.vb2vb")]
-        [InlineData("Module.vb2vb")]        
-        [InlineData("Lambda.CallInArray.cs2cs")] // https://github.com/ashmind/SharpLab/issues/9        
-        [InlineData("Cast.ExplicitOperatorOnNull.cs2cs")] // https://github.com/ashmind/SharpLab/issues/20        
+        [InlineData("Module.vb2vb")]
+        [InlineData("Lambda.CallInArray.cs2cs")] // https://github.com/ashmind/SharpLab/issues/9
+        [InlineData("Cast.ExplicitOperatorOnNull.cs2cs")] // https://github.com/ashmind/SharpLab/issues/20
         [InlineData("Goto.TryWhile.cs2cs")] // https://github.com/ashmind/SharpLab/issues/123
         [InlineData("Nullable.OperatorLifting.cs2cs")] // https://github.com/ashmind/SharpLab/issues/159
         [InlineData("Finalizer.Exception.cs2il")] // https://github.com/ashmind/SharpLab/issues/205
@@ -131,6 +131,7 @@ namespace SharpLab.Tests {
         [InlineData("JitAsm.ArrayElement.cs2asm")]
         [InlineData("JitAsm.AsyncRegression.cs2asm")]
         [InlineData("JitAsm.ConsoleWrite.cs2asm")]
+        [InlineData("JitAsm.JumpBack.cs2asm")] // https://github.com/ashmind/SharpLab/issues/229
         [InlineData("JitAsm.OpenGenerics.cs2asm")]
         [InlineData("JitAsm.GenericMethodWithAttribute.cs2asm")]
         [InlineData("JitAsm.GenericClassWithAttribute.cs2asm")]
