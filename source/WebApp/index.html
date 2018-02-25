@@ -21,7 +21,11 @@
     <!-- endbuild -->
   </head>
   <body data-mobile-codemirror-fullscreen-class="mobile-editor-focus" class="loading" data-cloak="loading">
-    <main v-bind:class="'root-status-' + status.name">
+    <main v-bind:class="{
+      'root-status-default': status.online && !status.error,
+      'root-status-offline': !status.online,
+      'root-status-error':   status.error,
+    }">
       <div class="section-group">
         <section class="code">
           <header>

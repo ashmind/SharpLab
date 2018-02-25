@@ -144,11 +144,12 @@ async function createAppAsync() {
                 };
             },
             status() {
-                if (!this.online)
-                    return { name: 'offline', color: '#aaa' };
-                if (!this.result.success)
-                    return { name: 'error', color: '#dc3912' };
-                return { name: 'default', color: '#4684ee' };
+                const error = !this.result.success;
+                return {
+                    online: this.online,
+                    error,
+                    color:  this.online ? (!error ? '#4684ee' : '#dc3912') : '#aaa'
+                };
             }
         },
         methods: { applyUpdateWait, applyUpdateResult, applyServerError, applyConnectionChange, applyAstHover }
