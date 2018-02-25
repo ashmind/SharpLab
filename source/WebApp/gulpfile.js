@@ -1,5 +1,5 @@
-﻿/* global require:false, process:false */
-/* eslint-disable arrow-body-style */
+/* global require:false, process:false */
+/* eslint-disable arrow-body-style, import/no-commonjs */
 
 'use strict';
 const fs = require('fs');
@@ -55,6 +55,7 @@ gulp.task('favicons', () => {
 });
 
 gulp.task('html', ['js', 'less'], () => {
+    const roslynVersion = getRoslynVersion();
     const faviconSvg = fs.readFileSync('favicon.svg', 'utf8');
     // http://codepen.io/jakob-e/pen/doMoML
     const faviconSvgUrlSafe = faviconSvg
@@ -73,8 +74,19 @@ gulp.task('html', ['js', 'less'], () => {
         .src('./index.html')
         .pipe(g.htmlReplace({ js: 'app.min.js?' + jsHash, css: 'app.min.css?' + cssHash })) // eslint-disable-line prefer-template
         .pipe(g.replace('{build:favicon-svg}', faviconSvgUrlSafe))
+        .pipe(g.replace('{build:roslyn-version}', roslynVersion))
         .pipe(gulp.dest('wwwroot'));
 });
+
+function getRoslynVersion() {
+    const assetsJson = JSON.parse(fs.readFileSync('../Server/obj/project.assets.json', 'utf8'));
+    for (const key in assetsJson.libraries) {
+        const match = key.match(/^Microsoft\.CodeAnalysis\.Common\/(.+)$/);
+        if (match)
+            return match[1];
+    }
+    return null;
+}
 
 gulp.task('watch', ['default'], () => {
     gulp.watch('less/**/*.*', ['less', 'html']);

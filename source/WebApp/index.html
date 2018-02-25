@@ -38,7 +38,7 @@
 
             <div class="select-wrapper option-branch option" v-show="options.language !== languages.fsharp">
               <select v-model="branch">
-                <option v-bind:value="null">Default</option>
+                <option v-bind:value="null">Default ({build:roslyn-version})</option>
                 <optgroup v-bind:label="group.name" v-for="group in branchGroups">
                   <option v-for="branch in group.branches" v-bind:value="branch">{{branch.name}} ({{formatDate(branch.commits[0].date, 'd mmm yyyy')}})</option>
                 </optgroup>
