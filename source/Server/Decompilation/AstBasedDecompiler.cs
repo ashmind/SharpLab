@@ -1,21 +1,20 @@
-using System;
-using System.Collections.Concurrent;
 using System.IO;
-using System.Linq;
-using AshMind.Extensions;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using Mono.Cecil;
-using SharpLab.Server.Common;
 
 namespace SharpLab.Server.Decompilation {
     public abstract class AstBasedDecompiler : IDecompiler {
-        private static readonly ConcurrentDictionary<string, AssemblyDefinition> AssemblyCache = new ConcurrentDictionary<string, AssemblyDefinition>();
+        private readonly IAssemblyResolver _assemblyResolver;
+
+        protected AstBasedDecompiler(IAssemblyResolver assemblyResolver) {
+            _assemblyResolver = assemblyResolver;
+        }
 
         public void Decompile(Stream assemblyStream, TextWriter codeWriter) {
             // ReSharper disable once AgentHeisenbug.CallToNonThreadSafeStaticMethodInThreadSafeType
             var module = ModuleDefinition.ReadModule(assemblyStream, new ReaderParameters {
-                AssemblyResolver = PreCachedAssemblyResolver.Instance
+                AssemblyResolver = _assemblyResolver
             });
 
             var context = new DecompilerContext(module) {

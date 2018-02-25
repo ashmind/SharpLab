@@ -4,7 +4,9 @@ using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.IO;
 using MirrorSharp.Advanced;
+using Mono.Cecil;
 using SharpLab.Server.Common;
+using SharpLab.Server.Common.Internal;
 using SharpLab.Server.Common.Languages;
 using SharpLab.Server.Compilation;
 using SharpLab.Server.Compilation.Internal;
@@ -19,8 +21,12 @@ namespace SharpLab.Server {
     [UsedImplicitly]
     public class ServerModule : Module {
         protected override void Load(ContainerBuilder builder) {
-            builder.RegisterType<MetadataReferenceCollector>()
-                   .As<IMetadataReferenceCollector>()
+            builder.RegisterType<AssemblyReferenceCollector>()
+                   .As<IAssemblyReferenceCollector>()
+                   .SingleInstance();
+
+            builder.RegisterType<PreCachedAssemblyResolver>()
+                   .As<IAssemblyResolver>()
                    .SingleInstance();
 
             builder.RegisterType<CSharpFeatureDiscovery>()

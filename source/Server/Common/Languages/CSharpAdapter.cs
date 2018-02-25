@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
 using JetBrains.Annotations;
@@ -12,6 +14,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MirrorSharp;
 using MirrorSharp.Advanced;
 using SharpLab.Runtime;
+using SharpLab.Server.Common.Internal;
 using SharpLab.Server.Compilation.Internal;
 using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
@@ -24,17 +27,17 @@ namespace SharpLab.Server.Common.Languages {
             .Max();
         private static readonly ImmutableArray<string> ReleasePreprocessorSymbols = ImmutableArray.Create("__DEMO_EXPERIMENTAL__");
         private static readonly ImmutableArray<string> DebugPreprocessorSymbols = ReleasePreprocessorSymbols.Add("DEBUG");
-        
+
         private readonly ImmutableList<MetadataReference> _references;
         private readonly IReadOnlyDictionary<string, string> _features;
 
-        public CSharpAdapter(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
-            _references = referenceCollector.SlowGetMetadataReferencesRecursive(
+        public CSharpAdapter(IAssemblyReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
+            var referencedAssemblies = referenceCollector.SlowGetAllReferencedAssembliesRecursive(
                 // Essential
-                typeof(Binder).Assembly,
                 NetFrameworkRuntime.AssemblyOfValueTask,
                 NetFrameworkRuntime.AssemblyOfValueTuple,
                 NetFrameworkRuntime.AssemblyOfSpan,
+                typeof(Binder).Assembly,
 
                 // Runtime
                 typeof(JitGenericAttribute).Assembly,
@@ -44,10 +47,19 @@ namespace SharpLab.Server.Common.Languages {
                 typeof(IDataReader).Assembly, // System.Data
                 typeof(HttpUtility).Assembly // System.Web
             ).ToImmutableList();
+
+            var referencedAssembliesTaskSource = new ReferencedAssembliesLoadTaskSource();
+            referencedAssembliesTaskSource.Complete(referencedAssemblies);
+            ReferencedAssembliesTask = referencedAssembliesTaskSource.Task;
+
+            _references = referencedAssemblies
+                .Select(a => (MetadataReference)MetadataReference.CreateFromFile(a.Location))
+                .ToImmutableList();
             _features = featureDiscovery.SlowDiscoverAll().ToDictionary(f => f, f => (string)null);
         }
 
         public string LanguageName => LanguageNames.CSharp;
+        public ReferencedAssembliesLoadTask ReferencedAssembliesTask { get; }
 
         public void SlowSetup(MirrorSharpOptions options) {
             // ReSharper disable HeapView.ObjectAllocation.Evident

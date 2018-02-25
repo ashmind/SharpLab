@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using JetBrains.Annotations;
 using MirrorSharp;
 using MirrorSharp.Advanced;
+using SharpLab.Server.Common.Internal;
 
 namespace SharpLab.Server.Common {
     public interface ILanguageAdapter {
@@ -12,5 +13,8 @@ namespace SharpLab.Server.Common {
         void SetOptionsForTarget([NotNull] IWorkSession session, [NotNull] string target);
 
         ImmutableArray<int> GetMethodParameterLines([NotNull] IWorkSession session, int lineInMethod, int columnInMethod);
+
+        // Note: in some cases this Task is never resolved (e.g. if VB is never used)
+        ReferencedAssembliesLoadTask ReferencedAssembliesTask { get; }
     }
 }

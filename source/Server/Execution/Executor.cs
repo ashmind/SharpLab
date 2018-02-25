@@ -16,14 +16,17 @@ using SharpLab.Server.Common;
 using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.Execution.Unbreakable;
 using SharpLab.Server.Monitoring;
+using IAssemblyResolver = Mono.Cecil.IAssemblyResolver;
 
 namespace SharpLab.Server.Execution {
     public class Executor : IExecutor {
+        private readonly IAssemblyResolver _assemblyResolver;
         private readonly IReadOnlyCollection<IAssemblyRewriter> _rewriters;
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;
         private readonly IMonitor _monitor;
 
-        public Executor(IReadOnlyCollection<IAssemblyRewriter> rewriters, RecyclableMemoryStreamManager memoryStreamManager, IMonitor monitor) {
+        public Executor(IAssemblyResolver assemblyResolver, IReadOnlyCollection<IAssemblyRewriter> rewriters, RecyclableMemoryStreamManager memoryStreamManager, IMonitor monitor) {
+            _assemblyResolver = assemblyResolver;
             _rewriters = rewriters;
             _memoryStreamManager = memoryStreamManager;
             _monitor = monitor;
@@ -36,7 +39,7 @@ namespace SharpLab.Server.Execution {
                 assembly = AssemblyDefinition.ReadAssembly(assemblyStream, new ReaderParameters {
                     ReadSymbols = true,
                     SymbolStream = symbolStream,
-                    AssemblyResolver = PreCachedAssemblyResolver.Instance
+                    AssemblyResolver = _assemblyResolver
                 });
             }
             /*

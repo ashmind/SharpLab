@@ -1,18 +1,9 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using Microsoft.CodeAnalysis;
 
-namespace SharpLab.Server.Compilation.Internal {
-    public class MetadataReferenceCollector : IMetadataReferenceCollector {
-        public IEnumerable<MetadataReference> SlowGetMetadataReferencesRecursive(params Assembly[] assemblies) {
-            foreach (var assembly in SlowCollectAllReferencedAssemblies(assemblies)) {
-                yield return MetadataReference.CreateFromFile(assembly.Location);
-            }
-        }
-
-        private ISet<Assembly> SlowCollectAllReferencedAssemblies(params Assembly[] assemblies) {
+namespace SharpLab.Server.Common.Internal {
+    public class AssemblyReferenceCollector : IAssemblyReferenceCollector {
+        public ISet<Assembly> SlowGetAllReferencedAssembliesRecursive(params Assembly[] assemblies) {
             var set = new HashSet<Assembly>();
             foreach (var assembly in assemblies) {
                 SlowCollectAllReferencedAssemblies(assembly, set);

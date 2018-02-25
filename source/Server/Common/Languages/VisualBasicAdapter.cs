@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
 using JetBrains.Annotations;
@@ -12,23 +14,26 @@ using Microsoft.VisualBasic.CompilerServices;
 using MirrorSharp;
 using MirrorSharp.Advanced;
 using SharpLab.Runtime;
+using SharpLab.Server.Common.Internal;
 using SharpLab.Server.Compilation.Internal;
 
 namespace SharpLab.Server.Common.Languages {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class VisualBasicAdapter : ILanguageAdapter {
-        private readonly IMetadataReferenceCollector _referenceCollector;
-        private readonly IFeatureDiscovery _featureDiscovery;
-
         private static readonly ImmutableArray<KeyValuePair<string, object>> DebugPreprocessorSymbols = ImmutableArray.Create(new KeyValuePair<string,object>("DEBUG", true));
         private static readonly ImmutableArray<KeyValuePair<string, object>> ReleasePreprocessorSymbols = ImmutableArray<KeyValuePair<string, object>>.Empty;
 
-        public VisualBasicAdapter(IMetadataReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
+        private readonly IAssemblyReferenceCollector _referenceCollector;
+        private readonly IFeatureDiscovery _featureDiscovery;
+        private ReferencedAssembliesLoadTaskSource _referencedAssembliesTaskSource = new ReferencedAssembliesLoadTaskSource();
+
+        public VisualBasicAdapter(IAssemblyReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
             _referenceCollector = referenceCollector;
             _featureDiscovery = featureDiscovery;
         }
 
         public string LanguageName => LanguageNames.VisualBasic;
+        public ReferencedAssembliesLoadTask ReferencedAssembliesTask => _referencedAssembliesTaskSource.Task;
 
         public void SlowSetup(MirrorSharpOptions options) {
             // ReSharper disable HeapView.ObjectAllocation.Evident
@@ -43,14 +48,12 @@ namespace SharpLab.Server.Common.Languages {
                     maxLanguageVersion,
                     documentationMode: DocumentationMode.Diagnose
                 ).WithFeatures(features);
-                o.MetadataReferences = _referenceCollector.SlowGetMetadataReferencesRecursive(
-                    // Visual Basic
-                    typeof(StandardModuleAttribute).Assembly,
-
-                    // BCL Future
+                var referencedAssemblies = _referenceCollector.SlowGetAllReferencedAssembliesRecursive(
+                    // Essential
                     NetFrameworkRuntime.AssemblyOfValueTuple,
                     NetFrameworkRuntime.AssemblyOfValueTask,
                     NetFrameworkRuntime.AssemblyOfSpan,
+                    typeof(StandardModuleAttribute).Assembly,
 
                     // Runtime
                     typeof(JitGenericAttribute).Assembly,
@@ -59,6 +62,10 @@ namespace SharpLab.Server.Common.Languages {
                     typeof(XDocument).Assembly, // System.Xml.Linq
                     typeof(HttpUtility).Assembly // System.Web
                 ).ToImmutableList();
+                _referencedAssembliesTaskSource.Complete(referencedAssemblies);
+                o.MetadataReferences = referencedAssemblies
+                    .Select(a => (MetadataReference)MetadataReference.CreateFromFile(a.Location))
+                    .ToImmutableList();
             });
             // ReSharper restore HeapView.DelegateAllocation
             // ReSharper restore HeapView.ObjectAllocation.Evident
