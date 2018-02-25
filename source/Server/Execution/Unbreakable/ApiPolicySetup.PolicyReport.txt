@@ -1245,7 +1245,24 @@ System
      ToString: Allowed
   BadImageFormatException: Denied
   Base64FormattingOptions: Denied
-  BitConverter: Denied
+  BitConverter: Allowed
+     DoubleToInt64Bits: Denied
+     Equals: Denied
+     GetBytes: Allowed (ArrayReturnRewriter)
+     GetHashCode: Denied
+     GetType: Denied
+     Int64BitsToDouble: Denied
+     ToBoolean: Denied
+     ToChar: Denied
+     ToDouble: Denied
+     ToInt16: Denied
+     ToInt32: Denied
+     ToInt64: Denied
+     ToSingle: Denied
+     ToString: Denied
+     ToUInt16: Denied
+     ToUInt32: Denied
+     ToUInt64: Denied
   Boolean: Allowed
      CompareTo: Allowed
      Equals: Allowed
@@ -2613,14 +2630,6 @@ System
      ToString: Allowed
      ToTuple: Allowed
      ToValueTuple: Allowed
-  TupleExtensions: Allowed
-     Deconstruct: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
-     ToTuple: Allowed
-     ToValueTuple: Allowed
   Type: Allowed
      Equals: Denied
      FindInterfaces: Denied
@@ -2859,22 +2868,7 @@ System
   UriPartial: Denied
   UriTypeConverter: Denied
   ValueTuple: Denied
-  ValueTuple: Denied
   ValueTuple`1: Allowed
-     .ctor: Allowed
-     CompareTo: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
-  ValueTuple`1: Allowed
-     .ctor: Allowed
-     CompareTo: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
-  ValueTuple`2: Allowed
      .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
@@ -2895,28 +2889,7 @@ System
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
-  ValueTuple`3: Allowed
-     .ctor: Allowed
-     CompareTo: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
   ValueTuple`4: Allowed
-     .ctor: Allowed
-     CompareTo: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
-  ValueTuple`4: Allowed
-     .ctor: Allowed
-     CompareTo: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
-  ValueTuple`5: Allowed
      .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
@@ -2937,28 +2910,7 @@ System
      GetHashCode: Allowed
      GetType: Allowed
      ToString: Allowed
-  ValueTuple`6: Allowed
-     .ctor: Allowed
-     CompareTo: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
   ValueTuple`7: Allowed
-     .ctor: Allowed
-     CompareTo: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
-  ValueTuple`7: Allowed
-     .ctor: Allowed
-     CompareTo: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     ToString: Allowed
-  ValueTuple`8: Allowed
      .ctor: Allowed
      CompareTo: Allowed
      Equals: Allowed
@@ -5773,7 +5725,6 @@ System.Runtime.CompilerServices
   SuppressIldasmAttribute: Denied
   TaskAwaiter: Denied
   TaskAwaiter`1: Denied
-  TupleElementNamesAttribute: Denied
   TupleElementNamesAttribute: Denied
   TypeForwardedFromAttribute: Denied
   TypeForwardedToAttribute: Denied

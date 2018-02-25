@@ -5,7 +5,11 @@ using System.IO;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Net;
+using System.Numerics;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
+using System.Web;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
 using Microsoft.VisualBasic.CompilerServices;
@@ -16,10 +20,6 @@ using Unbreakable.Policy.Rewriters;
 using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Server.Execution.Unbreakable {
-    using System.Numerics;
-    using System.Security.Cryptography;
-    using System.Text;
-    using System.Web;
     using static ApiAccess;
 
     public static class ApiPolicySetup {
@@ -76,6 +76,9 @@ namespace SharpLab.Server.Execution.Unbreakable {
 
         private static void SetupSystem(NamespacePolicy namespacePolicy) {
             namespacePolicy
+                .Type(typeof(BitConverter), Neutral,
+                    t => t.Member(nameof(BitConverter.GetBytes), Allowed, ArrayReturnRewriter.Default)
+                )
                 .Type(typeof(Console), Neutral,
                     t => t.Member(nameof(Console.Write), Allowed)
                           .Member(nameof(Console.WriteLine), Allowed)
