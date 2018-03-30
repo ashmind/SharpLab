@@ -1,0 +1,17 @@
+delegate void D();
+
+#=>
+
+; Desktop CLR v<IGNORE> (clr.dll) on x86.
+
+D..ctor(System.Object, IntPtr)
+    ; Cannot produce JIT assembly for runtime-implemented method.
+
+D.Invoke()
+    ; Cannot produce JIT assembly for runtime-implemented method.
+
+D.BeginInvoke(System.AsyncCallback, System.Object)
+    ; Cannot produce JIT assembly for runtime-implemented method.
+
+D.EndInvoke(System.IAsyncResult)
+    ; Cannot produce JIT assembly for runtime-implemented method.

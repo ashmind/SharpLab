@@ -1,4 +1,4 @@
-﻿using SharpLab.Runtime;
+using SharpLab.Runtime;
 
 [JitGeneric(typeof(int))]
 [JitGeneric(typeof(decimal))]
@@ -32,6 +32,6 @@ C`1[[System.Decimal, mscorlib]].M()
     L0016: pop edi
     L0017: ret
 
-C`1[[System.String, mscorlib]].M()
-    ; Failed to find HotColdInfo for generic method (reference types?).
-    ; If you know a solution, please comment at https://github.com/ashmind/SharpLab/issues/99.
+C`1[[System.__Canon, mscorlib]].M()
+    L0000: xor eax, eax
+    L0002: ret
