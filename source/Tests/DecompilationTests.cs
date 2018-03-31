@@ -84,7 +84,7 @@ namespace SharpLab.Tests {
         }
 
         [Theory]
-        [InlineData(LanguageNames.CSharp,"/// <summary><see cref=\"Incorrect\"/></summary>\r\nclass C {}", "CS1574")] // https://github.com/ashmind/SharpLab/issues/219
+        [InlineData(LanguageNames.CSharp,"/// <summary><see cref=\"Incorrect\"/></summary>\r\npublic class C {}", "CS1574")] // https://github.com/ashmind/SharpLab/issues/219
         [InlineData(LanguageNames.VisualBasic, "''' <summary><see cref=\"Incorrect\"/></summary>\r\nPublic Class C\r\nEnd Class", "BC42309")]
         public async Task SlowUpdate_ReturnsExpectedWarnings_ForXmlDocumentation(string sourceLanguageName, string code, string expectedWarningId) {
             var driver = MirrorSharpTestDriver.New(MirrorSharpOptions).SetText(code);
@@ -98,7 +98,7 @@ namespace SharpLab.Tests {
         }
 
         [Theory]
-        [InlineData(LanguageNames.CSharp, "class C {}")]
+        [InlineData(LanguageNames.CSharp, "public class C {}")]
         [InlineData(LanguageNames.VisualBasic, "Public Class C\r\nEnd Class")]
         public async Task SlowUpdate_DoesNotReturnWarnings_ForCodeWithoutXmlDocumentation(string sourceLanguageName, string code) {
             var driver = MirrorSharpTestDriver.New(MirrorSharpOptions).SetText(code);

@@ -29,9 +29,8 @@ namespace SharpLab.Server.Common.Languages {
         private static readonly ImmutableArray<string> DebugPreprocessorSymbols = ReleasePreprocessorSymbols.Add("DEBUG");
 
         private readonly ImmutableList<MetadataReference> _references;
-        private readonly IReadOnlyDictionary<string, string> _features;
 
-        public CSharpAdapter(IAssemblyReferenceCollector referenceCollector, IFeatureDiscovery featureDiscovery) {
+        public CSharpAdapter(IAssemblyReferenceCollector referenceCollector) {
             var referencedAssemblies = referenceCollector.SlowGetAllReferencedAssembliesRecursive(
                 // Essential
                 NetFrameworkRuntime.AssemblyOfValueTask,
@@ -55,7 +54,6 @@ namespace SharpLab.Server.Common.Languages {
             _references = referencedAssemblies
                 .Select(a => (MetadataReference)MetadataReference.CreateFromFile(a.Location))
                 .ToImmutableList();
-            _features = featureDiscovery.SlowDiscoverAll().ToDictionary(f => f, f => (string)null);
         }
 
         public string LanguageName => LanguageNames.CSharp;
@@ -68,7 +66,7 @@ namespace SharpLab.Server.Common.Languages {
                 MaxLanguageVersion,
                 preprocessorSymbols: DebugPreprocessorSymbols,
                 documentationMode: DocumentationMode.Diagnose
-            ).WithFeatures(_features);
+            );
             options.CSharp.CompilationOptions = new CSharpCompilationOptions(
                 OutputKind.DynamicallyLinkedLibrary,
                 specificDiagnosticOptions: new Dictionary<string, ReportDiagnostic> {

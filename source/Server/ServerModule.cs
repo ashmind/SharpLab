@@ -29,22 +29,12 @@ namespace SharpLab.Server {
                    .As<IAssemblyResolver>()
                    .SingleInstance();
 
-            builder.RegisterType<CSharpFeatureDiscovery>()
-                   .Keyed<IFeatureDiscovery>(LanguageNames.CSharp)
-                   .SingleInstance();
-
-            builder.RegisterType<VisualBasicFeatureDiscovery>()
-                   .Keyed<IFeatureDiscovery>(LanguageNames.VisualBasic)
-                   .SingleInstance();
-
             builder.RegisterType<CSharpAdapter>()
                    .As<ILanguageAdapter>()
-                   .WithParameter(ResolvedParameter.ForKeyed<IFeatureDiscovery>(LanguageNames.CSharp))
                    .SingleInstance();
 
             builder.RegisterType<VisualBasicAdapter>()
                    .As<ILanguageAdapter>()
-                   .WithParameter(ResolvedParameter.ForKeyed<IFeatureDiscovery>(LanguageNames.VisualBasic))
                    .SingleInstance();
 
             builder.RegisterType<FSharpAdapter>()
