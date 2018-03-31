@@ -125,6 +125,7 @@ Microsoft.FSharp.Collections
      ToArray: Denied
      ToSeq: Denied
      ToString: Denied
+     Transpose: Denied
      Truncate: Denied
      TryFind: Denied
      TryFindBack: Denied
@@ -232,6 +233,7 @@ Microsoft.FSharp.Collections
      ToArray: Allowed (CollectedEnumerableArgumentRewriter)
      ToList: Allowed (CollectedEnumerableArgumentRewriter)
      ToString: Denied
+     Transpose: Denied
      Truncate: Denied
      TryFind: Denied
      TryFindBack: Denied
@@ -1220,12 +1222,12 @@ System
   Attribute: Allowed
      Equals: Allowed
      get_TypeId: Allowed
-     GetCustomAttribute: Allowed
-     GetCustomAttributes: Allowed
+     GetCustomAttribute: Denied
+     GetCustomAttributes: Denied
      GetHashCode: Allowed
      GetType: Allowed
      IsDefaultAttribute: Allowed
-     IsDefined: Allowed
+     IsDefined: Denied
      Match: Allowed
      ToString: Allowed
   AttributeTargets: Denied
@@ -1246,23 +1248,23 @@ System
   BadImageFormatException: Denied
   Base64FormattingOptions: Denied
   BitConverter: Allowed
-     DoubleToInt64Bits: Denied
-     Equals: Denied
+     DoubleToInt64Bits: Allowed
+     Equals: Allowed
      GetBytes: Allowed (ArrayReturnRewriter)
-     GetHashCode: Denied
-     GetType: Denied
-     Int64BitsToDouble: Denied
-     ToBoolean: Denied
-     ToChar: Denied
-     ToDouble: Denied
-     ToInt16: Denied
-     ToInt32: Denied
-     ToInt64: Denied
-     ToSingle: Denied
-     ToString: Denied
-     ToUInt16: Denied
-     ToUInt32: Denied
-     ToUInt64: Denied
+     GetHashCode: Allowed
+     GetType: Allowed
+     Int64BitsToDouble: Allowed
+     ToBoolean: Allowed
+     ToChar: Allowed
+     ToDouble: Allowed
+     ToInt16: Allowed
+     ToInt32: Allowed
+     ToInt64: Allowed
+     ToSingle: Allowed
+     ToString: Allowed (StringReturnRewriter)
+     ToUInt16: Allowed
+     ToUInt32: Allowed
+     ToUInt64: Allowed
   Boolean: Allowed
      CompareTo: Allowed
      Equals: Allowed
@@ -1428,14 +1430,14 @@ System
   Convert: Allowed
      ChangeType: Allowed
      Equals: Allowed
-     FromBase64CharArray: Allowed
-     FromBase64String: Allowed
+     FromBase64CharArray: Allowed (ArrayReturnRewriter)
+     FromBase64String: Allowed (ArrayReturnRewriter)
      GetHashCode: Allowed
      GetType: Allowed
      GetTypeCode: Allowed
      IsDBNull: Allowed
      ToBase64CharArray: Allowed
-     ToBase64String: Allowed
+     ToBase64String: Allowed (StringReturnRewriter)
      ToBoolean: Allowed
      ToByte: Allowed
      ToChar: Allowed
@@ -1517,7 +1519,7 @@ System
      get_Today: Allowed
      get_UtcNow: Allowed
      get_Year: Allowed
-     GetDateTimeFormats: Allowed
+     GetDateTimeFormats: Allowed (ArrayReturnRewriter)
      GetHashCode: Allowed
      GetType: Allowed
      GetTypeCode: Allowed
@@ -1634,7 +1636,7 @@ System
      Equals: Allowed
      Floor: Allowed
      FromOACurrency: Allowed
-     GetBits: Allowed
+     GetBits: Allowed (ArrayReturnRewriter)
      GetHashCode: Allowed
      GetType: Allowed
      GetTypeCode: Allowed
@@ -1721,11 +1723,11 @@ System
      Format: Allowed
      GetHashCode: Allowed
      GetName: Allowed
-     GetNames: Allowed
+     GetNames: Allowed (ArrayReturnRewriter)
      GetType: Allowed
      GetTypeCode: Allowed
      GetUnderlyingType: Allowed
-     GetValues: Allowed
+     GetValues: Allowed (ArrayReturnRewriter)
      HasFlag: Allowed
      IsDefined: Allowed
      Parse: Allowed
@@ -2016,7 +2018,7 @@ System
      op_Inequality: Allowed
      Parse: Allowed
      ParseExact: Allowed
-     ToByteArray: Allowed
+     ToByteArray: Allowed (ArrayReturnRewriter)
      ToString: Allowed
      TryParse: Allowed
      TryParseExact: Allowed
@@ -2436,10 +2438,10 @@ System
      PadRight: Allowed
      Remove: Allowed
      Replace: Allowed
-     Split: Allowed
+     Split: Allowed (ArrayReturnRewriter)
      StartsWith: Allowed
      Substring: Allowed
-     ToCharArray: Allowed
+     ToCharArray: Allowed (ArrayReturnRewriter)
      ToLower: Allowed
      ToLowerInvariant: Allowed
      ToString: Allowed
@@ -2500,7 +2502,7 @@ System
      TryParseExact: Allowed
   TimeZone: Denied
   TimeZoneInfo: Allowed
-     ClearCachedData: Allowed
+     ClearCachedData: Denied
      ConvertTime: Allowed
      ConvertTimeBySystemTimeZoneId: Allowed
      ConvertTimeFromUtc: Allowed
@@ -2517,8 +2519,8 @@ System
      get_StandardName: Allowed
      get_SupportsDaylightSavingTime: Allowed
      get_Utc: Allowed
-     GetAdjustmentRules: Allowed
-     GetAmbiguousTimeOffsets: Allowed
+     GetAdjustmentRules: Allowed (ArrayReturnRewriter)
+     GetAmbiguousTimeOffsets: Allowed (ArrayReturnRewriter)
      GetHashCode: Allowed
      GetSystemTimeZones: Allowed
      GetType: Allowed
@@ -2836,7 +2838,7 @@ System
      get_Port: Allowed
      get_Query: Allowed
      get_Scheme: Allowed
-     get_Segments: Allowed
+     get_Segments: Allowed (ArrayReturnRewriter)
      get_UserEscaped: Allowed
      get_UserInfo: Allowed
      GetComponents: Allowed
@@ -3318,7 +3320,7 @@ System.Collections.Generic
      set_Capacity: Allowed
      set_Item: Allowed
      Sort: Allowed
-     ToArray: Allowed
+     ToArray: Allowed (ArrayReturnRewriter)
      ToString: Allowed
      TrimExcess: Allowed
      TrueForAll: Allowed
@@ -3343,7 +3345,7 @@ System.Collections.Generic
      GetHashCode: Allowed
      GetType: Allowed
      Peek: Allowed
-     ToArray: Allowed
+     ToArray: Allowed (ArrayReturnRewriter)
      ToString: Allowed
      TrimExcess: Allowed
   Queue`1+Enumerator: Allowed
@@ -3462,7 +3464,7 @@ System.Collections.Generic
      Peek: Allowed
      Pop: Allowed
      Push: Allowed (AddCallRewriter)
-     ToArray: Allowed
+     ToArray: Allowed (ArrayReturnRewriter)
      ToString: Allowed
      TrimExcess: Allowed
   Stack`1+Enumerator: Allowed
@@ -4005,9 +4007,47 @@ System.IO
   Stream: Denied
   StreamReader: Denied
   StreamWriter: Denied
-  StringReader: Denied
+  StringReader: Allowed
+     .ctor: Allowed
+     Close: Allowed
+     CreateObjRef: Denied
+     Dispose: Denied
+     Equals: Denied
+     GetHashCode: Denied
+     GetLifetimeService: Denied
+     GetType: Denied
+     InitializeLifetimeService: Denied
+     Peek: Allowed
+     Read: Allowed
+     ReadAsync: Denied
+     ReadBlock: Denied
+     ReadBlockAsync: Denied
+     ReadLine: Allowed (StringReturnRewriter)
+     ReadLineAsync: Denied
+     ReadToEnd: Allowed (StringReturnRewriter)
+     ReadToEndAsync: Denied
+     ToString: Denied
   StringWriter: Denied
-  TextReader: Denied
+  TextReader: Allowed
+     Close: Allowed
+     CreateObjRef: Denied
+     Dispose: Allowed
+     Equals: Denied
+     GetHashCode: Denied
+     GetLifetimeService: Denied
+     GetType: Denied
+     InitializeLifetimeService: Denied
+     Peek: Allowed
+     Read: Denied
+     ReadAsync: Denied
+     ReadBlock: Allowed
+     ReadBlockAsync: Denied
+     ReadLine: Allowed (StringReturnRewriter)
+     ReadLineAsync: Denied
+     ReadToEnd: Allowed (StringReturnRewriter)
+     ReadToEndAsync: Denied
+     Synchronized: Denied
+     ToString: Denied
   TextWriter: Allowed
      Close: Denied
      CreateObjRef: Denied
@@ -6321,16 +6361,16 @@ System.Text
   EncoderReplacementFallback: Denied
   EncoderReplacementFallbackBuffer: Denied
   Encoding: Allowed
-     Clone: Denied
-     Convert: Denied
-     Equals: Denied
+     Clone: Allowed
+     Convert: Allowed (ArrayReturnRewriter)
+     Equals: Allowed
      get_ASCII: Allowed
      get_BigEndianUnicode: Allowed
      get_BodyName: Allowed
      get_CodePage: Allowed
-     get_DecoderFallback: Denied
+     get_DecoderFallback: Allowed
      get_Default: Allowed
-     get_EncoderFallback: Denied
+     get_EncoderFallback: Allowed
      get_EncodingName: Allowed
      get_HeaderName: Allowed
      get_IsBrowserDisplay: Allowed
@@ -6345,25 +6385,25 @@ System.Text
      get_UTF8: Allowed
      get_WebName: Allowed
      get_WindowsCodePage: Allowed
-     GetByteCount: Denied
+     GetByteCount: Allowed
      GetBytes: Allowed (ArrayReturnRewriter)
-     GetCharCount: Denied
-     GetChars: Denied
-     GetDecoder: Denied
-     GetEncoder: Denied
+     GetCharCount: Allowed
+     GetChars: Allowed (ArrayReturnRewriter)
+     GetDecoder: Allowed
+     GetEncoder: Allowed
      GetEncoding: Allowed
-     GetEncodings: Denied
-     GetHashCode: Denied
-     GetMaxByteCount: Denied
-     GetMaxCharCount: Denied
-     GetPreamble: Denied
-     GetString: Denied
-     GetType: Denied
-     IsAlwaysNormalized: Denied
+     GetEncodings: Allowed (ArrayReturnRewriter)
+     GetHashCode: Allowed
+     GetMaxByteCount: Allowed
+     GetMaxCharCount: Allowed
+     GetPreamble: Allowed (ArrayReturnRewriter)
+     GetString: Allowed (StringReturnRewriter)
+     GetType: Allowed
+     IsAlwaysNormalized: Allowed
      RegisterProvider: Denied
      set_DecoderFallback: Denied
      set_EncoderFallback: Denied
-     ToString: Denied
+     ToString: Allowed
   EncodingInfo: Denied
   EncodingProvider: Denied
   NormalizationForm: Denied

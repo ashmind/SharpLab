@@ -41,9 +41,9 @@
     <PackageReference Include="SharpDisasm" Version="1.1.5" />
     <PackageReference Include="System.Memory" Version="4.5.0-preview1-26113-03" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.4.0" />
-    <PackageReference Include="Unbreakable" Version="0.7.2-unproven" />
+    <PackageReference Include="Unbreakable" Version="0.8.0-unproven" />
     <PackageReference Include="Unbreakable.Build.PolicyReport" Version="0.0.10" />
-    <PackageReference Include="Unbreakable.Policy" Version="0.1.2-unproven" />
+    <PackageReference Include="Unbreakable.Policy" Version="0.2.0-unproven" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,7 +8,6 @@ using System.Net;
 using System.Numerics;
 using System.Reflection;
 using System.Security.Cryptography;
-using System.Text;
 using System.Web;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
@@ -28,16 +27,12 @@ namespace SharpLab.Server.Execution.Unbreakable {
             .Namespace("System.Collections.Concurrent", Neutral, SetupSystemCollectionsConcurrent)
             .Namespace("System.Diagnostics", Neutral, SetupSystemDiagnostics)
             .Namespace("System.Globalization", Neutral, SetupSystemGlobalization)
-            .Namespace("System.Reflection", Neutral, SetupSystemReflection)
+            .Namespace("System.IO", Neutral, SetupSystemIO)
             .Namespace("System.Linq.Expressions", Neutral, SetupSystemLinqExpressions)
             .Namespace("System.Net", Neutral, SetupSystemNet)
             .Namespace("System.Numerics", Neutral, SetupSystemNumerics)
-            .Namespace("System.IO", Neutral,
-                // required by F#'s printf
-                n => n.Type(typeof(TextWriter), Neutral)
-            )
+            .Namespace("System.Reflection", Neutral, SetupSystemReflection)
             .Namespace("System.Security.Cryptography", Neutral, SetupSystemSecurityCryptography)
-            .Namespace("System.Text", Neutral, SetupSystemText)
             .Namespace("System.Web", Neutral, SetupSystemWeb)
             .Namespace("SharpLab.Runtime.Internal", Neutral,
                 n => n.Type(typeof(Flow), Neutral,
@@ -76,9 +71,6 @@ namespace SharpLab.Server.Execution.Unbreakable {
 
         private static void SetupSystem(NamespacePolicy namespacePolicy) {
             namespacePolicy
-                .Type(typeof(BitConverter), Neutral,
-                    t => t.Member(nameof(BitConverter.GetBytes), Allowed, ArrayReturnRewriter.Default)
-                )
                 .Type(typeof(Console), Neutral,
                     t => t.Member(nameof(Console.Write), Allowed)
                           .Member(nameof(Console.WriteLine), Allowed)
@@ -144,6 +136,28 @@ namespace SharpLab.Server.Execution.Unbreakable {
                 });
         }
 
+        private static void SetupSystemIO(NamespacePolicy namespacePolicy) {
+            namespacePolicy
+                // required by F#'s printf
+                .Type(typeof(TextWriter), Neutral)
+                .Type(typeof(TextReader), Neutral,
+                    t => t.Member(nameof(TextReader.Dispose), Allowed)
+                          .Member(nameof(TextReader.Close), Allowed)
+                          .Member(nameof(TextReader.Peek), Allowed)
+                          .Member(nameof(TextReader.ReadBlock), Allowed)
+                          .Member(nameof(TextReader.ReadLine), Allowed, StringReturnRewriter.Default)
+                          .Member(nameof(TextReader.ReadToEnd), Allowed, StringReturnRewriter.Default)
+                )
+                .Type(typeof(StringReader), Neutral,
+                    t => t.Constructor(Allowed)
+                          .Member(nameof(StringReader.Close), Allowed)
+                          .Member(nameof(StringReader.Peek), Allowed)
+                          .Member(nameof(StringReader.Read), Allowed)
+                          .Member(nameof(StringReader.ReadLine), Allowed, StringReturnRewriter.Default)
+                          .Member(nameof(StringReader.ReadToEnd), Allowed, StringReturnRewriter.Default)
+                );
+        }
+
         private static void SetupSystemLinqExpressions(NamespacePolicy namespacePolicy) {
             ForEachTypeInNamespaceOf<Expression>(type => {
                 if (type.IsEnum) {
@@ -207,14 +221,6 @@ namespace SharpLab.Server.Execution.Unbreakable {
                           .Member(nameof(HashAlgorithm.ComputeHash), Allowed, ArrayReturnRewriter.Default)
                 );
             });
-        }
-
-        private static void SetupSystemText(NamespacePolicy namespacePolicy) {
-            namespacePolicy
-                .Type(typeof(Encoding), Neutral,
-                    // TODO: Move to Unbreakable
-                    t => t.Member(nameof(Encoding.GetBytes), Allowed, ArrayReturnRewriter.Default)
-                );
         }
 
         private static void SetupSystemWeb(NamespacePolicy namespacePolicy) {
