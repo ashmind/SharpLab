@@ -92,7 +92,10 @@ async function createAppAsync() {
         languages,
         targets,
 
-        branchGroups: [],
+        branches: {
+            groups: [],
+            ungrouped: []
+        },
         branch: null,
 
         online: true,
@@ -116,11 +119,16 @@ async function createAppAsync() {
         const branches = await getBranchesAsync();
         const groups = {};
         for (const branch of branches) {
+            if (!branch.group) {
+                data.branches.ungrouped.push(branch);
+                continue;
+            }
+
             let group = groups[branch.group];
             if (!group) {
                 group = { name: branch.group, branches: [] };
                 groups[branch.group] = group;
-                data.branchGroups.push(group);
+                data.branches.groups.push(group);
             }
             group.branches.push(branch);
         }

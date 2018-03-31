@@ -43,8 +43,15 @@
             <div class="select-wrapper option-branch option" v-show="options.language !== languages.fsharp">
               <select v-model="branch">
                 <option v-bind:value="null">Default ({build:roslyn-version})</option>
-                <optgroup v-bind:label="group.name" v-for="group in branchGroups">
-                  <option v-for="branch in group.branches" v-bind:value="branch">{{branch.name}} ({{formatDate(branch.commits[0].date, 'd mmm yyyy')}})</option>
+                <option is="app-branch-option"
+                        v-for="branch in branches.ungrouped"
+                        v-bind:branch="branch"
+                        roslyn-version="{build:roslyn-version}"></option>
+                <optgroup v-bind:label="group.name" v-for="group in branches.groups">
+                  <option is="app-branch-option"
+                          v-for="branch in group.branches"
+                          v-bind:branch="branch"
+                          roslyn-version="{build:roslyn-version}"></option>
                 </optgroup>
               </select>
             </div>
@@ -65,7 +72,7 @@
           </div>
         </section>
 
-        <section v-if="branch" class="info-only branch-info non-code">
+        <section v-if="branch && branch.commits" class="info-only branch-info non-code">
           <header>
             <h1>Branch {{branch.name}}, last commit</h1>
           </header>

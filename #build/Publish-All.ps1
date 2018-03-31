@@ -24,6 +24,19 @@ function Login-ToAzure($azureConfig) {
     Login-AzureRmAccount -Credential $credential | Out-Null
 }
 
+function Get-PredefinedBranches() {
+    $x64Url = "http://sl-a-x64.sharplab.local"
+    if ($azure) {
+        $x64Url = "https://sl-a-x64.azurewebsites.net"
+    }
+    
+    return @([ordered]@{
+        id = 'x64'
+        name = 'x64'
+        url = $x64Url
+    })
+}
+
 # Code ------
 try {
     $Host.UI.RawUI.WindowTitle = "Deploy SharpLab" # prevents title > 1024 char errors
@@ -54,7 +67,7 @@ try {
         Login-ToAzure $azureConfig
     }
 
-    $branchesJson = @()
+    $branchesJson = @(Get-PredefinedBranches)
     Get-ChildItem $sitesRoot | ? { $_ -is [IO.DirectoryInfo] } | % {
         $branchFsName = $_.Name
 
