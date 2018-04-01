@@ -1,5 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net46</TargetFramework>
     <AssemblyName>SharpLab.Server.Azure</AssemblyName>
@@ -12,9 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\#external\ILSpy\cecil\Mono.Cecil.csproj">
-      <SetConfiguration>Configuration=net_4_5_$(Configuration)</SetConfiguration>
-    </ProjectReference>
     <ProjectReference Include="..\#external\ILSpy\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj">
       <SetConfiguration>Configuration=net_4_5_$(Configuration)</SetConfiguration>
     </ProjectReference>

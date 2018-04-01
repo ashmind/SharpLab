@@ -55,7 +55,7 @@ namespace SharpLab.Server.Execution.Internal {
             var lastLine = (int?)null;
             for (var i = 0; i < instructions.Count; i++) {
                 var instruction = instructions[i];
-                var sequencePoint = instruction.SequencePoint;
+                var sequencePoint = method.DebugInformation?.GetSequencePoint(instruction);
                 var hasSequencePoint = sequencePoint != null && sequencePoint.StartLine != HiddenLine;
                 if (!hasSequencePoint && lastLine == null)
                     continue;
@@ -90,7 +90,7 @@ namespace SharpLab.Server.Execution.Internal {
             if (!method.HasParameters)
                 return;
 
-            var sequencePoint = instruction.SequencePoint;
+            var sequencePoint = method.DebugInformation?.GetSequencePoint(instruction);
             var parameterLines = _languages[session.LanguageName]
                 .GetMethodParameterLines(session, sequencePoint.StartLine, sequencePoint.StartColumn);
 
@@ -113,10 +113,11 @@ namespace SharpLab.Server.Execution.Internal {
             var localIndex = GetIndexIfStloc(instruction);
             if (localIndex != null) {
                 var variable = il.Body.Variables[localIndex.Value];
-                if (string.IsNullOrEmpty(variable.Name))
+                var symbols = il.Body.Method.DebugInformation;
+                if (symbols == null || !symbols.TryGetName(variable, out var variableName))
                     return null;
 
-                return (variable.Name, variable.VariableType);
+                return (variableName, variable.VariableType);
             }
 
             if (instruction.OpCode.Code == Code.Ret) {

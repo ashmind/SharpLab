@@ -63,7 +63,8 @@ namespace SharpLab.Server.MirrorSharp {
                 if (targetName == TargetNames.Run)
                     symbolStream = _memoryStreamManager.GetStream();
 
-                if (!await _compiler.TryCompileToStreamAsync(assemblyStream, symbolStream, session, diagnostics, cancellationToken).ConfigureAwait(false)) {
+                var compiled = await _compiler.TryCompileToStreamAsync(assemblyStream, symbolStream, session, diagnostics, cancellationToken).ConfigureAwait(false);
+                if (!compiled.assembly) {
                     assemblyStream.Dispose();
                     symbolStream?.Dispose();
                     return null;
@@ -71,7 +72,7 @@ namespace SharpLab.Server.MirrorSharp {
                 assemblyStream.Seek(0, SeekOrigin.Begin);
                 symbolStream?.Seek(0, SeekOrigin.Begin);
                 if (targetName == TargetNames.Run)
-                    return _executor.Execute(assemblyStream, symbolStream, session);
+                    return _executor.Execute(assemblyStream, compiled.symbols ? symbolStream : null, session);
 
                 // it's fine not to Dispose() here -- MirrorSharp will dispose it after calling WriteResult()
                 return assemblyStream;

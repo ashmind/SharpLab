@@ -9,10 +9,10 @@ using AshMind.Extensions;
 using Microsoft.IO;
 using MirrorSharp.Advanced;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
 using Unbreakable;
 using Unbreakable.Runtime;
 using SharpLab.Runtime.Internal;
-using SharpLab.Server.Common;
 using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.Execution.Unbreakable;
 using SharpLab.Server.Monitoring;
@@ -21,60 +21,67 @@ using IAssemblyResolver = Mono.Cecil.IAssemblyResolver;
 namespace SharpLab.Server.Execution {
     public class Executor : IExecutor {
         private readonly IAssemblyResolver _assemblyResolver;
+        private readonly ISymbolReaderProvider _symbolReaderProvider;
         private readonly IReadOnlyCollection<IAssemblyRewriter> _rewriters;
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;
         private readonly IMonitor _monitor;
 
-        public Executor(IAssemblyResolver assemblyResolver, IReadOnlyCollection<IAssemblyRewriter> rewriters, RecyclableMemoryStreamManager memoryStreamManager, IMonitor monitor) {
+        public Executor(IAssemblyResolver assemblyResolver, ISymbolReaderProvider symbolReaderProvider, IReadOnlyCollection<IAssemblyRewriter> rewriters, RecyclableMemoryStreamManager memoryStreamManager, IMonitor monitor) {
             _assemblyResolver = assemblyResolver;
+            _symbolReaderProvider = symbolReaderProvider;
             _rewriters = rewriters;
             _memoryStreamManager = memoryStreamManager;
             _monitor = monitor;
         }
 
         public ExecutionResult Execute(Stream assemblyStream, Stream symbolStream, IWorkSession session) {
-            AssemblyDefinition assembly;
+            var readerParameters = new ReaderParameters {
+                ReadSymbols = symbolStream != null,
+                SymbolStream = symbolStream,
+                AssemblyResolver = _assemblyResolver,
+                SymbolReaderProvider = symbolStream != null ? _symbolReaderProvider : null
+            };
+
             using (assemblyStream)
-            using (symbolStream) {
-                assembly = AssemblyDefinition.ReadAssembly(assemblyStream, new ReaderParameters {
-                    ReadSymbols = true,
-                    SymbolStream = symbolStream,
-                    AssemblyResolver = _assemblyResolver
-                });
-            }
-            /*
-            #if DEBUG
-            assembly.Write(@"d:\Temp\assembly\" + DateTime.Now.Ticks + "-before-rewrite.dll");
-            #endif
-            */
-            foreach (var rewriter in _rewriters) {
-                rewriter.Rewrite(assembly, session);
-            }
-            if (assembly.EntryPoint == null)
-                throw new ArgumentException("Failed to find an entry point (Main?) in assembly.", nameof(assemblyStream));
-
-            var guardToken = AssemblyGuard.Rewrite(assembly, GuardSettings);
-
-            using (var rewrittenStream = _memoryStreamManager.GetStream()) {
-                assembly.Write(rewrittenStream);
+            using (symbolStream)
+            using (var assembly = AssemblyDefinition.ReadAssembly(assemblyStream, readerParameters)) {
                 /*
                 #if DEBUG
-                assembly.Write(@"d:\Temp\assembly\" + DateTime.Now.Ticks + ".dll");
+                assembly.Write(@"d:\Temp\assembly\" + DateTime.Now.Ticks + "-before-rewrite.dll");
                 #endif
                 */
-                rewrittenStream.Seek(0, SeekOrigin.Begin);
-
-                var currentSetup = AppDomain.CurrentDomain.SetupInformation;
-                using (var context = AppDomainContext.Create(new AppDomainSetup {
-                    ApplicationBase = currentSetup.ApplicationBase,
-                    PrivateBinPath = currentSetup.PrivateBinPath
-                })) {
-                    context.LoadAssembly(LoadMethod.LoadFrom, Assembly.GetExecutingAssembly().GetAssemblyFile().FullName);
-                    var (result, exception) = RemoteFunc.Invoke(context.Domain, rewrittenStream, guardToken, Remote.Execute);
-                    if (ShouldMonitorException(exception))
-                        _monitor.Exception(exception, session);
-                    return result;
+                foreach (var rewriter in _rewriters) {
+                    rewriter.Rewrite(assembly, session);
                 }
+                if (assembly.EntryPoint == null)
+                    throw new ArgumentException("Failed to find an entry point (Main?) in assembly.", nameof(assemblyStream));
+
+                var guardToken = AssemblyGuard.Rewrite(assembly, GuardSettings);
+                using (var rewrittenStream = _memoryStreamManager.GetStream()) {
+                    assembly.Write(rewrittenStream);
+                    /*
+                    #if DEBUG
+                    assembly.Write(@"d:\Temp\assembly\" + DateTime.Now.Ticks + ".dll");
+                    #endif
+                    */
+                    rewrittenStream.Seek(0, SeekOrigin.Begin);
+
+                    return ExecuteInAppDomain(rewrittenStream, guardToken, session);
+                }
+            }
+        }
+
+        private ExecutionResult ExecuteInAppDomain(MemoryStream assemblyStream, RuntimeGuardToken guardToken, IWorkSession session) {
+            var currentSetup = AppDomain.CurrentDomain.SetupInformation;
+            using (var context = AppDomainContext.Create(new AppDomainSetup {
+                ApplicationBase = currentSetup.ApplicationBase,
+                PrivateBinPath = currentSetup.PrivateBinPath
+            })) {
+                context.LoadAssembly(LoadMethod.LoadFrom, Assembly.GetExecutingAssembly().GetAssemblyFile().FullName);
+                var (result, exception) = RemoteFunc.Invoke(context.Domain, assemblyStream, guardToken, Remote.Execute);
+                if (ShouldMonitorException(exception))
+                    _monitor.Exception(exception, session);
+                return result;
             }
         }
 

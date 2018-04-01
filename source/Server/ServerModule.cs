@@ -1,15 +1,14 @@
-using Autofac;
-using Autofac.Core;
-using JetBrains.Annotations;
-using Microsoft.CodeAnalysis;
 using Microsoft.IO;
+using Autofac;
+using JetBrains.Annotations;
 using MirrorSharp.Advanced;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
+using Mono.Cecil.Pdb;
 using SharpLab.Server.Common;
 using SharpLab.Server.Common.Internal;
 using SharpLab.Server.Common.Languages;
 using SharpLab.Server.Compilation;
-using SharpLab.Server.Compilation.Internal;
 using SharpLab.Server.Decompilation;
 using SharpLab.Server.Decompilation.AstOnly;
 using SharpLab.Server.Execution;
@@ -27,6 +26,10 @@ namespace SharpLab.Server {
 
             builder.RegisterType<PreCachedAssemblyResolver>()
                    .As<IAssemblyResolver>()
+                   .SingleInstance();
+
+            builder.RegisterType<NativePdbReaderProvider>()
+                   .As<ISymbolReaderProvider>()
                    .SingleInstance();
 
             builder.RegisterType<CSharpAdapter>()

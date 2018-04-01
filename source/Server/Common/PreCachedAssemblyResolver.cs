@@ -40,5 +40,9 @@ namespace SharpLab.Server.Common {
         public AssemblyDefinition Resolve(string fullName, ReaderParameters parameters) {
             throw new NotSupportedException();
         }
+
+        public void Dispose() {
+            throw new NotSupportedException();
+        }
     }
 }

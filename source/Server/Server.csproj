@@ -40,21 +40,16 @@
     <PackageReference Include="MirrorSharp.FSharp" Version="0.9.3" />
     <PackageReference Include="MirrorSharp.Owin" Version="0.9.1" />
     <PackageReference Include="MirrorSharp.VisualBasic" Version="0.9.3" />
+    <PackageReference Include="Mono.Cecil" Version="0.10.0" />
     <PackageReference Include="SharpDisasm" Version="1.1.5" />
     <PackageReference Include="System.Memory" Version="4.5.0-preview1-26113-03" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.4.0" />
-    <PackageReference Include="Unbreakable" Version="0.8.0-unproven" />
+    <PackageReference Include="Unbreakable" Version="0.8.1-unproven" />
     <PackageReference Include="Unbreakable.Build.PolicyReport" Version="0.0.10" />
     <PackageReference Include="Unbreakable.Policy" Version="0.2.0-unproven" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\#external\ILSpy\cecil\Mono.Cecil.csproj">
-      <SetConfiguration>Configuration=net_4_5_$(Configuration)</SetConfiguration>
-    </ProjectReference>
-    <ProjectReference Include="..\#external\ILSpy\cecil\symbols\pdb\Mono.Cecil.Pdb.csproj">
-      <SetConfiguration>Configuration=net_4_5_$(Configuration)</SetConfiguration>
-    </ProjectReference>
     <ProjectReference Include="..\#external\ILSpy\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj">
       <SetConfiguration>Configuration=net_4_5_$(Configuration)</SetConfiguration>
     </ProjectReference>
