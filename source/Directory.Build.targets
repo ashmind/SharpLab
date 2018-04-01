@@ -1,0 +1,15 @@
+<Project>
+  <!--
+    Required by ICSharpCode libraries due to https://github.com/dotnet/cli/issues/6029.
+    Can be removed once I update to latest (NuGet) ILSpy.
+  -->
+  <Target Name="_RestorePreSdkProject"
+          AfterTargets="CollectPackageReferences"
+          Condition="Exists('$(MSBuildProjectDirectory)\packages.config')"
+          Inputs="$(MSBuildProjectDirectory)\packages.config"
+          Outputs="$(SolutionDir)\!$(MSBuildProjectName).packages.config.restored">
+    <Message Importance="high" Text="(Custom) Restoring packages for $(MSBuildProjectName)" />
+    <Exec Command="nuget restore &quot;$(MSBuildProjectFullPath)&quot; -SolutionDirectory ." WorkingDirectory="$(SolutionDir)" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\packages.config" DestinationFiles="$(SolutionDir)\!$(MSBuildProjectName).packages.config.restored" />
+  </Target>
+</Project>
