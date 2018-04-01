@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Globalization;
@@ -25,6 +26,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
         public static ApiPolicy CreatePolicy() => ApiPolicy.SafeDefault()
             .Namespace("System", Neutral, SetupSystem)
             .Namespace("System.Collections.Concurrent", Neutral, SetupSystemCollectionsConcurrent)
+            .Namespace("System.Collections.Specialized", Neutral, SetupSystemCollectionsSpecialized)
             .Namespace("System.Diagnostics", Neutral, SetupSystemDiagnostics)
             .Namespace("System.Globalization", Neutral, SetupSystemGlobalization)
             .Namespace("System.IO", Neutral, SetupSystemIO)
@@ -106,6 +108,15 @@ namespace SharpLab.Server.Execution.Unbreakable {
                       .Member(nameof(ConcurrentDictionary<object, object>.AddOrUpdate), Allowed, AddCallRewriter.Default)
                       .Member(nameof(ConcurrentDictionary<object, object>.GetOrAdd), Allowed, AddCallRewriter.Default)
                       .Member(nameof(ConcurrentDictionary<object, object>.TryAdd), Allowed, AddCallRewriter.Default)
+            );
+        }
+
+        private static void SetupSystemCollectionsSpecialized(NamespacePolicy namespacePolicy) {
+            namespacePolicy.Type(typeof(NameValueCollection), Allowed,
+                t => t.Constructor(Allowed, CountArgumentRewriter.ForCapacity)
+                      .Member(nameof(NameValueCollection.Add), Allowed, AddCallRewriter.Default)
+                      .Member(nameof(NameValueCollection.Set), Allowed, AddCallRewriter.Default)
+                      .Member("set_Item", Allowed, AddCallRewriter.Default)
             );
         }
 
@@ -239,6 +250,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
                           .Member(nameof(HttpUtility.UrlEncode), Allowed)
                           .Member(nameof(HttpUtility.HtmlAttributeEncode), Allowed)
                           .Member(nameof(HttpUtility.JavaScriptStringEncode), Allowed)
+                          .Member(nameof(HttpUtility.ParseQueryString), Allowed)
                 );
         }
 

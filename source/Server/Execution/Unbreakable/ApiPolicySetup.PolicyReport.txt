@@ -3475,6 +3475,46 @@ System.Collections.Generic
      GetType: Allowed
      MoveNext: Allowed
      ToString: Allowed
+System.Collections.Specialized
+  BitVector32: Denied
+  BitVector32+Section: Denied
+  CollectionsUtil: Denied
+  HybridDictionary: Denied
+  INotifyCollectionChanged: Denied
+  IOrderedDictionary: Denied
+  ListDictionary: Denied
+  NameObjectCollectionBase: Denied
+  NameObjectCollectionBase+KeysCollection: Denied
+  NameValueCollection: Allowed
+     .ctor: Allowed (CountArgumentRewriter(capacity))
+     Add: Allowed (AddCallRewriter)
+     Clear: Allowed
+     CopyTo: Allowed
+     Equals: Allowed
+     Get: Allowed
+     get_AllKeys: Allowed
+     get_Count: Allowed
+     get_Item: Allowed
+     get_Keys: Allowed
+     GetEnumerator: Allowed
+     GetHashCode: Allowed
+     GetKey: Allowed
+     GetObjectData: Allowed
+     GetType: Allowed
+     GetValues: Allowed
+     HasKeys: Allowed
+     OnDeserialization: Allowed
+     Remove: Allowed
+     Set: Allowed (AddCallRewriter)
+     set_Item: Allowed
+     ToString: Allowed
+  NotifyCollectionChangedAction: Denied
+  NotifyCollectionChangedEventArgs: Denied
+  NotifyCollectionChangedEventHandler: Denied
+  OrderedDictionary: Denied
+  StringCollection: Denied
+  StringDictionary: Denied
+  StringEnumerator: Denied
 System.ComponentModel
   AddingNewEventArgs: Denied
   AddingNewEventHandler: Denied
@@ -5766,6 +5806,7 @@ System.Runtime.CompilerServices
   TaskAwaiter: Denied
   TaskAwaiter`1: Denied
   TupleElementNamesAttribute: Denied
+  TupleElementNamesAttribute: Denied
   TypeForwardedFromAttribute: Denied
   TypeForwardedToAttribute: Denied
   UnsafeValueTypeAttribute: Denied
@@ -6527,7 +6568,7 @@ System.Web
      HtmlDecode: Allowed
      HtmlEncode: Allowed
      JavaScriptStringEncode: Allowed
-     ParseQueryString: Denied
+     ParseQueryString: Allowed
      ToString: Denied
      UrlDecode: Allowed
      UrlDecodeToBytes: Denied
