@@ -308,7 +308,9 @@ namespace SharpLab.Server.Execution.Unbreakable {
         }
 
         private static void SetupMicrosoftVisualBasic(NamespacePolicy namespacePolicy) {
-            namespacePolicy.Type(nameof(Microsoft.VisualBasic.Strings), Allowed);
+            namespacePolicy
+                .Type(nameof(Microsoft.VisualBasic.Globals), Allowed)
+                .Type(nameof(Microsoft.VisualBasic.Strings), Allowed);
         }
 
         private static void ForEachTypeInNamespaceOf<T>(Action<Type> action) {

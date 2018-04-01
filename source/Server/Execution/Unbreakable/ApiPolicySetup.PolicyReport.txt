@@ -771,7 +771,15 @@ Microsoft.VisualBasic
   Financial: Denied
   FirstDayOfWeek: Denied
   FirstWeekOfYear: Denied
-  Globals: Denied
+  Globals: Allowed
+     Equals: Allowed
+     get_ScriptEngine: Allowed
+     get_ScriptEngineBuildVersion: Allowed
+     get_ScriptEngineMajorVersion: Allowed
+     get_ScriptEngineMinorVersion: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
   HideModuleNameAttribute: Denied
   Information: Denied
   Interaction: Denied
@@ -3506,7 +3514,7 @@ System.Collections.Specialized
      OnDeserialization: Allowed
      Remove: Allowed
      Set: Allowed (AddCallRewriter)
-     set_Item: Allowed
+     set_Item: Allowed (AddCallRewriter)
      ToString: Allowed
   NotifyCollectionChangedAction: Denied
   NotifyCollectionChangedEventArgs: Denied
@@ -5805,7 +5813,6 @@ System.Runtime.CompilerServices
   SuppressIldasmAttribute: Denied
   TaskAwaiter: Denied
   TaskAwaiter`1: Denied
-  TupleElementNamesAttribute: Denied
   TupleElementNamesAttribute: Denied
   TypeForwardedFromAttribute: Denied
   TypeForwardedToAttribute: Denied
