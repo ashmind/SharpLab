@@ -50,10 +50,7 @@ namespace SharpLab.Server.MirrorSharp {
             if (diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error))
                 return null;
 
-            if (targetName == TargetNames.Verify)
-                return "✔️ Compilation completed.";
-
-            if (targetName != TargetNames.Run && !_decompilers.ContainsKey(targetName))
+            if (targetName != TargetNames.Run && targetName != TargetNames.Verify && !_decompilers.ContainsKey(targetName))
                 throw new NotSupportedException($"Target '{targetName}' is not (yet?) supported by this branch.");
 
             MemoryStream assemblyStream = null;
@@ -69,6 +66,13 @@ namespace SharpLab.Server.MirrorSharp {
                     symbolStream?.Dispose();
                     return null;
                 }
+
+                if (targetName == TargetNames.Verify) {
+                    assemblyStream.Dispose();
+                    symbolStream?.Dispose();
+                    return "✔️ Compilation completed.";
+                }
+
                 assemblyStream.Seek(0, SeekOrigin.Begin);
                 symbolStream?.Seek(0, SeekOrigin.Begin);
                 if (targetName == TargetNames.Run)
