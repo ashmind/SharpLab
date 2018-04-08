@@ -59,7 +59,8 @@ namespace SharpLab.Server {
 
             builder.RegisterInstance<Func<HttpClient>>(() => new HttpClient())
                    .As<Func<HttpClient>>()
-                   .SingleInstance();
+                   .SingleInstance()
+                   .PreserveExistingDefaults(); // allows tests and other overrides
 
             builder.RegisterType<AssemblyReferenceCollector>()
                    .As<IAssemblyReferenceCollector>()

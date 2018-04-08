@@ -2,3 +2,6 @@
 	path = "source/#external/ILSpy"
 	url = https://github.com/ashmind/ILSpy.git
 	branch = sharplab
+[submodule "source/Tests/TestData/language-syntax-explanations"]
+	path = source/Tests/TestData/language-syntax-explanations
+	url = https://github.com/ashmind/language-syntax-explanations.git

@@ -18,8 +18,6 @@ using SharpLab.Tests.Internal;
 
 namespace SharpLab.Tests {
     public class ExecutionTests {
-        private static readonly MirrorSharpOptions MirrorSharpOptions = Startup.CreateMirrorSharpOptions(Startup.CreateContainer());
-
         [Theory]
         [InlineData("Exception.DivideByZero.cs", 4, "DivideByZeroException")]
         [InlineData("Exception.DivideByZero.Catch.cs", 5, "DivideByZeroException")]
@@ -302,7 +300,7 @@ namespace SharpLab.Tests {
             string languageName = LanguageNames.CSharp,
             string optimize = Optimize.Debug
         ) {
-            var driver = MirrorSharpTestDriver.New(MirrorSharpOptions).SetText(code);
+            var driver = MirrorSharpTestDriver.New(TestEnvironment.MirrorSharpOptions).SetText(code);
             await driver.SendSetOptionsAsync(languageName, TargetNames.Run, optimize);
             return driver;
         }

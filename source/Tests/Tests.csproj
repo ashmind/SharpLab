@@ -11,7 +11,9 @@
   <ItemGroup>
     <Compile Remove="TestCode\**\*.cs" />
     <None Remove="TestCode\**\*.*" />
+    <None Remove="TestData\**\*.*" />
     <EmbeddedResource Include="TestCode\**\*.*" />
+    <EmbeddedResource Include="TestData\**\*.*" Exclude="TestData\language-syntax-explanations\.git; TestData\language-syntax-explanations\web.config" />
   </ItemGroup>
   
   <ItemGroup>
@@ -26,5 +28,13 @@
   <ItemGroup>
     <ProjectReference Include="..\Server\Server.csproj" />
     <ProjectReference Include="..\Server.Azure\Server.Azure.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="TestData\" />
   </ItemGroup>
 </Project>
