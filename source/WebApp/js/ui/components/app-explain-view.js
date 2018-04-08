@@ -14,7 +14,7 @@ Vue.component('app-explain-view', {
     },
     template: `<div class="result-content explanations">
         <small class="output-disclaimer">
-            This is a new feature — not everything might have an explanation yet.
+            This is a new feature — some things might be left unexplained.
         </small>
         <dl>
             <template v-for="explanation in explanations">
