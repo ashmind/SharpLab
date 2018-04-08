@@ -14,7 +14,8 @@ const languageAndTargetMap = {
     [targets.asm]:      'asm',
     [targets.ast]:      'ast',
     [targets.run]:      'run',
-    [targets.verify]:   'verify'
+    [targets.verify]:   'verify',
+    [targets.explain]:  'explain'
 };
 const languageAndTargetMapReverse = mapObject(languageAndTargetMap, (key, value) => [value, key]);
 const targetMapReverseV1 = mapObject(languageAndTargetMapReverse, (key, value) => ['>' + key, value]); // eslint-disable-line prefer-template

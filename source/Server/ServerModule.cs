@@ -1,3 +1,5 @@
+using System;
+using System.Net.Http;
 using Microsoft.IO;
 using Autofac;
 using JetBrains.Annotations;
@@ -15,11 +17,50 @@ using SharpLab.Server.Execution;
 using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.MirrorSharp;
 using SharpLab.Server.Monitoring;
+using SharpLab.Server.Explanation;
+using SharpLab.Server.Explanation.Internal;
+using System.Configuration;
 
 namespace SharpLab.Server {
     [UsedImplicitly]
     public class ServerModule : Module {
         protected override void Load(ContainerBuilder builder) {
+            RegisterCommon(builder);
+
+            builder.RegisterType<Compiler>()
+                   .As<ICompiler>()
+                   .SingleInstance();
+
+            RegisterDecompilation(builder);
+            RegisterExecution(builder);
+            RegisterExplanation(builder);
+
+            builder.RegisterType<DefaultTraceMonitor>()
+                   .As<IMonitor>()
+                   .SingleInstance()
+                   .PreserveExistingDefaults();
+
+            builder.RegisterType<MonitorExceptionLogger>()
+                   .As<IExceptionLogger>()
+                   .SingleInstance();
+
+            builder.RegisterType<SlowUpdate>()
+                   .As<ISlowUpdateExtension>()
+                   .SingleInstance();
+
+            builder.RegisterType<SetOptionsFromClient>()
+                   .As<ISetOptionsFromClientExtension>()
+                   .SingleInstance();
+        }
+
+        private static void RegisterCommon(ContainerBuilder builder) {
+            builder.RegisterInstance(new RecyclableMemoryStreamManager())
+                   .AsSelf();
+
+            builder.RegisterInstance<Func<HttpClient>>(() => new HttpClient())
+                   .As<Func<HttpClient>>()
+                   .SingleInstance();
+
             builder.RegisterType<AssemblyReferenceCollector>()
                    .As<IAssemblyReferenceCollector>()
                    .SingleInstance();
@@ -43,11 +84,9 @@ namespace SharpLab.Server {
             builder.RegisterType<FSharpAdapter>()
                    .As<ILanguageAdapter>()
                    .SingleInstance();
+        }
 
-            builder.RegisterType<Compiler>()
-                   .As<ICompiler>()
-                   .SingleInstance();
-
+        private static void RegisterDecompilation(ContainerBuilder builder) {
             builder.RegisterType<RoslynAstTarget>().As<IAstTarget>().SingleInstance();
             builder.RegisterType<FSharpAstTarget>().As<IAstTarget>().SingleInstance();
 
@@ -55,35 +94,34 @@ namespace SharpLab.Server {
             builder.RegisterType<VisualBasicDecompiler>().As<IDecompiler>().SingleInstance();
             builder.RegisterType<ILDecompiler>().As<IDecompiler>().SingleInstance();
             builder.RegisterType<JitAsmDecompiler>().As<IDecompiler>().SingleInstance();
+        }
 
+        private static void RegisterExecution(ContainerBuilder builder) {
             builder.RegisterType<Executor>()
                    .As<IExecutor>()
                    .SingleInstance();
+
             builder.RegisterType<FlowReportingRewriter>()
                    .As<IAssemblyRewriter>()
                    .SingleInstance();
+
             builder.RegisterType<FSharpEntryPointRewriter>()
                    .As<IAssemblyRewriter>()
                    .SingleInstance();
+        }
 
-            builder.RegisterInstance(new RecyclableMemoryStreamManager())
-                   .AsSelf();
+        private static void RegisterExplanation(ContainerBuilder builder) {
+            var csharpSourceUrl = new Uri(ConfigurationManager.AppSettings["App.Explanations.Urls.CSharp"]);
+            var updatePeriod = TimeSpan.Parse(ConfigurationManager.AppSettings["App.Explanations.UpdatePeriod"]);
 
-            builder.RegisterType<DefaultTraceMonitor>()
-                   .As<IMonitor>()
-                   .SingleInstance()
-                   .PreserveExistingDefaults();
-
-            builder.RegisterType<MonitorExceptionLogger>()
-                   .As<IExceptionLogger>()
+            builder.RegisterType<Explainer>()
+                   .As<IExplainer>()
                    .SingleInstance();
 
-            builder.RegisterType<SlowUpdate>()
-                   .As<ISlowUpdateExtension>()
-                   .SingleInstance();
-
-            builder.RegisterType<SetOptionsFromClient>()
-                   .As<ISetOptionsFromClientExtension>()
+            builder.RegisterType<ExternalSyntaxExplanationProvider>()
+                   .As<ISyntaxExplanationProvider>()
+                   .WithParameter("sourceUrl", csharpSourceUrl)
+                   .WithParameter("updatePeriod", updatePeriod)
                    .SingleInstance();
         }
     }

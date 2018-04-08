@@ -14,6 +14,7 @@ using SharpLab.Server.Compilation;
 using SharpLab.Server.Decompilation;
 using SharpLab.Server.Decompilation.AstOnly;
 using SharpLab.Server.Execution;
+using SharpLab.Server.Explanation;
 
 namespace SharpLab.Server.MirrorSharp {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
@@ -22,6 +23,7 @@ namespace SharpLab.Server.MirrorSharp {
         private readonly IReadOnlyDictionary<string, IDecompiler> _decompilers;
         private readonly IReadOnlyDictionary<string, IAstTarget> _astTargets;
         private readonly IExecutor _executor;
+        private readonly IExplainer _explainer;
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;
 
         public SlowUpdate(
@@ -29,6 +31,7 @@ namespace SharpLab.Server.MirrorSharp {
             IReadOnlyCollection<IDecompiler> decompilers,
             IReadOnlyCollection<IAstTarget> astTargets,
             IExecutor executor,
+            IExplainer explainer,
             RecyclableMemoryStreamManager memoryStreamManager
         ) {
             _compiler = compiler;
@@ -38,13 +41,17 @@ namespace SharpLab.Server.MirrorSharp {
                 .ToDictionary(x => x.languageName, x => x.target);
             _executor = executor;
             _memoryStreamManager = memoryStreamManager;
+            _explainer = explainer;
         }
 
         public async Task<object> ProcessAsync(IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
             var targetName = session.GetTargetName();
-            if (targetName == TargetNames.Ast) {
+            if (targetName == TargetNames.Ast || targetName == TargetNames.Explain) {
                 var astTarget = _astTargets.GetValueOrDefault(session.LanguageName);
-                return await astTarget.GetAstAsync(session, cancellationToken).ConfigureAwait(false);
+                var ast = await astTarget.GetAstAsync(session, cancellationToken).ConfigureAwait(false);
+                if (targetName == TargetNames.Explain)
+                    return await _explainer.ExplainAsync(ast, session, cancellationToken).ConfigureAwait(false);
+                return ast;
             }
 
             if (diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error))
@@ -93,7 +100,7 @@ namespace SharpLab.Server.MirrorSharp {
                 writer.WriteValue((string)null);
                 return;
             }
-            
+
             var targetName = session.GetTargetName();
             if (targetName == TargetNames.Verify) {
                 writer.WriteValue((string)result);
@@ -103,6 +110,11 @@ namespace SharpLab.Server.MirrorSharp {
             if (targetName == TargetNames.Ast) {
                 var astTarget = _astTargets.GetValueOrDefault(session.LanguageName);
                 astTarget.SerializeAst(result, writer, session);
+                return;
+            }
+
+            if (targetName == TargetNames.Explain) {
+                _explainer.Serialize((ExplanationResult)result, writer);
                 return;
             }
 

@@ -14,6 +14,7 @@ function getResultType(target) {
     switch (target) {
         case targets.verify: return 'verify';
         case targets.ast: return 'ast';
+        case targets.explain: return 'explain';
         case targets.run: return 'run';
         default: return 'code';
     }
@@ -47,7 +48,7 @@ function applyUpdateResult(updateResult) {
     };
     for (const diagnostic of updateResult.diagnostics) {
         if (diagnostic.severity === 'error') {
-            if (result.type !== 'ast')
+            if (result.type !== 'ast' && result.type !== 'explain')
                 result.success = false;
             result.errors.push(diagnostic);
         }

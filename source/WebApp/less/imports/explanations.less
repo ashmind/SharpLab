@@ -1,0 +1,40 @@
+@import 'common.less';
+
+.explanations {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    overflow: auto;
+}
+
+.explanations dl {
+    margin: 0;
+    padding: 6px;
+}
+
+.explanations code {
+    background-color: @highlight-color;
+    padding: 1px 5px;
+}
+
+.explanations dt,
+.explanations dd {
+    margin: 0;
+}
+
+.explanations dd {
+    padding-top: 5px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+}
+
+.explanations dd+dt {
+    padding-top: 10px;
+    border-top: 1px solid lighten(@border-color, 20%);
+}
+
+.explanation-doc-link {
+    margin-left: 10px;
+}

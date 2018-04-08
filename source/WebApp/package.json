@@ -49,6 +49,7 @@
     "codemirror": "^5.26.0",
     "dateformat": "^1.0.12",
     "lz-string": "^1.4.4",
+    "marked": "^0.3.19",
     "mirrorsharp": "^0.9.2",
     "vue": "^2.3.0"
   }

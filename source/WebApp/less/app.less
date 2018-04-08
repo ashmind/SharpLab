@@ -3,6 +3,7 @@
 
 @import 'https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.0/normalize.min.css';
 
+@import 'imports/common.less';
 @import 'imports/forms.less';
 
 * {
@@ -41,6 +42,10 @@ ul {
 
 li {
     list-style-type: none;
+}
+
+code {
+    .code-text();
 }
 
 main {
@@ -116,7 +121,7 @@ section {
 }
 
 .results section .content {
-    border-left: 1px solid #aaa;
+    border-left: 1px solid @border-color;
 }
 
 .option-language {
@@ -238,8 +243,10 @@ section.info-only {
 
 @import 'imports/loader.less';
 @import 'imports/expanders.less';
+@import 'imports/markdown.less';
 @import 'imports/mobile.less';
 @import 'imports/ast.less';
+@import 'imports/explanations.less';
 @import 'imports/codemirror.less';
 @import 'imports/output.less';
 @import 'imports/offline.less';
