@@ -2656,7 +2656,7 @@ System
      get_FullName: Allowed
      get_GenericParameterAttributes: Denied
      get_GenericParameterPosition: Denied
-     get_GenericTypeArguments: Denied
+     get_GenericTypeArguments: Allowed (ArrayReturnRewriter)
      get_GUID: Denied
      get_HasElementType: Denied
      get_IsAbstract: Denied

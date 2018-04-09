@@ -94,6 +94,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
 
         private static void SetupSystemType(TypePolicy typePolicy) {
             typePolicy
+                .Getter(nameof(Type.GenericTypeArguments), Allowed, ArrayReturnRewriter.Default)
                 .Member(nameof(Type.GetConstructor), Allowed)
                 .Member(nameof(Type.GetEvent), Allowed)
                 .Member(nameof(Type.GetField), Allowed)
