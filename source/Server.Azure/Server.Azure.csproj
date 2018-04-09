@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net47</TargetFramework>
     <AssemblyName>SharpLab.Server.Azure</AssemblyName>
     <RootNamespace>SharpLab.Server.Azure</RootNamespace>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>

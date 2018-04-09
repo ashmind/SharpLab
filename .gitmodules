@@ -1,3 +1,6 @@
 [submodule "source/Tests/TestData/language-syntax-explanations"]
 	path = source/Tests/TestData/language-syntax-explanations
 	url = https://github.com/ashmind/language-syntax-explanations.git
+[submodule "source/#external/SourcePath"]
+	path = "source/#external/SourcePath"
+	url = https://github.com/ashmind/SourcePath.git

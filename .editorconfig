@@ -11,5 +11,5 @@ insert_final_newline = false
 [*.cs]
 csharp_new_line_before_open_brace = none
 
-[*.{html,config}]
+[*.{html,config,targets,props}]
 indent_size = 2

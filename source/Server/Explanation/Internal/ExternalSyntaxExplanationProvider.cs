@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CSharp;
-using SharpLab.Server.Monitoring;
 using SharpYaml.Serialization;
+using SourcePath.CSharp;
+using SharpLab.Server.Monitoring;
 
 namespace SharpLab.Server.Explanation.Internal {
     public class ExternalSyntaxExplanationProvider : ISyntaxExplanationProvider, IDisposable {
         private readonly Func<HttpClient> _httpClientFactory;
         private readonly Uri _sourceUrl;
 
-        private IReadOnlyDictionary<SyntaxKind, SyntaxExplanation> _explanations;
+        private IReadOnlyCollection<SyntaxExplanation> _explanations;
         private readonly SemaphoreSlim _explanationsLock = new SemaphoreSlim(1);
 
         private Task _updateTask;
@@ -23,15 +23,23 @@ namespace SharpLab.Server.Explanation.Internal {
             NamingConvention = new FlatNamingConvention()
         });
         private readonly IMonitor _monitor;
+        private readonly ISyntaxPathParser _syntaxPathParser;
 
-        public ExternalSyntaxExplanationProvider(Func<HttpClient> httpClientFactory, Uri sourceUrl, TimeSpan updatePeriod, IMonitor monitor) {
+        public ExternalSyntaxExplanationProvider(
+            Func<HttpClient> httpClientFactory,
+            Uri sourceUrl,
+            TimeSpan updatePeriod,
+            IMonitor monitor,
+            ISyntaxPathParser syntaxPathParser
+        ) {
             _httpClientFactory = httpClientFactory;
             _sourceUrl = sourceUrl;
             _updatePeriod = updatePeriod;
             _monitor = monitor;
+            _syntaxPathParser = syntaxPathParser;
         }
 
-        public async ValueTask<IReadOnlyDictionary<SyntaxKind, SyntaxExplanation>> GetExplanationsAsync(CancellationToken cancellationToken) {
+        public async ValueTask<IReadOnlyCollection<SyntaxExplanation>> GetExplanationsAsync(CancellationToken cancellationToken) {
             if (_explanations == null) {
                 try {
                     await _explanationsLock.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -49,8 +57,8 @@ namespace SharpLab.Server.Explanation.Internal {
             return _explanations;
         }
 
-        private async Task<IReadOnlyDictionary<SyntaxKind, SyntaxExplanation>> LoadExplanationsSlowAsync(CancellationToken cancellationToken) {
-            var explanations = new Dictionary<SyntaxKind, SyntaxExplanation>();
+        private async Task<IReadOnlyCollection<SyntaxExplanation>> LoadExplanationsSlowAsync(CancellationToken cancellationToken) {
+            var explanations = new List<SyntaxExplanation>();
             var serializer = new Serializer();
             using (var client = _httpClientFactory()) {
                 var response = await client.GetAsync(_sourceUrl, cancellationToken).ConfigureAwait(false);
@@ -59,13 +67,21 @@ namespace SharpLab.Server.Explanation.Internal {
                 var yamlString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var yaml = _serilializer.Deserialize<IEnumerable<YamlExplanation>>(yamlString);
                 foreach (var item in yaml) {
-                    var explanation = new SyntaxExplanation(item.Name, item.Text, item.Link, item.Scope);
-                    foreach (var kind in item.Match) {
-                        explanations.Add(kind, explanation);
-                    }
+                    explanations.Add(ParseExplanation(item));
                 }
             }
             return explanations;
+        }
+
+        private SyntaxExplanation ParseExplanation(YamlExplanation item) {
+            SyntaxPath path;
+            try {
+                path = _syntaxPathParser.Parse(item.Path, SyntaxPathAxis.DescendantOrSelf);
+            }
+            catch (Exception ex) {
+                throw new Exception($"Failed to parse path for '{item.Name}': {ex.Message}.", ex);
+            }
+            return new SyntaxExplanation(path, item.Name, item.Text, item.Link);
         }
 
         private async Task UpdateLoopAsync() {
@@ -103,9 +119,7 @@ namespace SharpLab.Server.Explanation.Internal {
             public string Name { get; set; }
             public string Text { get; set; }
             public string Link { get; set; }
-
-            public SyntaxKind[] Match { get; set; }
-            public SyntaxFragmentScope Scope { get; set; } = SyntaxFragmentScope.Self;
+            public string Path { get; set; }
         }
     }
 }

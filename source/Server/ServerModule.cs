@@ -1,4 +1,5 @@
 using System;
+using System.Configuration;
 using System.Net.Http;
 using Microsoft.IO;
 using Autofac;
@@ -7,6 +8,8 @@ using MirrorSharp.Advanced;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Pdb;
+using SourcePath.Roslyn;
+using SourcePath.CSharp;
 using SharpLab.Server.Common;
 using SharpLab.Server.Common.Internal;
 using SharpLab.Server.Common.Languages;
@@ -19,12 +22,12 @@ using SharpLab.Server.MirrorSharp;
 using SharpLab.Server.Monitoring;
 using SharpLab.Server.Explanation;
 using SharpLab.Server.Explanation.Internal;
-using System.Configuration;
 
 namespace SharpLab.Server {
     [UsedImplicitly]
     public class ServerModule : Module {
         protected override void Load(ContainerBuilder builder) {
+            RegisterSourcePath(builder);
             RegisterCommon(builder);
 
             builder.RegisterType<Compiler>()
@@ -50,6 +53,16 @@ namespace SharpLab.Server {
 
             builder.RegisterType<SetOptionsFromClient>()
                    .As<ISetOptionsFromClientExtension>()
+                   .SingleInstance();
+        }
+
+        private void RegisterSourcePath(ContainerBuilder builder) {
+            builder.RegisterType<SyntaxPathParser>()
+                   .As<ISyntaxPathParser>()
+                   .SingleInstance();
+
+            builder.RegisterType<RoslynCSharpSyntaxQueryExecutor>()
+                   .As<IRoslynCSharpSyntaxQueryExecutor>()
                    .SingleInstance();
         }
 

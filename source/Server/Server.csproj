@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net47</TargetFramework>
     <AssemblyName>SharpLab.Server</AssemblyName>
     <RootNamespace>SharpLab.Server</RootNamespace>
     <Company>Andrey Shchekin</Company>
@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <PackageReference Include="AppDomainToolkit" Version="1.0.4.3" />
-    <PackageReference Include="Argument" Version="1.0.3" />
+    <PackageReference Include="Argument" Version="1.1.0" />
     <PackageReference Include="AshMind.Extensions" Version="2.0.0-pre-20160719" />
     <PackageReference Include="Autofac" Version="3.5.2" />
     <PackageReference Include="Autofac.Extras.FileSystemRegistration" Version="0.1.3" />
@@ -57,6 +57,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\#external\SourcePath\CSharp\CSharp.csproj" />
+    <ProjectReference Include="..\#external\SourcePath\Roslyn\Roslyn.csproj" />
     <ProjectReference Include="..\Runtime\Runtime.csproj" />
   </ItemGroup>
   

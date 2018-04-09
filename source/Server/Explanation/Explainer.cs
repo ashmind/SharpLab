@@ -1,20 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MirrorSharp.Advanced;
+using SourcePath.Roslyn;
 using SharpLab.Server.Explanation.Internal;
 
 namespace SharpLab.Server.Explanation {
     public class Explainer : IExplainer {
         private readonly ISyntaxExplanationProvider _explanationProvider;
+        private readonly IRoslynCSharpSyntaxQueryExecutor _syntaxPathExecutor;
 
-        public Explainer(ISyntaxExplanationProvider explanationProvider) {
+        public Explainer(ISyntaxExplanationProvider explanationProvider, IRoslynCSharpSyntaxQueryExecutor syntaxPathExecutor) {
             _explanationProvider = explanationProvider;
+            _syntaxPathExecutor = syntaxPathExecutor;
         }
 
         public async Task<ExplanationResult> ExplainAsync(object ast, IWorkSession session, CancellationToken cancellationToken) {
@@ -25,14 +29,13 @@ namespace SharpLab.Server.Explanation {
             return new ExplanationResult(MapExplanations(ast, explanations));
         }
 
-        private IEnumerable<(SyntaxNodeOrToken, SyntaxExplanation)> MapExplanations(object ast, IReadOnlyDictionary<SyntaxKind, SyntaxExplanation> explanations) {
-            var seen = new HashSet<SyntaxExplanation>();
+        private IEnumerable<(SyntaxNodeOrToken, SyntaxExplanation)> MapExplanations(object ast, IReadOnlyCollection<SyntaxExplanation> explanations) {
             var tree = (CSharpSyntaxNode)ast;
             var results = new List<(SyntaxNode, SyntaxExplanation)>();
-            foreach (var descendant in tree.DescendantNodesAndTokensAndSelf()) {
-                if (!explanations.TryGetValue(descendant.Kind(), out var explanation) || !seen.Add(explanation))
-                    continue;
-                yield return (explanation.GetBestFragment(descendant), explanation);
+            foreach (var explanation in explanations) {
+                var match = _syntaxPathExecutor.QueryAll(tree, explanation.Path).FirstOrDefault();
+                if (match != default(SyntaxNodeOrToken))
+                    yield return (match, explanation);
             }
         }
 
