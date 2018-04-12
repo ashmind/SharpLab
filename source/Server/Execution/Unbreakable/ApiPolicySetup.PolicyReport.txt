@@ -2648,7 +2648,7 @@ System
      get_AssemblyQualifiedName: Denied
      get_Attributes: Denied
      get_BaseType: Denied
-     get_ContainsGenericParameters: Denied
+     get_ContainsGenericParameters: Allowed
      get_CustomAttributes: Denied
      get_DeclaringMethod: Denied
      get_DeclaringType: Denied
@@ -2667,13 +2667,13 @@ System
      get_IsByRef: Denied
      get_IsClass: Denied
      get_IsCOMObject: Denied
-     get_IsConstructedGenericType: Denied
+     get_IsConstructedGenericType: Allowed
      get_IsContextful: Denied
      get_IsEnum: Denied
      get_IsExplicitLayout: Denied
      get_IsGenericParameter: Denied
-     get_IsGenericType: Denied
-     get_IsGenericTypeDefinition: Denied
+     get_IsGenericType: Allowed
+     get_IsGenericTypeDefinition: Allowed
      get_IsImport: Denied
      get_IsInterface: Denied
      get_IsLayoutSequential: Denied
@@ -2725,7 +2725,7 @@ System
      GetFields: Denied
      GetGenericArguments: Denied
      GetGenericParameterConstraints: Denied
-     GetGenericTypeDefinition: Denied
+     GetGenericTypeDefinition: Allowed
      GetHashCode: Denied
      GetInterface: Allowed
      GetInterfaceMap: Denied
