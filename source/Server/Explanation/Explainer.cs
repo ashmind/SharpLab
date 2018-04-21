@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MirrorSharp.Advanced;
 using SharpLab.Server.Explanation.Internal;
 
@@ -40,7 +42,7 @@ namespace SharpLab.Server.Explanation {
                 writer.WriteStartObject();
                 writer.WritePropertyName("code");
                 using (var code = writer.OpenString()) {
-                    fragment.WriteTo(code);
+                    SerializeFragment(fragment, code);
                 }
                 writer.WriteProperty("name", explanation.Name);
                 writer.WriteProperty("text", explanation.Text);
@@ -48,6 +50,16 @@ namespace SharpLab.Server.Explanation {
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
+        }
+
+        private void SerializeFragment(SyntaxNodeOrToken fragment, TextWriter code) {
+            if (fragment.IsToken) {
+                fragment.WriteTo(code);
+                return;
+            }
+
+            var simplified = SimplifyingCodeDisplayRewriter.Default.Visit(fragment.AsNode());
+            simplified.WriteTo(code);
         }
     }
 }

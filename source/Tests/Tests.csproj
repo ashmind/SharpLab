@@ -13,7 +13,7 @@
     <None Remove="TestCode\**\*.*" />
     <None Remove="TestData\**\*.*" />
     <EmbeddedResource Include="TestCode\**\*.*" />
-    <EmbeddedResource Include="TestData\**\*.*" Exclude="TestData\language-syntax-explanations\.git; TestData\language-syntax-explanations\web.config" />
+    <EmbeddedResource Include="TestData\language-syntax-explanations\*.yml" />
   </ItemGroup>
   
   <ItemGroup>
