@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Numerics;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Web;
 using Microsoft.FSharp.Collections;
@@ -34,6 +35,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
             .Namespace("System.Net", Neutral, SetupSystemNet)
             .Namespace("System.Numerics", Neutral, SetupSystemNumerics)
             .Namespace("System.Reflection", Neutral, SetupSystemReflection)
+            .Namespace("System.Runtime.InteropServices", Neutral, SetupSystemRuntimeInteropServices)
             .Namespace("System.Security.Cryptography", Neutral, SetupSystemSecurityCryptography)
             .Namespace("System.Web", Neutral, SetupSystemWeb)
             .Namespace("SharpLab.Runtime.Internal", Neutral,
@@ -226,6 +228,13 @@ namespace SharpLab.Server.Execution.Unbreakable {
                     }
                 });
             });
+        }
+
+        private static void SetupSystemRuntimeInteropServices(NamespacePolicy namespacePolicy) {
+            namespacePolicy
+                .Type(typeof(Marshal), Neutral,
+                    t => t.Member(nameof(Marshal.SizeOf), Allowed)
+                );
         }
 
         private static void SetupSystemSecurityCryptography(NamespacePolicy namespacePolicy) {
