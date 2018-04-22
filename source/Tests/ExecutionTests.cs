@@ -280,6 +280,16 @@ namespace SharpLab.Tests {
             AssertIsSuccess(result);
         }
 
+        [Theory]
+        [InlineData("Regression.Disposable.cs")]
+        public async Task SlowUpdate_DoesNotFail_OnAnyGuard(string resourceName) {
+            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), LanguageNames.CSharp);
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+
+            AssertIsSuccess(result, allowRuntimeException: true);
+            Assert.DoesNotMatch("GuardException", result.ExtensionResult.GetOutputAsString());
+        }
+
         private static void AssertIsSuccess(SlowUpdateResult<ExecutionResultData> result, bool allowRuntimeException = false) {
             var errors = result.JoinErrors();
             Assert.True(errors.IsNullOrEmpty(), errors);
