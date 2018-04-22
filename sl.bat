@@ -1,1 +1,1 @@
-@powershell #scripts/%1.ps1 %2 %3 %4 %5
+@powershell -File "#scripts/%1.ps1" %2 %3 %4 %5
