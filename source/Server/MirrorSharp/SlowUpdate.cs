@@ -57,6 +57,9 @@ namespace SharpLab.Server.MirrorSharp {
             if (diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error))
                 return null;
 
+            if (targetName == LanguageNames.VisualBasic)
+                return VisualBasicNotAvailable;
+
             if (targetName != TargetNames.Run && targetName != TargetNames.Verify && !_decompilers.ContainsKey(targetName))
                 throw new NotSupportedException($"Target '{targetName}' is not (yet?) supported by this branch.");
 
@@ -101,12 +104,13 @@ namespace SharpLab.Server.MirrorSharp {
                 return;
             }
 
-            var targetName = session.GetTargetName();
-            if (targetName == TargetNames.Verify) {
-                writer.WriteValue((string)result);
+            if (result is string s)
+            {
+                writer.WriteValue(s);
                 return;
             }
 
+            var targetName = session.GetTargetName();
             if (targetName == TargetNames.Ast) {
                 var astTarget = _astTargets.GetValueOrDefault(session.LanguageName);
                 astTarget.SerializeAst(result, writer, session);
@@ -129,5 +133,11 @@ namespace SharpLab.Server.MirrorSharp {
                 decompiler.Decompile(stream, stringWriter);
             }
         }
+
+        private const string VisualBasicNotAvailable =
+            "' Unfortunately, Visual Basic decompilation is no longer supported.\r\n" +
+            "' \r\n" +
+            "' All decompilation in SharpLab is provided by ILSpy, and latest ILSpy does not suport VB.\r\n" +
+            "' If you are interested in VB, please discuss or contribute at https://github.com/icsharpcode/ILSpy.";
     }
 }

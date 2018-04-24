@@ -92,7 +92,6 @@ namespace SharpLab.Server {
             builder.RegisterType<FSharpAstTarget>().As<IAstTarget>().SingleInstance();
 
             builder.RegisterType<CSharpDecompiler>().As<IDecompiler>().SingleInstance();
-            builder.RegisterType<VisualBasicDecompiler>().As<IDecompiler>().SingleInstance();
             builder.RegisterType<ILDecompiler>().As<IDecompiler>().SingleInstance();
             builder.RegisterType<JitAsmDecompiler>().As<IDecompiler>().SingleInstance();
         }

@@ -97,7 +97,7 @@
               <select v-model="options.target">
                 <optgroup label="Decompile">
                   <option v-bind:value="targets.csharp">C#</option>
-                  <option v-bind:value="targets.vb">Visual Basic</option>
+                  <option v-show="options.target === targets.vb" v-bind:value="targets.vb">Visual Basic</option>
                   <option v-bind:value="targets.il">IL</option>
                   <option v-bind:value="targets.asm">JIT Asm</option>
                 </optgroup>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 public class C {
 	public void M() {
 		Func<int, int> getInt = s => s;
@@ -14,22 +14,20 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("0.0.0.0")]
-[assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)]
 [assembly: CompilationRelaxations(8)]
 [assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+[assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
-[module: UnverifiableCode]
+[assembly: AssemblyVersion("0.0.0.0")]
 public class C
 {
-    [CompilerGenerated]
     [Serializable]
+    [CompilerGenerated]
     private sealed class <>c
     {
-        public static readonly C.<>c <>9 = new C.<>c();
+        public static readonly <>c <>9 = new <>c();
 
         public static Func<int, int> <>9__0_0;
 
@@ -41,17 +39,11 @@ public class C
 
     public void M()
     {
-        Func<int, int> arg_1F_0;
-        if ((arg_1F_0 = C.<>c.<>9__0_0) == null)
-        {
-            C.<>c.<>9__0_0 = (arg_1F_0 = new Func<int, int>(C.<>c.<>9.<M>b__0_0));
-        }
-        Func<int, int> func = arg_1F_0;
-        int[] expr_26 = new int[4];
-        RuntimeHelpers.InitializeArray(expr_26, fieldof(<PrivateImplementationDetails>.7C7D749A182D008FD83D960F228CB2B1A0177992).FieldHandle);
-        int[] expr_31 = expr_26;
-        expr_31[3] = func(1);
-        Console.WriteLine(expr_31[3]);
+        Func<int, int> func = <>c.<>9__0_0 ?? (<>c.<>9__0_0 = <>c.<>9.<M>b__0_0);
+        int[] obj = new int[4];
+        RuntimeHelpers.InitializeArray(obj, (RuntimeFieldHandle)/*OpCode not supported: LdMemberToken*/);
+        obj[3] = func(1);
+        Console.WriteLine(obj[3]);
     }
 }
 [CompilerGenerated]
@@ -62,5 +54,5 @@ internal sealed class <PrivateImplementationDetails>
     {
     }
 
-    internal static readonly <PrivateImplementationDetails>.__StaticArrayInitTypeSize=16 7C7D749A182D008FD83D960F228CB2B1A0177992 = bytearray(1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0);
+    internal static readonly __StaticArrayInitTypeSize=16 7C7D749A182D008FD83D960F228CB2B1A0177992/* Not supported: data(01 00 00 00 02 00 00 00 03 00 00 00 00 00 00 00) */;
 }

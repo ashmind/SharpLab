@@ -13,10 +13,8 @@ namespace SharpLab.Server.Decompilation {
             //assembly.Write(@"d:\Temp\assembly\" + System.DateTime.Now.Ticks + "-il.dll");
             //#endif
 
-            var output = new CustomizableIndentPlainTextOutput(codeWriter) {
-                IndentationString = "    "
-            };
-            var disassembler = new ReflectionDisassembler(output, false, CancellationToken.None);
+            var output = new SpaceIndentingPlainTextOutput(codeWriter);
+            var disassembler = new ReflectionDisassembler(output, CancellationToken.None);
             disassembler.WriteModuleContents(assembly.MainModule);
         }
 

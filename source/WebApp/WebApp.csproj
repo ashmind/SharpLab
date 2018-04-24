@@ -21,18 +21,6 @@
     <DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="1.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\#external\ILSpy\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj">
-      <SetConfiguration>Configuration=net_4_5_$(Configuration)</SetConfiguration>
-    </ProjectReference>
-    <ProjectReference Include="..\#external\ILSpy\ILSpy.VB\ILSpy.VB.csproj">
-      <SetConfiguration>Configuration=net_4_5_$(Configuration)</SetConfiguration>
-    </ProjectReference>
-    <ProjectReference Include="..\#external\ILSpy\NRefactory.VB\ICSharpCode.NRefactory.VB\ICSharpCode.NRefactory.VB.csproj">
-      <SetConfiguration>Configuration=net_4_5_$(Configuration)</SetConfiguration>
-    </ProjectReference>
-    <ProjectReference Include="..\#external\ILSpy\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
-      <SetConfiguration>Configuration=net_4_5_$(Configuration)</SetConfiguration>
-    </ProjectReference>
     <ProjectReference Include="..\Server.Azure\Server.Azure.csproj" />
   </ItemGroup>
   <ItemGroup>

@@ -1,20 +1,50 @@
 using System.IO;
-using ICSharpCode.Decompiler.Ast;
-using Microsoft.CodeAnalysis;
+using ICSharpCode.Decompiler;
+using ICSharpCode.Decompiler.CSharp.OutputVisitor;
 using Mono.Cecil;
-using SharpLab.Server.Decompilation.Internal;
+using SharpLab.Server.Common;
 
 namespace SharpLab.Server.Decompilation {
-    public class CSharpDecompiler : AstBasedDecompiler {
-        public CSharpDecompiler(IAssemblyResolver assemblyResolver) : base(assemblyResolver) {
+    public class CSharpDecompiler : IDecompiler {
+        private static readonly CSharpFormattingOptions FormattingOptions = CreateFormattingOptions();
+        private static readonly DecompilerSettings DecompilerSettings = new DecompilerSettings {
+            AnonymousMethods = false,
+            AnonymousTypes = false,
+            YieldReturn = false,
+            AsyncAwait = false,
+            AutomaticProperties = false,
+            ExpressionTrees = false,
+            ArrayInitializers = false,
+            ObjectOrCollectionInitializers = false,
+            UsingStatement = false,
+            LiftNullables = false,
+            NullPropagation = false
+        };
+
+        private readonly IAssemblyResolver _assemblyResolver;
+
+        public CSharpDecompiler(IAssemblyResolver assemblyResolver) {
+            _assemblyResolver = assemblyResolver;
         }
 
-        protected override void WriteResult(TextWriter writer, AstBuilder ast) {
-            ast.GenerateCode(new CustomizableIndentPlainTextOutput(writer) {
-                IndentationString = "    "
-            });
+        public void Decompile(Stream assemblyStream, TextWriter codeWriter) {
+            // ReSharper disable once AgentHeisenbug.CallToNonThreadSafeStaticMethodInThreadSafeType
+            var readerParameters = new ReaderParameters { AssemblyResolver = _assemblyResolver };
+            using (var module = ModuleDefinition.ReadModule(assemblyStream, readerParameters)) {
+                var decompiler = new ICSharpCode.Decompiler.CSharp.CSharpDecompiler(module, DecompilerSettings);
+                var syntaxTree = decompiler.DecompileWholeModuleAsSingleFile();
+
+                new CSharpOutputVisitor(codeWriter, FormattingOptions).VisitSyntaxTree(syntaxTree);
+            }
         }
 
-        public override string LanguageName => LanguageNames.CSharp;
+        public string LanguageName => TargetNames.CSharp;
+
+        private static CSharpFormattingOptions CreateFormattingOptions()
+        {
+            var options = FormattingOptionsFactory.CreateAllman();
+            options.IndentationString = "    ";
+            return options;
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 public class C {
     void M() {
         again: try {
@@ -12,19 +12,16 @@ public class C {
 
 #=>
 
-using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Security;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("0.0.0.0")]
-[assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)]
 [assembly: CompilationRelaxations(8)]
 [assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+[assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
-[module: UnverifiableCode]
+[assembly: AssemblyVersion("0.0.0.0")]
 public class C
 {
     private void M()
@@ -33,11 +30,8 @@ public class C
         {
             try
             {
-                goto IL_01;
                 while (true)
                 {
-                    IL_01:
-                    goto IL_01;
                 }
             }
             catch

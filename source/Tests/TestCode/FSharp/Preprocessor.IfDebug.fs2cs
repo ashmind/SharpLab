@@ -1,4 +1,4 @@
-﻿#if DEBUG
+#if DEBUG
     printfn "Debug"
 #else
     printfn "Release"
@@ -14,17 +14,17 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyVersion("0.0.0.0")]
 [assembly: FSharpInterfaceDataVersion(2, 0, 0)]
+[assembly: AssemblyVersion("0.0.0.0")]
 [CompilationMapping(SourceConstructFlags.Module)]
 public static class _
 {
     [CompilationMapping(SourceConstructFlags.Value)]
-    internal static PrintfFormat<Unit, TextWriter, Unit, Unit> fp@1
+    internal static PrintfFormat<Unit, TextWriter, Unit, Unit> fp@1-1
     {
         get
         {
-            return $_.fp@1;
+            return $_.fp@1-1;
         }
     }
 }
@@ -33,15 +33,17 @@ namespace <StartupCode$_>
     internal static class $_
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        internal static readonly PrintfFormat<Unit, TextWriter, Unit, Unit> fp@1;
+        internal static readonly PrintfFormat<Unit, TextWriter, Unit, Unit> fp@1-1;
 
-        [DebuggerBrowsable(DebuggerBrowsableState.Never), DebuggerNonUserCode, CompilerGenerated]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [CompilerGenerated]
+        [DebuggerNonUserCode]
         internal static int init@;
 
         static $_()
         {
-            $_.fp@1 = new PrintfFormat<Unit, TextWriter, Unit, Unit, Unit>("Debug");
-            PrintfModule.PrintFormatLineToTextWriter<Unit>(Console.Out, _.fp@1);
+            fp@1-1 = new PrintfFormat<Unit, TextWriter, Unit, Unit, Unit>("Debug");
+            PrintfModule.PrintFormatLineToTextWriter(Console.Out, _.fp@1-1);
         }
     }
 }

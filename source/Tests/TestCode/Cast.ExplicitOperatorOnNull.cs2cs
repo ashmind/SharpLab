@@ -1,4 +1,4 @@
-﻿public class Foo {
+public class Foo {
     public static explicit operator uint? (Foo foo) => 1;
 }
 
@@ -10,30 +10,27 @@ public class Bar {
 
 #=>
 
-using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Security;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("0.0.0.0")]
-[assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)]
 [assembly: CompilationRelaxations(8)]
 [assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+[assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
-[module: UnverifiableCode]
+[assembly: AssemblyVersion("0.0.0.0")]
 public class Foo
 {
-    public static uint? op_Explicit(Foo foo)
+    public static explicit operator uint?(Foo foo)
     {
-        return new uint?(1u);
+        return 1u;
     }
 }
 public class Bar
 {
     public void Baz()
     {
-        /*uint?*/Foo.op_Explicit(null);
+        uint? nullable = (uint?)(Foo)null;
     }
 }

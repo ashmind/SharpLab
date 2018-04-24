@@ -2,7 +2,7 @@ import languages from './languages.js';
 
 const targets = {
     csharp:  languages.csharp,
-    vb:      languages.vb,
+    vb:      languages.vb, // no longer supported, just a placeholder
     il:      'IL',
     asm:     'JIT ASM',
     ast:     'AST',

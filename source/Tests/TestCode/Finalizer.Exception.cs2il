@@ -23,13 +23,17 @@ public class C {
         // Code size 13 (0xd)
         .maxstack 1
 
-        IL_0000: newobj instance void [mscorlib]System.Exception::.ctor()
-        IL_0005: throw
-        IL_0006: ldarg.0
-        IL_0007: call instance void [mscorlib]System.Object::Finalize()
-        IL_000c: endfinally
-
-        Try IL_0000-IL_0005 Finally IL_0006-IL_000c
+        .try
+        {
+            IL_0000: newobj instance void [mscorlib]System.Exception::.ctor()
+            IL_0005: throw
+        } // end .try
+        finally
+        {
+            IL_0006: ldarg.0
+            IL_0007: call instance void [mscorlib]System.Object::Finalize()
+            IL_000c: endfinally
+        } // end handler
     } // end of method C::Finalize
 
     .method public hidebysig specialname rtspecialname 

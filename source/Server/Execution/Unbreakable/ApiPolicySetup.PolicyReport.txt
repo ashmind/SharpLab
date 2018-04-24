@@ -125,7 +125,6 @@ Microsoft.FSharp.Collections
      ToArray: Denied
      ToSeq: Denied
      ToString: Denied
-     Transpose: Denied
      Truncate: Denied
      TryFind: Denied
      TryFindBack: Denied
@@ -233,7 +232,6 @@ Microsoft.FSharp.Collections
      ToArray: Allowed (CollectedEnumerableArgumentRewriter)
      ToList: Allowed (CollectedEnumerableArgumentRewriter)
      ToString: Denied
-     Transpose: Denied
      Truncate: Denied
      TryFind: Denied
      TryFindBack: Denied

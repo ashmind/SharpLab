@@ -1,4 +1,4 @@
-﻿public class Point {
+public class Point {
     public int X { get; set; }
     public int M(Point p) {
         return (p?.X).GetValueOrDefault();
@@ -7,19 +7,16 @@
 
 #=>
 
-using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Security;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("0.0.0.0")]
-[assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)]
 [assembly: CompilationRelaxations(8)]
 [assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+[assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
-[module: UnverifiableCode]
+[assembly: AssemblyVersion("0.0.0.0")]
 public class Point
 {
     [CompilerGenerated]
@@ -30,17 +27,18 @@ public class Point
         [CompilerGenerated]
         get
         {
-            return this.<X>k__BackingField;
+            return <X>k__BackingField;
         }
         [CompilerGenerated]
         set
         {
-            this.<X>k__BackingField = value;
+            <X>k__BackingField = value;
         }
     }
 
     public int M(Point p)
     {
-        return ((p != null) ? new int?(p.X) : null).GetValueOrDefault();
+        int? nullable = (p != null) ? new int?(p.X) : null;
+        return nullable.GetValueOrDefault();
     }
 }
