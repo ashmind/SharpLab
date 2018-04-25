@@ -7,7 +7,6 @@ using SharpLab.Runtime.Internal;
 
 public static class Inspect {
     private static ClrRuntime _runtime;
-    private static bool _heapWarningDone = false;
 
     public static void Heap(object @object) {
         EnsureRuntime();
@@ -18,15 +17,20 @@ public static class Inspect {
             throw new Exception($"Failed to find object type for address 0x{(ulong)GetHeapPointer(@object):X}.");
 
         var objectSize = objectType.GetSize(address);
-        var data = new byte[objectSize];
-        _runtime.ReadMemory(address, data, (int)objectSize, out var _);
+
+        // Move by one pointer size back -- Object Header,
+        // see https://blogs.msdn.microsoft.com/seteplia/2017/05/26/managed-object-internals-part-1-layout/
+        //
+        // Not sure if there is a better way to get this through ClrMD yet.
+        var objectStart = address - (uint)IntPtr.Size;
+        var data = ReadMemory(objectStart, objectSize);
 
         var sourceFields = objectType.Fields;
         var sourceFieldCount = objectType.Fields.Count;
         var fields = new MemoryInspectionResult.Field[sourceFieldCount];
         for (var i = 0; i < sourceFieldCount; i++) {
             var sourceField = sourceFields[i];
-            var offset = (int)(sourceField.GetAddress(address) - address);
+            var offset = (int)(sourceField.GetAddress(address) - objectStart);
             fields[i] = new MemoryInspectionResult.Field(
                 sourceField.Name,
                 offset,
@@ -34,11 +38,13 @@ public static class Inspect {
             );
         }
 
-        if (!_heapWarningDone) {
-            Output.WriteWarning("Heap memory might include junk data at the end, not yet sure why.");
-            _heapWarningDone = true;
-        }
         Output.Write(new MemoryInspectionResult(address, objectType.Name, fields, data));
+    }
+
+    private static byte[] ReadMemory(ulong address, ulong size) {
+        var data = new byte[size];
+        _runtime.ReadMemory(address, data, (int)size, out var _);
+        return data;
     }
 
     private static unsafe IntPtr GetHeapPointer(object @object) {

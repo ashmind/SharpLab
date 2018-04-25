@@ -5,7 +5,8 @@
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
-     Memory: Allowed
+     Heap: Allowed
+     ReferenceEquals: Allowed
      ToString: Allowed
   SharpLabObjectExtensions: Allowed
      Dump: Allowed
@@ -919,9 +920,11 @@ SharpLab.Runtime.Internal
      ReportValue: Allowed (NoGuardRewriter)
      ToString: Denied
   Flow+Step: Denied
-  InspectionResult: Denied
+  InspectionSettings: Denied
+  MemoryInspectionResult: Denied
+  MemoryInspectionResult+Field: Denied
   Output: Denied
-  Settings: Denied
+  SimpleInspectionResult: Denied
 System
   _AppDomain: Denied
   AccessViolationException: Denied
