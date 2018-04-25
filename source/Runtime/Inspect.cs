@@ -35,7 +35,7 @@ public static class Inspect {
         }
 
         if (!_heapWarningDone) {
-            Output.WriteWarning("Memory sizes seem to be incorrect and might include junk data at the end.");
+            Output.WriteWarning("Heap memory might include junk data at the end, not yet sure why.");
             _heapWarningDone = true;
         }
         Output.Write(new MemoryInspectionResult(address, objectType.Name, fields, data));
