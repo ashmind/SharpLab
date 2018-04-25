@@ -47,6 +47,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
             )
             .Namespace("", Neutral,
                 n => n.Type(typeof(SharpLabObjectExtensions), Allowed)
+                      .Type(typeof(Inspect), Allowed)
             )
             .Namespace("Microsoft.FSharp.Core", Neutral, SetupFSharpCore)
             .Namespace("Microsoft.FSharp.Collections", Neutral,
@@ -82,11 +83,11 @@ namespace SharpLab.Server.Execution.Unbreakable {
                           .Getter(nameof(Console.Out), Allowed)
                 )
                 .Type(typeof(ReadOnlySpan<>), Allowed,
-                    t => t.Member(nameof(ReadOnlySpan<object>.DangerousCreate), Denied)
+                    t => t.Member(nameof(ReadOnlySpan<object>.ToArray), Allowed, ArrayReturnRewriter.Default)
                 )
                 .Type(typeof(ReadOnlySpan<>.Enumerator), Allowed)
                 .Type(typeof(Span<>), Allowed,
-                    t => t.Member(nameof(ReadOnlySpan<object>.DangerousCreate), Denied)
+                    t => t.Member(nameof(Span<object>.ToArray), Allowed, ArrayReturnRewriter.Default)
                 )
                 .Type(typeof(Span<>.Enumerator), Allowed)
                 .Type(typeof(STAThreadAttribute), Allowed)

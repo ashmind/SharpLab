@@ -14,6 +14,7 @@ const production = process.env.NODE_ENV === 'production';
 gulp.task('less', () => {
     return gulp
         .src('./less/app.less')
+        .pipe(g.plumber())
         // this doesn't really work properly, e.g. https://github.com/ai/autoprefixer-core/issues/27
         .pipe(g.sourcemaps.init())
         .pipe(g.less())
@@ -30,6 +31,7 @@ gulp.task('js', () => {
     delete config.dest;
     return gulp
         .src('./js/app.js')
+        .pipe(g.plumber())
         .pipe(g.sourcemaps.init())
         .pipe(g.betterRollup(config, config))
         .pipe(g.if(production, g.babili({ comments: false })))

@@ -13,11 +13,15 @@ namespace SharpLab.Runtime.Internal {
         public static TextWriter Writer { get; } = new OutputWriter();
 
         public static void WriteWarning(string message) {
-            WriteObject(new InspectionResult("Warning", new StringBuilder(message)));
+            WriteObject(new SimpleInspectionResult("Warning", message));
         }
-        
-        public static void Write(InspectionResult data) {
-            WriteObject(data);
+
+        public static void Write(SimpleInspectionResult inspection) {
+            WriteObject(inspection);
+        }
+
+        public static void Write(MemoryInspectionResult inspection) {
+            WriteObject(inspection);
         }
 
         public static void Write(string value) {
@@ -30,7 +34,7 @@ namespace SharpLab.Runtime.Internal {
 
         private static void WriteObject(object value) {
             if (_stream.Count == MaxStreamDataCount - 1) {
-                _stream.Add(new InspectionResult("System", new StringBuilder("Output limit reached")));
+                _stream.Add(new SimpleInspectionResult("System", "Output limit reached"));
                 return;
             }
 

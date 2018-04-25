@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import OutputViewMemory from './internal/app-output-view-memory.js';
 
 Vue.component('app-output-view', {
     props: {
@@ -24,12 +25,16 @@ Vue.component('app-output-view', {
       <div class="output-empty" v-show="output.length === 0">Completed — no output.</div>
       <template v-for="item in output">
         <pre v-if="typeof item === 'string'">{{item}}</pre>
-        <div v-if="item.type === 'inspection'"
+        <div v-else-if="item.type === 'inspection:simple'"
              class="inspection"
              v-bind:class="{ 'inspection-multiline': isMultiline(item), 'inspection-exception': isException(item), 'inspection-warning': isWarning(item) }">
           <header>{{item.title}}</header>
           <div class="inspection-value">{{item.value}}</div>
         </div>
+        <sub-output-view-memory v-else-if="item.type === 'inspection:memory'" v-bind:inspection="item"></sub-output-view-memory>
       </template>
-    </div>`.replace(/[\r\n]+\s*/g, '').replace(/\s{2,}/g, ' ')
+    </div>`.replace(/[\r\n]+\s*/g, '').replace(/\s{2,}/g, ' '),
+    components: {
+        'sub-output-view-memory': OutputViewMemory
+    }
 });

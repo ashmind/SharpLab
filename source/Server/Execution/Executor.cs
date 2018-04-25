@@ -13,10 +13,12 @@ using Mono.Cecil.Cil;
 using Unbreakable;
 using Unbreakable.Runtime;
 using SharpLab.Runtime.Internal;
+using SharpLab.Server.Common;
 using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.Execution.Unbreakable;
 using SharpLab.Server.Monitoring;
 using IAssemblyResolver = Mono.Cecil.IAssemblyResolver;
+using System.Text;
 
 namespace SharpLab.Server.Execution {
     public class Executor : IExecutor {
@@ -78,7 +80,7 @@ namespace SharpLab.Server.Execution {
                 PrivateBinPath = currentSetup.PrivateBinPath
             })) {
                 context.LoadAssembly(LoadMethod.LoadFrom, Assembly.GetExecutingAssembly().GetAssemblyFile().FullName);
-                var (result, exception) = RemoteFunc.Invoke(context.Domain, assemblyStream, guardToken, Remote.Execute);
+                var (result, exception) = RemoteFunc.Invoke(context.Domain, assemblyStream, guardToken, CurrentProcess.Id, Remote.Execute);
                 if (ShouldMonitorException(exception))
                     _monitor.Exception(exception, session);
                 return result;
@@ -125,20 +127,23 @@ namespace SharpLab.Server.Execution {
             TextWriter openStringWriter = null;
             foreach (var item in output) {
                 switch (item) {
-                    case InspectionResult inspection:
+                    case SimpleInspectionResult inspection:
                         if (openStringWriter != null) {
                             openStringWriter.Close();
                             openStringWriter = null;
                         }
-                        writer.WriteStartObject();
-                        writer.WriteProperty("type", "inspection");
-                        writer.WriteProperty("title", inspection.Title);
-                        writer.WriteProperty("value", inspection.Value);
-                        writer.WriteEndObject();
+                        SerializeSimpleInspectionResult(inspection, writer);
+                        break;
+                    case MemoryInspectionResult memory:
+                        if (openStringWriter != null) {
+                            openStringWriter.Close();
+                            openStringWriter = null;
+                        }
+                        SerializeMemoryInspectionResult(memory, writer);
                         break;
                     case string @string:
                         if (openStringWriter == null)
-                            openStringWriter = openStringWriter ?? writer.OpenString();
+                            openStringWriter = writer.OpenString();
                         openStringWriter.Write(@string);
                         break;
                     case char[] chars:
@@ -160,15 +165,54 @@ namespace SharpLab.Server.Execution {
             openStringWriter?.Close();
         }
 
+        private void SerializeSimpleInspectionResult(SimpleInspectionResult inspection, IFastJsonWriter writer) {
+            writer.WriteStartObject();
+            writer.WriteProperty("type", "inspection:simple");
+            writer.WriteProperty("title", inspection.Title);
+            writer.WritePropertyName("value");
+            if (inspection.Value is StringBuilder builder) {
+                writer.WriteValue(builder);
+            }
+            else {
+                writer.WriteValue((string)inspection.Value);
+            }
+            writer.WriteEndObject();
+        }
+
+        private void SerializeMemoryInspectionResult(MemoryInspectionResult memory, IFastJsonWriter writer) {
+            writer.WriteStartObject();
+            writer.WriteProperty("type", "inspection:memory");
+            writer.WriteProperty("title", memory.Title);
+            writer.WriteProperty("address", memory.Address.ToString("X"));
+            writer.WritePropertyStartArray("fields");
+            foreach (var field in memory.Fields) {
+                writer.WriteStartObject();
+                writer.WriteProperty("name", field.Name);
+                writer.WriteProperty("offset", field.Offset);
+                writer.WriteProperty("size", field.Size);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WritePropertyStartArray("data");
+            foreach (var @byte in memory.Data) {
+                writer.WriteValue(@byte);
+            }
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }
+
         private static class Remote {
-            public static ExecutionResultWrapper Execute(Stream assemblyStream, RuntimeGuardToken guardToken) {
+            public static unsafe ExecutionResultWrapper Execute(Stream assemblyStream, RuntimeGuardToken guardToken, int processId) {
                 try {
                     Console.SetOut(Output.Writer);
+                    InspectionSettings.CurrentProcessId = processId;
 
                     var assembly = Assembly.Load(ReadAllBytes(assemblyStream));
                     var main = assembly.EntryPoint;
                     using (guardToken.Scope(NewRuntimeGuardSettings())) {
                         var args = main.GetParameters().Length > 0 ? new object[] { new string[0] } : null;
+                        byte* stackStart = stackalloc byte[1];
+                        InspectionSettings.StackStart = (ulong)stackStart;
                         var result = main.Invoke(null, args);
                         if (main.ReturnType != typeof(void))
                             result.Inspect("Return");

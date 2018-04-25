@@ -2,6 +2,7 @@
 
 @inspection-border-color: #cecece;
 @inspection-header-color: #ececec;
+@inspection-secondary-text-color: #aaa;
 
 .output {
     position: absolute;
@@ -41,7 +42,7 @@
 }
 
 .inspection {
-    .code-text();
+    .code-font();
     display: flex;
     width: fit-content;
     border: 1px solid @inspection-border-color;
@@ -52,6 +53,14 @@
         &::after {
             content: ':';
         }
+
+        .select-wrapper {
+            border: none;
+        }
+    }
+
+    select {
+        .code-font();
     }
 }
 
@@ -59,6 +68,49 @@
     text-align: right;
     padding: 2px 4px;
     white-space: pre-wrap;
+}
+
+.inspection-memory {
+    flex-direction: column;
+    header {
+        display: flex;
+    }
+
+    header::after {
+        content: '';
+    }
+
+    .inspection-title {
+        flex-grow: 1;
+        align-items: center;
+    }
+
+    .select-wrapper {
+        margin-left: 10px;
+    }
+
+    tr + tr {
+        border-top: 1px solid @inspection-border-color;
+    }
+}
+
+.inspection-field {
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.inspection-data-cell, .inspection-field {
+    padding: 2px 4px;
+}
+
+.inspection-field + .inspection-field,
+.inspection-data-cell + .inspection-data-cell {
+    border-left: 1px solid @inspection-border-color;
+}
+
+.inspection-data-zero {
+    color: @inspection-secondary-text-color;
 }
 
 .inspection-multiline {

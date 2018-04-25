@@ -1,6 +1,12 @@
 
   Argument: Denied
   Argument+Extensible: Denied
+  Inspect: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     Memory: Allowed
+     ToString: Allowed
   SharpLabObjectExtensions: Allowed
      Dump: Allowed
      Equals: Allowed
@@ -915,6 +921,7 @@ SharpLab.Runtime.Internal
   Flow+Step: Denied
   InspectionResult: Denied
   Output: Denied
+  Settings: Denied
 System
   _AppDomain: Denied
   AccessViolationException: Denied
@@ -2297,7 +2304,6 @@ System
   ReadOnlySpan`1: Allowed
      .ctor: Allowed
      CopyTo: Allowed
-     DangerousCreate: Denied
      Equals: Allowed
      get_Empty: Allowed
      get_IsEmpty: Allowed
@@ -2310,7 +2316,7 @@ System
      op_Implicit: Allowed
      op_Inequality: Allowed
      Slice: Allowed
-     ToArray: Allowed
+     ToArray: Allowed (ArrayReturnRewriter)
      ToString: Allowed
      TryCopyTo: Allowed
   ReadOnlySpan`1+Enumerator: Allowed
@@ -2349,6 +2355,7 @@ System
      Parse: Allowed
      ToString: Allowed
      TryParse: Allowed
+  SequencePosition: Denied
   SerializableAttribute: Denied
   Single: Allowed
      CompareTo: Allowed
@@ -2373,7 +2380,6 @@ System
      .ctor: Allowed
      Clear: Allowed
      CopyTo: Allowed
-     DangerousCreate: Denied
      Equals: Allowed
      Fill: Allowed
      get_Empty: Allowed
@@ -2387,7 +2393,7 @@ System
      op_Implicit: Allowed
      op_Inequality: Allowed
      Slice: Allowed
-     ToArray: Allowed
+     ToArray: Allowed (ArrayReturnRewriter)
      ToString: Allowed
      TryCopyTo: Allowed
   Span`1+Enumerator: Allowed
@@ -6068,6 +6074,7 @@ System.Runtime.InteropServices
   SafeBuffer: Denied
   SafeHandle: Denied
   SEHException: Denied
+  SequenceMarshal: Denied
   SetWin32ContextInIDispatchAttribute: Denied
   StandardOleMarshalObject: Denied
   STATSTG: Denied
