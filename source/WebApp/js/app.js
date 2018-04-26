@@ -89,10 +89,10 @@ function applyAstSelect(item) {
 }
 
 function applyCursorMove(getCursorOffset) {
-    const astView = this.$refs.astView;
-    if (!astView)
+    if (!this.result || this.result.type !== 'ast')
         return;
-    astView.selectDeepestByOffset(getCursorOffset());
+
+    this.$refs.astView.selectDeepestByOffset(getCursorOffset());
 }
 
 async function createAppAsync() {
