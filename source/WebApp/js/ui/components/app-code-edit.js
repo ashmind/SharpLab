@@ -16,6 +16,7 @@ Vue.component('app-code-edit', {
         Vue.nextTick(() => {
             const textarea = this.$el;
             textarea.value = this.initialText;
+
             let instance;
             const options = {
                 serviceUrl: this.serviceUrl,
@@ -31,8 +32,9 @@ Vue.component('app-code-edit', {
             if (this.serverOptions)
                 instance.sendServerOptions(this.serverOptions);
 
-            const contentEditable = instance
-                .getCodeMirror()
+            const cm = instance.getCodeMirror();
+
+            const contentEditable = cm
                 .getWrapperElement()
                 .querySelector('[contentEditable=true]');
             if (contentEditable)
@@ -50,7 +52,6 @@ Vue.component('app-code-edit', {
 
             let currentMarker = null;
             this.$watch('highlightedRange', range => {
-                const cm = instance.getCodeMirror();
                 if (currentMarker) {
                     currentMarker.clear();
                     currentMarker = null;
@@ -65,6 +66,9 @@ Vue.component('app-code-edit', {
 
             const bookmarks = [];
             this.$watch('executionFlow', steps => renderExecutionFlow(steps || [], instance.getCodeMirror(), bookmarks));
+
+            const getCursorOffset = () => cm.indexFromPos(cm.getCursor());
+            cm.on('cursorActivity', () => this.$emit('cursor-move', getCursorOffset));
         });
     },
     template: '<textarea></textarea>'

@@ -65,6 +65,7 @@
                            v-bind:highlighted-range="highlightedCodeRange"
                            v-bind:execution-flow="result.type === 'run' && result.value ? result.value.flow : null"
                            v-on:text-change="code = arguments[0]()"
+                           v-on:cursor-move="applyCursorMove"
                            v-on:slow-update-wait="applyUpdateWait"
                            v-on:slow-update-result="applyUpdateResult"
                            v-on:server-error="applyServerError"
@@ -127,10 +128,11 @@
                            v-bind:value="lastResultOfType.code.value"
                            v-bind:language="options.target"></app-code-view>
             <app-ast-view class="ast"
+                          ref="astView"
                           v-if="lastResultOfType.ast"
                           v-show="result.type === 'ast'"
                           v-bind:roots="lastResultOfType.ast.value"
-                          v-on:item-hover="applyAstHover"></app-ast-view>
+                          v-on:item-select="applyAstSelect"></app-ast-view>
             <app-verify-view v-if="lastResultOfType.verify"
                              v-show="result.type === 'verify'"
                              v-bind:value="lastResultOfType.verify.value"></app-verify-view>

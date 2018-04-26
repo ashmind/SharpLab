@@ -79,13 +79,20 @@ function getServiceUrl(branch) {
     return `${httpRoot.replace(/^http/, 'ws')}/mirrorsharp`;
 }
 
-function applyAstHover(item) {
+function applyAstSelect(item) {
     if (!item || !item.range) {
         this.highlightedCodeRange = null;
         return;
     }
     const [start, end] = item.range.split('-');
     this.highlightedCodeRange = { start, end };
+}
+
+function applyCursorMove(getCursorOffset) {
+    const astView = this.$refs.astView;
+    if (!astView)
+        return;
+    astView.selectDeepestByOffset(getCursorOffset());
 }
 
 async function createAppAsync() {
@@ -161,7 +168,14 @@ async function createAppAsync() {
                 };
             }
         },
-        methods: { applyUpdateWait, applyUpdateResult, applyServerError, applyConnectionChange, applyAstHover }
+        methods: {
+            applyUpdateWait,
+            applyUpdateResult,
+            applyServerError,
+            applyConnectionChange,
+            applyAstSelect,
+            applyCursorMove
+        }
     };
 }
 

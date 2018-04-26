@@ -5,56 +5,118 @@ Vue.component('app-ast-view', {
     props: {
         roots: Array
     },
-    mounted: function() {
-        const getItem = li => this.allById[li.getAttribute('data-id')];
+    methods: {
+        expand(item, li = null) {
+            if (!item.children || this.isExpanded(item))
+                return;
+            this.expanded.add(item);
+            li = li || getItemLI(item, this);
+            li.classList.remove('collapsed');
+        },
 
-        let hoverSupported = false;
-        let lastHoverByClick = null;
+        collapse(item, li = null) {
+            if (!item.children || !this.isExpanded(item))
+                return;
+            this.expanded.delete(item);
+            li = li || getItemLI(item, this);
+            li.classList.add('collapsed');
+        },
+
+        isExpanded(item) {
+            return this.expanded.has(item);
+        },
+
+        select(item, li = null) {
+            if (this.selected.item === item)
+                return;
+            if (this.selected.li)
+                this.selected.li.classList.remove('selected');
+            this.$emit('item-select', item);
+            if (item) {
+                li = li || getItemLI(item, this);
+                li.classList.add('selected');
+            }
+            this.selected = { li, item };
+        },
+
+        selectDeepestByOffset(offset) {
+            const recurse = items => {
+                for (const item of items) {
+                    if (!matchesOffset(item, offset))
+                        continue;
+
+                    if (item.children) {
+                        this.expand(item);
+                        recurse(item.children);
+                        break;
+                    }
+
+                    const li = getItemLI(item, this);
+                    this.select(item, li);
+                    li.scrollIntoView();
+                    break;
+                }
+            };
+            recurse(this.roots);
+        }
+    },
+    created() {
+        this.itemsById = {};
+        this.ids = new WeakMap();
+        this.expanded = new WeakSet();
+        this.selected = { item: null, li: null };
+    },
+    mounted() {
+        const getItem = li => this.itemsById[li.getAttribute('data-id')];
+
+        let hoverDetected = false;
         Vue.nextTick(() => {
             handleOnLI(this.$el, 'click', li => {
-                li.classList.toggle('collapsed');
-                if (hoverSupported)
-                    return;
+                const item = getItem(li);
+                if (!this.isExpanded(item)) {
+                    this.expand(item, li);
+                }
+                else {
+                    this.collapse(item, li);
+                }
 
-                if (lastHoverByClick)
-                    lastHoverByClick.classList.remove('hover');
-                this.$emit('item-hover', getItem(li));
-                li.classList.add('hover');
-                lastHoverByClick = li;
+                // select-on-click is only enabled in mobile and such
+                if (hoverDetected)
+                    return;
+                this.select(item, li);
             });
             handleOnLI(this.$el, 'mouseover', li => {
-                hoverSupported = true;
-                this.$emit('item-hover', getItem(li));
-                li.classList.add('hover');
+                hoverDetected = true;
+                this.select(getItem(li), li);
             });
-            handleOnLI(this.$el, 'mouseout', li => {
-                this.$emit('item-hover', null);
-                li.classList.remove('hover');
+            handleOnLI(this.$el, 'mouseout', () => {
+                this.select(null);
             });
         });
     },
-    render: function(h) {
-        this.allById = {};
-        return h('div', [renderTree(h, this.roots, this.allById)]);
+    render(h) {
+        this.itemsById = {};
+        return h('div', [renderTree(h, this.roots, this)]);
     }
 });
 
-function renderTree(h, items, allById, parentId) {
+function renderTree(h, items, that, parentId) {
     return h('ol',
-        items.map((item, index) => renderLI(h, item, allById, (parentId != null) ? parentId + '.' + index : index))
+        items.map((item, index) => renderLI(h, item, that, (parentId != null) ? parentId + '.' + index : index))
     );
 }
 
-function renderLI(h, item, allById, id) {
-    allById[id] = item;
+function renderLI(h, item, that, id) {
+    that.itemsById[id] = item;
+    that.ids.set(item, id);
     return h('li',
         {
-            class: { collapsed: true, leaf: !item.children },
+            class: { collapsed: !that.isExpanded(item), leaf: !item.children },
             attrs: { 'data-id': id }
         },
         [
             h(AstViewItem, { props: { item } }),
-            item.children ? renderTree(h, item.children, allById, id) : null
+            item.children ? renderTree(h, item.children, that, id) : null
         ]
     );
 }
@@ -76,4 +138,17 @@ function findLI(e) {
         element = element.parentElement;
     }
     return null;
+}
+
+function getItemLI(item, that) {
+    const id = that.ids.get(item);
+    return that.$el.querySelector(`li[data-id='${id}']`);
+}
+
+function matchesOffset(item, offset) {
+    if (!item.range)
+        return false;
+    const [start, end] = item.range.split('-');
+    return offset >= parseInt(start)
+        && offset <= parseInt(end);
 }
