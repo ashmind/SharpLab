@@ -30,14 +30,14 @@ namespace SharpLab.Server.Explanation.Internal {
             Func<HttpClient> httpClientFactory,
             Uri sourceUrl,
             TimeSpan updatePeriod,
-            IMonitor monitor,
-            ISourcePathParser<SyntaxNodeOrToken> sourcePathParser
+            ISourcePathParser<SyntaxNodeOrToken> sourcePathParser,
+            IMonitor monitor
         ) {
             _httpClientFactory = httpClientFactory;
             _sourceUrl = sourceUrl;
             _updatePeriod = updatePeriod;
-            _monitor = monitor;
             _sourcePathParser = sourcePathParser;
+            _monitor = monitor;
         }
 
         public async ValueTask<IReadOnlyCollection<SyntaxExplanation>> GetExplanationsAsync(CancellationToken cancellationToken) {
@@ -68,7 +68,17 @@ namespace SharpLab.Server.Explanation.Internal {
                 var yamlString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var yaml = _serilializer.Deserialize<IEnumerable<YamlExplanation>>(yamlString);
                 foreach (var item in yaml) {
-                    explanations.Add(ParseExplanation(item));
+                    SyntaxExplanation parsed;
+                    try {
+                        parsed = ParseExplanation(item);
+                    }
+                    catch (Exception ex) {
+                        // depending on SourcePath version, it's possible that
+                        // an explanation fails to parse on some branches
+                        _monitor.Exception(ex, session: null);
+                        continue;
+                    }
+                    explanations.Add(parsed);
                 }
             }
             return explanations;
@@ -97,7 +107,7 @@ namespace SharpLab.Server.Explanation.Internal {
                     _explanations = await LoadExplanationsSlowAsync(_updateCancellationSource.Token).ConfigureAwait(false);
                 }
                 catch (Exception ex) {
-                    _monitor.Exception(ex, null);
+                    _monitor.Exception(ex, session: null);
                     // intentionally not re-throwing -- retrying after delay
                 }
             }
