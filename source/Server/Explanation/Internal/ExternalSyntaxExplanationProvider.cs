@@ -4,8 +4,9 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using SharpYaml.Serialization;
-using SourcePath.CSharp;
+using SourcePath;
 using SharpLab.Server.Monitoring;
+using Microsoft.CodeAnalysis;
 
 namespace SharpLab.Server.Explanation.Internal {
     public class ExternalSyntaxExplanationProvider : ISyntaxExplanationProvider, IDisposable {
@@ -23,20 +24,20 @@ namespace SharpLab.Server.Explanation.Internal {
             NamingConvention = new FlatNamingConvention()
         });
         private readonly IMonitor _monitor;
-        private readonly ISyntaxPathParser _syntaxPathParser;
+        private readonly ISourcePathParser<SyntaxNodeOrToken> _sourcePathParser;
 
         public ExternalSyntaxExplanationProvider(
             Func<HttpClient> httpClientFactory,
             Uri sourceUrl,
             TimeSpan updatePeriod,
             IMonitor monitor,
-            ISyntaxPathParser syntaxPathParser
+            ISourcePathParser<SyntaxNodeOrToken> sourcePathParser
         ) {
             _httpClientFactory = httpClientFactory;
             _sourceUrl = sourceUrl;
             _updatePeriod = updatePeriod;
             _monitor = monitor;
-            _syntaxPathParser = syntaxPathParser;
+            _sourcePathParser = sourcePathParser;
         }
 
         public async ValueTask<IReadOnlyCollection<SyntaxExplanation>> GetExplanationsAsync(CancellationToken cancellationToken) {
@@ -74,9 +75,9 @@ namespace SharpLab.Server.Explanation.Internal {
         }
 
         private SyntaxExplanation ParseExplanation(YamlExplanation item) {
-            SyntaxPath path;
+            ISourcePath<SyntaxNodeOrToken> path;
             try {
-                path = _syntaxPathParser.Parse(item.Path, SyntaxPathAxis.DescendantOrSelf);
+                path = _sourcePathParser.Parse(item.Path);
             }
             catch (Exception ex) {
                 throw new Exception($"Failed to parse path for '{item.Name}': {ex.Message}.", ex);

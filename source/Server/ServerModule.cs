@@ -4,12 +4,12 @@ using System.Net.Http;
 using Microsoft.IO;
 using Autofac;
 using JetBrains.Annotations;
-using MirrorSharp.Advanced;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Pdb;
-using SourcePath.Roslyn;
-using SourcePath.CSharp;
+using Microsoft.CodeAnalysis;
+using SourcePath;
+using MirrorSharp.Advanced;
 using SharpLab.Server.Common;
 using SharpLab.Server.Common.Internal;
 using SharpLab.Server.Common.Languages;
@@ -22,6 +22,8 @@ using SharpLab.Server.MirrorSharp;
 using SharpLab.Server.Monitoring;
 using SharpLab.Server.Explanation;
 using SharpLab.Server.Explanation.Internal;
+using System.Collections.Generic;
+using SourcePath.Roslyn;
 
 namespace SharpLab.Server {
     [UsedImplicitly]
@@ -57,12 +59,16 @@ namespace SharpLab.Server {
         }
 
         private void RegisterSourcePath(ContainerBuilder builder) {
-            builder.RegisterType<SyntaxPathParser>()
-                   .As<ISyntaxPathParser>()
+            builder.RegisterType<RoslynAxisNavigator>()
+                   .As<ISourcePathAxisNavigator<SyntaxNodeOrToken>>()
                    .SingleInstance();
 
-            builder.RegisterType<RoslynCSharpSyntaxQueryExecutor>()
-                   .As<IRoslynCSharpSyntaxQueryExecutor>()
+            builder.RegisterType<CSharpExplanationPathDialect>()
+                   .As<ISourcePathDialect<SyntaxNodeOrToken>>()
+                   .SingleInstance();
+
+            builder.RegisterType<SourcePathParser<SyntaxNodeOrToken>>()
+                   .As<ISourcePathParser<SyntaxNodeOrToken>>()
                    .SingleInstance();
         }
 

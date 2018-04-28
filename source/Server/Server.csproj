@@ -50,6 +50,7 @@
     <PackageReference Include="SharpDisasm" Version="1.1.5" />
     <PackageReference Include="SharpYaml" Version="1.6.2" />
     <PackageReference Include="System.Memory" Version="4.5.0-preview2-26406-04" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0-preview2-26406-04" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.4.0" />
     <PackageReference Include="Unbreakable" Version="0.9.0-unproven" />
     <PackageReference Include="Unbreakable.Build.PolicyReport" Version="0.0.10" />
@@ -57,7 +58,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\#external\SourcePath\CSharp\CSharp.csproj" />
     <ProjectReference Include="..\#external\SourcePath\Roslyn\Roslyn.csproj" />
     <ProjectReference Include="..\Runtime\Runtime.csproj" />
   </ItemGroup>
