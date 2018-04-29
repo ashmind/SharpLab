@@ -39,23 +39,26 @@ export default {
             return labels;
         },
 
-        spaceAfterLastLabel() {
-            const inspection = this.inspection;
-            // TODO: Remove once all backends are updated to use labels
-            if (!inspection.labels)
-                return 0;
+        labelsWithPadding() {
+            const labels = this.labels;
+            const results = [];
+            for (let i = 0; i < labels.length; i++) {
+                const label = labels[i];
+                results.push(label);
 
-            const last = inspection.labels[inspection.labels.length - 1];
-            if (!last)
-                return 0;
-
-            return inspection.data.length - (last.offset + last.length);
+                const next = labels[i + 1] || { offset: this.inspection.data.length };
+                const padding = { offset: label.offset + label.length };
+                padding.length = next.offset - padding.offset;
+                if (padding.length > 0)
+                    results.push(padding);
+            }
+            return results;
         }
     },
     template: `
       <div class="inspection inspection-memory">
         <header>
-          <span class="inspection-title">{{inspection.title}} at 0x{{inspection.address}}</span>
+          <span class="inspection-title">{{inspection.title}}</span>
           <app-select v-model="mode">
             <option value="decimal">Decimal</option>
             <option value="hex">Hex</option>
@@ -64,13 +67,10 @@ export default {
         </header>
         <table>
           <tr>
-            <td v-for="label in labels"
+            <td v-for="label in labelsWithPadding"
                 class="inspection-data-label"
                 v-bind:colspan="label.length"
                 v-bind:title="label.name">{{label.name}}</td>
-            <td v-if="spaceAfterLastLabel > 0"
-                class="inspection-data-label"
-                v-bind:colspan="spaceAfterLastLabel"></td>
           </tr>
           <tr>
             <td v-for="cell in inspection.data"

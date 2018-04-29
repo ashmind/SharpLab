@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading;
 using Microsoft.Diagnostics.Runtime;
 using SharpLab.Runtime.Internal;
 
@@ -27,25 +30,17 @@ public static class Inspect {
         var data = ReadMemory(objectStart, objectSize);
 
         var fields = objectType.Fields;
-        var fieldCount = objectType.Fields.Count;
-
-        var labels = new MemoryInspectionResult.Label[2 + fieldCount];
+        var labels = new MemoryInspectionResult.Label[2 + fields.Count];
         labels[0] = new MemoryInspectionResult.Label("header", 0, IntPtr.Size);
         labels[1] = new MemoryInspectionResult.Label("type handle", IntPtr.Size, IntPtr.Size);
-        for (var i = 0; i < fieldCount; i++) {
-            var field = fields[i];
-            var offset = (int)(field.GetAddress(address) - objectStart);
-            labels[2 + i] = new MemoryInspectionResult.Label(
-                field.Name,
-                offset,
-                field.Size
-            );
-        }
+        SetMemoryLabelsFromFields(labels, fields, startIndex: 2, address, objectStart);
 
-        Output.Write(new MemoryInspectionResult(address, objectType.Name, labels, data));
+        Output.Write(new MemoryInspectionResult($"{objectType.Name} at 0x{address:X}", labels, data));
     }
 
     private static byte[] ReadMemory(ulong address, ulong size) {
+        EnsureRuntime();
+
         var data = new byte[size];
         _runtime.ReadMemory(address, data, (int)size, out var _);
         return data;
@@ -56,47 +51,48 @@ public static class Inspect {
         return **(IntPtr**)(&indirect);
     }
 
+    public static unsafe void Stack<T>(in T value) {
+        var type = typeof(T);
+
+        var address = (ulong)Unsafe.AsPointer(ref Unsafe.AsRef(in value));
+        var size = type.IsValueType ? (ulong)Unsafe.SizeOf<T>() : (uint)IntPtr.Size;
+        var data = ReadMemory(address, size);
+
+        MemoryInspectionResult.Label[] labels;
+        if (type.IsValueType && !type.IsPrimitive) {
+            var fields = _runtime.Heap.GetTypeByMethodTable((ulong)type.TypeHandle.Value).Fields;
+            labels = new MemoryInspectionResult.Label[fields.Count];
+            SetMemoryLabelsFromFields(labels, fields, startIndex: 0, address, address + (uint)IntPtr.Size);
+        }
+        else {
+            labels = new MemoryInspectionResult.Label[0];
+        }
+
+        var title = type.IsValueType
+            ? $"{type.FullName}"
+            : $"Pointer to {type.FullName}";
+        Output.Write(new MemoryInspectionResult(title, labels, data));
+    }
+
+    private static void SetMemoryLabelsFromFields(MemoryInspectionResult.Label[] labels, IList<ClrInstanceField> fields, int startIndex, ulong objectAddress, ulong offsetBase) {
+        var fieldCount = fields.Count;
+        for (var i = 0; i < fieldCount; i++) {
+            var field = fields[i];
+            var offset = (int)(field.GetAddress(objectAddress) - offsetBase);
+            labels[startIndex + i] = new MemoryInspectionResult.Label(
+                field.Name,
+                offset,
+                field.Size
+            );
+        }
+    }
+
     private static void EnsureRuntime() {
         if (_runtime != null)
             return;
         var dataTarget = DataTarget.AttachToProcess(InspectionSettings.CurrentProcessId, UInt32.MaxValue, AttachFlag.Passive);
         _runtime = dataTarget.ClrVersions.Single().CreateRuntime();
     }
-
-    //public static unsafe void Stack() {
-    //    byte* stackEnd = stackalloc byte[1];
-    //    var stackEndCutoff = (ulong)stackEnd;
-
-    //    using (var dataTarget = DataTarget.AttachToProcess(InspectionSettings.CurrentProcessId, UInt32.MaxValue, AttachFlag.Passive)) {
-    //        var runtime = dataTarget.ClrVersions.Single().CreateRuntime();
-    //        var thread = FindCurrentThread(runtime);
-    //        var builder = new StringBuilder();
-    //        var stackStartCutoff = InspectionSettings.StackStart;
-    //        foreach (var value in thread.EnumerateStackObjects()) {
-    //            if (value.Address > stackStartCutoff || value.Address < stackEndCutoff)
-    //                continue;
-
-    //            builder
-    //                .AppendFormat("0x{0:X}", value.Address)
-    //                .Append(" ")
-    //                .Append(value.Kind)
-    //                .Append(" ")
-    //                .Append(value.Type.Name)
-    //                .AppendLine();
-    //        }
-    //        Output.Write(new SimpleInspectionResult("Stack", builder));
-    //    }
-    //}
-
-    //private static ClrThread FindCurrentThread(ClrRuntime runtime) {
-    //    var managedThreadId = Thread.CurrentThread.ManagedThreadId;
-    //    foreach (var thread in runtime.Threads) {
-    //        if (thread.ManagedThreadId == managedThreadId)
-    //            return thread;
-    //    }
-
-    //    throw new Exception($"Could not find thread {managedThreadId}.");
-    //}
 
     [EditorBrowsable(EditorBrowsableState.Never)]
     internal static new bool Equals(object a, object b) {

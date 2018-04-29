@@ -183,7 +183,6 @@ namespace SharpLab.Server.Execution {
             writer.WriteStartObject();
             writer.WriteProperty("type", "inspection:memory");
             writer.WriteProperty("title", memory.Title);
-            writer.WriteProperty("address", memory.Address.ToString("X"));
             writer.WritePropertyStartArray("labels");
             foreach (var label in memory.Labels) {
                 writer.WriteStartObject();

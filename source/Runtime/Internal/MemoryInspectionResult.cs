@@ -4,14 +4,12 @@ using System.Collections.Generic;
 namespace SharpLab.Runtime.Internal {
     [Serializable]
     public class MemoryInspectionResult {
-        public MemoryInspectionResult(ulong address, string title, IReadOnlyList<Label> labels, byte[] data) {
-            Address = address;
+        public MemoryInspectionResult(string title, IReadOnlyList<Label> labels, byte[] data) {
             Title = title;
             Labels = labels;
             Data = data;
         }
 
-        public ulong Address { get; }
         public string Title { get; }
         public IReadOnlyList<Label> Labels { get; }
         public byte[] Data { get; }
