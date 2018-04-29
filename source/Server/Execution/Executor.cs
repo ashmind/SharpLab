@@ -184,12 +184,12 @@ namespace SharpLab.Server.Execution {
             writer.WriteProperty("type", "inspection:memory");
             writer.WriteProperty("title", memory.Title);
             writer.WriteProperty("address", memory.Address.ToString("X"));
-            writer.WritePropertyStartArray("fields");
-            foreach (var field in memory.Fields) {
+            writer.WritePropertyStartArray("labels");
+            foreach (var label in memory.Labels) {
                 writer.WriteStartObject();
-                writer.WriteProperty("name", field.Name);
-                writer.WriteProperty("offset", field.Offset);
-                writer.WriteProperty("size", field.Size);
+                writer.WriteProperty("name", label.Name);
+                writer.WriteProperty("offset", label.Offset);
+                writer.WriteProperty("length", label.Length);
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();

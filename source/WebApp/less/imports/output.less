@@ -94,17 +94,18 @@
     }
 }
 
-.inspection-field {
+.inspection-data-label {
     max-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.inspection-data-cell, .inspection-field {
+.inspection-data-cell, .inspection-data-label {
     padding: 2px 4px;
 }
 
-.inspection-field + .inspection-field,
+.inspection-data-label + .inspection-data-label,
 .inspection-data-cell + .inspection-data-cell {
     border-left: 1px solid @inspection-border-color;
 }

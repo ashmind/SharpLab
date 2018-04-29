@@ -22,23 +22,27 @@ public static class Inspect {
         // see https://blogs.msdn.microsoft.com/seteplia/2017/05/26/managed-object-internals-part-1-layout/
         //
         // Not sure if there is a better way to get this through ClrMD yet.
+        // https://github.com/Microsoft/clrmd/issues/99
         var objectStart = address - (uint)IntPtr.Size;
         var data = ReadMemory(objectStart, objectSize);
 
-        var sourceFields = objectType.Fields;
-        var sourceFieldCount = objectType.Fields.Count;
-        var fields = new MemoryInspectionResult.Field[sourceFieldCount];
-        for (var i = 0; i < sourceFieldCount; i++) {
-            var sourceField = sourceFields[i];
-            var offset = (int)(sourceField.GetAddress(address) - objectStart);
-            fields[i] = new MemoryInspectionResult.Field(
-                sourceField.Name,
+        var fields = objectType.Fields;
+        var fieldCount = objectType.Fields.Count;
+
+        var labels = new MemoryInspectionResult.Label[2 + fieldCount];
+        labels[0] = new MemoryInspectionResult.Label("header", 0, IntPtr.Size);
+        labels[1] = new MemoryInspectionResult.Label("type handle", IntPtr.Size, IntPtr.Size);
+        for (var i = 0; i < fieldCount; i++) {
+            var field = fields[i];
+            var offset = (int)(field.GetAddress(address) - objectStart);
+            labels[2 + i] = new MemoryInspectionResult.Label(
+                field.Name,
                 offset,
-                sourceField.Size
+                field.Size
             );
         }
 
-        Output.Write(new MemoryInspectionResult(address, objectType.Name, fields, data));
+        Output.Write(new MemoryInspectionResult(address, objectType.Name, labels, data));
     }
 
     private static byte[] ReadMemory(ulong address, ulong size) {

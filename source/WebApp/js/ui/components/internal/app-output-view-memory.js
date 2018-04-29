@@ -30,21 +30,26 @@ export default {
         }
     },
     computed: {
-        spaceBeforeFirstField() {
-            const inspection = this.inspection;
-            if (inspection.fields.length === 0)
-                return inspection.data.length;
+        // TODO: Remove once all backends are updated to use labels
+        labels() {
+            let labels = this.inspection.labels;
+            if (!labels && this.inspection.fields)
+                labels = [{ offset: 0, length: this.inspection.data.length, name: 'this branch is not updated to the new label model yet' }];
 
-            return inspection.fields[0].offset;
+            return labels;
         },
 
-        spaceAfterLastField() {
+        spaceAfterLastLabel() {
             const inspection = this.inspection;
-            const last = inspection.fields[inspection.fields.length - 1];
+            // TODO: Remove once all backends are updated to use labels
+            if (!inspection.labels)
+                return 0;
+
+            const last = inspection.labels[inspection.labels.length - 1];
             if (!last)
                 return 0;
 
-            return inspection.data.length - (last.offset + last.size);
+            return inspection.data.length - (last.offset + last.length);
         }
     },
     template: `
@@ -59,16 +64,13 @@ export default {
         </header>
         <table>
           <tr>
-            <td v-if="spaceBeforeFirstField > 0"
-                class="inspection-field"
-                v-bind:colspan="spaceBeforeFirstField"></td>
-            <td v-for="field in inspection.fields"
-                class="inspection-field"
-                v-bind:colspan="field.size"
-                v-bind:title="'Field: ' + field.name">{{field.name}}</td>
-            <td v-if="spaceAfterLastField > 0"
-                class="inspection-field"
-                v-bind:colspan="spaceAfterLastField"></td>
+            <td v-for="label in labels"
+                class="inspection-data-label"
+                v-bind:colspan="label.length"
+                v-bind:title="label.name">{{label.name}}</td>
+            <td v-if="spaceAfterLastLabel > 0"
+                class="inspection-data-label"
+                v-bind:colspan="spaceAfterLastLabel"></td>
           </tr>
           <tr>
             <td v-for="cell in inspection.data"
