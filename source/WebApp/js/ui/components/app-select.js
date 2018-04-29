@@ -5,9 +5,22 @@ Vue.component('app-select', {
         value: null
     },
 
+    data() {
+        return { innerValue: this.value };
+    },
+
+    watch: {
+        value() {
+            this.innerValue = this.value;
+        },
+
+        innerValue() {
+            this.$emit('input', this.innerValue);
+        }
+    },
+
     template: `<div class="select-wrapper">
-      <select v-bind:value="value"
-              v-on:change="$emit('input', $event.target.value)">
+      <select v-model="innerValue">
         <slot></slot>
       </select>
     </div>`.replace(/[\r\n]+\s*/g, '').replace(/\s{2,}/g, ' ')
