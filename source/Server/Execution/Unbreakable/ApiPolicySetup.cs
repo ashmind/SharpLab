@@ -131,6 +131,8 @@ namespace SharpLab.Server.Execution.Unbreakable {
 
         private static void SetupSystemDiagnostics(NamespacePolicy namespacePolicy) {
             namespacePolicy
+                // required by some F# code
+                .Type(typeof(DebuggerTypeProxyAttribute), Allowed)
                 .Type(typeof(Stopwatch), Allowed, typePolicy => {
                     foreach (var property in typeof(Stopwatch).GetProperties()) {
                         if (!property.Name.Contains("Elapsed"))
@@ -274,6 +276,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
             namespacePolicy
                 .Type(typeof(CompilationArgumentCountsAttribute), Allowed)
                 .Type(typeof(CompilationMappingAttribute), Allowed)
+                .Type(typeof(CustomOperationAttribute), Allowed)
                 .Type(typeof(EntryPointAttribute), Allowed)
                 .Type(typeof(ExtraTopLevelOperators), Neutral,
                     t => t.Member(nameof(ExtraTopLevelOperators.CreateDictionary), Allowed, CollectedEnumerableArgumentRewriter.Default)
@@ -300,6 +303,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
                           .Getter(nameof(LanguagePrimitives.GenericEqualityComparer), Allowed)
                           .Getter(nameof(LanguagePrimitives.GenericEqualityERComparer), Allowed)
                 )
+                .Type(typeof(LanguagePrimitives.HashCompare), Allowed)
                 .Type(typeof(OptimizedClosures.FSharpFunc<,,>), Allowed)
                 .Type(typeof(OptimizedClosures.FSharpFunc<,,,>), Allowed)
                 .Type(typeof(OptimizedClosures.FSharpFunc<,,,,>), Allowed)

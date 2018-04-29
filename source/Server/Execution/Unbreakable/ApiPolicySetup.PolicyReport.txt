@@ -294,7 +294,30 @@ Microsoft.FSharp.Core
   CompilerMessageAttribute: Denied
   CustomComparisonAttribute: Denied
   CustomEqualityAttribute: Denied
-  CustomOperationAttribute: Denied
+  CustomOperationAttribute: Allowed
+     .ctor: Allowed
+     Equals: Allowed
+     get_AllowIntoPattern: Allowed
+     get_IsLikeGroupJoin: Allowed
+     get_IsLikeJoin: Allowed
+     get_IsLikeZip: Allowed
+     get_JoinConditionWord: Allowed
+     get_MaintainsVariableSpace: Allowed
+     get_MaintainsVariableSpaceUsingBind: Allowed
+     get_Name: Allowed
+     get_TypeId: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     IsDefaultAttribute: Allowed
+     Match: Allowed
+     set_AllowIntoPattern: Allowed
+     set_IsLikeGroupJoin: Allowed
+     set_IsLikeJoin: Allowed
+     set_IsLikeZip: Allowed
+     set_JoinConditionWord: Allowed
+     set_MaintainsVariableSpace: Allowed
+     set_MaintainsVariableSpaceUsingBind: Allowed
+     ToString: Allowed
   DefaultAugmentationAttribute: Denied
   DefaultValueAttribute: Denied
   EntryPointAttribute: Allowed
@@ -476,7 +499,37 @@ Microsoft.FSharp.Core
      SByteWithMeasure: Denied
      ToString: Denied
   LanguagePrimitives+ErrorStrings: Denied
-  LanguagePrimitives+HashCompare: Denied
+  LanguagePrimitives+HashCompare: Allowed
+     Equals: Allowed
+     FastCompareTuple2: Allowed
+     FastCompareTuple3: Allowed
+     FastCompareTuple4: Allowed
+     FastCompareTuple5: Allowed
+     FastEqualsTuple2: Allowed
+     FastEqualsTuple3: Allowed
+     FastEqualsTuple4: Allowed
+     FastEqualsTuple5: Allowed
+     FastHashTuple2: Allowed
+     FastHashTuple3: Allowed
+     FastHashTuple4: Allowed
+     FastHashTuple5: Allowed
+     GenericComparisonIntrinsic: Allowed
+     GenericComparisonWithComparerIntrinsic: Allowed
+     GenericEqualityERIntrinsic: Allowed
+     GenericEqualityIntrinsic: Allowed
+     GenericEqualityWithComparerIntrinsic: Allowed
+     GenericGreaterOrEqualIntrinsic: Allowed
+     GenericGreaterThanIntrinsic: Allowed
+     GenericHashIntrinsic: Allowed
+     GenericHashWithComparerIntrinsic: Allowed
+     GenericLessOrEqualIntrinsic: Allowed
+     GenericLessThanIntrinsic: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     LimitedGenericHashIntrinsic: Allowed
+     PhysicalEqualityIntrinsic: Allowed
+     PhysicalHashIntrinsic: Allowed
+     ToString: Allowed
   LanguagePrimitives+IntrinsicFunctions: Denied
   LanguagePrimitives+IntrinsicOperators: Denied
   LiteralAttribute: Denied
@@ -922,7 +975,7 @@ SharpLab.Runtime.Internal
   Flow+Step: Denied
   InspectionSettings: Denied
   MemoryInspectionResult: Denied
-  MemoryInspectionResult+Field: Denied
+  MemoryInspectionResult+Label: Denied
   Output: Denied
   SimpleInspectionResult: Denied
 System
@@ -3832,7 +3885,20 @@ System.Diagnostics
      IsDefaultAttribute: Allowed
      Match: Allowed
      ToString: Allowed
-  DebuggerTypeProxyAttribute: Denied
+  DebuggerTypeProxyAttribute: Allowed
+     .ctor: Allowed
+     Equals: Allowed
+     get_ProxyTypeName: Allowed
+     get_Target: Allowed
+     get_TargetTypeName: Allowed
+     get_TypeId: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     IsDefaultAttribute: Allowed
+     Match: Allowed
+     set_Target: Allowed
+     set_TargetTypeName: Allowed
+     ToString: Allowed
   DebuggerVisualizerAttribute: Denied
   DefaultTraceListener: Denied
   DelimitedListTraceListener: Denied
