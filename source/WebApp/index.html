@@ -31,30 +31,26 @@
           <header>
             <button class="mobile-menu-button" v-app-class-toggle="{ target: '.code', class: 'mobile-menu-open' }"></button>
             <h1>Code</h1>
-            <div class="select-wrapper option-language option">
-              <select v-model="options.language">
-                <option v-bind:value="languages.csharp">C#</option>
-                <option v-bind:value="languages.vb">Visual Basic</option>
-                <option v-bind:value="languages.fsharp">F#</option>
-              </select>
-            </div>
+            <app-select v-model="options.language" class="option-language option">
+              <option v-bind:value="languages.csharp">C#</option>
+              <option v-bind:value="languages.vb">Visual Basic</option>
+              <option v-bind:value="languages.fsharp">F#</option>
+            </app-select>
             <div class="offline-only">[connection lost, reconnecting…]</div>
 
-            <div class="select-wrapper option-branch option" v-show="options.language !== languages.fsharp">
-              <select v-model="branch">
-                <option v-bind:value="null">Default ({build:roslyn-version})</option>
+            <app-select v-model="branch" class="option-branch option" v-show="options.language !== languages.fsharp">
+              <option v-bind:value="null">Default ({build:roslyn-version})</option>
+              <option is="app-branch-option"
+                      v-for="branch in branches.ungrouped"
+                      v-bind:branch="branch"
+                      roslyn-version="{build:roslyn-version}"></option>
+              <optgroup v-bind:label="group.name" v-for="group in branches.groups">
                 <option is="app-branch-option"
-                        v-for="branch in branches.ungrouped"
+                        v-for="branch in group.branches"
                         v-bind:branch="branch"
                         roslyn-version="{build:roslyn-version}"></option>
-                <optgroup v-bind:label="group.name" v-for="group in branches.groups">
-                  <option is="app-branch-option"
-                          v-for="branch in group.branches"
-                          v-bind:branch="branch"
-                          roslyn-version="{build:roslyn-version}"></option>
-                </optgroup>
-              </select>
-            </div>
+              </optgroup>
+            </app-select>
 
             <div class="mobile-menu"></div>
           </header>
@@ -94,31 +90,27 @@
             <button class="mobile-menu-button" v-app-class-toggle="{ target: '.results', class: 'mobile-menu-open' }"></button>
             <h1>Results</h1>
 
-            <div class="select-wrapper option-target-language option">
-              <select v-model="options.target">
-                <optgroup label="Decompile">
-                  <option v-bind:value="targets.csharp">C#</option>
-                  <option v-show="options.target === targets.vb" v-bind:value="targets.vb">Visual Basic</option>
-                  <option v-bind:value="targets.il">IL</option>
-                  <option v-bind:value="targets.asm">JIT Asm</option>
-                </optgroup>
-                <optgroup label="Other">
-                  <option v-bind:value="targets.ast">Syntax Tree</option>
-                  <option v-bind:value="targets.verify">Verify Only</option>
-                </optgroup>
-                <optgroup label="Experimental">
-                  <option v-bind:value="targets.run">Run</option>
-                  <option v-bind:value="targets.explain">Explain</option>
-                </optgroup>
-              </select>
-            </div>
+            <app-select v-model="options.target" class="option-target-language option">
+              <optgroup label="Decompile">
+                <option v-bind:value="targets.csharp">C#</option>
+                <option v-show="options.target === targets.vb" v-bind:value="targets.vb">Visual Basic</option>
+                <option v-bind:value="targets.il">IL</option>
+                <option v-bind:value="targets.asm">JIT Asm</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option v-bind:value="targets.ast">Syntax Tree</option>
+                <option v-bind:value="targets.verify">Verify Only</option>
+              </optgroup>
+              <optgroup label="Experimental">
+                <option v-bind:value="targets.run">Run</option>
+                <option v-bind:value="targets.explain">Explain</option>
+              </optgroup>
+            </app-select>
 
-            <div class="select-wrapper option-optimizations option">
-              <select v-model="options.release">
-                <option v-bind:value="false">Debug</option>
-                <option v-bind:value="true">Release</option>
-              </select>
-            </div>
+            <app-select v-model="options.release" class="option-optimizations option">
+              <option v-bind:value="false">Debug</option>
+              <option v-bind:value="true">Release</option>
+            </app-select>
             <div class="mobile-menu"></div>
           </header>
           <div class="content">
