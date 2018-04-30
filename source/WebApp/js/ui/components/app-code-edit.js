@@ -12,64 +12,64 @@ Vue.component('app-code-edit', {
         highlightedRange: Object,
         executionFlow:    Array
     },
-    mounted: function() {
-        Vue.nextTick(() => {
-            const textarea = this.$el;
-            textarea.value = this.initialText;
+    async mounted() {
+        await Vue.nextTick();
 
-            let instance;
-            const options = {
-                serviceUrl: this.serviceUrl,
-                on: {
-                    slowUpdateWait: () => this.$emit('slow-update-wait'),
-                    slowUpdateResult: result => this.$emit('slow-update-result', result),
-                    connectionChange: type => this.$emit('connection-change', type),
-                    textChange: getText => this.$emit('text-change', getText),
-                    serverError: message => this.$emit('server-error', message)
-                }
-            };
+        const textarea = this.$el;
+        textarea.value = this.initialText;
+
+        let instance;
+        const options = {
+            serviceUrl: this.serviceUrl,
+            on: {
+                slowUpdateWait: () => this.$emit('slow-update-wait'),
+                slowUpdateResult: result => this.$emit('slow-update-result', result),
+                connectionChange: type => this.$emit('connection-change', type),
+                textChange: getText => this.$emit('text-change', getText),
+                serverError: message => this.$emit('server-error', message)
+            }
+        };
+        instance = mirrorsharp(textarea, options);
+        if (this.serverOptions)
+            instance.sendServerOptions(this.serverOptions);
+
+        const cm = instance.getCodeMirror();
+
+        const contentEditable = cm
+            .getWrapperElement()
+            .querySelector('[contentEditable=true]');
+        if (contentEditable)
+            contentEditable.setAttribute('autocomplete', 'off');
+
+        this.$watch('initialText', v => instance.setText(v));
+        this.$watch('serverOptions', o => instance.sendServerOptions(o), { deep: true });
+        this.$watch('serviceUrl', u => {
+            instance.destroy({ keepCodeMirror: true });
+            options.serviceUrl = u;
             instance = mirrorsharp(textarea, options);
             if (this.serverOptions)
                 instance.sendServerOptions(this.serverOptions);
-
-            const cm = instance.getCodeMirror();
-
-            const contentEditable = cm
-                .getWrapperElement()
-                .querySelector('[contentEditable=true]');
-            if (contentEditable)
-                contentEditable.setAttribute('autocomplete', 'off');
-
-            this.$watch('initialText', v => instance.setText(v));
-            this.$watch('serverOptions', o => instance.sendServerOptions(o), { deep: true });
-            this.$watch('serviceUrl', u => {
-                instance.destroy({ keepCodeMirror: true });
-                options.serviceUrl = u;
-                instance = mirrorsharp(textarea, options);
-                if (this.serverOptions)
-                    instance.sendServerOptions(this.serverOptions);
-            });
-
-            let currentMarker = null;
-            this.$watch('highlightedRange', range => {
-                if (currentMarker) {
-                    currentMarker.clear();
-                    currentMarker = null;
-                }
-                if (!range)
-                    return;
-
-                const from = cm.posFromIndex(range.start);
-                const to = cm.posFromIndex(range.end);
-                currentMarker = cm.markText(from, to, { className: 'highlighted' });
-            });
-
-            const bookmarks = [];
-            this.$watch('executionFlow', steps => renderExecutionFlow(steps || [], instance.getCodeMirror(), bookmarks));
-
-            const getCursorOffset = () => cm.indexFromPos(cm.getCursor());
-            cm.on('cursorActivity', () => this.$emit('cursor-move', getCursorOffset));
         });
+
+        let currentMarker = null;
+        this.$watch('highlightedRange', range => {
+            if (currentMarker) {
+                currentMarker.clear();
+                currentMarker = null;
+            }
+            if (!range)
+                return;
+
+            const from = cm.posFromIndex(range.start);
+            const to = cm.posFromIndex(range.end);
+            currentMarker = cm.markText(from, to, { className: 'highlighted' });
+        });
+
+        const bookmarks = [];
+        this.$watch('executionFlow', steps => renderExecutionFlow(steps || [], instance.getCodeMirror(), bookmarks));
+
+        const getCursorOffset = () => cm.indexFromPos(cm.getCursor());
+        cm.on('cursorActivity', () => this.$emit('cursor-move', getCursorOffset));
     },
     template: '<textarea></textarea>'
 });

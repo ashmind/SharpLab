@@ -66,32 +66,32 @@ Vue.component('app-ast-view', {
         this.expanded = new WeakSet();
         this.selected = { item: null, li: null };
     },
-    mounted() {
+    async mounted() {
+        await Vue.nextTick();
+
         const getItem = li => this.itemsById[li.getAttribute('data-id')];
-
         let hoverDetected = false;
-        Vue.nextTick(() => {
-            handleOnLI(this.$el, 'click', li => {
-                const item = getItem(li);
-                if (!this.isExpanded(item)) {
-                    this.expand(item, li);
-                }
-                else {
-                    this.collapse(item, li);
-                }
 
-                // select-on-click is only enabled in mobile and such
-                if (hoverDetected)
-                    return;
-                this.select(item, li);
-            });
-            handleOnLI(this.$el, 'mouseover', li => {
-                hoverDetected = true;
-                this.select(getItem(li), li);
-            });
-            handleOnLI(this.$el, 'mouseout', () => {
-                this.select(null);
-            });
+        handleOnLI(this.$el, 'click', li => {
+            const item = getItem(li);
+            if (!this.isExpanded(item)) {
+                this.expand(item, li);
+            }
+            else {
+                this.collapse(item, li);
+            }
+
+            // select-on-click is only enabled in mobile and such
+            if (hoverDetected)
+                return;
+            this.select(item, li);
+        });
+        handleOnLI(this.$el, 'mouseover', li => {
+            hoverDetected = true;
+            this.select(getItem(li), li);
+        });
+        handleOnLI(this.$el, 'mouseout', () => {
+            this.select(null);
         });
     },
     render(h) {

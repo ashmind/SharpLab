@@ -13,46 +13,46 @@ Vue.component('app-code-view', {
         value:    String,
         language: String
     },
-    mounted: function() {
-        Vue.nextTick(() => {
-            const modeMap = {
-                [targets.csharp]: 'text/x-csharp',
-                [targets.vb]:     'text/x-vb',
-                [targets.il]:     'text/x-cil',
-                [targets.asm]:    'text/x-asm'
-            };
+    async mounted() {
+        await Vue.nextTick();
 
-            const textarea = this.$el.firstChild;
-            textarea.value = this.value;
-            const options = {
-                readOnly: true,
-                indentUnit: 4,
-                mode: modeMap[this.language],
-                infotip: {}
-            };
-            const cm = CodeMirror.fromTextArea(textarea, options);
-            this.cm = cm;
+        const modeMap = {
+            [targets.csharp]: 'text/x-csharp',
+            [targets.vb]:     'text/x-vb',
+            [targets.il]:     'text/x-cil',
+            [targets.asm]:    'text/x-asm'
+        };
 
-            const wrapper = cm.getWrapperElement();
-            wrapper.classList.add('mirrorsharp-theme');
+        const textarea = this.$el.firstChild;
+        textarea.value = this.value;
+        const options = {
+            readOnly: true,
+            indentUnit: 4,
+            mode: modeMap[this.language],
+            infotip: {}
+        };
+        const cm = CodeMirror.fromTextArea(textarea, options);
+        this.cm = cm;
 
-            const codeElement = wrapper.getElementsByClassName('CodeMirror-code')[0];
-            if (codeElement && codeElement.contentEditable) // HACK, mobile only
-                codeElement.contentEditable = false;
+        const wrapper = cm.getWrapperElement();
+        wrapper.classList.add('mirrorsharp-theme');
 
-            this.$watch('language', value => {
-                cm.setOption('mode', modeMap[value]);
-            });
-            this.$watch('value', value => {
-                value = value != null ? value : '';
-                if (cm.getValue() === value)
-                    return;
-                cm.setValue(value);
-            });
+        const codeElement = wrapper.getElementsByClassName('CodeMirror-code')[0];
+        if (codeElement && codeElement.contentEditable) // HACK, mobile only
+            codeElement.contentEditable = false;
+
+        this.$watch('language', value => {
+            cm.setOption('mode', modeMap[value]);
+        });
+        this.$watch('value', value => {
+            value = value != null ? value : '';
+            if (cm.getValue() === value)
+                return;
+            cm.setValue(value);
         });
     },
 
-    beforeDestroy: function() {
+    beforeDestroy() {
         this.cm.toTextArea();
     },
 
