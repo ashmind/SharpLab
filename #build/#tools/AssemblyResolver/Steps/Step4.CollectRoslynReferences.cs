@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -37,12 +37,19 @@ namespace AssemblyResolver.Steps {
                 foreach (var reference in assembly.Definition.MainModule.AssemblyReferences) {
                     if (!seen.Add(reference.Name))
                         continue;
+
                     FluentConsole.Gray.Line($"    {reference.FullName}");
-                    mainAssemblies = mainAssemblies.Remove(reference.Name);
+
+                    var mainAssembly = mainAssemblies.GetValueOrDefault(reference.Name);
+                    var mainVersion = mainAssembly?.Definition.Name.Version;
+                    if (mainAssembly != null)
+                        mainAssemblies = mainAssemblies.Remove(reference.Name);
+
                     if (usedRoslynAssemblies.ContainsKey(reference.Name)) {
                         FluentConsole.Gray.Line("      [roslyn assembly, already used]");
                         continue;
                     }
+
                     var roslynAssemblyPath = roslynAssemblyPaths.GetValueOrDefault(reference.Name);
                     if (roslynAssemblyPath != null) {
                         FluentConsole.Gray.Line("      [roslyn assembly, queued]");
@@ -51,6 +58,7 @@ namespace AssemblyResolver.Steps {
                         queue.Enqueue(roslynAssembly);
                         continue;
                     }
+
                     if (InGlobalAssemblyCache(reference)) {
                         FluentConsole.Gray.Line("      [gac]");
                         continue;
@@ -59,6 +67,13 @@ namespace AssemblyResolver.Steps {
                     var referencedAssembly = GetAssemblyDetailsFromNuGetCache(reference.Name, roslynPackageMap);
                     if (referencedAssembly == null) {
                         FluentConsole.Gray.Line("      [system?]");
+                        continue;
+                    }
+
+                    if (mainVersion > reference.Version) {
+                        FluentConsole.Gray.Line($"      [main assembly is newer, queued using version {mainVersion} instead of {reference.Version}]");
+                        othersReferencedByRoslynBuilder.Add(reference.Name, mainAssembly);
+                        queue.Enqueue(mainAssembly);
                         continue;
                     }
                     othersReferencedByRoslynBuilder.Add(reference.Name, referencedAssembly);
