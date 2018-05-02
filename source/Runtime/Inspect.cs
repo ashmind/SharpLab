@@ -29,11 +29,9 @@ public static class Inspect {
         var objectStart = address - (uint)IntPtr.Size;
         var data = ReadMemory(objectStart, objectSize);
 
-        var fields = objectType.Fields;
-        var labels = new MemoryInspectionResult.Label[2 + fields.Count];
+        var labels = CreateLabelsFromType(objectType, address, objectStart, first: (index: 2, offset: 2 * IntPtr.Size));
         labels[0] = new MemoryInspectionResult.Label("header", 0, IntPtr.Size);
         labels[1] = new MemoryInspectionResult.Label("type handle", IntPtr.Size, IntPtr.Size);
-        SetMemoryLabelsFromFields(labels, fields, startIndex: 2, address, objectStart);
 
         Output.Write(new MemoryInspectionResult($"{objectType.Name} at 0x{address:X}", labels, data));
     }
@@ -60,9 +58,8 @@ public static class Inspect {
 
         MemoryInspectionResult.Label[] labels;
         if (type.IsValueType && !type.IsPrimitive) {
-            var fields = _runtime.Heap.GetTypeByMethodTable((ulong)type.TypeHandle.Value).Fields;
-            labels = new MemoryInspectionResult.Label[fields.Count];
-            SetMemoryLabelsFromFields(labels, fields, startIndex: 0, address, address + (uint)IntPtr.Size);
+            var runtimeType = _runtime.Heap.GetTypeByMethodTable((ulong)type.TypeHandle.Value);
+            labels = CreateLabelsFromType(runtimeType, address, address + (uint)IntPtr.Size);
         }
         else {
             labels = new MemoryInspectionResult.Label[0];
@@ -74,17 +71,36 @@ public static class Inspect {
         Output.Write(new MemoryInspectionResult(title, labels, data));
     }
 
-    private static void SetMemoryLabelsFromFields(MemoryInspectionResult.Label[] labels, IList<ClrInstanceField> fields, int startIndex, ulong objectAddress, ulong offsetBase) {
+    private static MemoryInspectionResult.Label[] CreateLabelsFromType(ClrType objectType, ulong objectAddress, ulong offsetBase, (int index, int offset) first = default) {
+        MemoryInspectionResult.Label[] labels;
+        if (objectType.IsArray) {
+            var length = objectType.GetArrayLength(objectAddress);
+            labels = new MemoryInspectionResult.Label[first.index + 1 + length];
+            labels[first.index] = new MemoryInspectionResult.Label("length", first.offset, IntPtr.Size);
+            for (var i = 0; i < length; i++) {
+                var offset = (int)(objectType.GetArrayElementAddress(objectAddress, i) - offsetBase);
+                labels[first.index + 1 + i] = new MemoryInspectionResult.Label(
+                    i.ToString(),
+                    offset,
+                    objectType.ElementSize
+                );
+            }
+            return labels;
+        }
+
+        var fields = objectType.Fields;
         var fieldCount = fields.Count;
+        labels = new MemoryInspectionResult.Label[first.index + fieldCount];
         for (var i = 0; i < fieldCount; i++) {
             var field = fields[i];
             var offset = (int)(field.GetAddress(objectAddress) - offsetBase);
-            labels[startIndex + i] = new MemoryInspectionResult.Label(
+            labels[first.index + i] = new MemoryInspectionResult.Label(
                 field.Name,
                 offset,
                 field.Size
             );
         }
+        return labels;
     }
 
     private static void EnsureRuntime() {
