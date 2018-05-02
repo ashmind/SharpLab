@@ -50,7 +50,7 @@
     "dateformat": "^1.0.12",
     "lz-string": "^1.4.4",
     "marked": "^0.3.19",
-    "mirrorsharp": "^0.9.2",
+    "mirrorsharp": "^0.9.3",
     "vue": "^2.5.16"
   }
 }
