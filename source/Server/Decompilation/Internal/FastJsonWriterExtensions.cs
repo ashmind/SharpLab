@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MirrorSharp.Advanced;
 
-namespace SharpLab.Server.Decompilation.Internal
-{
+namespace SharpLab.Server.Decompilation.Internal {
     public static class FastJsonWriterExtensions {
         public static void WriteValueFromParts(this IFastJsonWriter writer, string part1, string part2, string part3) {
             using (var stringWriter = writer.OpenString()) {

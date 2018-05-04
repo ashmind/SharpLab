@@ -1,4 +1,4 @@
-﻿class C {
+class C {
     int i = 1;
     char c = 'c';
 
@@ -152,6 +152,11 @@ b";
                         "range": "21-24",
                         "children": [
                           {
+                            "type": "operation",
+                            "property": "Operation",
+                            "kind": "FieldInitializer"
+                          },
+                          {
                             "type": "token",
                             "kind": "EqualsToken",
                             "property": "EqualsToken",
@@ -176,6 +181,18 @@ b";
                             "property": "Value",
                             "range": "23-24",
                             "children": [
+                              {
+                                "type": "operation",
+                                "property": "Operation",
+                                "kind": "Literal",
+                                "children": [
+                                  {
+                                    "type": "property-only",
+                                    "property": "Value",
+                                    "value": 1
+                                  }
+                                ]
+                              },
                               {
                                 "type": "token",
                                 "kind": "NumericLiteralToken",
@@ -287,6 +304,11 @@ b";
                         "range": "38-43",
                         "children": [
                           {
+                            "type": "operation",
+                            "property": "Operation",
+                            "kind": "FieldInitializer"
+                          },
+                          {
                             "type": "token",
                             "kind": "EqualsToken",
                             "property": "EqualsToken",
@@ -311,6 +333,18 @@ b";
                             "property": "Value",
                             "range": "40-43",
                             "children": [
+                              {
+                                "type": "operation",
+                                "property": "Operation",
+                                "kind": "Literal",
+                                "children": [
+                                  {
+                                    "type": "property-only",
+                                    "property": "Value",
+                                    "value": "c"
+                                  }
+                                ]
+                              },
                               {
                                 "type": "token",
                                 "kind": "CharacterLiteralToken",
@@ -428,6 +462,11 @@ b";
                         "range": "62-72",
                         "children": [
                           {
+                            "type": "operation",
+                            "property": "Operation",
+                            "kind": "FieldInitializer"
+                          },
+                          {
                             "type": "token",
                             "kind": "EqualsToken",
                             "property": "EqualsToken",
@@ -452,6 +491,18 @@ b";
                             "property": "Value",
                             "range": "64-72",
                             "children": [
+                              {
+                                "type": "operation",
+                                "property": "Operation",
+                                "kind": "Literal",
+                                "children": [
+                                  {
+                                    "type": "property-only",
+                                    "property": "Value",
+                                    "value": "\"a\r\nb\""
+                                  }
+                                ]
+                              },
                               {
                                 "type": "token",
                                 "kind": "StringLiteralToken",
@@ -563,6 +614,11 @@ b";
                         "range": "89-98",
                         "children": [
                           {
+                            "type": "operation",
+                            "property": "Operation",
+                            "kind": "FieldInitializer"
+                          },
+                          {
                             "type": "token",
                             "kind": "EqualsToken",
                             "property": "EqualsToken",
@@ -587,6 +643,18 @@ b";
                             "property": "Value",
                             "range": "91-98",
                             "children": [
+                              {
+                                "type": "operation",
+                                "property": "Operation",
+                                "kind": "Literal",
+                                "children": [
+                                  {
+                                    "type": "property-only",
+                                    "property": "Value",
+                                    "value": "\"a\r\nb\""
+                                  }
+                                ]
+                              },
                               {
                                 "type": "token",
                                 "kind": "StringLiteralToken",

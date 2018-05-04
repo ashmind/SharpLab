@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -8,19 +9,27 @@ using MirrorSharp.Advanced;
 using SharpLab.Server.Decompilation.Internal;
 
 namespace SharpLab.Server.Decompilation.AstOnly {
-    public class RoslynAstTarget : IAstTarget {
+    public partial class RoslynAstTarget : IAstTarget {
         public async Task<object> GetAstAsync(IWorkSession session, CancellationToken cancellationToken) {
             var document = session.Roslyn.Project.Documents.Single();
-            return await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+
+            return new RoslynAst(syntaxRoot, semanticModel);
         }
 
         public void SerializeAst(object ast, IFastJsonWriter writer, IWorkSession session) {
+            SerializeAst((RoslynAst)ast, writer, session);
+        }
+
+        private void SerializeAst(RoslynAst ast, IFastJsonWriter writer, IWorkSession session) {
             writer.WriteStartArray();
-            SerializeNode((SyntaxNode)ast, writer);
+            SerializeNode(ast.SyntaxRoot, ast.SemanticModel, writer);
             writer.WriteEndArray();
         }
 
-        private void SerializeNode(SyntaxNode node, IFastJsonWriter writer, string specialParentPropertyName = null) {
+        private void SerializeNode(SyntaxNode node, SemanticModel semanticModel, IFastJsonWriter writer, string specialParentPropertyName = null) {
+            RuntimeHelpers.EnsureSufficientExecutionStack();
             writer.WriteStartObject();
             writer.WriteProperty("type", "node");
             writer.WriteProperty("kind", RoslynSyntaxHelper.GetKindName(node.RawKind));
@@ -28,20 +37,27 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             if (parentPropertyName != null)
                 writer.WriteProperty("property", parentPropertyName);
             SerializeSpanProperty(node.FullSpan, writer);
+
             writer.WritePropertyStartArray("children");
+            var operation = semanticModel.GetOperation(node);
+            if (operation != null)
+                SerializeOperation(operation, writer);
+
             foreach (var child in node.ChildNodesAndTokens()) {
                 if (child.IsNode) {
-                    SerializeNode(child.AsNode(), writer);
+                    SerializeNode(child.AsNode(), semanticModel, writer);
                 }
                 else {
-                    SerializeToken(child.AsToken(), writer);
+                    SerializeToken(child.AsToken(), semanticModel, writer);
                 }
             }
             writer.WriteEndArray();
+
             writer.WriteEndObject();
         }
 
-        private void SerializeToken(SyntaxToken token, IFastJsonWriter writer) {
+        private void SerializeToken(SyntaxToken token, SemanticModel semanticModel, IFastJsonWriter writer) {
+            RuntimeHelpers.EnsureSufficientExecutionStack();
             writer.WriteStartObject();
             writer.WriteProperty("type", "token");
             writer.WriteProperty("kind", RoslynSyntaxHelper.GetKindName(token.RawKind));
@@ -54,7 +70,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             if (token.HasLeadingTrivia || token.HasTrailingTrivia) {
                 writer.WritePropertyStartArray("children");
                 foreach (var trivia in token.LeadingTrivia) {
-                    SerializeTrivia(trivia, writer);
+                    SerializeTrivia(trivia, semanticModel, writer);
                 }
                 writer.WriteStartObject();
                 writer.WriteProperty("type", "value");
@@ -62,7 +78,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 SerializeSpanProperty(token.Span, writer);
                 writer.WriteEndObject();
                 foreach (var trivia in token.TrailingTrivia) {
-                    SerializeTrivia(trivia, writer);
+                    SerializeTrivia(trivia, semanticModel, writer);
                 }
                 writer.WriteEndArray();
             }
@@ -72,14 +88,15 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             writer.WriteEndObject();
         }
 
-        private void SerializeTrivia(SyntaxTrivia trivia, IFastJsonWriter writer) {
+        private void SerializeTrivia(SyntaxTrivia trivia, SemanticModel semanticModel, IFastJsonWriter writer) {
+            RuntimeHelpers.EnsureSufficientExecutionStack();
             writer.WriteStartObject();
             writer.WriteProperty("type", "trivia");
             writer.WriteProperty("kind", RoslynSyntaxHelper.GetKindName(trivia.RawKind));
             SerializeSpanProperty(trivia.FullSpan, writer);
             if (trivia.HasStructure) {
                 writer.WritePropertyStartArray("children");
-                SerializeNode(trivia.GetStructure(), writer, "Structure");
+                SerializeNode(trivia.GetStructure(), semanticModel, writer, "Structure");
                 writer.WriteEndArray();
             }
             else {
@@ -91,6 +108,46 @@ namespace SharpLab.Server.Decompilation.AstOnly {
         private void SerializeSpanProperty(TextSpan span, IFastJsonWriter writer) {
             writer.WritePropertyName("range");
             writer.WriteValueFromParts(span.Start, '-', span.End);
+        }
+
+        //private void SerializeSymbol(ISymbol symbol, IFastJsonWriter writer, string relationToParent) {
+        //    RuntimeHelpers.EnsureSufficientExecutionStack();
+        //    writer.WriteStartObject();
+        //    writer.WriteProperty("type", "symbol");
+        //    writer.WriteProperty("property", relationToParent);
+        //    writer.WriteProperty("kind", symbol.Kind.ToString());
+        //    writer.WritePropertyStartArray("children");
+        //    writer.WriteStartObject();
+        //    writer.WriteProperty("type", "property");
+        //    writer.WriteProperty("property", "Name");
+        //    writer.WriteProperty("value", symbol.Name);
+        //    writer.WriteEndObject();
+        //    writer.WriteEndArray();
+        //    writer.WriteEndObject();
+        //}
+
+        private void SerializeOperation(IOperation operation, IFastJsonWriter writer) {
+            RuntimeHelpers.EnsureSufficientExecutionStack();
+            writer.WriteStartObject();
+            writer.WriteProperty("type", "operation");
+            writer.WriteProperty("property", "Operation");
+            writer.WriteProperty("kind", operation.Kind.ToString());
+            if (operation.ConstantValue.HasValue) {
+                writer.WritePropertyStartArray("children");
+                writer.WriteStartObject();
+                writer.WriteProperty("type", "property-only");
+                writer.WriteProperty("property", "Value");
+                writer.WritePropertyName("value");
+                switch (operation.ConstantValue.Value) {
+                    case int i: writer.WriteValue(i); break;
+                    case string s: writer.WriteValueFromParts("\"", s, "\""); break;
+                    case var v: writer.WriteValue(v.ToString()); break;
+                }
+                writer.WriteEndObject();
+                writer.WriteEndArray();
+            }
+
+            writer.WriteEndObject();
         }
 
         public IReadOnlyCollection<string> SupportedLanguageNames { get; } = new[] {

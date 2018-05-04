@@ -25,13 +25,7 @@
 
     li {
         cursor: pointer;
-        padding-top: 2px;
-        padding-bottom: 2px;
         padding-right: 6px;
-
-        &:first-child {
-            padding-top: 2px;
-        }
 
         &.selected {
             background-color: @highlight-color;
@@ -67,10 +61,11 @@
 .ast-item-wrap {
     display: flex;
     align-items: center;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 .ast-item-property {
-    font-weight: bold;
     margin-right: 5px;
 }
 
@@ -96,6 +91,14 @@
     .ast-item-value & {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0.5 0.5 20 20'%3E%3Cpath fill='%23eeb046' stroke='%23f6f6f6' d='M8 8h4v4H8z'/%3E%3C/svg%3E");
     }
+
+    .ast-item-operation & {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0.5 0.5 20 20'%3E%3Ccircle cx='10' cy='10' r='4.23' stroke='%23f6f6f6' stroke-width='4.5' fill='none'/%3E%3Ccircle cx='10' cy='10' r='4.23' stroke='%23888' stroke-width='2.5' fill='none'/%3E%3C/svg%3E");
+    }
+
+    .ast-item-property-only & {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0.5 0.5 20 20'%3E%3Ccircle cx='10' cy='10' r='2' fill='%23888' stroke='%23f6f6f6' stroke-width='1.1'/%3E%3C/svg%3E");
+    }
 }
 
 .ast-inline-value {
@@ -110,4 +113,8 @@
         font-style: italic;
         margin-left: 5px;
     }
+}
+
+.ast-item-operation {
+    font-style: italic;
 }

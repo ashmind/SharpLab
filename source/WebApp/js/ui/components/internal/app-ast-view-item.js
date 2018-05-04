@@ -1,4 +1,7 @@
 function renderValue(value, type) {
+    if (typeof value === 'number')
+        return value;
+
     if (type === 'trivia')
         return escapeTrivia(value);
 

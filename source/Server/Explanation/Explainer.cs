@@ -4,8 +4,8 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using MirrorSharp.Advanced;
+using SharpLab.Server.Decompilation.AstOnly;
 using SharpLab.Server.Explanation.Internal;
 using SourcePath;
 
@@ -27,7 +27,7 @@ namespace SharpLab.Server.Explanation {
 
         private IEnumerable<(SyntaxNodeOrToken, SyntaxExplanation)> MapExplanations(object ast, IReadOnlyCollection<SyntaxExplanation> explanations) {
             var seen = new HashSet<SyntaxExplanation>();
-            var tree = (CSharpSyntaxNode)ast;
+            var tree = ((RoslynAst)ast).SyntaxRoot;
             var results = new List<(SyntaxNode, SyntaxExplanation)>();
             foreach (var descendant in tree.DescendantNodesAndTokensAndSelf()) {
                 foreach (var explanation in explanations) {
