@@ -82,6 +82,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
                           // required by F#'s printf
                           .Getter(nameof(Console.Out), Allowed)
                 )
+                .Type(typeof(MemoryExtensions), Allowed)
                 .Type(typeof(ReadOnlySpan<>), Allowed,
                     t => t.Member(nameof(ReadOnlySpan<object>.ToArray), Allowed, ArrayReturnRewriter.Default)
                 )

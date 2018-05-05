@@ -133,7 +133,6 @@ Microsoft.FSharp.Collections
      ToArray: Denied
      ToSeq: Denied
      ToString: Denied
-     Transpose: Denied
      Truncate: Denied
      TryFind: Denied
      TryFindBack: Denied
@@ -241,7 +240,6 @@ Microsoft.FSharp.Collections
      ToArray: Allowed (CollectedEnumerableArgumentRewriter)
      ToList: Allowed (CollectedEnumerableArgumentRewriter)
      ToString: Denied
-     Transpose: Denied
      Truncate: Denied
      TryFind: Denied
      TryFindBack: Denied
@@ -2237,7 +2235,35 @@ System
      Truncate: Allowed
   MemberAccessException: Denied
   Memory`1: Denied
-  MemoryExtensions: Denied
+  MemoryExtensions: Allowed
+     AsMemory: Allowed
+     AsSpan: Allowed
+     BinarySearch: Allowed
+     CompareTo: Allowed
+     Contains: Allowed
+     CopyTo: Allowed
+     EndsWith: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     IndexOf: Allowed
+     IndexOfAny: Allowed
+     IsWhiteSpace: Allowed
+     LastIndexOf: Allowed
+     LastIndexOfAny: Allowed
+     Overlaps: Allowed
+     Reverse: Allowed
+     SequenceCompareTo: Allowed
+     SequenceEqual: Allowed
+     StartsWith: Allowed
+     ToLower: Allowed
+     ToLowerInvariant: Allowed
+     ToString: Allowed
+     ToUpper: Allowed
+     ToUpperInvariant: Allowed
+     Trim: Allowed
+     TrimEnd: Allowed
+     TrimStart: Allowed
   MethodAccessException: Denied
   MidpointRounding: Denied
   MissingFieldException: Denied
