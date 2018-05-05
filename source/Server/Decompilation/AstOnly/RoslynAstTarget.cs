@@ -141,7 +141,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 switch (operation.ConstantValue.Value) {
                     case int i: writer.WriteValue(i); break;
                     case string s: writer.WriteValueFromParts("\"", s, "\""); break;
-                    case var v: writer.WriteValue(v.ToString()); break;
+                    case var v: writer.WriteValue(v?.ToString()); break;
                 }
                 writer.WriteEndObject();
                 writer.WriteEndArray();
