@@ -120,6 +120,10 @@ namespace SharpLab.Server {
                    .As<IExecutor>()
                    .SingleInstance();
 
+            builder.RegisterType<ExecutionResultSerializer>()
+                   .AsSelf()
+                   .SingleInstance();
+
             builder.RegisterType<FlowReportingRewriter>()
                    .As<IAssemblyRewriter>()
                    .SingleInstance();

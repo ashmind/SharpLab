@@ -133,6 +133,7 @@ Microsoft.FSharp.Collections
      ToArray: Denied
      ToSeq: Denied
      ToString: Denied
+     Transpose: Denied
      Truncate: Denied
      TryFind: Denied
      TryFindBack: Denied
@@ -240,6 +241,7 @@ Microsoft.FSharp.Collections
      ToArray: Allowed (CollectedEnumerableArgumentRewriter)
      ToList: Allowed (CollectedEnumerableArgumentRewriter)
      ToString: Denied
+     Transpose: Denied
      Truncate: Denied
      TryFind: Denied
      TryFindBack: Denied
@@ -975,8 +977,8 @@ SharpLab.Runtime.Internal
      ToString: Denied
   Flow+Step: Denied
   InspectionSettings: Denied
+  MemoryInspectionLabel: Denied
   MemoryInspectionResult: Denied
-  MemoryInspectionResult+Label: Denied
   Output: Denied
   SimpleInspectionResult: Denied
 System

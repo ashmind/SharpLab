@@ -30,29 +30,14 @@ export default {
         }
     },
     computed: {
-        // TODO: Remove once all backends are updated to use labels
-        labels() {
-            let labels = this.inspection.labels;
-            if (!labels && this.inspection.fields)
-                labels = [{ offset: 0, length: this.inspection.data.length, name: 'this branch is not updated to the new label model yet' }];
-
-            return labels;
-        },
-
-        labelsWithPadding() {
-            const labels = this.labels;
-            const results = [];
-            for (let i = 0; i < labels.length; i++) {
-                const label = labels[i];
-                results.push(label);
-
-                const next = labels[i + 1] || { offset: this.inspection.data.length };
-                const padding = { offset: label.offset + label.length };
-                padding.length = next.offset - padding.offset;
-                if (padding.length > 0)
-                    results.push(padding);
+        labelLevels() {
+            const levels = [];
+            addLabelsToLevelRecursive(levels, this.inspection.labels, 0);
+            applyCrossLevelSpansToLabels(levels);
+            for (let i = 0; i < levels.length; i++) {
+                levels[i] = sortAndAddPaddingBetweenLabels(levels[i], this.inspection.data.length);
             }
-            return results;
+            return levels;
         }
     },
     template: `
@@ -66,10 +51,11 @@ export default {
           </app-select>
         </header>
         <table>
-          <tr>
-            <td v-for="label in labelsWithPadding"
+          <tr v-for="labels in labelLevels">
+            <td v-for="label in labels"
                 class="inspection-data-label"
                 v-bind:colspan="label.length"
+                v-bind:rowspan="label.levelSpan"
                 v-bind:title="label.name">{{label.name}}</td>
           </tr>
           <tr>
@@ -81,3 +67,55 @@ export default {
       </div>
     `.replace(/[\r\n]+\s*/g, '').replace(/\s{2,}/g, ' ')
 };
+
+function addLabelsToLevelRecursive(levels, labels, index) {
+    let level = levels[index];
+    if (!level) {
+        level = [];
+        levels[index] = level;
+    }
+    for (const label of labels) {
+        level.push(label);
+        if (label.nested && label.nested.length > 0)
+            addLabelsToLevelRecursive(levels, label.nested, index + 1);
+    }
+}
+
+function applyCrossLevelSpansToLabels(levels) {
+    for (let i = 0; i < levels.length; i++) {
+        for (const label of levels[i]) {
+            if (label.nested && label.nested.length > 0)
+                continue;
+            label.levelSpan = 1;
+            for (let j = i + 1; j < levels.length; j++) {
+                levels[j].push({ offset: label.offset, length: label.length, levelSpanPlaceholder: true });
+                label.levelSpan += 1;
+            }
+        }
+    }
+}
+
+function sortAndAddPaddingBetweenLabels(labels, dataLength) {
+    const results = [];
+    labels.sort((a, b) => {
+        if (a.offset > b.offset) return +1;
+        if (a.offset < b.offset) return -1;
+        return 0;
+    });
+
+    for (let i = 0; i < labels.length; i++) {
+        const label = labels[i];
+        if (i === 0 && label.offset > 0)
+            results.push({ offset: 0, length: label.offset });
+
+        if (!label.levelSpanPlaceholder)
+            results.push(label);
+
+        const next = labels[i + 1] || { offset: dataLength };
+        const padding = { offset: label.offset + label.length };
+        padding.length = next.offset - padding.offset;
+        if (padding.length > 0)
+            results.push(padding);
+    }
+    return results;
+}

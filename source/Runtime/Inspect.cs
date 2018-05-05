@@ -30,8 +30,8 @@ public static class Inspect {
         var data = ReadMemory(objectStart, objectSize);
 
         var labels = CreateLabelsFromType(objectType, address, objectStart, first: (index: 2, offset: 2 * IntPtr.Size));
-        labels[0] = new MemoryInspectionResult.Label("header", 0, IntPtr.Size);
-        labels[1] = new MemoryInspectionResult.Label("type handle", IntPtr.Size, IntPtr.Size);
+        labels[0] = new MemoryInspectionLabel("header", 0, IntPtr.Size);
+        labels[1] = new MemoryInspectionLabel("type handle", IntPtr.Size, IntPtr.Size);
 
         Output.Write(new MemoryInspectionResult($"{objectType.Name} at 0x{address:X}", labels, data));
     }
@@ -56,13 +56,13 @@ public static class Inspect {
         var size = type.IsValueType ? (ulong)Unsafe.SizeOf<T>() : (uint)IntPtr.Size;
         var data = ReadMemory(address, size);
 
-        MemoryInspectionResult.Label[] labels;
+        MemoryInspectionLabel[] labels;
         if (type.IsValueType && !type.IsPrimitive) {
             var runtimeType = _runtime.Heap.GetTypeByMethodTable((ulong)type.TypeHandle.Value);
             labels = CreateLabelsFromType(runtimeType, address, address + (uint)IntPtr.Size);
         }
         else {
-            labels = new MemoryInspectionResult.Label[0];
+            labels = new MemoryInspectionLabel[0];
         }
 
         var title = type.IsValueType
@@ -71,18 +71,25 @@ public static class Inspect {
         Output.Write(new MemoryInspectionResult(title, labels, data));
     }
 
-    private static MemoryInspectionResult.Label[] CreateLabelsFromType(ClrType objectType, ulong objectAddress, ulong offsetBase, (int index, int offset) first = default) {
-        MemoryInspectionResult.Label[] labels;
+    private static MemoryInspectionLabel[] CreateLabelsFromType(
+        ClrType objectType,
+        ulong objectAddress,
+        ulong offsetBase,
+        (int index, int offset) first = default
+    ) {
+        MemoryInspectionLabel[] labels;
         if (objectType.IsArray) {
             var length = objectType.GetArrayLength(objectAddress);
-            labels = new MemoryInspectionResult.Label[first.index + 1 + length];
-            labels[first.index] = new MemoryInspectionResult.Label("length", first.offset, IntPtr.Size);
+            labels = new MemoryInspectionLabel[first.index + 1 + length];
+            labels[first.index] = new MemoryInspectionLabel("length", first.offset, IntPtr.Size);
             for (var i = 0; i < length; i++) {
-                var offset = (int)(objectType.GetArrayElementAddress(objectAddress, i) - offsetBase);
-                labels[first.index + 1 + i] = new MemoryInspectionResult.Label(
+                var elementAddress = objectType.GetArrayElementAddress(objectAddress, i);
+                var offset = (int)(elementAddress - offsetBase);
+                labels[first.index + 1 + i] = new MemoryInspectionLabel(
                     i.ToString(),
                     offset,
-                    objectType.ElementSize
+                    objectType.ElementSize,
+                    GetNestedLabels(objectType.ComponentType, elementAddress, offsetBase)
                 );
             }
             return labels;
@@ -90,17 +97,33 @@ public static class Inspect {
 
         var fields = objectType.Fields;
         var fieldCount = fields.Count;
-        labels = new MemoryInspectionResult.Label[first.index + fieldCount];
+        labels = new MemoryInspectionLabel[first.index + fieldCount];
         for (var i = 0; i < fieldCount; i++) {
             var field = fields[i];
-            var offset = (int)(field.GetAddress(objectAddress) - offsetBase);
-            labels[first.index + i] = new MemoryInspectionResult.Label(
+            var fieldAddress = field.GetAddress(objectAddress);
+            var offset = (int)(fieldAddress - offsetBase);
+            labels[first.index + i] = new MemoryInspectionLabel(
                 field.Name,
                 offset,
-                field.Size
+                GetCorrectFieldSize(field),
+                GetNestedLabels(field.Type, fieldAddress, offsetBase)
             );
         }
         return labels;
+    }
+
+    private static int GetCorrectFieldSize(ClrInstanceField field) {
+        // https://github.com/Microsoft/clrmd/issues/101
+        return !field.IsValueClass
+             ? field.Size
+             : (field.Size - (2 * IntPtr.Size));
+    }
+
+    private static IReadOnlyList<MemoryInspectionLabel> GetNestedLabels(ClrType type, ulong valueAddress, ulong offsetBase) {
+        if (!type.IsValueClass)
+            return Array.Empty<MemoryInspectionLabel>();
+
+        return CreateLabelsFromType(type, valueAddress, offsetBase + (uint)IntPtr.Size);
     }
 
     private static void EnsureRuntime() {
