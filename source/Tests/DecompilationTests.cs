@@ -131,11 +131,15 @@ namespace SharpLab.Tests {
         [InlineData("JitAsm.AsyncRegression.cs2asm")]
         [InlineData("JitAsm.ConsoleWrite.cs2asm")]
         [InlineData("JitAsm.JumpBack.cs2asm")] // https://github.com/ashmind/SharpLab/issues/229
-        [InlineData("JitAsm.OpenGenerics.cs2asm")]
-        [InlineData("JitAsm.GenericMethodWithAttribute.cs2asm")]
-        [InlineData("JitAsm.GenericClassWithAttribute.cs2asm")]
-        [InlineData("JitAsm.GenericMethodWithAttribute.fs2asm")]
         [InlineData("JitAsm.Delegate.cs2asm")]
+        [InlineData("JitAsm.Nested.Simple.cs2asm")]
+        [InlineData("JitAsm.Generic.Open.Multiple.cs2asm")]
+        [InlineData("JitAsm.Generic.MethodWithAttribute.cs2asm")]
+        [InlineData("JitAsm.Generic.ClassWithAttribute.cs2asm")]
+        [InlineData("JitAsm.Generic.MethodWithAttribute.fs2asm")]
+        [InlineData("JitAsm.Generic.Nested.AttributeOnTop.cs2asm")]
+        [InlineData("JitAsm.Generic.Nested.AttributeOnNested.cs2asm")]
+        [InlineData("JitAsm.Generic.Nested.AttributeOnBoth.cs2asm")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForJitAsm(string resourceName) {
             var data = TestData.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);

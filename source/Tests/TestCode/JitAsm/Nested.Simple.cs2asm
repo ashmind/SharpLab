@@ -1,0 +1,13 @@
+static class C {
+    static class N {
+        static int M() => 0x12345;
+    }
+}
+
+#=>
+
+; Desktop CLR v<IGNORE> (clr.dll) on x86.
+
+C+N.M()
+    L0000: mov eax, 0x12345
+    L0005: ret

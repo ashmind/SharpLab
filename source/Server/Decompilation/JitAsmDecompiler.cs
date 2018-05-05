@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -12,7 +13,6 @@ using SharpDisasm;
 using SharpDisasm.Translators;
 using SharpLab.Runtime;
 using SharpLab.Server.Common;
-using SharpLab.Server.Decompilation.Internal;
 
 namespace SharpLab.Server.Decompilation {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
@@ -190,14 +190,16 @@ namespace SharpLab.Server.Decompilation {
                 }
                 var results = new List<MethodJitResult>();
                 foreach (var type in assembly.DefinedTypes) {
+                    if (type.IsNested)
+                        continue; // it's easier to handle nested generic types recursively, so we suppress all nested for consistency
                     CompileAndCollectMembers(results, type);
                 }
                 return results;
             }
 
-            private static void CompileAndCollectMembers(ICollection<MethodJitResult> results, TypeInfo type) {
+            private static void CompileAndCollectMembers(ICollection<MethodJitResult> results, TypeInfo type, ImmutableArray<Type>? genericArgumentTypes = null) {
                 if (type.IsGenericTypeDefinition) {
-                    if (TryCompileAndCollectMembersOfGeneric(results, type))
+                    if (TryCompileAndCollectMembersOfGeneric(results, type, genericArgumentTypes))
                         return;
                 }
 
@@ -210,22 +212,32 @@ namespace SharpLab.Server.Decompilation {
                         continue;
                     CollectCompiledWraps(results, method);
                 }
+
+                foreach (var nested in type.DeclaredNestedTypes) {
+                    CompileAndCollectMembers(results, nested, genericArgumentTypes);
+                }
             }
 
-            private static bool TryCompileAndCollectMembersOfGeneric(ICollection<MethodJitResult> results, TypeInfo type) {
-                if (type.DeclaringType?.IsGenericTypeDefinition ?? false)
-                    return true; // we expect to see that one separately when we visit the parent type
-
+            private static bool TryCompileAndCollectMembersOfGeneric(ICollection<MethodJitResult> results, TypeInfo type, ImmutableArray<Type>? parentArgumentTypes = null) {
                 var hadAttribute = false;
                 foreach (var attribute in type.GetCustomAttributes<JitGenericAttribute>(false)) {
                     hadAttribute = true;
-                    var genericInstance = type.MakeGenericType(attribute.ArgumentTypes).GetTypeInfo();
-                    CompileAndCollectMembers(results, genericInstance.GetTypeInfo());
-                    foreach (var nested in genericInstance.DeclaredNestedTypes) {
-                        CompileAndCollectMembers(results, nested);
-                    }
+
+                    var fullArgumentTypes = (parentArgumentTypes ?? ImmutableArray<Type>.Empty)
+                        .AddRange(attribute.ArgumentTypes);
+                    var genericInstance = type.MakeGenericType(fullArgumentTypes.ToArray());
+                    CompileAndCollectMembers(results, genericInstance.GetTypeInfo(), fullArgumentTypes);
                 }
-                return hadAttribute;
+                if (hadAttribute)
+                    return true;
+
+                if (parentArgumentTypes != null) {
+                    var genericInstance = type.MakeGenericType(parentArgumentTypes.Value.ToArray());
+                    CompileAndCollectMembers(results, genericInstance.GetTypeInfo(), parentArgumentTypes);
+                    return true;
+                }
+
+                return false;
             }
 
             private static void CollectCompiledWraps(ICollection<MethodJitResult> results, MethodBase method) {
