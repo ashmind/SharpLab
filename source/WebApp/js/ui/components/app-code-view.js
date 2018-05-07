@@ -31,12 +31,7 @@ Vue.component('app-code-view', {
         highlightAt(location, by) {
             if (!this.hasRanges())
                 return;
-            const range = this.ranges.find(
-                r => location.line >= r.result.start.line
-                  && location.ch >= r.result.start.ch
-                  && location.line <= r.result.end.line
-                  && location.ch <= r.result.end.ch
-            );
+            const range = this.ranges.find(r => this.isLocationBetween(location, r.result.start, r.result.end));
             if (this.highlighted.range === range) {
                 this.highlighted.by = by;
                 return;
@@ -53,6 +48,18 @@ Vue.component('app-code-view', {
                 marker: this.cm.markText(range.result.start, range.result.end, { className: 'highlighted' }),
                 range
             };
+        },
+
+        isLocationBetween(location, start, end) {
+            if (location.line < start.line)
+                return false;
+            if (location.line === start.line && location.ch < start.ch)
+                return false;
+            if (location.line > end.line)
+                return false;
+            if (location.line === end.line && location.ch > end.ch)
+                return false;
+            return true;
         }
     },
     created() {
