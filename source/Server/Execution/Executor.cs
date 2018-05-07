@@ -44,17 +44,16 @@ namespace SharpLab.Server.Execution {
             _monitor = monitor;
         }
 
-        public ExecutionResult Execute(Stream assemblyStream, Stream symbolStream, IWorkSession session) {
+        public ExecutionResult Execute(CompilationStreamPair streams, IWorkSession session) {
             var readerParameters = new ReaderParameters {
-                ReadSymbols = symbolStream != null,
-                SymbolStream = symbolStream,
+                ReadSymbols = streams.SymbolStream != null,
+                SymbolStream = streams.SymbolStream,
                 AssemblyResolver = _assemblyResolver,
-                SymbolReaderProvider = symbolStream != null ? _symbolReaderProvider : null
+                SymbolReaderProvider = streams.SymbolStream != null ? _symbolReaderProvider : null
             };
 
-            using (assemblyStream)
-            using (symbolStream)
-            using (var assembly = AssemblyDefinition.ReadAssembly(assemblyStream, readerParameters)) {
+            using (streams)
+            using (var assembly = AssemblyDefinition.ReadAssembly(streams.AssemblyStream, readerParameters)) {
                 /*
                 #if DEBUG
                 assembly.Write(@"d:\Temp\assembly\" + DateTime.Now.Ticks + "-before-rewrite.dll");
@@ -64,7 +63,7 @@ namespace SharpLab.Server.Execution {
                     rewriter.Rewrite(assembly, session);
                 }
                 if (assembly.EntryPoint == null)
-                    throw new ArgumentException("Failed to find an entry point (Main?) in assembly.", nameof(assemblyStream));
+                    throw new ArgumentException("Failed to find an entry point (Main?) in assembly.", nameof(streams));
 
                 var guardToken = AssemblyGuard.Rewrite(assembly, GuardSettings);
                 using (var rewrittenStream = _memoryStreamManager.GetStream()) {

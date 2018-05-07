@@ -27,10 +27,12 @@ namespace SharpLab.Server.Decompilation {
             _assemblyResolver = assemblyResolver;
         }
 
-        public void Decompile(Stream assemblyStream, TextWriter codeWriter) {
-            // ReSharper disable once AgentHeisenbug.CallToNonThreadSafeStaticMethodInThreadSafeType
+        public void Decompile(CompilationStreamPair streams, TextWriter codeWriter) {
+            Argument.NotNull(nameof(streams), streams);
+            Argument.NotNull(nameof(codeWriter), codeWriter);
+
             var readerParameters = new ReaderParameters { AssemblyResolver = _assemblyResolver };
-            using (var module = ModuleDefinition.ReadModule(assemblyStream, readerParameters)) {
+            using (var module = ModuleDefinition.ReadModule(streams.AssemblyStream, readerParameters)) {
                 var decompiler = new ICSharpCode.Decompiler.CSharp.CSharpDecompiler(module, DecompilerSettings);
                 var syntaxTree = decompiler.DecompileWholeModuleAsSingleFile();
 

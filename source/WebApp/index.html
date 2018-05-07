@@ -118,7 +118,9 @@
             <app-code-view v-if="lastResultOfType.code"
                            v-show="result.type === 'code'"
                            v-bind:value="lastResultOfType.code.value"
-                           v-bind:language="options.target"></app-code-view>
+                           v-bind:ranges="lastResultOfType.code.ranges"
+                           v-bind:language="options.target"
+                           v-on:range-active="applyCodeViewRange"></app-code-view>
             <app-ast-view class="ast"
                           ref="astView"
                           v-if="lastResultOfType.ast"

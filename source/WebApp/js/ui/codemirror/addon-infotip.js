@@ -30,7 +30,7 @@
         if (!this.active) {
           element.removeAttribute("hidden");
           // Note: we have to show it *before* we check for a better position
-          // othervise we can't calculate the size
+          // otherwise we can't calculate the size
         }
 
         const rect = element.getBoundingClientRect();

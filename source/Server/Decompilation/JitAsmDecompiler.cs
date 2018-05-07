@@ -19,7 +19,10 @@ namespace SharpLab.Server.Decompilation {
     public class JitAsmDecompiler : IDecompiler {
         public string LanguageName => TargetNames.JitAsm;
 
-        public void Decompile(Stream assemblyStream, TextWriter codeWriter) {
+        public void Decompile(CompilationStreamPair streams, TextWriter codeWriter) {
+            Argument.NotNull(nameof(streams), streams);
+            Argument.NotNull(nameof(codeWriter), codeWriter);
+
             var currentSetup = AppDomain.CurrentDomain.SetupInformation;
             using (var dataTarget = DataTarget.AttachToProcess(CurrentProcess.Id, UInt32.MaxValue, AttachFlag.Passive))
             using (var context = AppDomainContext.Create(new AppDomainSetup {
@@ -27,7 +30,7 @@ namespace SharpLab.Server.Decompilation {
                 PrivateBinPath = currentSetup.PrivateBinPath
             })) {
                 context.LoadAssembly(LoadMethod.LoadFrom, Assembly.GetExecutingAssembly().GetAssemblyFile().FullName);
-                var results = RemoteFunc.Invoke(context.Domain, assemblyStream, Remote.GetCompiledMethods);
+                var results = RemoteFunc.Invoke(context.Domain, streams.AssemblyStream, Remote.GetCompiledMethods);
 
                 var currentMethodAddressRef = new Reference<ulong>();
                 var runtime = dataTarget.ClrVersions.Single().CreateRuntime();

@@ -1,5 +1,4 @@
 import * as getGistAsync from '../js/state/handlers/url/get-gist-async.js';
-
 import languages from '../js/helpers/languages.js';
 import targets from '../js/helpers/targets.js';
 import url from '../js/state/handlers/url.js';

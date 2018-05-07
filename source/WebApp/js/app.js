@@ -2,6 +2,7 @@ import './polyfills/iterable-dom.js';
 import trackFeature from './helpers/track-feature.js';
 import languages from './helpers/languages.js';
 import targets from './helpers/targets.js';
+import extractRangesFromIL from './helpers/extract-ranges-from-il';
 import getBranchesAsync from './server/get-branches-async.js';
 import state from './state/index.js';
 import url from './state/handlers/url.js';
@@ -56,6 +57,11 @@ function applyUpdateResult(updateResult) {
             result.warnings.push(diagnostic);
         }
     }
+    if (this.options.target === targets.il && result.value) {
+        const { code, ranges } = extractRangesFromIL(result.value);
+        result.value = code;
+        result.ranges = ranges;
+    }
     this.result = result;
     this.lastResultOfType[result.type] = result;
     resetLoading.apply(this);
@@ -77,6 +83,10 @@ function applyConnectionChange(connectionState) {
 function getServiceUrl(branch) {
     const httpRoot = branch ? branch.url : window.location.origin;
     return `${httpRoot.replace(/^http/, 'ws')}/mirrorsharp`;
+}
+
+function applyCodeViewRange(range) {
+    this.highlightedCodeRange = range ? range.source : null;
 }
 
 function applyAstSelect(item) {
@@ -173,6 +183,7 @@ async function createAppAsync() {
             applyUpdateResult,
             applyServerError,
             applyConnectionChange,
+            applyCodeViewRange,
             applyAstSelect,
             applyCursorMove
         }
