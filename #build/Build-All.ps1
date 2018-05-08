@@ -86,6 +86,7 @@ try {
     Write-Output "  Server.Azure.csproj"
     dotnet build "$sourceRoot\Server.Azure\Server.Azure.csproj" `
         /p:AllowedReferenceRelatedFileExtensions=.pdb `
+        /p:UnbreakablePolicyReportEnabled=false `
         /p:Configuration=Release
     if ($LastExitCode -ne 0) {
         Write-Error "SharpLab build failed."
