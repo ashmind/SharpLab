@@ -42,7 +42,7 @@
     <PackageReference Include="System.Memory" Version="4.5.0-preview2-26406-04" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0-preview2-26406-04" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.4.0" />
-    <PackageReference Include="Unbreakable" Version="0.9.0-unproven" />
+    <PackageReference Include="Unbreakable" Version="0.9.1-unproven" />
     <PackageReference Include="Unbreakable.Build.PolicyReport" Version="0.0.10" />
     <PackageReference Include="Unbreakable.Policy" Version="0.2.0-unproven" />
   </ItemGroup>
