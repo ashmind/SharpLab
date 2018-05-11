@@ -47,17 +47,23 @@ Vue.component('app-ast-view', {
 
                     if (item.children) {
                         this.expand(item);
-                        recurse(item.children);
-                        break;
+                        if (recurse(item.children))
+                            return true;
                     }
 
                     const li = getItemLI(item, this);
                     this.select(item, li);
                     li.scrollIntoView();
-                    break;
+                    return true;
                 }
+                return false;
             };
-            recurse(this.roots);
+            recurse(this.processedRoots);
+        }
+    },
+    computed: {
+        processedRoots() {
+            return preprocessItems(this.roots);
         }
     },
     created() {
@@ -96,9 +102,29 @@ Vue.component('app-ast-view', {
     },
     render(h) {
         this.itemsById = {};
-        return h('div', [renderTree(h, this.roots, this)]);
+        return h('div', [renderTree(h, this.processedRoots, this)]);
     }
 });
+
+function preprocessItems(items) {
+    return items.map(item => {
+        if (typeof item !== 'object') // simple value
+            return item;
+
+        const processed = Object.assign({}, item);
+        delete processed.properties;
+
+        const childrenFromProperties = Object
+            .entries(item.properties || {})
+            .map(([name, value]) => ({ type: 'property-only', property: name, value }));
+
+        if (childrenFromProperties.length === 0 && !item.children)
+            return processed;
+
+        processed.children = childrenFromProperties.concat(preprocessItems(item.children || []));
+        return processed;
+    });
+}
 
 function renderTree(h, items, that, parentId) {
     return h('ol',

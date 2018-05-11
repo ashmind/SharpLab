@@ -1,8 +1,5 @@
 function renderValue(value, type) {
-    if (value === null)
-        return 'null';
-
-    if (typeof value === 'number')
+    if (typeof value !== 'string')
         return value;
 
     if (type === 'trivia')

@@ -175,7 +175,7 @@
     </footer>
 
     <script type="text/x-template" id="app-ast-view-item">
-      <span v-if="typeof item === 'string'" class="ast-item-wrap ast-item-value">
+      <span v-if="typeof item !== 'object'" class="ast-item-wrap ast-item-value">
         <span class="ast-item-type"></span>
         {{renderValue(item, 'value')}}
       </span>

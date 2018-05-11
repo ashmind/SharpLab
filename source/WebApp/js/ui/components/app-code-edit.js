@@ -60,8 +60,8 @@ Vue.component('app-code-edit', {
             if (!range)
                 return;
 
-            const from = typeof range.start === 'number' ? cm.posFromIndex(range.start) : range.start;
-            const to   = typeof range.end === 'number'   ? cm.posFromIndex(range.end)   : range.end;
+            const from = typeof range.start === 'object' ? range.start : cm.posFromIndex(range.start);
+            const to   = typeof range.end === 'object'   ? range.end : cm.posFromIndex(range.end);
             currentMarker = cm.markText(from, to, { className: 'highlighted' });
         });
 

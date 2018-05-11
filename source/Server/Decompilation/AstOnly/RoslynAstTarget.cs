@@ -3,6 +3,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using AshMind.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using MirrorSharp.Advanced;
@@ -10,6 +11,12 @@ using SharpLab.Server.Decompilation.Internal;
 
 namespace SharpLab.Server.Decompilation.AstOnly {
     public partial class RoslynAstTarget : IAstTarget {
+        private readonly IRoslynOperationPropertySerializer _operationPropertySerializer;
+
+        public RoslynAstTarget(IRoslynOperationPropertySerializer operationPropertySerializer) {
+            _operationPropertySerializer = operationPropertySerializer;
+        }
+
         public async Task<object> GetAstAsync(IWorkSession session, CancellationToken cancellationToken) {
             var document = session.Roslyn.Project.Documents.Single();
             var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
@@ -132,20 +139,10 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             writer.WriteProperty("type", "operation");
             writer.WriteProperty("property", "Operation");
             writer.WriteProperty("kind", operation.Kind.ToString());
-            if (operation.ConstantValue.HasValue) {
-                writer.WritePropertyStartArray("children");
-                writer.WriteStartObject();
-                writer.WriteProperty("type", "property-only");
-                writer.WriteProperty("property", "Value");
-                writer.WritePropertyName("value");
-                switch (operation.ConstantValue.Value) {
-                    case int i: writer.WriteValue(i); break;
-                    case string s: writer.WriteValueFromParts("\"", s, "\""); break;
-                    case var v: writer.WriteValue(v?.ToString()); break;
-                }
-                writer.WriteEndObject();
-                writer.WriteEndArray();
-            }
+
+            writer.WritePropertyStartObject("properties");
+            _operationPropertySerializer.SerializeProperties(operation, writer);
+            writer.WriteEndObject();
 
             writer.WriteEndObject();
         }

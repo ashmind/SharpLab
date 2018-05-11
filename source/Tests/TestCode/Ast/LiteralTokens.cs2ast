@@ -154,7 +154,10 @@ b";
                           {
                             "type": "operation",
                             "property": "Operation",
-                            "kind": "FieldInitializer"
+                            "kind": "FieldInitializer",
+                            "properties": {
+                              "InitializedFields": "<skipped>"
+                            }
                           },
                           {
                             "type": "token",
@@ -185,13 +188,10 @@ b";
                                 "type": "operation",
                                 "property": "Operation",
                                 "kind": "Literal",
-                                "children": [
-                                  {
-                                    "type": "property-only",
-                                    "property": "Value",
-                                    "value": 1
-                                  }
-                                ]
+                                "properties": {
+                                  "ConstantValue": "1",
+                                  "Type": "int"
+                                }
                               },
                               {
                                 "type": "token",
@@ -306,7 +306,10 @@ b";
                           {
                             "type": "operation",
                             "property": "Operation",
-                            "kind": "FieldInitializer"
+                            "kind": "FieldInitializer",
+                            "properties": {
+                              "InitializedFields": "<skipped>"
+                            }
                           },
                           {
                             "type": "token",
@@ -337,13 +340,10 @@ b";
                                 "type": "operation",
                                 "property": "Operation",
                                 "kind": "Literal",
-                                "children": [
-                                  {
-                                    "type": "property-only",
-                                    "property": "Value",
-                                    "value": "c"
-                                  }
-                                ]
+                                "properties": {
+                                  "ConstantValue": "c",
+                                  "Type": "char"
+                                }
                               },
                               {
                                 "type": "token",
@@ -464,7 +464,10 @@ b";
                           {
                             "type": "operation",
                             "property": "Operation",
-                            "kind": "FieldInitializer"
+                            "kind": "FieldInitializer",
+                            "properties": {
+                              "InitializedFields": "<skipped>"
+                            }
                           },
                           {
                             "type": "token",
@@ -495,13 +498,10 @@ b";
                                 "type": "operation",
                                 "property": "Operation",
                                 "kind": "Literal",
-                                "children": [
-                                  {
-                                    "type": "property-only",
-                                    "property": "Value",
-                                    "value": "\"a\r\nb\""
-                                  }
-                                ]
+                                "properties": {
+                                  "ConstantValue": "a\r\nb",
+                                  "Type": "string"
+                                }
                               },
                               {
                                 "type": "token",
@@ -616,7 +616,10 @@ b";
                           {
                             "type": "operation",
                             "property": "Operation",
-                            "kind": "FieldInitializer"
+                            "kind": "FieldInitializer",
+                            "properties": {
+                              "InitializedFields": "<skipped>"
+                            }
                           },
                           {
                             "type": "token",
@@ -647,13 +650,10 @@ b";
                                 "type": "operation",
                                 "property": "Operation",
                                 "kind": "Literal",
-                                "children": [
-                                  {
-                                    "type": "property-only",
-                                    "property": "Value",
-                                    "value": "\"a\r\nb\""
-                                  }
-                                ]
+                                "properties": {
+                                  "ConstantValue": "a\r\nb",
+                                  "Type": "string"
+                                }
                               },
                               {
                                 "type": "token",

@@ -1,29 +1,29 @@
 using System;
 using System.Configuration;
 using System.Net.Http;
-using Microsoft.IO;
 using Autofac;
 using JetBrains.Annotations;
+using Microsoft.CodeAnalysis;
+using Microsoft.IO;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Pdb;
-using Microsoft.CodeAnalysis;
-using SourcePath;
 using MirrorSharp.Advanced;
+using SourcePath;
+using SourcePath.Roslyn;
 using SharpLab.Server.Common;
 using SharpLab.Server.Common.Internal;
 using SharpLab.Server.Common.Languages;
 using SharpLab.Server.Compilation;
 using SharpLab.Server.Decompilation;
 using SharpLab.Server.Decompilation.AstOnly;
+using SharpLab.Server.Decompilation.Internal;
 using SharpLab.Server.Execution;
 using SharpLab.Server.Execution.Internal;
-using SharpLab.Server.MirrorSharp;
-using SharpLab.Server.Monitoring;
 using SharpLab.Server.Explanation;
 using SharpLab.Server.Explanation.Internal;
-using System.Collections.Generic;
-using SourcePath.Roslyn;
+using SharpLab.Server.MirrorSharp;
+using SharpLab.Server.Monitoring;
 
 namespace SharpLab.Server {
     [UsedImplicitly]
@@ -107,6 +107,7 @@ namespace SharpLab.Server {
         }
 
         private static void RegisterDecompilation(ContainerBuilder builder) {
+            builder.RegisterType<RoslynOperationPropertySerializer>().As<IRoslynOperationPropertySerializer>().SingleInstance();
             builder.RegisterType<RoslynAstTarget>().As<IAstTarget>().SingleInstance();
             builder.RegisterType<FSharpAstTarget>().As<IAstTarget>().SingleInstance();
 

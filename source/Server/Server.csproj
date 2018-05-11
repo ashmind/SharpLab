@@ -8,7 +8,7 @@
     <Authors>Andrey Shchekin</Authors>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +21,7 @@
     <PackageReference Include="AshMind.Extensions" Version="2.0.0-pre-20160719" />
     <PackageReference Include="Autofac" Version="3.5.2" />
     <PackageReference Include="Autofac.Extras.FileSystemRegistration" Version="0.1.3" />
+    <PackageReference Include="fasterflect" Version="2.1.3" />
     <PackageReference Include="ICSharpCode.Decompiler" Version="3.1.0.3652" />
     <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
     <PackageReference Include="Microsoft.AspNet.Cors" Version="5.2.3" />
