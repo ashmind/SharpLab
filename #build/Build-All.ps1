@@ -26,7 +26,7 @@ function Update-RoslynSource($directoryPath, $repositoryUrl) {
 }
 
 function Get-RoslynBranchFeatureMap() {
-    $markdown = (Invoke-WebRequest 'https://raw.githubusercontent.com/dotnet/roslyn/master/docs/Language%20Feature%20Status.md')
+    $markdown = (Invoke-WebRequest 'https://raw.githubusercontent.com/dotnet/roslyn/master/docs/Language%20Feature%20Status.md' -UseBasicParsing)
     $languageVersions = [regex]::Matches($markdown, '#\s*(?<language>.+)\s*$\s*(?<table>(?:^\|.+$\s*)+)', 'Multiline')
 
     $map = @{}
