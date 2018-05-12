@@ -14,11 +14,6 @@
       "Name":    "alrz",
       "Url":     "https://github.com/alrz/roslyn.git",
       "Include": "jmp-expr"
-    },
-    {
-      "Name":    "khyperia",
-      "Url":     "https://github.com/khyperia/roslyn.git",
-      "Include": "range"
     }
   ]
 }

@@ -25,6 +25,34 @@ function Update-RoslynSource($directoryPath, $repositoryUrl) {
     }
 }
 
+function Get-RoslynBranchFeatureMap() {
+    $markdown = (Invoke-WebRequest 'https://raw.githubusercontent.com/dotnet/roslyn/master/docs/Language%20Feature%20Status.md')
+    $languageVersions = [regex]::Matches($markdown, '#\s*(?<language>.+)\s*$\s*(?<table>(?:^\|.+$\s*)+)', 'Multiline')
+
+    $map = @{}
+    $languageVersions | % {
+        $language = $_.Groups['language'].Value
+        $table = $_.Groups['table'].Value
+        [regex]::Matches($table, '^\|(?<rawname>[^|]+)\|.+roslyn/tree/(?<branch>[A-Za-z\d\-/]+)', 'Multiline') | % {
+            $name = $_.Groups['rawname'].Value.Trim()
+            $branch = $_.Groups['branch'].Value
+            $url = ''
+            if ($name -match '\[([^\]]+)\]\(([^)]+)\)') {
+                $name = $matches[1]
+                $url = $matches[2]
+            }
+            
+            $map.Add($branch, [PSCustomObject]@{
+                language = $language
+                name = $name
+                url = $url
+            })
+        }
+    } | Out-Null
+
+    return $map
+}
+
 function Ensure-ResolvedPath($path) {
     if (-not (Test-Path $path)) {
         New-Item -ItemType directory -Path $path | Out-Null
@@ -79,6 +107,9 @@ try {
 
     ${env:$HOME} = $PSScriptRoot
     Invoke-Git . --version
+
+    Write-Output "Getting Roslyn feature map..."
+    $roslynBranchFeatureMap = Get-RoslynBranchFeatureMap
 
     Write-Output "Building SharpLab..."
     Write-Output "  Restoring packages..."
@@ -155,8 +186,9 @@ try {
                     -IfBuilt {
                         Write-Output "Getting branch info..."
                         $branchInfo = @{
-                            name    = $_
+                            name       = $_
                             repository = $repositoryConfig.Name
+                            feature    = $roslynBranchFeatureMap[$_]
                             commits = @(@{
                                 hash    =  (Invoke-Git $repositorySourceRoot log "$_" -n 1 --pretty=format:"%H" )
                                 date    =  (Invoke-Git $repositorySourceRoot log "$_" -n 1 --pretty=format:"%aI")

@@ -37,6 +37,13 @@ if (Test-Path "$sourceRoot\Binaries\Release") {
     Remove-Item "$sourceRoot\Binaries\Release" -Recurse -Force
 }
 
+Write-Output "Building '$branchName'..."
+
+$buildLogPath = "$artifactsRoot\BranchBuild.log"
+if (Test-Path $buildLogPath) {
+    Remove-Item $buildLogPath
+}
+
 function Build-Project(
     [Parameter(Mandatory=$true)][string[]] $candidateProjectPaths,
     [string] $msbuildArgs
@@ -50,13 +57,6 @@ function Build-Project(
     if ($LastExitCode -ne 0) {
         throw New-Object BranchBuildException("Build failed, see $buildLogPath", $buildLogPath)
     }
-}
-
-Write-Output "Building '$branchName'..."
-
-$buildLogPath = "$(Resolve-Path "$sourceRoot\..")\$([IO.Path]::GetFileName($sourceRoot))-$branchFsName.build.log"
-if (Test-Path $buildLogPath) {
-    Remove-Item $buildLogPath
 }
 
 Push-Location $sourceRoot
