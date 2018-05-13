@@ -56,7 +56,7 @@ gulp.task('favicons', () => {
         .pipe(gulp.dest('wwwroot'));
 });
 
-gulp.task('html', ['js', 'less'], () => {
+gulp.task('html-only', () => {
     const roslynVersion = getRoslynVersion();
     const faviconSvg = fs.readFileSync('favicon.svg', 'utf8');
     // http://codepen.io/jakob-e/pen/doMoML
@@ -80,6 +80,8 @@ gulp.task('html', ['js', 'less'], () => {
         .pipe(gulp.dest('wwwroot'));
 });
 
+gulp.task('html', ['js', 'less', 'html-only']);
+
 function getRoslynVersion() {
     const assetsJson = JSON.parse(fs.readFileSync('../Server/obj/project.assets.json', 'utf8'));
     for (const key in assetsJson.libraries) {
@@ -91,10 +93,10 @@ function getRoslynVersion() {
 }
 
 gulp.task('watch', ['default'], () => {
-    gulp.watch('less/**/*.*', ['less', 'html']);
-    gulp.watch('js/**/*.js', ['js', 'html']);
+    gulp.watch('less/**/*.*', ['less', 'html-only']);
+    gulp.watch('js/**/*.js', ['js', 'html-only']);
     gulp.watch('favicon*.svg', ['favicons']);
-    gulp.watch('index.html', ['html']);
+    gulp.watch('index.html', ['html-only']);
 });
 
 gulp.task('default', ['less', 'js', 'favicons', 'html']);

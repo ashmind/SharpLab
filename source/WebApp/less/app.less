@@ -146,7 +146,7 @@ section {
     flex-grow: 1;
 }
 
-section.info-only {
+section.details-only {
     header {
         background-color: #bbb;
     }
@@ -156,11 +156,7 @@ section.info-only {
     }
 }
 
-.branch-info .content {
-    padding: 10px;
-}
-
-.branch-info,
+.branch-details,
 .warnings,
 .root-status-default .errors {
     flex-shrink: 0;
@@ -218,10 +214,6 @@ section.info-only {
     }
 }
 
-.commit-message {
-    white-space: pre-line;
-}
-
 .diagnostic {
     white-space: pre-wrap;
 }
@@ -245,6 +237,7 @@ section.info-only {
 @import 'imports/expanders.less';
 @import 'imports/markdown.less';
 @import 'imports/mobile.less';
+@import 'imports/branches.less';
 @import 'imports/ast.less';
 @import 'imports/explanations.less';
 @import 'imports/codemirror.less';

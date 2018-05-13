@@ -6,7 +6,7 @@
 
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
     <meta name="theme-color" content="#4684ee">
-    <meta name="description" content="C#/VB/F# compiler playground. Not a Shark lab." />
+    <meta name="description" content="C#/VB/F# compiler playground.">
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,{build:favicon-svg}">
     <link rel="icon" type="image/png" href="favicon-256.png" sizes="256x256">
@@ -40,15 +40,11 @@
 
             <app-select v-model="branch" class="option-branch option" v-show="options.language !== languages.fsharp">
               <option v-bind:value="null">Default ({build:roslyn-version})</option>
-              <option is="app-branch-option"
-                      v-for="branch in branches.ungrouped"
-                      v-bind:branch="branch"
-                      roslyn-version="{build:roslyn-version}"></option>
+              <option v-for="branch in branches.ungrouped"
+                      v-bind:value="branch">{{branch.displayName}}</option>
               <optgroup v-bind:label="group.name" v-for="group in branches.groups">
-                <option is="app-branch-option"
-                        v-for="branch in group.branches"
-                        v-bind:branch="branch"
-                        roslyn-version="{build:roslyn-version}"></option>
+                <option v-for="branch in group.branches"
+                        v-bind:value="branch">{{branch.displayName}}</option>
               </optgroup>
             </app-select>
 
@@ -69,17 +65,20 @@
           </div>
         </section>
 
-        <section v-if="branch && branch.commits" class="info-only branch-info non-code">
+        <section v-if="branch && branch.commits" class="details-only branch-details non-code">
           <header>
-            <h1>Branch {{branch.name}}, last commit</h1>
+            <h1>Branch {{branch.displayName}}</h1>
           </header>
           <div class="content">
-            <div>
-              <a v-bind:href="'https://github.com/dotnet/roslyn/commit/' + branch.commits[0].hash" target="_blank">{{branch.commits[0].hash}}</a>
-              at {{formatDate(branch.commits[0].date, 'dd mmm yyyy')}}
-              by {{branch.commits[0].author}}
+            <div v-if="branch.feature && branch.feature.url" class="branch-feature-link">
+              <a v-bind:href="branch.feature.url" target="_blank">{{branch.feature.url}}</a>
             </div>
-            <div class="commit-message">{{branch.commits[0].message.trim()}}</div>
+            <div>
+              Latest commit
+              <a v-bind:href="'https://github.com/dotnet/roslyn/commit/' + branch.commits[0].hash" target="_blank">{{branch.commits[0].hash.substr(0, 6)}}</a>
+              by {{branch.commits[0].author}}:
+            </div>
+            <div class="branch-commit-message">{{branch.commits[0].message.trim()}}</div>
           </div>
         </section>
       </div>
@@ -199,6 +198,7 @@
         });
       })();
     </script>
+    <script>window.appBuild = {roslynVersion: '{build:roslyn-version}'};</script>
     <!-- build:js -->
     <!-- endbuild -->
     <script>

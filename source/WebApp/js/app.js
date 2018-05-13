@@ -4,6 +4,7 @@ import languages from './helpers/languages.js';
 import targets from './helpers/targets.js';
 import extractRangesFromIL from './helpers/extract-ranges-from-il';
 import getBranchesAsync from './server/get-branches-async.js';
+import { getBranchDisplayName, groupAndSortBranches } from './ui/branches.js';
 import state from './state/index.js';
 import url from './state/handlers/url.js';
 import defaults from './state/handlers/defaults.js';
@@ -133,23 +134,13 @@ async function createAppAsync() {
     await state.loadAsync(data);
     data.lastLoadedCode = data.code;
 
+    const roslynVersion = window.appBuild.roslynVersion;
     const branchesPromise = (async () => {
         const branches = await getBranchesAsync();
-        const groups = {};
         for (const branch of branches) {
-            if (!branch.group) {
-                data.branches.ungrouped.push(branch);
-                continue;
-            }
-
-            let group = groups[branch.group];
-            if (!group) {
-                group = { name: branch.group, branches: [] };
-                groups[branch.group] = group;
-                data.branches.groups.push(group);
-            }
-            group.branches.push(branch);
+            branch.displayName = getBranchDisplayName(branch, roslynVersion);
         }
+        data.branches = groupAndSortBranches(branches);
         return branches;
     })();
 

@@ -2,7 +2,6 @@ import Vue from 'vue';
 import './mixins/format-date.js';
 import './mixins/markdown.js';
 import hooks from './hooks/registry.js';
-import './components/app-branch-option.js';
 import './components/app-code-edit.js';
 import './components/app-diagnostic.js';
 import './components/app-code-view.js';
