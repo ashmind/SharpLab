@@ -195,9 +195,9 @@ namespace SharpLab.Tests {
         [InlineData("Console.WriteLine(\"abc\");", "abc{newline}")]
         [InlineData("Console.Write('a');", "a")]
         [InlineData("Console.Write(3);", "3")]
-        [InlineData("Console.Write(3.1);", "3.1")]
+        [InlineData("Console.Write(3.1);", 3.1)]
         [InlineData("Console.Write(new object());", "System.Object")]
-        public async Task SlowUpdate_IncludesConsoleInOutput(string code, string expectedOutput) {
+        public async Task SlowUpdate_IncludesConsoleInOutput(string code, object expectedOutput) {
             var driver = await NewTestDriverAsync(@"
                 using System;
                 public static class Program {
@@ -209,7 +209,7 @@ namespace SharpLab.Tests {
 
             AssertIsSuccess(result);
             Assert.Equal(
-                expectedOutput.Replace("{newline}", Environment.NewLine),
+                expectedOutput.ToString().Replace("{newline}", Environment.NewLine),
                 result.ExtensionResult.GetOutputAsString()
             );
         }
