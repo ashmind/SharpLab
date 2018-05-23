@@ -45,6 +45,7 @@ namespace SharpLab.Server.Decompilation.Internal {
 
         private Expression SlowExpressSerializeProperty(ParameterExpression operation, PropertyInfo property, ParameterExpression writer) {
             var propertyValue = Expression.Property(Expression.Convert(operation, property.DeclaringType), property);
+
             if (property.PropertyType.IsGenericTypeDefinedAs(typeof(Optional<>))) {
                 return Expression.Condition(
                     Expression.Property(propertyValue, nameof(Optional<object>.HasValue)),
@@ -53,14 +54,6 @@ namespace SharpLab.Server.Decompilation.Internal {
                         Expression.Property(propertyValue, nameof(Optional<object>.Value)),
                         writer
                     ),
-                    Expression.Empty()
-                );
-            }
-
-            if (!property.PropertyType.IsValueType) {
-                return Expression.Condition(
-                    Expression.ReferenceNotEqual(propertyValue, Expression.Constant(null, propertyValue.Type)),
-                    SlowExpressWriteNameAndValue(property.Name, propertyValue, writer),
                     Expression.Empty()
                 );
             }
@@ -76,12 +69,21 @@ namespace SharpLab.Server.Decompilation.Internal {
             return SlowExpressWriteNameAndValue(property.Name, propertyValue, writer);
         }
 
-        private Expression SlowExpressWriteNameAndValue(string name, Expression value, ParameterExpression writer) {
+        private static Expression SlowExpressWriteNameAndValue(string name, Expression value, ParameterExpression writer) {
             var valueToWrite = SlowGetValueToWrite(value);
-            return Expression.Block(
+            var result = Expression.Block(
                 Expression.Call(writer, nameof(IFastJsonWriter.WritePropertyName), typeArguments: null, Expression.Constant(name)),
                 Expression.Call(writer, nameof(IFastJsonWriter.WriteValue), typeArguments: null, valueToWrite)
             );
+
+            if (!value.Type.IsValueType) {
+                return Expression.Condition(
+                    Expression.ReferenceNotEqual(value, Expression.Constant(null, value.Type)),
+                    result, Expression.Empty()
+                );
+            }
+
+            return result;
         }
 
         private static readonly Expression Skipped = Expression.Constant("<skipped>");
