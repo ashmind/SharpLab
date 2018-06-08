@@ -69,7 +69,7 @@ namespace SharpLab.Server.Decompilation.Internal {
             return SlowExpressWriteNameAndValue(property.Name, propertyValue, writer);
         }
 
-        private static Expression SlowExpressWriteNameAndValue(string name, Expression value, ParameterExpression writer) {
+        private Expression SlowExpressWriteNameAndValue(string name, Expression value, ParameterExpression writer) {
             var valueToWrite = SlowGetValueToWrite(value);
             var result = Expression.Block(
                 Expression.Call(writer, nameof(IFastJsonWriter.WritePropertyName), typeArguments: null, Expression.Constant(name)),
