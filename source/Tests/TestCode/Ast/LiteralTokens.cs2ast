@@ -5,6 +5,8 @@ class C {
     string s1 = "a\r\nb";
     string s2 = @"a
 b";
+
+    object o = null;
 }
 
 #=>
@@ -13,12 +15,12 @@ b";
   {
     "type": "node",
     "kind": "CompilationUnit",
-    "range": "0-102",
+    "range": "0-126",
     "children": [
       {
         "type": "node",
         "kind": "ClassDeclaration",
-        "range": "0-102",
+        "range": "0-126",
         "children": [
           {
             "type": "token",
@@ -692,10 +694,167 @@ b";
             ]
           },
           {
+            "type": "node",
+            "kind": "FieldDeclaration",
+            "range": "101-125",
+            "children": [
+              {
+                "type": "node",
+                "kind": "VariableDeclaration",
+                "property": "Declaration",
+                "range": "101-122",
+                "children": [
+                  {
+                    "type": "node",
+                    "kind": "PredefinedType",
+                    "property": "Type",
+                    "range": "101-114",
+                    "children": [
+                      {
+                        "type": "token",
+                        "kind": "ObjectKeyword",
+                        "property": "Keyword",
+                        "range": "101-114",
+                        "children": [
+                          {
+                            "type": "trivia",
+                            "kind": "EndOfLineTrivia",
+                            "range": "101-103",
+                            "value": "\r\n"
+                          },
+                          {
+                            "type": "trivia",
+                            "kind": "WhitespaceTrivia",
+                            "range": "103-107",
+                            "value": "    "
+                          },
+                          {
+                            "type": "value",
+                            "value": "object",
+                            "range": "107-113"
+                          },
+                          {
+                            "type": "trivia",
+                            "kind": "WhitespaceTrivia",
+                            "range": "113-114",
+                            "value": " "
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "node",
+                    "kind": "VariableDeclarator",
+                    "range": "114-122",
+                    "children": [
+                      {
+                        "type": "token",
+                        "kind": "IdentifierToken",
+                        "property": "Identifier",
+                        "range": "114-116",
+                        "children": [
+                          {
+                            "type": "value",
+                            "value": "o",
+                            "range": "114-115"
+                          },
+                          {
+                            "type": "trivia",
+                            "kind": "WhitespaceTrivia",
+                            "range": "115-116",
+                            "value": " "
+                          }
+                        ]
+                      },
+                      {
+                        "type": "node",
+                        "kind": "EqualsValueClause",
+                        "property": "Initializer",
+                        "range": "116-122",
+                        "children": [
+                          {
+                            "type": "operation",
+                            "property": "Operation",
+                            "kind": "FieldInitializer",
+                            "properties": {
+                              "InitializedFields": "<skipped>"
+                            }
+                          },
+                          {
+                            "type": "token",
+                            "kind": "EqualsToken",
+                            "property": "EqualsToken",
+                            "range": "116-118",
+                            "children": [
+                              {
+                                "type": "value",
+                                "value": "=",
+                                "range": "116-117"
+                              },
+                              {
+                                "type": "trivia",
+                                "kind": "WhitespaceTrivia",
+                                "range": "117-118",
+                                "value": " "
+                              }
+                            ]
+                          },
+                          {
+                            "type": "node",
+                            "kind": "NullLiteralExpression",
+                            "property": "Value",
+                            "range": "118-122",
+                            "children": [
+                              {
+                                "type": "operation",
+                                "property": "Operation",
+                                "kind": "Literal",
+                                "properties": {
+                                  "ConstantValue": null
+                                }
+                              },
+                              {
+                                "type": "token",
+                                "kind": "NullKeyword",
+                                "property": "Token",
+                                "range": "118-122",
+                                "value": "null"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "token",
+                "kind": "SemicolonToken",
+                "property": "SemicolonToken",
+                "range": "122-125",
+                "children": [
+                  {
+                    "type": "value",
+                    "value": ";",
+                    "range": "122-123"
+                  },
+                  {
+                    "type": "trivia",
+                    "kind": "EndOfLineTrivia",
+                    "range": "123-125",
+                    "value": "\r\n"
+                  }
+                ]
+              }
+            ]
+          },
+          {
             "type": "token",
             "kind": "CloseBraceToken",
             "property": "CloseBraceToken",
-            "range": "101-102",
+            "range": "125-126",
             "value": "}"
           }
         ]
@@ -704,7 +863,7 @@ b";
         "type": "token",
         "kind": "EndOfFileToken",
         "property": "EndOfFileToken",
-        "range": "102-102",
+        "range": "126-126",
         "value": ""
       }
     ]

@@ -45,6 +45,7 @@ namespace SharpLab.Server.Decompilation.Internal {
 
         private Expression SlowExpressSerializeProperty(ParameterExpression operation, PropertyInfo property, ParameterExpression writer) {
             var propertyValue = Expression.Property(Expression.Convert(operation, property.DeclaringType), property);
+
             if (property.PropertyType.IsGenericTypeDefinedAs(typeof(Optional<>))) {
                 return Expression.Condition(
                     Expression.Property(propertyValue, nameof(Optional<object>.HasValue)),
@@ -57,14 +58,6 @@ namespace SharpLab.Server.Decompilation.Internal {
                 );
             }
 
-            if (!property.PropertyType.IsValueType) {
-                return Expression.Condition(
-                    Expression.ReferenceNotEqual(propertyValue, Expression.Constant(null, propertyValue.Type)),
-                    SlowExpressWriteNameAndValue(property.Name, propertyValue, writer),
-                    Expression.Empty()
-                );
-            }
-
             if (property.PropertyType == typeof(bool)) {
                 return Expression.Condition(
                     propertyValue,
@@ -73,7 +66,11 @@ namespace SharpLab.Server.Decompilation.Internal {
                 );
             }
 
-            return SlowExpressWriteNameAndValue(property.Name, propertyValue, writer);
+            return SlowHandleNulls(
+                propertyValue,
+                SlowExpressWriteNameAndValue(property.Name, propertyValue, writer),
+                Expression.Empty()
+            );
         }
 
         private Expression SlowExpressWriteNameAndValue(string name, Expression value, ParameterExpression writer) {
@@ -85,14 +82,30 @@ namespace SharpLab.Server.Decompilation.Internal {
         }
 
         private static readonly Expression Skipped = Expression.Constant("<skipped>");
-        private static Expression SlowGetValueToWrite(Expression value) {
+        private Expression SlowGetValueToWrite(Expression value) {
             if (value.Type.IsAssignableTo<IEnumerable>() || value.Type.IsAssignableTo<SyntaxNode>())
                 return Skipped;
 
-            if (!DirectlyWritableTypes.Contains(value.Type))
-                return Expression.Call(value, ObjectToString);
+            if (!DirectlyWritableTypes.Contains(value.Type)) {
+                return SlowHandleNulls(
+                    value,
+                    Expression.Call(value, ObjectToString),
+                    Expression.Constant(null, typeof(string))
+                );
+            }
 
             return value;
+        }
+
+        private Expression SlowHandleNulls(Expression value, Expression ifNotNull, Expression ifNull) {
+            if (value.Type.IsValueType)
+                return ifNotNull;
+
+            return Expression.Condition(
+                Expression.ReferenceNotEqual(value, Expression.Constant(null, value.Type)),
+                ifNotNull,
+                ifNull
+            );
         }
 
         private bool SlowShouldSkip(PropertyInfo property) {
