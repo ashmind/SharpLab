@@ -810,7 +810,9 @@ b";
                                 "type": "operation",
                                 "property": "Operation",
                                 "kind": "Literal",
-                                "properties": {}
+                                "properties": {
+                                  "ConstantValue": null
+                                }
                               },
                               {
                                 "type": "token",
