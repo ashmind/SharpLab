@@ -18,14 +18,13 @@ using SharpLab.Server.Compilation;
 using SharpLab.Server.Decompilation;
 using SharpLab.Server.Decompilation.AstOnly;
 using SharpLab.Server.Decompilation.Internal;
-using SharpLab.Server.Execution;
-using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.Explanation;
 using SharpLab.Server.Explanation.Internal;
 using SharpLab.Server.MirrorSharp;
 using SharpLab.Server.Monitoring;
 
 namespace SharpLab.Server {
+    // TODO: split into individual modules (like ExecutionModule)
     [UsedImplicitly]
     public class ServerModule : Module {
         protected override void Load(ContainerBuilder builder) {
@@ -37,7 +36,6 @@ namespace SharpLab.Server {
                    .SingleInstance();
 
             RegisterDecompilation(builder);
-            RegisterExecution(builder);
             RegisterExplanation(builder);
 
             builder.RegisterType<DefaultTraceMonitor>()
@@ -114,24 +112,6 @@ namespace SharpLab.Server {
             builder.RegisterType<CSharpDecompiler>().As<IDecompiler>().SingleInstance();
             builder.RegisterType<ILDecompiler>().As<IDecompiler>().SingleInstance();
             builder.RegisterType<JitAsmDecompiler>().As<IDecompiler>().SingleInstance();
-        }
-
-        private static void RegisterExecution(ContainerBuilder builder) {
-            builder.RegisterType<Executor>()
-                   .As<IExecutor>()
-                   .SingleInstance();
-
-            builder.RegisterType<ExecutionResultSerializer>()
-                   .AsSelf()
-                   .SingleInstance();
-
-            builder.RegisterType<FlowReportingRewriter>()
-                   .As<IAssemblyRewriter>()
-                   .SingleInstance();
-
-            builder.RegisterType<FSharpEntryPointRewriter>()
-                   .As<IAssemblyRewriter>()
-                   .SingleInstance();
         }
 
         private static void RegisterExplanation(ContainerBuilder builder) {

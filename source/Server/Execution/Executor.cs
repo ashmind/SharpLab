@@ -15,7 +15,6 @@ using Unbreakable.Runtime;
 using SharpLab.Runtime.Internal;
 using SharpLab.Server.Common;
 using SharpLab.Server.Execution.Internal;
-using SharpLab.Server.Execution.Unbreakable;
 using SharpLab.Server.Monitoring;
 using IAssemblyResolver = Mono.Cecil.IAssemblyResolver;
 
@@ -23,6 +22,7 @@ namespace SharpLab.Server.Execution {
     public class Executor : IExecutor {
         private readonly IAssemblyResolver _assemblyResolver;
         private readonly ISymbolReaderProvider _symbolReaderProvider;
+        private readonly AssemblyGuardSettings _guardSettings;
         private readonly IReadOnlyCollection<IAssemblyRewriter> _rewriters;
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;
         private readonly ExecutionResultSerializer _serializer;
@@ -31,6 +31,7 @@ namespace SharpLab.Server.Execution {
         public Executor(
             IAssemblyResolver assemblyResolver,
             ISymbolReaderProvider symbolReaderProvider,
+            ApiPolicy apiPolicy,
             IReadOnlyCollection<IAssemblyRewriter> rewriters,
             RecyclableMemoryStreamManager memoryStreamManager,
             ExecutionResultSerializer serializer,
@@ -38,6 +39,7 @@ namespace SharpLab.Server.Execution {
         ) {
             _assemblyResolver = assemblyResolver;
             _symbolReaderProvider = symbolReaderProvider;
+            _guardSettings = CreateGuardSettings(apiPolicy);
             _rewriters = rewriters;
             _memoryStreamManager = memoryStreamManager;
             _serializer = serializer;
@@ -65,7 +67,7 @@ namespace SharpLab.Server.Execution {
                 if (assembly.EntryPoint == null)
                     throw new ArgumentException("Failed to find an entry point (Main?) in assembly.", nameof(streams));
 
-                var guardToken = AssemblyGuard.Rewrite(assembly, GuardSettings);
+                var guardToken = AssemblyGuard.Rewrite(assembly, _guardSettings);
                 using (var rewrittenStream = _memoryStreamManager.GetStream()) {
                     assembly.Write(rewrittenStream);
                     /*
@@ -173,15 +175,15 @@ namespace SharpLab.Server.Execution {
             }
         }
 
-        private static readonly AssemblyGuardSettings GuardSettings = ((Func<AssemblyGuardSettings>)(() => {
+        private static AssemblyGuardSettings CreateGuardSettings(ApiPolicy apiPolicy) {
             var settings = AssemblyGuardSettings.DefaultForCSharpAssembly();
-            settings.ApiPolicy = ApiPolicySetup.CreatePolicy();
+            settings.ApiPolicy = apiPolicy;
             settings.AllowExplicitLayoutInTypesMatchingPattern = new Regex(settings.AllowExplicitLayoutInTypesMatchingPattern.ToString(), RegexOptions.Compiled);
             settings.AllowPointerOperationsInTypesMatchingPattern = new Regex(settings.AllowPointerOperationsInTypesMatchingPattern.ToString(), RegexOptions.Compiled);
             settings.AllowCustomTypesMatchingPatternInSystemNamespaces = new Regex(
                 settings.AllowCustomTypesMatchingPatternInSystemNamespaces.ToString() + @"|System\.Range", RegexOptions.Compiled
             );
             return settings;
-        }))();
+        }
     }
 }

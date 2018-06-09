@@ -9,10 +9,8 @@ using Newtonsoft.Json.Linq;
 using Xunit;
 using AshMind.Extensions;
 using Pedantic.IO;
-using MirrorSharp;
 using MirrorSharp.Testing;
 using MirrorSharp.Testing.Results;
-using SharpLab.Server;
 using SharpLab.Server.Common;
 using SharpLab.Tests.Internal;
 
@@ -202,6 +200,29 @@ namespace SharpLab.Tests {
                 using System;
                 public static class Program {
                     public static void Main() { " + code + @" }
+                }
+            ");
+
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+
+            AssertIsSuccess(result);
+            Assert.Equal(
+                expectedOutput.Replace("{newline}", Environment.NewLine),
+                result.ExtensionResult.GetOutputAsString()
+            );
+        }
+
+        [Theory]
+        [InlineData("Console.Write(3.1);", "cs-CZ", "3.1")]
+        public async Task SlowUpdate_IncludesConsoleInOutput_UsingInvariantCulture(string code, string currentCultureName, string expectedOutput) {
+            var driver = await NewTestDriverAsync(@"
+                using System;
+                using System.Globalization;
+                public static class Program {
+                    public static void Main() {
+                        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(""" + currentCultureName + @""");
+                        " + code + @"
+                    }
                 }
             ");
 

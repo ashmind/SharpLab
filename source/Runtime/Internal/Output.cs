@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -45,6 +46,9 @@ namespace SharpLab.Runtime.Internal {
 
         private class OutputWriter : TextWriter {
             public override Encoding Encoding => Encoding.UTF8;
+
+            public OutputWriter() : base(CultureInfo.InvariantCulture) {
+            }
 
             public override void Write(string value) {
                 Output.Write(value);
