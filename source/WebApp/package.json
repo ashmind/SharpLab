@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "prepare": "patch-package",
     "test": "jest"
   },
   "jest": {
@@ -38,7 +37,6 @@
     "jest": "^20.0.4",
     "md5-file": "^3.1.1",
     "multipipe": "^1.0.1",
-    "patch-package": "^3.3.3",
     "rimraf": "^2.5.4",
     "rollup": "^0.41.6",
     "rollup-plugin-commonjs": "^8.0.2",
@@ -46,7 +44,7 @@
     "svg2png": "3.0.0"
   },
   "dependencies": {
-    "codemirror": "^5.26.0",
+    "codemirror": "5.38.0",
     "dateformat": "^1.0.12",
     "lz-string": "^1.4.4",
     "marked": "^0.3.19",
