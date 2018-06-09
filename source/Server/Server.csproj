@@ -25,10 +25,10 @@
     <PackageReference Include="ICSharpCode.Decompiler" Version="3.1.0.3652" />
     <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
     <PackageReference Include="Microsoft.AspNet.Cors" Version="5.2.3" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="2.7.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="2.7.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Features" Version="2.7.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.7.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="2.8.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="2.8.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Features" Version="2.8.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.8.2" />
     <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="0.9.180305.1" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.1" />
     <PackageReference Include="Microsoft.Owin.Cors" Version="3.0.1" />

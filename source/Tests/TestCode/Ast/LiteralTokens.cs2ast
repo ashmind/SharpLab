@@ -158,7 +158,8 @@ b";
                             "property": "Operation",
                             "kind": "FieldInitializer",
                             "properties": {
-                              "InitializedFields": "<skipped>"
+                              "InitializedFields": "<skipped>",
+                              "Locals": "<skipped>"
                             }
                           },
                           {
@@ -310,7 +311,8 @@ b";
                             "property": "Operation",
                             "kind": "FieldInitializer",
                             "properties": {
-                              "InitializedFields": "<skipped>"
+                              "InitializedFields": "<skipped>",
+                              "Locals": "<skipped>"
                             }
                           },
                           {
@@ -468,7 +470,8 @@ b";
                             "property": "Operation",
                             "kind": "FieldInitializer",
                             "properties": {
-                              "InitializedFields": "<skipped>"
+                              "InitializedFields": "<skipped>",
+                              "Locals": "<skipped>"
                             }
                           },
                           {
@@ -620,7 +623,8 @@ b";
                             "property": "Operation",
                             "kind": "FieldInitializer",
                             "properties": {
-                              "InitializedFields": "<skipped>"
+                              "InitializedFields": "<skipped>",
+                              "Locals": "<skipped>"
                             }
                           },
                           {
@@ -778,7 +782,8 @@ b";
                             "property": "Operation",
                             "kind": "FieldInitializer",
                             "properties": {
-                              "InitializedFields": "<skipped>"
+                              "InitializedFields": "<skipped>",
+                              "Locals": "<skipped>"
                             }
                           },
                           {
