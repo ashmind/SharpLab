@@ -45,15 +45,14 @@ if (Test-Path $buildLogPath) {
 }
 
 function Build-Project(
-    [Parameter(Mandatory=$true)][string[]] $candidateProjectPaths,
-    [string] $msbuildArgs
+    [Parameter(Mandatory=$true)][string] $projectPath
 ) {
-    $projectPath = @($candidateProjectPaths | ? { Test-Path "$sourceRoot\$_" })[0];
-    if (!$projectPath) {
-        throw New-Object BranchBuildException("Project not found: none of @($candidateProjectPaths) matched.", $buildLogPath)
+    $projectPath = "$sourceRoot\$projectPath"
+    if (!(Test-Path $projectPath)) {
+        throw New-Object BranchBuildException("Project path $projectPath was not found.", $buildLogPath)
     }
-    "  msbuild $projectPath $msbuildArgs" | Out-Default
-    &$MSBuild $projectPath /m /p:Configuration=Release /p:DelaySign=false /p:SignAssembly=false /p:NeedsFakeSign=false /p:SolutionDir="$sourceRoot\Src" >> "$buildLogPath"
+    "  dotnet msbuild $projectPath" | Out-Default
+    dotnet msbuild $projectPath /m /p:Configuration=Release /p:DelaySign=false /p:SignAssembly=false /p:NeedsFakeSign=false /p:SolutionDir="$sourceRoot\Src" >> "$buildLogPath"
     if ($LastExitCode -ne 0) {
         throw New-Object BranchBuildException("Build failed, see $buildLogPath", $buildLogPath)
     }
@@ -66,7 +65,7 @@ try {
     }
     Write-Output "  .\Restore.cmd"
     .\Restore.cmd >> "$buildLogPath"
-        
+
     Build-Project "Src\Compilers\Core\Portable\CodeAnalysis.csproj"
     Build-Project "Src\Compilers\CSharp\Portable\CSharpCodeAnalysis.csproj"
     Build-Project "src\Features\CSharp\Portable\CSharpFeatures.csproj"
