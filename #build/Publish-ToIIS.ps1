@@ -40,23 +40,23 @@ if ($appPoolName.Length -gt 64) {
     $first = $parts[0].Substring(0, $parts[0].Length - ($appPoolName.Length - 64) - 3)
     $appPoolName = "$first(…).$($parts[1])"
 }
-$appPool = $server.ApplicationPools[$appPoolName]
-if (!$appPool) {
+
+if (!$server.ApplicationPools[$appPoolName]) {
     Write-Output "  Creating app pool..."
-    $appPool = $server.ApplicationPools.Add($appPoolName)
+    $server.ApplicationPools.Add($appPoolName) | Out-Null
 }
 else {
     Write-Output "  App pool found."
 }
 
-$website = $server.Sites[$siteName]
-if (!$website) {
+if (!$server.Sites[$siteName]) {
     Write-Output "  Creating web site..."
-    $website = New-IISSite `
+    New-IISSite `
         -Name $siteName `
         -BindingInformation "*:80:$siteName" `
         -PhysicalPath (Resolve-Path $sourcePath)
-    $website.Applications["/"].ApplicationPoolName = $appPoolName
+    $server.Sites[$siteName].Applications["/"].ApplicationPoolName = $appPoolName
+    #Write-Host "WebSite: $website"
 }
 else {
     Write-Output "  Web site found."
