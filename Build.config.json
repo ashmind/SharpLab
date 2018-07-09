@@ -4,16 +4,6 @@
       "Name":    "dotnet",
       "Url":     "https://github.com/dotnet/roslyn.git",
       "Include": "^master$|^features"
-    },
-    {
-      "Name":    "AdamSpeight2008",
-      "Url":     "https://github.com/AdamSpeight2008/roslyn-AdamSpeight2008.git",
-      "Include": "EnumFlagExpression"
-    },
-    {
-      "Name":    "alrz",
-      "Url":     "https://github.com/alrz/roslyn.git",
-      "Include": "jmp-expr"
     }
   ]
 }
