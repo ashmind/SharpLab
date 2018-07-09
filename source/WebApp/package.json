@@ -48,7 +48,7 @@
     "dateformat": "^1.0.12",
     "lz-string": "^1.4.4",
     "marked": "^0.3.19",
-    "mirrorsharp": "^0.9.3",
+    "mirrorsharp": "0.9.4",
     "throttle-debounce": "^1.0.1",
     "vue": "^2.5.16"
   }
