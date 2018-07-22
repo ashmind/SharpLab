@@ -45,7 +45,7 @@
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.4.0" />
     <PackageReference Include="Unbreakable" Version="0.9.1-unproven" />
     <PackageReference Include="Unbreakable.Build.PolicyReport" Version="0.0.10" />
-    <PackageReference Include="Unbreakable.Policy" Version="0.2.0-unproven" />
+    <PackageReference Include="Unbreakable.Policy" Version="0.2.1" />
   </ItemGroup>
 
   <ItemGroup>

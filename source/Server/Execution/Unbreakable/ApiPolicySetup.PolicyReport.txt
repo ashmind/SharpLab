@@ -2732,7 +2732,7 @@ System
      ToTuple: Allowed
      ToValueTuple: Allowed
   Type: Allowed
-     Equals: Denied
+     Equals: Allowed
      FindInterfaces: Denied
      FindMembers: Denied
      get_Assembly: Denied
