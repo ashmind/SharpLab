@@ -67,12 +67,11 @@ try {
     .\Restore.cmd >> "$buildLogPath"
 
     $givtPath = '.\build\Targets\RepoToolset\GenerateInternalsVisibleTo.targets'
-    if (!(Test-Path $givtPath)) {
-        throw New-Object BranchBuildException("Build failed: could not find $givtPath", $buildLogPath)
+    if (Test-Path $givtPath) {
+        Write-Output "  fixing GenerateInternalsVisibleTo.targets"
+        $givtContent = Get-Content $givtPath -Raw
+        Set-Content $givtPath $($givtContent -replace ', PublicKey=\$\(PublicKey\)','')
     }
-    Write-Output "  fixing GenerateInternalsVisibleTo.targets"
-    $givtContent = Get-Content $givtPath -Raw
-    Set-Content $givtPath $($givtContent -replace ', PublicKey=\$\(PublicKey\)','')
     
     Build-Project "Src\Compilers\Core\Portable\Microsoft.CodeAnalysis.csproj"
     Build-Project "Src\Compilers\CSharp\Portable\Microsoft.CodeAnalysis.CSharp.csproj"
