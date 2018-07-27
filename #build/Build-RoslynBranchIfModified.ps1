@@ -66,8 +66,11 @@ try {
     Write-Output "  .\Restore.cmd"
     .\Restore.cmd >> "$buildLogPath"
 
-    Write-Output "  fixing GenerateInternalsVisibleTo.targets"
     $givtPath = '.\build\Targets\RepoToolset\GenerateInternalsVisibleTo.targets'
+    if (!(Test-Path $givtPath)) {
+        throw New-Object BranchBuildException("Build failed: could not find $givtPath", $buildLogPath)
+    }
+    Write-Output "  fixing GenerateInternalsVisibleTo.targets"
     $givtContent = Get-Content $givtPath -Raw
     Set-Content $givtPath $($givtContent -replace ', PublicKey=\$\(PublicKey\)','')
     
