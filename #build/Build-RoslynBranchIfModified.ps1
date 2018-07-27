@@ -52,7 +52,7 @@ function Build-Project(
         throw New-Object BranchBuildException("Project path $projectPath was not found.", $buildLogPath)
     }
     "  dotnet msbuild $projectPath" | Out-Default
-    dotnet msbuild $projectPath /m /p:Configuration=Release /p:DelaySign=false /p:SignAssembly=false /p:NeedsFakeSign=false /p:SolutionDir="$sourceRoot\Src" >> "$buildLogPath"
+    dotnet msbuild $projectPath /m /nodeReuse:false /p:Configuration=Release /p:DelaySign=false /p:SignAssembly=false /p:NeedsFakeSign=false /p:UseRoslynAnalyzers=false /p:SolutionDir="$sourceRoot\Src" >> "$buildLogPath"
     if ($LastExitCode -ne 0) {
         throw New-Object BranchBuildException("Build failed, see $buildLogPath", $buildLogPath)
     }
@@ -66,12 +66,17 @@ try {
     Write-Output "  .\Restore.cmd"
     .\Restore.cmd >> "$buildLogPath"
 
-    Build-Project "Src\Compilers\Core\Portable\CodeAnalysis.csproj"
-    Build-Project "Src\Compilers\CSharp\Portable\CSharpCodeAnalysis.csproj"
-    Build-Project "src\Features\CSharp\Portable\CSharpFeatures.csproj"
+    Write-Output "  fixing GenerateInternalsVisibleTo.targets"
+    $givtPath = '.\build\Targets\RepoToolset\GenerateInternalsVisibleTo.targets'
+    $givtContent = Get-Content $givtPath -Raw
+    Set-Content $givtPath $($givtContent -replace ', PublicKey=\$\(PublicKey\)','')
+    
+    Build-Project "Src\Compilers\Core\Portable\Microsoft.CodeAnalysis.csproj"
+    Build-Project "Src\Compilers\CSharp\Portable\Microsoft.CodeAnalysis.CSharp.csproj"
+    Build-Project "src\Features\CSharp\Portable\Microsoft.CodeAnalysis.CSharp.Features.csproj"
     Build-Project "Src\Tools\Source\CompilerGeneratorTools\Source\VisualBasicSyntaxGenerator\VisualBasicSyntaxGenerator.vbproj"
-    Build-Project "Src\Compilers\VisualBasic\Portable\BasicCodeAnalysis.vbproj"
-    Build-Project "src\Features\VisualBasic\Portable\BasicFeatures.vbproj"
+    Build-Project "Src\Compilers\VisualBasic\Portable\Microsoft.CodeAnalysis.VisualBasic.vbproj"
+    Build-Project "src\Features\VisualBasic\Portable\Microsoft.CodeAnalysis.VisualBasic.Features.vbproj"
 }
 finally {
     Pop-Location
