@@ -1,18 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AshMind.Extensions;
 using Microsoft.CodeAnalysis;
-using MirrorSharp;
 using MirrorSharp.Testing;
 using Newtonsoft.Json.Linq;
-using Pedantic.IO;
 using Xunit;
 using Xunit.Abstractions;
-using SharpLab.Server;
 using SharpLab.Server.Common;
 using SharpLab.Tests.Internal;
 
@@ -50,16 +45,15 @@ namespace SharpLab.Tests {
         [InlineData("Nullable.OperatorLifting.cs2cs")] // https://github.com/ashmind/SharpLab/issues/159
         [InlineData("Finalizer.Exception.cs2il")] // https://github.com/ashmind/SharpLab/issues/205
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string resourceName) {
-            var data = TestData.FromResource(resourceName);
+            var data = TestCode.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);
 
             var result = await driver.SendSlowUpdateAsync<string>();
             var errors = result.JoinErrors();
 
             var decompiledText = result.ExtensionResult?.Trim();
-            _output.WriteLine(decompiledText ?? "<null>");
             Assert.True(errors.IsNullOrEmpty(), errors);
-            Assert.Equal(data.Expected, decompiledText);
+            data.AssertIsExpected(decompiledText, _output);
         }
 
         [Theory]
@@ -70,16 +64,15 @@ namespace SharpLab.Tests {
         [InlineData("FSharp.Preprocessor.IfDebug.fs2cs")] // https://github.com/ashmind/SharpLab/issues/161
         [InlineData("Using.Simple.cs2cs")] // https://github.com/ashmind/SharpLab/issues/185
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_InDebug(string resourceName) {
-            var data = TestData.FromResource(resourceName);
+            var data = TestCode.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data, Optimize.Debug);
 
             var result = await driver.SendSlowUpdateAsync<string>();
             var errors = result.JoinErrors();
 
             var decompiledText = result.ExtensionResult?.Trim();
-            _output.WriteLine(decompiledText ?? "<null>");
             Assert.True(errors.IsNullOrEmpty(), errors);
-            Assert.Equal(data.Expected, decompiledText);
+            data.AssertIsExpected(decompiledText, _output);
         }
 
         [Theory]
@@ -112,16 +105,15 @@ namespace SharpLab.Tests {
         [InlineData("FSharp.SimpleMethod.fs2cs")] // https://github.com/ashmind/SharpLab/issues/119
         [InlineData("FSharp.NotNull.fs2cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForFSharp(string resourceName) {
-            var data = TestData.FromResource(resourceName);
+            var data = TestCode.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);
 
             var result = await driver.SendSlowUpdateAsync<string>();
             var errors = result.JoinErrors();
 
             var decompiledText = result.ExtensionResult?.Trim();
-            _output.WriteLine(decompiledText ?? "<null>");
             Assert.True(errors.IsNullOrEmpty(), errors);
-            Assert.Equal(data.Expected, decompiledText);
+            data.AssertIsExpected(decompiledText, _output);
         }
 
         [Theory]
@@ -141,16 +133,15 @@ namespace SharpLab.Tests {
         [InlineData("JitAsm.Generic.Nested.AttributeOnNested.cs2asm")]
         [InlineData("JitAsm.Generic.Nested.AttributeOnBoth.cs2asm")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForJitAsm(string resourceName) {
-            var data = TestData.FromResource(resourceName);
+            var data = TestCode.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);
 
             var result = await driver.SendSlowUpdateAsync<string>();
             var errors = result.JoinErrors();
 
-            var decompiledText = MakeJitAsmComparable(result.ExtensionResult?.Trim());
-            _output.WriteLine(decompiledText ?? "<null>");
+            var decompiledText = result.ExtensionResult?.Trim();
             Assert.True(errors.IsNullOrEmpty(), errors);
-            Assert.Equal(data.Expected, decompiledText);
+            data.AssertIsExpected(decompiledText, _output);
         }
 
         [Theory]
@@ -171,65 +162,21 @@ namespace SharpLab.Tests {
         [InlineData("Ast.EmptyType.fs2ast")]
         [InlineData("Ast.LiteralTokens.fs2ast")]
         public async Task SlowUpdate_ReturnsExpectedResult_ForAst(string resourceName) {
-            var data = TestData.FromResource(resourceName);
+            var data = TestCode.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);
 
             var result = await driver.SendSlowUpdateAsync<JArray>();
 
             var json = result.ExtensionResult?.ToString();
 
-            _output.WriteLine(json ?? "<null>");
-            Assert.Equal(data.Expected, json);
+            data.AssertIsExpected(json, _output);
         }
 
-        private static string MakeJitAsmComparable(string jitAsm) {
-            if (jitAsm == null)
-                return null;
-
-            return Regex.Replace(
-                jitAsm,
-                @"((?<=0x)[\da-f]{7,8}(?=$|[^\da-f])|(?<=CLR v)[\d\.]+)", "<IGNORE>"
-            );
-        }
-
-        private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestData data, string optimize = Optimize.Release) {
+        private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestCode code, string optimize = Optimize.Release) {
             var driver = MirrorSharpTestDriver.New(TestEnvironment.MirrorSharpOptions);
-            await driver.SendSetOptionsAsync(data.SourceLanguageName, data.TargetLanguageName, optimize);
-            driver.SetText(data.Original);
+            await driver.SendSetOptionsAsync(code.SourceLanguageName, code.TargetName, optimize);
+            driver.SetText(code.Original);
             return driver;
-        }
-
-        private class TestData {
-            private static readonly IDictionary<string, string> LanguageMap = new Dictionary<string, string> {
-                { "cs",  LanguageNames.CSharp },
-                { "vb",  LanguageNames.VisualBasic },
-                { "fs",  LanguageNames.FSharp },
-                { "il",  TargetNames.IL },
-                { "asm", TargetNames.JitAsm },
-                { "ast", TargetNames.Ast },
-            };
-            public string Original { get; }
-            public string Expected { get; }
-            public string SourceLanguageName { get; }
-            public string TargetLanguageName { get; }
-
-            public TestData(string original, string expected, string sourceLanguageName, string targetLanguageName) {
-                Original = original;
-                Expected = expected;
-                SourceLanguageName = sourceLanguageName;
-                TargetLanguageName = targetLanguageName;
-            }
-
-            public static TestData FromResource(string name) {
-                var content = EmbeddedResource.ReadAllText(typeof(DecompilationTests), "TestCode." + name);
-                var parts = content.Split("#=>");
-                var code = parts[0].Trim();
-                var expected = parts[1].Trim();
-                // ReSharper disable once PossibleNullReferenceException
-                var fromTo = Path.GetExtension(name).TrimStart('.').Split('2').Select(x => LanguageMap[x]).ToList();
-
-                return new TestData(code, expected, fromTo[0], fromTo[1]);
-            }
         }
     }
 }

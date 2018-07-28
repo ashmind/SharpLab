@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using Xunit.Abstractions;
 using AshMind.Extensions;
 using Pedantic.IO;
 using MirrorSharp.Testing;
@@ -16,6 +17,12 @@ using SharpLab.Tests.Internal;
 
 namespace SharpLab.Tests {
     public class ExecutionTests {
+        private readonly ITestOutputHelper _testOutputHelper;
+
+        public ExecutionTests(ITestOutputHelper testOutputHelper) {
+            _testOutputHelper = testOutputHelper;
+        }
+
         [Theory]
         [InlineData("Exception.DivideByZero.cs", 4, "DivideByZeroException")]
         [InlineData("Exception.DivideByZero.Catch.cs", 5, "DivideByZeroException")]
@@ -175,7 +182,7 @@ namespace SharpLab.Tests {
         [InlineData("(1, 2, 3).Inspect();", "Inspect: (1, 2, 3)")]
         [InlineData("new[] { 1, 2, 3 }.Inspect();", "Inspect: { 1, 2, 3 }")]
         [InlineData("3.Dump();", "Dump: 3")]
-        public async Task SlowUpdate_IncludesInspectAndDumpInOutput(string code, string expectedOutput) {
+        public async Task SlowUpdate_IncludesSimpleInspectAndDumpInOutput(string code, string expectedOutput) {
             var driver = await NewTestDriverAsync(@"
                 public static class Program {
                     public static void Main() { " + code + @" }
@@ -186,6 +193,22 @@ namespace SharpLab.Tests {
 
             AssertIsSuccess(result);
             Assert.Equal(expectedOutput, result.ExtensionResult.GetOutputAsString());
+        }
+
+
+        [Theory]
+        [InlineData("Output.Inspect.Heap.Simple.cs2output")]
+        [InlineData("Output.Inspect.Heap.Struct.cs2output")]
+        [InlineData("Output.Inspect.Heap.Struct.Nested.cs2output")]
+        [InlineData("Output.Inspect.Heap.Int32.cs2output")]
+        public async Task SlowUpdate_IncludesInspectHeapInOutput(string resourceName) {
+            var code = TestCode.FromResource("Execution." + resourceName);
+            var driver = await NewTestDriverAsync(code.Original);
+
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+
+            AssertIsSuccess(result);
+            code.AssertIsExpected(result.ExtensionResult.GetOutputAsString(), _testOutputHelper);
         }
 
         [Theory]
@@ -347,9 +370,15 @@ namespace SharpLab.Tests {
             public string GetOutputAsString() {
                 return string.Join("\n", Output.Select(token => {
                     if (token is JObject @object)
-                        return @object.Value<string>("title") + ": " + @object.Value<string>("value");
+                        return ConvertOutputObjectToString(@object);
                     return token.Value<string>();
                 }));
+            }
+
+            private string ConvertOutputObjectToString(JObject @object) {
+                if (@object.Value<string>("type") == "inspection:simple")
+                    return @object.Value<string>("title") + ": " + @object.Value<string>("value");
+                return @object.ToString();
             }
 
             [OnDeserialized]
