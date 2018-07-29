@@ -14,7 +14,6 @@ const production = process.env.NODE_ENV === 'production';
 gulp.task('less', () => {
     return gulp
         .src('./less/app.less')
-        .pipe(g.plumber())
         // this doesn't really work properly, e.g. https://github.com/ai/autoprefixer-core/issues/27
         .pipe(g.sourcemaps.init())
         .pipe(g.less())
@@ -31,7 +30,6 @@ gulp.task('js', () => {
     delete config.dest;
     return gulp
         .src('./js/app.js')
-        .pipe(g.plumber())
         .pipe(g.sourcemaps.init())
         .pipe(g.betterRollup(config, config))
         .pipe(g.if(production, g.babili({ comments: false })))
@@ -80,7 +78,7 @@ gulp.task('html-only', () => {
         .pipe(gulp.dest('wwwroot'));
 });
 
-gulp.task('html', ['js', 'less', 'html-only']);
+gulp.task('html', gulp.parallel('js', 'less', 'html-only'));
 
 function getRoslynVersion() {
     const assetsJson = JSON.parse(fs.readFileSync('../Server/obj/project.assets.json', 'utf8'));
@@ -92,11 +90,11 @@ function getRoslynVersion() {
     return null;
 }
 
-gulp.task('watch', ['default'], () => {
+gulp.task('default', gulp.parallel('less', 'js', 'favicons', 'html'));
+
+gulp.task('watch', gulp.series('default', () => {
     gulp.watch('less/**/*.*', ['less', 'html-only']);
     gulp.watch('js/**/*.js', ['js', 'html-only']);
     gulp.watch('favicon*.svg', ['favicons']);
     gulp.watch('index.html', ['html-only']);
-});
-
-gulp.task('default', ['less', 'js', 'favicons', 'html']);
+}));
