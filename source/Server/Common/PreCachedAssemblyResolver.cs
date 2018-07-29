@@ -3,33 +3,47 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using AshMind.Extensions;
+using ICSharpCode.Decompiler.Metadata;
 using Mono.Cecil;
 
 namespace SharpLab.Server.Common {
-    public class PreCachedAssemblyResolver : IAssemblyResolver {
-        private readonly ConcurrentDictionary<string, AssemblyDefinition> _cache = new ConcurrentDictionary<string, AssemblyDefinition>();
+    public class PreCachedAssemblyResolver : ICSharpCode.Decompiler.Metadata.IAssemblyResolver, Mono.Cecil.IAssemblyResolver {
+        private readonly ConcurrentDictionary<string, PEFile> _peFileCache = new ConcurrentDictionary<string, PEFile>();
+        private readonly ConcurrentDictionary<string, AssemblyDefinition> _cecilCache = new ConcurrentDictionary<string, AssemblyDefinition>();
 
         public PreCachedAssemblyResolver(IReadOnlyCollection<ILanguageAdapter> languages) {
             foreach (var language in languages) {
-                language.ReferencedAssembliesTask.ContinueWith(assemblies => AddToCache(assemblies));
+                language.ReferencedAssembliesTask.ContinueWith(assemblies => AddToCaches(assemblies));
             }
         }
 
-        private void AddToCache(IReadOnlyCollection<Assembly> assemblies) {
+        private void AddToCaches(IReadOnlyCollection<Assembly> assemblies) {
             foreach (var assembly in assemblies) {
+                var file = new PEFile(assembly.GetAssemblyFile().FullName);
+                _peFileCache.TryAdd(file.Name, file);
+
                 var definition = AssemblyDefinition.ReadAssembly(assembly.GetAssemblyFile().FullName);
-                var name = definition.Name.Name;
-                _cache.TryAdd(name, definition);
+                _cecilCache.TryAdd(definition.Name.Name, definition);
             }
         }
 
-        public AssemblyDefinition Resolve(AssemblyNameReference name) {
-            if (!_cache.TryGetValue(name.Name, out var assembly))
+        public PEFile Resolve(IAssemblyReference reference) {
+            if (!_peFileCache.TryGetValue(reference.Name, out var assembly))
+                throw new Exception($"Assembly {reference.Name} was not found in cache.");
+            return assembly;
+        }
+
+        public PEFile ResolveModule(PEFile mainModule, string moduleName) {
+            throw new NotSupportedException();
+        }
+
+        public AssemblyDefinition Resolve(Mono.Cecil.AssemblyNameReference name) {
+            if (!_cecilCache.TryGetValue(name.Name, out var assembly))
                 throw new Exception($"Assembly {name.Name} was not found in cache.");
             return assembly;
         }
 
-        public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters) {
+        public AssemblyDefinition Resolve(Mono.Cecil.AssemblyNameReference name, ReaderParameters parameters) {
             throw new NotSupportedException();
         }
 

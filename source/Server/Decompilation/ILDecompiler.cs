@@ -1,8 +1,8 @@
+using System;
 using System.IO;
 using System.Threading;
-using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Disassembler;
-using Mono.Cecil;
+using ICSharpCode.Decompiler.Metadata;
 using Mono.Cecil.Cil;
 using SharpLab.Server.Common;
 using SharpLab.Server.Decompilation.Internal;
@@ -10,29 +10,30 @@ using SharpLab.Server.Decompilation.Internal;
 namespace SharpLab.Server.Decompilation {
     public class ILDecompiler : IDecompiler {
         private readonly ISymbolReaderProvider _symbolReaderProvider;
+        private readonly Func<Stream, IDisposableDebugInfoProvider> _debugInfoFactory;
 
-        public ILDecompiler(ISymbolReaderProvider symbolReaderProvider) {
+        public ILDecompiler(ISymbolReaderProvider symbolReaderProvider, Func<Stream, IDisposableDebugInfoProvider> debugInfoFactory) {
             _symbolReaderProvider = symbolReaderProvider;
+            _debugInfoFactory = debugInfoFactory;
         }
 
         public void Decompile(CompilationStreamPair streams, TextWriter codeWriter) {
             Argument.NotNull(nameof(streams), streams);
             Argument.NotNull(nameof(codeWriter), codeWriter);
 
-            var assembly = AssemblyDefinition.ReadAssembly(streams.AssemblyStream, new ReaderParameters {
-                ReadSymbols = streams.SymbolStream != null,
-                SymbolStream = streams.SymbolStream,
-                SymbolReaderProvider = streams.SymbolStream != null ? _symbolReaderProvider : null
-            });
-            //#if DEBUG
-            //assembly.Write(@"d:\Temp\assembly\" + System.DateTime.Now.Ticks + "-il.dll");
-            //#endif
+            using (var assemblyFile = new PEFile("", streams.AssemblyStream))
+            using (var debugInfo = streams.SymbolStream != null ? _debugInfoFactory(streams.SymbolStream) : null) {
+                //#if DEBUG
+                //assembly.Write(@"d:\Temp\assembly\" + System.DateTime.Now.Ticks + "-il.dll");
+                //#endif
 
-            var output = new SpaceIndentingPlainTextOutput(codeWriter);
-            var disassembler = new ReflectionDisassembler(output, CancellationToken.None) {
-                ShowSequencePoints = true
-            };
-            disassembler.WriteModuleContents(assembly.MainModule);
+                var output = new SpaceIndentingPlainTextOutput(codeWriter);
+                var disassembler = new ReflectionDisassembler(output, CancellationToken.None) {
+                    DebugInfo = debugInfo,
+                    ShowSequencePoints = true
+                };
+                disassembler.WriteModuleContents(assemblyFile);
+            }
         }
 
         public string LanguageName => TargetNames.IL;

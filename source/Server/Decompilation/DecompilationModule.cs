@@ -10,6 +10,9 @@ namespace SharpLab.Server.Decompilation {
             builder.RegisterType<RoslynOperationPropertySerializer>()
                    .As<IRoslynOperationPropertySerializer>()
                    .SingleInstance();
+            builder.RegisterType<PortablePdbDebugInfoProvider>()
+                   .As<IDisposableDebugInfoProvider>()
+                   .InstancePerDependency();
 
             builder.RegisterType<RoslynAstTarget>()
                    .As<IAstTarget>()

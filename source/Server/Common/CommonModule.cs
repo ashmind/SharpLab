@@ -3,7 +3,6 @@ using System.Net.Http;
 using Autofac;
 using JetBrains.Annotations;
 using Microsoft.IO;
-using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Pdb;
 using SharpLab.Server.Common.Internal;
@@ -20,7 +19,8 @@ namespace SharpLab.Server.Common {
                    .SingleInstance();
 
             builder.RegisterType<PreCachedAssemblyResolver>()
-                   .As<IAssemblyResolver>()
+                   .As<ICSharpCode.Decompiler.Metadata.IAssemblyResolver>()
+                   .As<Mono.Cecil.IAssemblyResolver>()
                    .SingleInstance();
 
             builder.RegisterType<CSharpAdapter>()
@@ -45,7 +45,7 @@ namespace SharpLab.Server.Common {
                    .SingleInstance()
                    .PreserveExistingDefaults(); // allows tests and other overrides
 
-            builder.RegisterType<NativePdbReaderProvider>()
+            builder.RegisterType<PortablePdbReaderProvider>()
                    .As<ISymbolReaderProvider>()
                    .SingleInstance();
         }

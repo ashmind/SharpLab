@@ -44,6 +44,7 @@ namespace SharpLab.Tests {
         [InlineData("Goto.TryWhile.cs2cs")] // https://github.com/ashmind/SharpLab/issues/123
         [InlineData("Nullable.OperatorLifting.cs2cs")] // https://github.com/ashmind/SharpLab/issues/159
         [InlineData("Finalizer.Exception.cs2il")] // https://github.com/ashmind/SharpLab/issues/205
+        [InlineData("Parameters.Optional.Decimal.cs2cs")] // https://github.com/ashmind/SharpLab/issues/316
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string resourceName) {
             var data = TestCode.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);

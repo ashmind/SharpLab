@@ -1,16 +1,14 @@
-using System;
 public class C {
-    public bool M(DateTime? d) {
-        return d > DateTime.Now;
+    public void M(decimal d = 5.0m) {
     }
 }
 
 #=>
 
-using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
 
@@ -22,14 +20,7 @@ using System.Security.Permissions;
 [module: UnverifiableCode]
 public class C
 {
-    public bool M(DateTime? d)
+    public void M([Optional] [DecimalConstant(1, 0, 0u, 0u, 50u)] decimal d)
     {
-        DateTime? dateTime = d;
-        DateTime now = DateTime.Now;
-        if (!dateTime.HasValue)
-        {
-            return false;
-        }
-        return dateTime.GetValueOrDefault() > now;
     }
 }

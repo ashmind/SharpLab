@@ -1,6 +1,10 @@
 using System.IO;
+using System.Reflection.Metadata;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.CSharp.Syntax;
+using ICSharpCode.Decompiler.Disassembler;
+using ICSharpCode.Decompiler.Metadata;
+using ICSharpCode.Decompiler.TypeSystem;
 
 namespace SharpLab.Server.Decompilation.Internal {
     public class SpaceIndentingPlainTextOutput : ITextOutput {
@@ -18,14 +22,6 @@ namespace SharpLab.Server.Decompilation.Internal {
         {
             Argument.NotNull(nameof(writer), writer);
             _writer = writer;
-        }
-
-        public TextLocation Location
-        {
-            get {
-                var column = _column + (_indentRequired ? IndentSize : 0);
-                return new TextLocation(_line, column);
-            }
         }
 
         private int IndentSize => _indentLevel * IndentString.Length;
@@ -61,14 +57,6 @@ namespace SharpLab.Server.Decompilation.Internal {
             _column = 1;
         }
 
-        public void WriteDefinition(string text, object definition, bool isLocal) {
-            Write(text);
-        }
-
-        public void WriteReference(string text, object reference, bool isLocal) {
-            Write(text);
-        }
-
         private void WriteIndentIfRequired()
         {
             if (!_indentRequired)
@@ -81,7 +69,27 @@ namespace SharpLab.Server.Decompilation.Internal {
             _indentRequired = false;
         }
 
-        void ITextOutput.MarkFoldStart(string collapsedText, bool defaultCollapsed) {}
-        void ITextOutput.MarkFoldEnd() {}
+        public void WriteLocalReference(string text, object reference, bool isDefinition = false) {
+            Write(text);
+        }
+
+        public void WriteReference(OpCodeInfo opCode) {
+            Write(opCode.Name);
+        }
+
+        public void WriteReference(PEFile module, EntityHandle handle, string text, bool isDefinition = false) {
+            Write(text);
+        }
+
+        public void WriteReference(IType type, string text, bool isDefinition = false) {
+            Write(text);
+        }
+
+        public void WriteReference(IMember member, string text, bool isDefinition = false) {
+            Write(text);
+        }
+
+        void ITextOutput.MarkFoldStart(string collapsedText, bool defaultCollapsed) { }
+        void ITextOutput.MarkFoldEnd() { }
     }
 }
