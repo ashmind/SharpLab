@@ -127,6 +127,9 @@ namespace SharpLab.Server.Execution {
                     if (ex is TargetInvocationException invocationEx)
                         ex = invocationEx.InnerException;
 
+                    if (ex is RegexMatchTimeoutException)
+                        ex = new TimeGuardException("Time limit reached while evaluating a Regex.\r\nNote that timeout was added by SharpLab — in real code this would not throw, but might run for a very long time.", ex);
+
                     Flow.ReportException(ex);
                     ex.Inspect("Exception");
                     return new ExecutionResultWrapper(new ExecutionResult(Output.Stream, Flow.Steps), ex);
