@@ -3250,6 +3250,7 @@ System.Collections.Generic
      SymmetricExceptWith: Allowed
      ToString: Allowed
      TrimExcess: Allowed
+     TryGetValue: Allowed
      UnionWith: Allowed (CollectedEnumerableArgumentRewriter)
   HashSet`1+Enumerator: Allowed
      Dispose: Allowed
@@ -3541,6 +3542,7 @@ System.Collections.Generic
      SetEquals: Allowed
      SymmetricExceptWith: Allowed
      ToString: Allowed
+     TryGetValue: Allowed
      UnionWith: Allowed (CollectedEnumerableArgumentRewriter)
   SortedSet`1+Enumerator: Allowed
      Dispose: Allowed
@@ -4278,6 +4280,7 @@ System.Linq
      ThenByDescending: Allowed (CollectedEnumerableArgumentRewriter)
      ToArray: Allowed (CollectedEnumerableArgumentRewriter)
      ToDictionary: Allowed (CollectedEnumerableArgumentRewriter)
+     ToHashSet: Denied
      ToList: Allowed (CollectedEnumerableArgumentRewriter)
      ToLookup: Allowed (CollectedEnumerableArgumentRewriter)
      ToString: Denied
@@ -6880,6 +6883,118 @@ System.Text
   UTF32Encoding: Denied
   UTF7Encoding: Denied
   UTF8Encoding: Denied
+System.Text.RegularExpressions
+  Capture: Allowed
+     Equals: Allowed
+     get_Index: Allowed
+     get_Length: Allowed
+     get_Value: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  CaptureCollection: Denied
+  Group: Allowed
+     Equals: Allowed
+     get_Captures: Allowed
+     get_Index: Allowed
+     get_Length: Allowed
+     get_Name: Allowed
+     get_Success: Allowed
+     get_Value: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     Synchronized: Denied
+     ToString: Allowed
+  GroupCollection: Allowed
+     CopyTo: Allowed
+     Equals: Allowed
+     get_Count: Allowed
+     get_IsReadOnly: Allowed
+     get_IsSynchronized: Allowed
+     get_Item: Allowed
+     get_SyncRoot: Allowed
+     GetEnumerator: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  Match: Allowed
+     Equals: Allowed
+     get_Captures: Allowed
+     get_Empty: Allowed
+     get_Groups: Allowed
+     get_Index: Allowed
+     get_Length: Allowed
+     get_Name: Allowed
+     get_Success: Allowed
+     get_Value: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     NextMatch: Allowed
+     Result: Allowed
+     Synchronized: Denied
+     ToString: Allowed
+  MatchCollection: Allowed
+     CopyTo: Allowed
+     Equals: Allowed
+     get_Count: Allowed
+     get_IsReadOnly: Allowed
+     get_IsSynchronized: Allowed
+     get_Item: Allowed
+     get_SyncRoot: Allowed
+     GetEnumerator: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
+  MatchEvaluator: Allowed
+     .ctor: Allowed
+     BeginInvoke: Denied
+     Clone: Denied
+     DynamicInvoke: Denied
+     EndInvoke: Denied
+     Equals: Denied
+     get_Method: Denied
+     get_Target: Denied
+     GetHashCode: Denied
+     GetInvocationList: Denied
+     GetObjectData: Denied
+     GetType: Denied
+     Invoke: Allowed
+     ToString: Denied
+  Regex: Allowed
+     .ctor: Allowed (RegexDangerousMethodCallRewriter)
+     CompileToAssembly: Denied
+     Equals: Denied
+     Escape: Allowed (StringReturnRewriter)
+     get_CacheSize: Denied
+     get_MatchTimeout: Denied
+     get_Options: Allowed
+     get_RightToLeft: Allowed
+     GetGroupNames: Allowed (ArrayReturnRewriter)
+     GetGroupNumbers: Allowed (ArrayReturnRewriter)
+     GetHashCode: Denied
+     GetType: Denied
+     GroupNameFromNumber: Allowed
+     GroupNumberFromName: Allowed
+     IsMatch: Allowed (RegexDangerousMethodCallRewriter)
+     Match: Allowed (RegexDangerousMethodCallRewriter)
+     Matches: Allowed (RegexDangerousMethodCallRewriter)
+     Replace: Allowed (RegexDangerousMethodCallRewriter, StringReturnRewriter)
+     set_CacheSize: Denied
+     Split: Allowed (RegexDangerousMethodCallRewriter, ArrayReturnRewriter)
+     ToString: Allowed (StringReturnRewriter)
+     Unescape: Allowed (StringReturnRewriter)
+  RegexCompilationInfo: Denied
+  RegexMatchTimeoutException: Denied
+  RegexOptions: Allowed
+     CompareTo: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     GetTypeCode: Allowed
+     HasFlag: Allowed
+     ToString: Allowed
+  RegexRunner: Denied
+  RegexRunnerFactory: Denied
 System.Threading
 System.Web
   ApplicationShutdownReason: Denied
@@ -7007,6 +7122,7 @@ System.Web
   ReadEntityBodyMode: Denied
   RequestNotification: Denied
   RequestNotificationStatus: Denied
+  SameSiteMode: Denied
   SiteMap: Denied
   SiteMapNode: Denied
   SiteMapNodeCollection: Denied
