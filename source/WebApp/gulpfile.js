@@ -32,7 +32,7 @@ gulp.task('js', () => {
         .src('./js/app.js')
         .pipe(g.sourcemaps.init())
         .pipe(g.betterRollup(config, config))
-        .pipe(g.if(production, g.babelMinify({ comments: false })))
+        .pipe(g.if(production, g.babelMinify()))
         .pipe(g.rename('app.min.js'))
         .pipe(g.sourcemaps.write('.'))
         .pipe(gulp.dest('wwwroot'));
