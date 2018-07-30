@@ -29,7 +29,9 @@ function build(...entries) {
     const sortedByLength = entries.slice(0);
     sortedByLength.sort((a, b) => Math.sign(b.length - a.length));
 
-    const pattern = '@|' + sortedByLength.map(e => e.replace('.', '\\.')).join('|'); // eslint-disable-line prefer-template
+    const pattern = String.raw`@|(?:${
+        sortedByLength.map(e => e.replace(/\./g, '\\.')).join('|')
+    }')(?=[^\d]|$)`;
     return { entries, regex: new RegExp(pattern, 'g') };
 }
 
