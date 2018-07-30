@@ -93,8 +93,8 @@ function getRoslynVersion() {
 gulp.task('default', gulp.parallel('less', 'js', 'favicons', 'html'));
 
 gulp.task('watch', gulp.series('default', () => {
-    gulp.watch('less/**/*.*', ['less', 'html-only']);
-    gulp.watch('js/**/*.js', ['js', 'html-only']);
-    gulp.watch('favicon*.svg', ['favicons']);
-    gulp.watch('index.html', ['html-only']);
+    gulp.watch('less/**/*.*', gulp.series('less', 'html-only'));
+    gulp.watch('js/**/*.js', gulp.series('js', 'html-only'));
+    gulp.watch('favicon*.svg', gulp.series('favicons'));
+    gulp.watch('index.html', gulp.series('html-only'));
 }));

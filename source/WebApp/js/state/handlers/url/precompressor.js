@@ -1,4 +1,5 @@
 import languages from '../../../helpers/languages.js';
+import help from '../../../helpers/help.js';
 
 const dictionaries = {
     [languages.csharp]: build(
@@ -21,7 +22,8 @@ const dictionaries = {
         'static',
         'Program',
         'Main',
-        'Console.WriteLine'
+        'Console.WriteLine',
+        help.run.csharp
     )
 };
 
@@ -29,10 +31,8 @@ function build(...entries) {
     const sortedByLength = entries.slice(0);
     sortedByLength.sort((a, b) => Math.sign(b.length - a.length));
 
-    const pattern = String.raw`@|(?:${
-        sortedByLength.map(e => e.replace(/\./g, '\\.')).join('|')
-    }')(?=[^\d]|$)`;
-    return { entries, regex: new RegExp(pattern, 'g') };
+    const pattern = String.raw`@|(?:${sortedByLength.map(escapeRegex).join('|')}')(?=[^\d]|$)`;
+    return { entries, regex: new RegExp(pattern, 'mg') };
 }
 
 function compress(code, language) {
@@ -55,6 +55,10 @@ function decompress(compressed, language) {
             return '@';
         return dictionary.entries[parseInt($1, 10)];
     });
+}
+
+function escapeRegex(value) {
+    return value.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
 }
 
 export default {
