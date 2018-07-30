@@ -5058,7 +5058,9 @@ System.Reflection
   AssemblyDelaySignAttribute: Denied
   AssemblyDescriptionAttribute: Denied
   AssemblyFileVersionAttribute: Denied
+  AssemblyFlags: Denied
   AssemblyFlagsAttribute: Denied
+  AssemblyHashAlgorithm: Denied
   AssemblyInformationalVersionAttribute: Denied
   AssemblyKeyFileAttribute: Denied
   AssemblyKeyNameAttribute: Denied
@@ -5145,6 +5147,7 @@ System.Reflection
   CustomAttributeFormatException: Denied
   CustomAttributeNamedArgument: Denied
   CustomAttributeTypedArgument: Denied
+  DeclarativeSecurityAction: Denied
   DefaultMemberAttribute: Denied
   EventAttributes: Allowed
      CompareTo: Allowed
@@ -5268,6 +5271,7 @@ System.Reflection
   IReflect: Denied
   IReflectableType: Denied
   LocalVariableInfo: Denied
+  ManifestResourceAttributes: Denied
   ManifestResourceInfo: Denied
   MemberFilter: Denied
   MemberInfo: Allowed
@@ -5359,6 +5363,7 @@ System.Reflection
      GetTypeCode: Allowed
      HasFlag: Allowed
      ToString: Allowed
+  MethodImportAttributes: Denied
   MethodInfo: Allowed
      CreateDelegate: Denied
      Equals: Denied
@@ -5411,6 +5416,7 @@ System.Reflection
      op_Equality: Denied
      op_Inequality: Denied
      ToString: Denied
+  MethodSemanticsAttributes: Denied
   Missing: Denied
   Module: Denied
   ModuleResolveEventHandler: Denied
@@ -7007,6 +7013,84 @@ System.Text.RegularExpressions
   RegexRunner: Denied
   RegexRunnerFactory: Denied
 System.Threading
+  AbandonedMutexException: Denied
+  ApartmentState: Denied
+  AsyncFlowControl: Denied
+  AsyncLocal`1: Denied
+  AsyncLocalValueChangedArgs`1: Denied
+  AutoResetEvent: Denied
+  Barrier: Denied
+  BarrierPostPhaseException: Denied
+  CancellationToken: Denied
+  CancellationTokenRegistration: Denied
+  CancellationTokenSource: Denied
+  CompressedStack: Denied
+  ContextCallback: Denied
+  CountdownEvent: Denied
+  EventResetMode: Denied
+  EventWaitHandle: Denied
+  ExecutionContext: Denied
+  HostExecutionContext: Denied
+  HostExecutionContextManager: Denied
+  Interlocked: Allowed
+     Add: Denied
+     CompareExchange: Allowed
+     Decrement: Denied
+     Equals: Denied
+     Exchange: Denied
+     GetHashCode: Denied
+     GetType: Denied
+     Increment: Denied
+     MemoryBarrier: Denied
+     Read: Denied
+     ToString: Denied
+  IOCompletionCallback: Denied
+  LazyInitializer: Denied
+  LazyThreadSafetyMode: Denied
+  LockCookie: Denied
+  LockRecursionException: Denied
+  LockRecursionPolicy: Denied
+  ManualResetEvent: Denied
+  ManualResetEventSlim: Denied
+  Monitor: Denied
+  Mutex: Denied
+  NativeOverlapped: Denied
+  Overlapped: Denied
+  ParameterizedThreadStart: Denied
+  PreAllocatedOverlapped: Denied
+  ReaderWriterLock: Denied
+  ReaderWriterLockSlim: Denied
+  RegisteredWaitHandle: Denied
+  Semaphore: Denied
+  SemaphoreFullException: Denied
+  SemaphoreSlim: Denied
+  SendOrPostCallback: Denied
+  SpinLock: Denied
+  SpinWait: Denied
+  SynchronizationContext: Denied
+  SynchronizationLockException: Denied
+  Thread: Denied
+  ThreadAbortException: Denied
+  ThreadExceptionEventArgs: Denied
+  ThreadExceptionEventHandler: Denied
+  ThreadInterruptedException: Denied
+  ThreadLocal`1: Denied
+  ThreadPool: Denied
+  ThreadPoolBoundHandle: Denied
+  ThreadPriority: Denied
+  ThreadStart: Denied
+  ThreadStartException: Denied
+  ThreadState: Denied
+  ThreadStateException: Denied
+  Timeout: Denied
+  Timer: Denied
+  TimerCallback: Denied
+  Volatile: Denied
+  WaitCallback: Denied
+  WaitHandle: Denied
+  WaitHandleCannotBeOpenedException: Denied
+  WaitHandleExtensions: Denied
+  WaitOrTimerCallback: Denied
 System.Web
   ApplicationShutdownReason: Denied
   AspNetHostingPermission: Denied
