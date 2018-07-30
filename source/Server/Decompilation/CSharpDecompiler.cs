@@ -1,9 +1,7 @@
 using System;
 using System.IO;
-using System.Reflection.Metadata;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.CSharp.OutputVisitor;
-using ICSharpCode.Decompiler.DebugInfo;
 using ICSharpCode.Decompiler.Metadata;
 using SharpLab.Server.Common;
 using SharpLab.Server.Decompilation.Internal;
@@ -23,7 +21,8 @@ namespace SharpLab.Server.Decompilation {
             UsingStatement = false,
             LiftNullables = false,
             NullPropagation = false,
-            DecimalConstants = false
+            DecimalConstants = false,
+            AutomaticEvents = false
         };
 
         private readonly IAssemblyResolver _assemblyResolver;
