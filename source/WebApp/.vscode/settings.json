@@ -21,10 +21,13 @@
         "multipipe",
         "pageview",
         "polyfills",
+        "precompressed",
+        "precompressor",
         "recurse",
         "sharplab",
         "tryroslyn",
         "ungrouped",
         "wwwroot"
-    ]
+    ],
+    "jest.pathToJest": "npm run test --"
 }
