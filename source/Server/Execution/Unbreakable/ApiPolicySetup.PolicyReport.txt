@@ -1907,7 +1907,16 @@ System
      Match: Allowed
      ToString: Allowed
   FormatException: Denied
-  FormattableString: Denied
+  FormattableString: Allowed
+     Equals: Allowed
+     get_ArgumentCount: Allowed
+     get_Format: Allowed
+     GetArgument: Allowed
+     GetArguments: Allowed (ArrayReturnRewriter)
+     GetHashCode: Allowed
+     GetType: Allowed
+     Invariant: Allowed
+     ToString: Allowed (StringReturnRewriter)
   FtpStyleUriParser: Denied
   Func`1: Allowed
      .ctor: Allowed
@@ -5841,7 +5850,12 @@ System.Runtime.CompilerServices
      ToString: Allowed
   FixedAddressValueTypeAttribute: Denied
   FixedBufferAttribute: Denied
-  FormattableStringFactory: Denied
+  FormattableStringFactory: Allowed
+     Create: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
   HasCopySemanticsAttribute: Denied
   IAsyncStateMachine: Denied
   ICriticalNotifyCompletion: Denied
