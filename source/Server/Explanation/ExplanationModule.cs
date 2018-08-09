@@ -28,16 +28,16 @@ namespace SharpLab.Server.Explanation {
         }
 
         private void RegisterSourcePath(ContainerBuilder builder) {
-            builder.RegisterType<RoslynAxisNavigator>()
-                   .As<ISourcePathAxisNavigator<SyntaxNodeOrToken>>()
+            builder.RegisterType<RoslynNodeHandler>()
+                   .As<ISourceNodeHandler<RoslynNodeContext>>()
                    .SingleInstance();
 
             builder.RegisterType<CSharpExplanationPathDialect>()
-                   .As<ISourcePathDialect<SyntaxNodeOrToken>>()
+                   .As<ISourcePathDialect<RoslynNodeContext>>()
                    .SingleInstance();
 
-            builder.RegisterType<SourcePathParser<SyntaxNodeOrToken>>()
-                   .As<ISourcePathParser<SyntaxNodeOrToken>>()
+            builder.RegisterType<SourcePathParser<RoslynNodeContext>>()
+                   .As<ISourcePathParser<RoslynNodeContext>>()
                    .SingleInstance();
         }
     }

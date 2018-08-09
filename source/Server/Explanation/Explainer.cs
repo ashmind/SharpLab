@@ -8,6 +8,7 @@ using MirrorSharp.Advanced;
 using SharpLab.Server.Decompilation.AstOnly;
 using SharpLab.Server.Explanation.Internal;
 using SourcePath;
+using SourcePath.Roslyn;
 
 namespace SharpLab.Server.Explanation {
     public class Explainer : IExplainer {
@@ -22,19 +23,18 @@ namespace SharpLab.Server.Explanation {
                 throw new NotSupportedException("Explain mode is only available for C# at the moment.");
 
             var explanations = await _explanationProvider.GetExplanationsAsync(cancellationToken).ConfigureAwait(false);
-            return new ExplanationResult(MapExplanations(ast, explanations));
+            return new ExplanationResult(MapExplanations((RoslynAst)ast, explanations));
         }
 
-        private IEnumerable<(SyntaxNodeOrToken, SyntaxExplanation)> MapExplanations(object ast, IReadOnlyCollection<SyntaxExplanation> explanations) {
+        private IEnumerable<(SyntaxNodeOrToken, SyntaxExplanation)> MapExplanations(RoslynAst ast, IReadOnlyCollection<SyntaxExplanation> explanations) {
             var seen = new HashSet<SyntaxExplanation>();
-            var tree = ((RoslynAst)ast).SyntaxRoot;
             var results = new List<(SyntaxNode, SyntaxExplanation)>();
-            foreach (var descendant in tree.DescendantNodesAndTokensAndSelf()) {
+            foreach (var descendant in ast.SyntaxRoot.DescendantNodesAndTokensAndSelf()) {
                 foreach (var explanation in explanations) {
                     if (seen.Contains(explanation))
                         continue;
 
-                    var matched = Match(descendant, explanation);
+                    var matched = Match(descendant, explanation, ast.SemanticModel);
                     if (matched == null)
                         continue;
 
@@ -44,7 +44,7 @@ namespace SharpLab.Server.Explanation {
             }
         }
 
-        private SyntaxNodeOrToken? Match(SyntaxNodeOrToken descendant, SyntaxExplanation explanation) {
+        private SyntaxNodeOrToken? Match(SyntaxNodeOrToken descendant, SyntaxExplanation explanation, SemanticModel semanticModel) {
             var path = explanation.Path;
             if (path is SourcePathSequence<SyntaxNodeOrToken> sequence) {
                 var segment = sequence.Segments[0];
@@ -55,7 +55,8 @@ namespace SharpLab.Server.Explanation {
                 }
             }
 
-            if (path.Matches(descendant, SourcePathAxis.Self))
+            var descendantContext = new RoslynNodeContext(descendant, semanticModel);
+            if (path.Matches(descendantContext, SourcePathAxis.Self))
                 return descendant;
             return null;
         }

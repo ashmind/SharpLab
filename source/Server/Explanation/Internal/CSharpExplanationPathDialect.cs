@@ -7,29 +7,36 @@ using SourcePath;
 using SourcePath.Roslyn;
 
 namespace SharpLab.Server.Explanation.Internal {
-    public class CSharpExplanationPathDialect : ISourcePathDialect<SyntaxNodeOrToken> {
-        private static readonly IReadOnlyDictionary<string, RoslynCSharpNodeKind> NodeKinds =
-            Enum.GetValues(typeof(SyntaxKind))
-                .Cast<SyntaxKind>()
-                .ToDictionary(
-                    k => k.ToString(),
-                    k => new RoslynCSharpNodeKind(k.ToString(), new HashSet<SyntaxKind> { k })
-                );
+    using IRoslynNodeKind = ISourceNodeKind<RoslynNodeContext>;
+
+    public class CSharpExplanationPathDialect : ISourcePathDialect<RoslynNodeContext> {
+        private static readonly IReadOnlyDictionary<string, IRoslynNodeKind> NodeKinds =
+            EnumerateNodeKinds().ToDictionary(k => k.ToPathString(), k => k);
+
+        private static IEnumerable<IRoslynNodeKind> EnumerateNodeKinds() {
+            foreach (SyntaxKind syntaxKind in Enum.GetValues(typeof(SyntaxKind))) {
+                yield return new RoslynCSharpNodeKind(syntaxKind.ToString(), new HashSet<SyntaxKind> { syntaxKind });
+            }
+
+            foreach (SymbolKind symbolKind in Enum.GetValues(typeof(SymbolKind))) {
+                yield return new SymbolNodeKind(symbolKind);
+            }
+
+            yield return IsVerbatimNodeKind.Default;
+            yield return StarNodeKind.Default;
+        }
 
         public SourcePathDialectSupports Supports { get; } = new SourcePathDialectSupports {
             TopLevelAxis = false,
             TopLevelSegments = false,
-            TopLevelAnd = false,
             AxisSelf = false,
             AxisDescendant = false,
             AxisParent = false,
             AxisAncestor = false
         };
 
-        public ISourceNodeKind<SyntaxNodeOrToken> ResolveNodeKind(string nodeKindString) {
+        public IRoslynNodeKind ResolveNodeKind(string nodeKindString) {
             Argument.NotNullOrEmpty(nameof(nodeKindString), nodeKindString);
-            if (nodeKindString == "*")
-                return StarNodeKind.Default;
 
             if (!NodeKinds.TryGetValue(nodeKindString, out var nodeKind))
                 return UnknownNodeKind.Default;
@@ -37,21 +44,47 @@ namespace SharpLab.Server.Explanation.Internal {
             return nodeKind;
         }
 
+        public class StarNodeKind : IRoslynNodeKind {
+            public static StarNodeKind Default { get; } = new StarNodeKind();
+
+            public bool Matches(RoslynNodeContext context) => true;
+            public string ToPathString() => "*";
+        }
+
+        public class IsVerbatimNodeKind : IRoslynNodeKind {
+            public static IsVerbatimNodeKind Default { get; } = new IsVerbatimNodeKind();
+
+            public bool Matches(RoslynNodeContext context) {
+                return context.IsToken
+                    && context.AsToken().Text.StartsWith("@");
+            }
+
+            public string ToPathString() => "_IsVerbatim";
+        }
+
+        public class SymbolNodeKind : IRoslynNodeKind {
+            private readonly SymbolKind _symbolKind;
+
+            public SymbolNodeKind(SymbolKind symbolKind) {
+                _symbolKind = symbolKind;
+            }
+
+            public bool Matches(RoslynNodeContext context) {
+                var symbol = context.SemanticModel.GetSymbolInfo(context.AsNode());
+                return symbol.Symbol?.Kind == _symbolKind;
+            }
+
+            public string ToPathString() => "SymbolKind:" + _symbolKind.ToString();
+        }
+
         // Represents a value that's not in SyntaxKind enum -- likely because the
         // current branch is too old. It can't match anything, but it's still needed
         // so that Explanation file can be loaded without exceptions.
-        private class UnknownNodeKind : ISourceNodeKind<SyntaxNodeOrToken> {
+        private class UnknownNodeKind : IRoslynNodeKind {
             public static UnknownNodeKind Default { get; } = new UnknownNodeKind();
 
-            public bool Matches(SyntaxNodeOrToken node) => false;
+            public bool Matches(RoslynNodeContext context) => false;
             public string ToPathString() => "Unknown";
-        }
-
-        public class StarNodeKind : ISourceNodeKind<SyntaxNodeOrToken> {
-            public static StarNodeKind Default { get; } = new StarNodeKind();
-
-            public bool Matches(SyntaxNodeOrToken node) => true;
-            public string ToPathString() => "*";
         }
     }
 }

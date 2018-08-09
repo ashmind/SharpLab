@@ -4,9 +4,10 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using SharpYaml.Serialization;
-using SourcePath;
-using SharpLab.Server.Monitoring;
 using Microsoft.CodeAnalysis;
+using SourcePath;
+using SourcePath.Roslyn;
+using SharpLab.Server.Monitoring;
 
 namespace SharpLab.Server.Explanation.Internal {
     public class ExternalSyntaxExplanationProvider : ISyntaxExplanationProvider, IDisposable {
@@ -24,13 +25,13 @@ namespace SharpLab.Server.Explanation.Internal {
             NamingConvention = new FlatNamingConvention()
         });
         private readonly IMonitor _monitor;
-        private readonly ISourcePathParser<SyntaxNodeOrToken> _sourcePathParser;
+        private readonly ISourcePathParser<RoslynNodeContext> _sourcePathParser;
 
         public ExternalSyntaxExplanationProvider(
             Func<HttpClient> httpClientFactory,
             Uri sourceUrl,
             TimeSpan updatePeriod,
-            ISourcePathParser<SyntaxNodeOrToken> sourcePathParser,
+            ISourcePathParser<RoslynNodeContext> sourcePathParser,
             IMonitor monitor
         ) {
             _httpClientFactory = httpClientFactory;
@@ -85,7 +86,7 @@ namespace SharpLab.Server.Explanation.Internal {
         }
 
         private SyntaxExplanation ParseExplanation(YamlExplanation item) {
-            ISourcePath<SyntaxNodeOrToken> path;
+            ISourcePath<RoslynNodeContext> path;
             try {
                 path = _sourcePathParser.Parse(item.Path);
             }

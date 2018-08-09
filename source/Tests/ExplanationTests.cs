@@ -10,7 +10,11 @@ namespace SharpLab.Tests {
         [Theory]
         [InlineData("expression-bodied member", "class C { int P => 1; }", "int P => 1;")]
         [InlineData("pattern matching", "class C { void M() { switch(1) { case int i: break; } } }", "case int i:")]
-        [InlineData("in parameter", "class C { void M(in int x) {}", "in int x")]
+        [InlineData("in parameter", "class C { void M(in int x) {} }", "in int x")]
+        [InlineData("verbatim identifier", "class @C {}", "@C")]
+        [InlineData("verbatim string", "class C { string f = @\"a\"; }", "@\"a\"")]
+        [InlineData("dynamic type", "class C { dynamic f = 1; }", "dynamic")]
+        [InlineData("discard", "class C { void M() { _ = 1; } }", "_")]
         public async Task SlowUpdate_ExplainsCSharpFeature(string name, string providedCode, string expectedCode) {
             var driver = await NewTestDriverAsync();
             driver.SetText(providedCode);
