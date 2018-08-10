@@ -16,6 +16,7 @@ namespace SharpLab.Tests {
         [InlineData("dynamic type", "class C { dynamic f = 1; }", "dynamic")]
         [InlineData("discard", "class C { void M() { _ = 1; } }", "_")]
         [InlineData("nameof expression", "class C { string f = nameof(C); }", "nameof(C)")]
+        [InlineData("declaration with a private protected access modifier", "class C { private protected string f; }", "private protected string f;")]
         public async Task SlowUpdate_ExplainsCSharpFeature(string name, string providedCode, string expectedCode) {
             var driver = await NewTestDriverAsync();
             driver.SetText(providedCode);
