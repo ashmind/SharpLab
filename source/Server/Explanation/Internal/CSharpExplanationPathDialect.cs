@@ -22,6 +22,10 @@ namespace SharpLab.Server.Explanation.Internal {
                 yield return new SymbolNodeKind(symbolKind);
             }
 
+            foreach (OperationKind operationKind in Enum.GetValues(typeof(OperationKind))) {
+                yield return new OperationNodeKind(operationKind);
+            }
+
             yield return IsVerbatimNodeKind.Default;
             yield return StarNodeKind.Default;
         }
@@ -75,6 +79,21 @@ namespace SharpLab.Server.Explanation.Internal {
             }
 
             public string ToPathString() => "SymbolKind:" + _symbolKind.ToString();
+        }
+
+        public class OperationNodeKind : IRoslynNodeKind {
+            private readonly OperationKind _operationKind;
+
+            public OperationNodeKind(OperationKind operationKind) {
+                _operationKind = operationKind;
+            }
+
+            public bool Matches(RoslynNodeContext context) {
+                var operation = context.SemanticModel.GetOperation(context.AsNode());
+                return operation?.Kind == _operationKind;
+            }
+
+            public string ToPathString() => "OperationKind:" + _operationKind.ToString();
         }
 
         // Represents a value that's not in SyntaxKind enum -- likely because the
