@@ -1,9 +1,11 @@
 {
     "cSpell.words": [
         "Andrey",
+        "Basepath",
         "Colspan",
         "Decompile",
         "Shchekin",
+        "adhoc",
         "ashmind",
         "azurewebsites",
         "clike",
@@ -12,7 +14,9 @@
         "favicons",
         "hacky",
         "hidebysig",
+        "iife",
         "infotip",
+        "jetpack",
         "maxstack",
         "mirrorsharp",
         "mixins",
@@ -23,8 +27,10 @@
         "polyfills",
         "precompressed",
         "precompressor",
+        "promisify",
         "recurse",
         "sharplab",
+        "sourcemap",
         "tryroslyn",
         "ungrouped",
         "wwwroot"

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net47</TargetFramework>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
@@ -26,23 +26,23 @@
   <ItemGroup>
     <ProjectReference Include="..\Server\Server.csproj" />
   </ItemGroup>
-  <Target Name="Npm" BeforeTargets="Gulp" Inputs="package.json" Outputs="!package.json.installed">
-    <PropertyGroup>
-      <NpmPath Condition="'$(TR_BUILD_NPM_PATH)' != ''">"$(TR_BUILD_NPM_PATH)"</NpmPath>
-      <NpmPath Condition="'$(TR_BUILD_NPM_PATH)' == ''">npm</NpmPath>
-    </PropertyGroup>
+  <PropertyGroup>
+    <NpmPath Condition="'$(TR_BUILD_NPM_PATH)' != ''">"$(TR_BUILD_NPM_PATH)"</NpmPath>
+    <NpmPath Condition="'$(TR_BUILD_NPM_PATH)' == ''">npm</NpmPath>
+  </PropertyGroup>
+  <Target Name="NpmInstall" BeforeTargets="NpmBuild" Inputs="package.json" Outputs="!package.json.installed">
     <Exec Command="$(NpmPath) install" EnvironmentVariables="NODE_ENV=" />
     <Copy SourceFiles="package.json" DestinationFiles="!package.json.installed" />
   </Target>
   <ItemGroup>
-    <_GulpOutputs Include="wwwroot\**\*.*" Exclude="wwwroot\!branches.json" />
-    <_GulpInputs Include="@(None)" Exclude="**\!*.*; @(_GulpOutputs)" />
+    <_StaticOutputs Include="wwwroot\**\*.*" Exclude="wwwroot\!branches.json" />
+    <_StaticInputs Include="@(None)" Exclude="**\!*.*; @(_StaticOutputs)" />
   </ItemGroup>
-  <ItemGroup Condition="'@(_GulpOutputs)' == ''">
-    <_GulpOutputs Include="$(wwwroot)\.any" />
+  <ItemGroup Condition="'@(_StaticOutputs)' == ''">
+      <_StaticOutputs Include="$(wwwroot)\.any" />
   </ItemGroup>
-  <Target Name="Gulp" AfterTargets="Build" Inputs="@(_GulpInputs)" Outputs="@(_GulpOutputs)">
-    <Exec Command="node_modules\.bin\gulp.cmd" />
+  <Target Name="NpmBuild" AfterTargets="Build" Inputs="@(_StaticInputs)" Outputs="@(_StaticOutputs)">
+    <Exec Command="$(NpmPath) run build" />
     <ItemGroup>
       <Content Include="wwwroot\**\*.*" />
     </ItemGroup>
