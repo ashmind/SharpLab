@@ -172,20 +172,6 @@
       <span hidden>(Experimental) Also has a <a data-manual-role="toggle-theme">dark theme</a>.</span>
     </footer>
 
-    <script type="text/x-template" id="app-ast-view-item">
-      <span v-if="typeof item !== 'object'" class="ast-item-wrap ast-item-value">
-        <span class="ast-item-type"></span>
-        {{renderValue(item, 'value')}}
-      </span>
-      <span v-else v-bind:class="'ast-item-wrap ast-item-' + item.type">
-        <button v-if="item.children"></button>
-        <span class="ast-item-type" v-bind:title="item.type"></span>
-        <span class="ast-item-property" v-if="item.property">{{item.property}}:</span>
-        <span v-if="item.value !== undefined" class="ast-inline-value">{{renderValue(item.value, item.type)}}</span>
-        <span class="ast-item-kind">{{item.kind}}</span>
-      </span>
-    </script>
-
     {build:templates}
 
     <script type="text/javascript">

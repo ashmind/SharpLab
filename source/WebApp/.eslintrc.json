@@ -4,7 +4,8 @@
         "node": true
     },
     "globals": {
-        "Promise": true
+        "Promise": true,
+        "Symbol": true
     },
     "parserOptions": {
         "ecmaVersion": 8
