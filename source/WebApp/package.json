@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "node build.js",
+    "watch": "node build.js --watch",
     "test": "jest"
   },
   "jest": {
@@ -23,6 +24,7 @@
     "jest": "23.5.0",
     "less": "3.8.1",
     "md5-file": "3.1.1",
+    "oldowan": "1.0.0-preview-2",
     "postcss": "7.0.2",
     "rollup": "0.63.4",
     "rollup-plugin-commonjs": "9.1.4",

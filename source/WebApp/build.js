@@ -1,5 +1,7 @@
 // Common:
+const { task, tasks, run } = require('oldowan');
 const path = require('path');
+const jetpack = require('fs-jetpack');
 const md5File = require('md5-file/promise');
 // CSS:
 const less = require('less');
@@ -15,8 +17,6 @@ const rollupPluginTerser = require('rollup-plugin-terser').terser;
 const sharp = require('sharp');
 // HTML:
 const htmlMinifier = require('html-minifier');
-// Other:
-const { task, tasks, build, jetpack } = require('./build/oldowan.js');
 
 const outputRoot = `wwwroot`;
 const production = process.env.NODE_ENV === 'production';
@@ -63,7 +63,7 @@ task('less', async () => {
         jetpack.writeAsync(paths.to.css, result.css),
         jetpack.writeAsync(paths.to.css + '.map', result.map)
     );
-});
+}, { inputs: `${__dirname}/less/**/*.less` });
 
 task('js', async () => {
     const bundle = await rollup.rollup({
@@ -85,6 +85,11 @@ task('js', async () => {
         file: paths.to.js,
         sourcemap: true
     });
+}, {
+    inputs: [
+        `${__dirname}/js/**/*.js`,
+        `${__dirname}/package.json`
+    ]
 });
 
 task('favicons', () => {
@@ -101,7 +106,7 @@ task('favicons', () => {
         jetpack.copyAsync(paths.from.favicon, paths.to.favicon.svg, { overwrite: true }),
         pngGeneration
     );
-});
+}, { inputs: paths.from.favicon });
 
 task('html', async () => {
     const roslynVersion = await getRoslynVersion();
@@ -120,6 +125,14 @@ task('html', async () => {
         .replace(/\{build:roslyn-version\}/g, roslynVersion);
     html = htmlMinifier.minify(html, { collapseWhitespace: true });
     await jetpack.writeAsync(paths.to.html, html);
+}, {
+    inputs: [
+        `${__dirname}/templates/**/*.html`,
+        paths.to.css,
+        paths.to.js,
+        paths.from.html,
+        paths.from.favicon
+    ]
 });
 
 task('default', () => {
@@ -166,4 +179,4 @@ async function getCombinedTemplates() {
     return (await Promise.all(htmlPromises)).join('\r\n');
 }
 
-build();
+run();
