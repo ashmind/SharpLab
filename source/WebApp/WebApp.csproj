@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net47</TargetFramework>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
@@ -31,7 +31,7 @@
     <NpmPath Condition="'$(TR_BUILD_NPM_PATH)' == ''">npm</NpmPath>
   </PropertyGroup>
   <Target Name="NpmInstall" BeforeTargets="NpmBuild" Inputs="package.json" Outputs="!package.json.installed">
-    <Exec Command="$(NpmPath) install" EnvironmentVariables="NODE_ENV=" />
+    <Exec Command="$(NpmPath) ci" EnvironmentVariables="NODE_ENV=" />
     <Copy SourceFiles="package.json" DestinationFiles="!package.json.installed" />
   </Target>
   <ItemGroup>
@@ -46,25 +46,5 @@
     <ItemGroup>
       <Content Include="wwwroot\**\*.*" />
     </ItemGroup>
-  </Target>
-  <!-- Required since Azure doesn't have MSBuild 15, so we can only build through .NET publish. -->
-  <!-- Should be removed after https://github.com/projectkudu/kudu/issues/2350 is resolved. -->
-  <Target Name="PreparePublishFilesForNonCoreAspNet" AfterTargets="ComputeFilesToPublish">
-    <ItemGroup>
-      <_ResolvedFileToIgnore Include="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').StartsWith('runtimes\'))" />
-      <ResolvedFileToPublish Remove="@(_ResolvedFileToIgnore)" />
-      
-      <_ResolvedFileToPublishToBin Include="@(ResolvedFileToPublish)">
-        <RelativePath>bin\%(FileName)%(Extension)</RelativePath>
-      </_ResolvedFileToPublishToBin>
-      <ResolvedFileToPublish Remove="@(_ResolvedFileToPublishToBin)" />
-      <ResolvedFileToPublish Include="@(_ResolvedFileToPublishToBin)" />
-      <ResolvedFileToPublish Include="@(Content)">
-        <RelativePath>%(RelativeDir)%(FileName)%(Extension)</RelativePath>
-      </ResolvedFileToPublish>
-    </ItemGroup>
-  </Target>
-  <Target Name="TransformWebConfig" AfterTargets="Publish">
-    <Exec Command="dotnet transform-xdt --xml &quot;Web.config&quot; --transform &quot;Web.$(Configuration).config&quot; --output &quot;$(PublishDir)Web.config&quot;" />
   </Target>
 </Project>
