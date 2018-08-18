@@ -31,7 +31,7 @@
     <NpmPath Condition="'$(TR_BUILD_NPM_PATH)' == ''">npm</NpmPath>
   </PropertyGroup>
   <Target Name="NpmInstall" BeforeTargets="NpmBuild" Inputs="package.json" Outputs="!package.json.installed">
-    <Exec Command="$(NpmPath) ci" EnvironmentVariables="NODE_ENV=" />
+    <Exec Command="$(NpmPath) install" EnvironmentVariables="NODE_ENV=" />
     <Copy SourceFiles="package.json" DestinationFiles="!package.json.installed" />
   </Target>
   <ItemGroup>

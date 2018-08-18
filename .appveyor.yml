@@ -1,7 +1,7 @@
 version: '{branch}-{build}'
 image: Visual Studio 2017
 cache:
-- source/WebApp/node_modules -> source/WebApp/package.json
+- source/WebApp/node_modules
 - '%USERPROFILE%\.nuget\packages'
 build_script:
 - cmd: >-
