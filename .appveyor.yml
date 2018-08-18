@@ -1,7 +1,8 @@
 version: '{branch}-{build}'
 image: Visual Studio 2017
-platform:
-- x64
+install:
+- ps: >-
+    Install-Product node 8.11 x64
 cache:
 - source/WebApp/node_modules
 - '%USERPROFILE%\.nuget\packages'
