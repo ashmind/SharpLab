@@ -1,11 +1,9 @@
 version: '{branch}-{build}'
 image: Visual Studio 2017
 install:
-- ps: >-
-    Install-Product node 8.11 x64
+- ps: Install-Product node 8.11 x64
 cache:
 - source/WebApp/node_modules
-- '%USERPROFILE%\.nuget\packages'
 build_script:
 - cmd: >-
     git submodule update --recursive --init
