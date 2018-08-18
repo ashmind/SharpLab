@@ -93,6 +93,7 @@ task('js', async () => {
 });
 
 task('favicons', async () => {
+    await jetpack.dirAsync(outputRoot);
     const pngGeneration = [16, 32, 64, 96, 128, 196, 256].map(size => {
         // https://github.com/lovell/sharp/issues/729
         const density = size > 128 ? Math.round(72 * size / 128) : 72;
@@ -102,7 +103,6 @@ task('favicons', async () => {
             .toFile(paths.to.favicon.png.replace('{size}', size));
     });
 
-    await jetpack.dirAsync(outputRoot);
     return parallel(
         jetpack.copyAsync(paths.from.favicon, paths.to.favicon.svg, { overwrite: true }),
         pngGeneration
