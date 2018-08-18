@@ -1,5 +1,7 @@
 version: '{branch}-{build}'
 image: Visual Studio 2017
+environment:
+  NODE_ENV: production
 install:
 - ps: Install-Product node 8.11 x64
 cache:
