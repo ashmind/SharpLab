@@ -7,14 +7,7 @@ install:
 cache:
 - source/WebApp/node_modules
 build_script:
-- cmd: >-
-    git submodule update --recursive --init
-
-    dotnet restore source/WebApp/WebApp.csproj
-
-    dotnet msbuild source/WebApp/WebApp.csproj /p:Configuration=Release /p:UnbreakablePolicyReportEnabled=false /t:Publish /verbosity:minimal
-
-    powershell -Command "Compress-Archive -Path source/WebApp/bin/publish/* -DestinationPath source/WebApp/bin/publish/WebApp.zip"
+- cmd: sl ci
 artifacts:
 - path: source/WebApp/bin/publish/WebApp.zip
   name: WebApp.zip
