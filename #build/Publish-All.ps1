@@ -82,6 +82,7 @@ function Get-PredefinedBranches() {
 # Code ------
 try {
     $Host.UI.RawUI.WindowTitle = "Deploy SharpLab" # prevents title > 1024 char errors
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
     Write-Output "Environment:"
     Write-Output "  Current Path:          $(Get-Location)"    
@@ -152,16 +153,26 @@ try {
 
         Write-Host "GET $url/status"
         $ok = $false
-        for ($try = 1; $try -le 3; $try++) {
+        $tryPermanent = 1
+        $tryTemporary = 1
+        while ($tryPermanent -le 3 -and $tryTemporary -le 30) {
             try {
                 Invoke-RestMethod "$url/status"
                 $ok = $true
                 break
             }
             catch {
-                Write-Warning ($_.Exception.Message)
+                $ex = $_.Exception
+                $temporary = ($ex -is [Net.WebException] -and $ex.Response -and $ex.Response.StatusCode -eq 503)
+                if ($temporary) {
+                    $tryTemporary += 1
+                }
+                else {
+                    $tryPermanent += 1
+                }
+                Write-Warning ($ex.Message)
             }
-            Start-Sleep -Seconds 2
+            Start-Sleep -Seconds 1
         }
         if (!$ok) {
             return
