@@ -35,6 +35,10 @@ namespace SharpLab.Runtime.Internal {
             _steps.Add(new Step(lineNumber));
         }
 
+        public static void ReportRefValue<T>(ref T value, string name, int lineNumber) {
+            ReportValue(value, name, lineNumber);
+        }
+
         public static void ReportValue<T>(T value, string name, int lineNumber) {
             if (!TryFindLastStepAtLineNumber(lineNumber, out var step, out var stepIndex)) {
                 if (_steps.Count >= ReportLimits.MaxStepCount)

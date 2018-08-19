@@ -973,6 +973,7 @@ SharpLab.Runtime.Internal
      GetType: Denied
      ReportException: Allowed (NoGuardRewriter)
      ReportLineStart: Allowed (NoGuardRewriter)
+     ReportRefValue: Allowed (NoGuardRewriter)
      ReportValue: Allowed (NoGuardRewriter)
      ToString: Denied
   Flow+Step: Denied

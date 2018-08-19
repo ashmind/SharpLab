@@ -43,6 +43,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
                          t => t.Member(nameof(Flow.ReportException), Allowed, NoGuardRewriter.Default)
                                .Member(nameof(Flow.ReportLineStart), Allowed, NoGuardRewriter.Default)
                                .Member(nameof(Flow.ReportValue), Allowed, NoGuardRewriter.Default)
+                               .Member(nameof(Flow.ReportRefValue), Allowed, NoGuardRewriter.Default)
                      )
             )
             .Namespace("", Neutral,
