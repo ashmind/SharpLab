@@ -23,7 +23,7 @@ deploy:
   website: sharplab-edge
   username: ashmind
   password:
-    secure: RqELB/5//3XmjRFiWCwP3A==
+    secure: wEc+18g+jntokDCz/mZpgBLAK6e8cpWFFqFpLmBh+Mg=
   artifact: WebApp.zip
   on:
     branch: edge
