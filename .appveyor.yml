@@ -27,3 +27,19 @@ deploy:
   artifact: WebApp.zip
   on:
     branch: edge
+- provider: AzureAppServiceZipDeploy
+  website: sharplab
+  username: ashmind
+  password:
+    secure: qw19YwhalM4U1yggQoIwwtGWcjnBMhHUUPirHzyt6PA=
+  artifact: WebApp.zip
+  on:
+    branch: master
+- provider: AzureAppServiceZipDeploy
+  website: sl-a-x64
+  username: ashmind
+  password:
+    secure: HbFOv+rl9G69GOoeUJFHFLSZA2AkKW2yZRGsV34yfR0=
+  artifact: WebApp.zip
+  on:
+    branch: master
