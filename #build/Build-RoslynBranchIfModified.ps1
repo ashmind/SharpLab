@@ -45,11 +45,11 @@ if (Test-Path $buildLogPath) {
 }
 
 function Build-Project(
-    [Parameter(Mandatory=$true)][string] $projectPath
+    [Parameter(Mandatory=$true)][string[]] $projectPathCandidates
 ) {
-    $projectPath = "$sourceRoot\$projectPath"
-    if (!(Test-Path $projectPath)) {
-        throw New-Object BranchBuildException("Project path $projectPath was not found.", $buildLogPath)
+    $projectPath = $projectPathCandidates | % { "$sourceRoot\$_" } | ? { Test-Path $_ } | select -first 1
+    if (!$projectPath) {
+        throw New-Object BranchBuildException("Not of paths ($projectPathCandidates) was found.", $buildLogPath)
     }
     "  dotnet msbuild $projectPath" | Out-Default
     dotnet msbuild $projectPath /m /nodeReuse:false /p:Configuration=Release /p:DelaySign=false /p:SignAssembly=false /p:NeedsFakeSign=false /p:UseRoslynAnalyzers=false /p:SolutionDir="$sourceRoot\Src" >> "$buildLogPath"
@@ -73,12 +73,12 @@ try {
         Set-Content $givtPath $($givtContent -replace ', PublicKey=\$\(PublicKey\)','')
     }
     
-    Build-Project "Src\Compilers\Core\Portable\Microsoft.CodeAnalysis.csproj"
-    Build-Project "Src\Compilers\CSharp\Portable\Microsoft.CodeAnalysis.CSharp.csproj"
-    Build-Project "src\Features\CSharp\Portable\Microsoft.CodeAnalysis.CSharp.Features.csproj"
-    Build-Project "Src\Tools\Source\CompilerGeneratorTools\Source\VisualBasicSyntaxGenerator\VisualBasicSyntaxGenerator.vbproj"
-    Build-Project "Src\Compilers\VisualBasic\Portable\Microsoft.CodeAnalysis.VisualBasic.vbproj"
-    Build-Project "src\Features\VisualBasic\Portable\Microsoft.CodeAnalysis.VisualBasic.Features.vbproj"
+    Build-Project @("Src\Compilers\Core\Portable\Microsoft.CodeAnalysis.csproj", "Src\Compilers\Core\Portable\CodeAnalysis.csproj")
+    Build-Project @("Src\Compilers\CSharp\Portable\Microsoft.CodeAnalysis.CSharp.csproj", "Src\Compilers\CSharp\Portable\CSharpCodeAnalysis.csproj")
+    Build-Project @("src\Features\CSharp\Portable\Microsoft.CodeAnalysis.CSharp.Features.csproj", "src\Features\CSharp\Portable\CSharpFeatures.csproj")
+    Build-Project @("Src\Tools\Source\CompilerGeneratorTools\Source\VisualBasicSyntaxGenerator\VisualBasicSyntaxGenerator.vbproj")
+    Build-Project @("Src\Compilers\VisualBasic\Portable\Microsoft.CodeAnalysis.VisualBasic.vbproj", "Src\Compilers\VisualBasic\Portable\BasicCodeAnalysis.vbproj")
+    Build-Project @("src\Features\VisualBasic\Portable\Microsoft.CodeAnalysis.VisualBasic.Features.vbproj", "src\Features\VisualBasic\Portable\BasicFeatures.vbproj")
 }
 finally {
     Pop-Location
