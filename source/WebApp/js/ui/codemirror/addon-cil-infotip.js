@@ -239,10 +239,37 @@
     "xor": "Bitwise XOR of integer values, returns an integer"
   };
 
-  CodeMirror.registerHelper("infotip", "cil", function(cm, token) {
+  var render = function(parent, token) {
+    var name = document.createElement("span");
+    name.className = "cm-builtin";
+    name.textContent = token.string;
+
+    var description = document.createElement("div");
+    description.className = "CodeMirror-infotip-description";
+    description.textContent = instructions[token.string];
+
+    parent.appendChild(name);
+    parent.appendChild(description);
+  };
+
+  CodeMirror.registerHelper("infotip", "cil", function(cm, coords) {
+    var token = cm.getTokenAt(coords);
     if (!token || token.type !== "builtin")
-        return null;
-    return "<span class='cm-builtin'>" + token.string + "</span>" +
-           "<div class='CodeMirror-infotip-description'>" + instructions[token.string] + "</div>";
+      return null;
+
+    // this means that we are actually beyond the token, e.g.
+    // coordsChar() to the right of eol still returns last char
+    // on the line, but xRel will be 1 (to the right)
+    if (token.end === coords.ch && coords.xRel > 0)
+      return null;
+
+    return {
+      data: token,
+      range: {
+        from: CodeMirror.Pos(coords.line, token.start),
+        to: CodeMirror.Pos(coords.line, token.end)
+      },
+      render: render
+    };
   });
 });

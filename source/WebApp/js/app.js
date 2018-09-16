@@ -2,7 +2,7 @@ import './polyfills/iterable-dom.js';
 import trackFeature from './helpers/track-feature.js';
 import languages from './helpers/languages.js';
 import targets from './helpers/targets.js';
-import extractRangesFromIL from './helpers/extract-ranges-from-il';
+import extractRangesFromIL from './helpers/extract-ranges-from-il.js';
 import getBranchesAsync from './server/get-branches-async.js';
 import { getBranchDisplayName, groupAndSortBranches } from './ui/branches.js';
 import state from './state/index.js';

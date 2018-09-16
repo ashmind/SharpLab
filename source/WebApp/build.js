@@ -70,7 +70,7 @@ task('js', async () => {
         input: paths.from.js,
         plugins: [
             rollupPluginCommonJS({
-                include: ['node_modules/**', 'js/ui/codemirror/**', 'js/ui/helpers/**']
+                include: ['node_modules/**', 'js/ui/codemirror/**', 'js/ui/helpers/**' ]
             }),
             {
                 name: 'rollup-plugin-adhoc-resolve-vue',
@@ -80,6 +80,7 @@ task('js', async () => {
             ...(production ? [rollupPluginTerser()] : [])
         ]
     });
+
     await bundle.write({
         format: 'iife',
         file: paths.to.js,
@@ -136,7 +137,7 @@ task('html', async () => {
     ]
 });
 
-task('default', () => {
+task('default', async () => {
     const htmlAll = async () => {
         await parallel(tasks.less(), tasks.js());
         await tasks.html();

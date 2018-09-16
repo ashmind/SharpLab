@@ -26,7 +26,7 @@
     "md5-file": "3.1.1",
     "oldowan": "1.0.0-preview-2",
     "postcss": "7.0.2",
-    "rollup": "0.63.4",
+    "rollup": "0.66.0",
     "rollup-plugin-commonjs": "9.1.4",
     "rollup-plugin-node-resolve": "3.0.0",
     "rollup-plugin-terser": "1.0.1",
@@ -34,10 +34,12 @@
   },
   "dependencies": {
     "codemirror": "5.38.0",
+    "codemirror-addon-infotip": "1.0.0-pre-20180916",
+    "codemirror-addon-lint-fix": "1.0.1-pre-20170118",
     "dateformat": "1.0.12",
     "lz-string": "1.4.4",
     "marked": "0.3.19",
-    "mirrorsharp": "0.9.4",
+    "mirrorsharp": "0.11.0-pre-01",
     "throttle-debounce": "1.0.1",
     "vue": "2.5.16"
   }
