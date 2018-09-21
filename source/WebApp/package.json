@@ -34,12 +34,12 @@
   },
   "dependencies": {
     "codemirror": "5.38.0",
-    "codemirror-addon-infotip": "1.0.0-pre-20180920",
+    "codemirror-addon-infotip": "1.0.0-pre-20180921",
     "codemirror-addon-lint-fix": "1.0.1-pre-20170118",
     "dateformat": "1.0.12",
     "lz-string": "1.4.4",
     "marked": "0.3.19",
-    "mirrorsharp": "0.11.0-pre-03",
+    "mirrorsharp": "0.11.0-pre-04",
     "throttle-debounce": "1.0.1",
     "vue": "2.5.16"
   }
