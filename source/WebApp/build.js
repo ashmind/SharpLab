@@ -67,6 +67,8 @@ task('less', async () => {
 
 task('js', async () => {
     const bundle = await rollup.rollup({
+        // https://github.com/rollup/rollup/issues/2473
+        treeshake: false,
         input: paths.from.js,
         plugins: [
             rollupPluginCommonJS({

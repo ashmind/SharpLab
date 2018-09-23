@@ -30,7 +30,7 @@ namespace SharpLab.Server.Common.Languages {
 
         private readonly ImmutableList<MetadataReference> _references;
 
-        public CSharpAdapter(IAssemblyReferenceCollector referenceCollector) {
+        public CSharpAdapter(IAssemblyReferenceCollector referenceCollector, IAssemblyDocumentationResolver documentationResolver) {
             var referencedAssemblies = referenceCollector.SlowGetAllReferencedAssembliesRecursive(
                 // Essential
                 NetFrameworkRuntime.AssemblyOfValueTask,
@@ -52,7 +52,7 @@ namespace SharpLab.Server.Common.Languages {
             ReferencedAssembliesTask = referencedAssembliesTaskSource.Task;
 
             _references = referencedAssemblies
-                .Select(a => (MetadataReference)MetadataReference.CreateFromFile(a.Location))
+                .Select(a => (MetadataReference)MetadataReference.CreateFromFile(a.Location, documentation: documentationResolver.GetDocumentation(a)))
                 .ToImmutableList();
         }
 

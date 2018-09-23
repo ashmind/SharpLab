@@ -18,6 +18,10 @@ namespace SharpLab.Server.Common {
                    .As<IAssemblyReferenceCollector>()
                    .SingleInstance();
 
+            builder.RegisterType<AssemblyDocumentationResolver>()
+                   .As<IAssemblyDocumentationResolver>()
+                   .SingleInstance();
+
             builder.RegisterType<PreCachedAssemblyResolver>()
                    .As<ICSharpCode.Decompiler.Metadata.IAssemblyResolver>()
                    .As<Mono.Cecil.IAssemblyResolver>()

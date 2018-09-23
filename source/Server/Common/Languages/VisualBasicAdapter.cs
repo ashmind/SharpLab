@@ -25,9 +25,11 @@ namespace SharpLab.Server.Common.Languages {
 
         private readonly IAssemblyReferenceCollector _referenceCollector;
         private ReferencedAssembliesLoadTaskSource _referencedAssembliesTaskSource = new ReferencedAssembliesLoadTaskSource();
+        private readonly IAssemblyDocumentationResolver _documentationResolver;
 
-        public VisualBasicAdapter(IAssemblyReferenceCollector referenceCollector) {
+        public VisualBasicAdapter(IAssemblyReferenceCollector referenceCollector, IAssemblyDocumentationResolver documentationResolver) {
             _referenceCollector = referenceCollector;
+            _documentationResolver = documentationResolver;
         }
 
         public string LanguageName => LanguageNames.VisualBasic;
@@ -61,7 +63,7 @@ namespace SharpLab.Server.Common.Languages {
                 ).ToImmutableList();
                 _referencedAssembliesTaskSource.Complete(referencedAssemblies);
                 o.MetadataReferences = referencedAssemblies
-                    .Select(a => (MetadataReference)MetadataReference.CreateFromFile(a.Location))
+                    .Select(a => (MetadataReference)MetadataReference.CreateFromFile(a.Location, documentation: _documentationResolver.GetDocumentation(a)))
                     .ToImmutableList();
             });
             // ReSharper restore HeapView.DelegateAllocation
