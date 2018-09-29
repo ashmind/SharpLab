@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net47</TargetFramework>
@@ -33,10 +33,10 @@
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.1" />
     <PackageReference Include="Microsoft.Owin.Cors" Version="3.0.1" />
     <PackageReference Include="Microsoft.Owin.Host.SystemWeb" Version="3.0.1" />
-    <PackageReference Include="MirrorSharp.Common" Version="0.11.0-pre-05" />
-    <PackageReference Include="MirrorSharp.FSharp" Version="0.11.0-pre-05" />
-    <PackageReference Include="MirrorSharp.Owin" Version="0.11.0-pre-05" />
-    <PackageReference Include="MirrorSharp.VisualBasic" Version="0.11.0-pre-05" />
+    <PackageReference Include="MirrorSharp.Common" Version="0.11.0-pre-07" />
+    <PackageReference Include="MirrorSharp.FSharp" Version="0.11.0-pre-07" />
+    <PackageReference Include="MirrorSharp.Owin" Version="0.11.0-pre-07" />
+    <PackageReference Include="MirrorSharp.VisualBasic" Version="0.11.0-pre-07" />
     <PackageReference Include="Mono.Cecil" Version="0.10.0" />
     <PackageReference Include="SharpDisasm" Version="1.1.5" />
     <PackageReference Include="SharpYaml" Version="1.6.2" />
