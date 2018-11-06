@@ -3,7 +3,7 @@
     {
       "Name":    "dotnet",
       "Url":     "https://github.com/dotnet/roslyn.git",
-      "Include": "^master$|^features"
+      "Include": "^master$|^features|^dev[\d.]+\-(preview|rc)\d*$"
     }
   ]
 }
