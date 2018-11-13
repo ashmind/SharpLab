@@ -12,6 +12,7 @@ namespace AssemblyResolver.Steps {
         private static readonly string LocalNuGetCachePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".nuget/packages");
         private static readonly IReadOnlyDictionary<string, int> SupportedFrameworkNames = new[] {
                 "net46", "net45",
+                "netstandard1.1",
                 "netstandard1.0",
                 "portable-net45+win8",
                 "portable-net45+win8+wp8+wpa81",
@@ -88,9 +89,8 @@ namespace AssemblyResolver.Steps {
             IImmutableDictionary<AssemblyShortName, IImmutableSet<PackageInfo>> roslynPackageMap
         ) {
             var packageInfoSet = roslynPackageMap.GetValueOrDefault(name);
-            if (packageInfoSet == null) {
+            if (packageInfoSet == null)
                 throw new Exception($"Could not identify NuGet package for assembly '{name}' (in packages referenced by Roslyn).");
-            }
             if (packageInfoSet.Count > 1)
                 throw new Exception($"Ambiguous match for NuGet package for assembly '{name}':\r\n  {string.Join("\r\n  ", packageInfoSet)}.");
 
