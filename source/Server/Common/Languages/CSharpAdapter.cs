@@ -24,6 +24,7 @@ namespace SharpLab.Server.Common.Languages {
         private static readonly LanguageVersion MaxLanguageVersion = Enum
             .GetValues(typeof (LanguageVersion))
             .Cast<LanguageVersion>()
+            .Where(v => v != LanguageVersion.Latest) // seems like latest got fixed at some point
             .Max();
         private static readonly ImmutableArray<string> ReleasePreprocessorSymbols = ImmutableArray.Create("__DEMO_EXPERIMENTAL__");
         private static readonly ImmutableArray<string> DebugPreprocessorSymbols = ReleasePreprocessorSymbols.Add("DEBUG");
