@@ -14,15 +14,21 @@ namespace SharpLab.Server.Explanation.Internal {
             EnumerateNodeKinds().ToDictionary(k => k.ToPathString(), k => k);
 
         private static IEnumerable<IRoslynNodeKind> EnumerateNodeKinds() {
-            foreach (SyntaxKind syntaxKind in Enum.GetValues(typeof(SyntaxKind))) {
+            // Normally Enum.GetValues does not require Distinct, but there are some branches of Roslyn
+            // that (temporarily?) have duplicate values, e.g. see
+            // https://github.com/dotnet/roslyn/blob/7ea6fa4d1871175f5ad5445677c0e0dd1a7a597c/src/Compilers/Core/Portable/Operations/OperationKind.cs#L209-L212
+            IEnumerable<T> GetEnumValues<T>() where T: Enum
+                => Enum.GetValues(typeof(T)).Cast<T>().Distinct();
+
+            foreach (var syntaxKind in GetEnumValues<SyntaxKind>()) {
                 yield return new RoslynCSharpNodeKind(syntaxKind.ToString(), new HashSet<SyntaxKind> { syntaxKind });
             }
 
-            foreach (SymbolKind symbolKind in Enum.GetValues(typeof(SymbolKind))) {
+            foreach (var symbolKind in GetEnumValues<SymbolKind>()) {
                 yield return new SymbolNodeKind(symbolKind);
             }
 
-            foreach (OperationKind operationKind in Enum.GetValues(typeof(OperationKind))) {
+            foreach (var operationKind in GetEnumValues<OperationKind>()) {
                 yield return new OperationNodeKind(operationKind);
             }
 
