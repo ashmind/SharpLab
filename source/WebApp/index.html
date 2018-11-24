@@ -52,6 +52,7 @@
           <div class="content">
             <app-code-edit v-bind:initial-text="lastLoadedCode"
                            v-bind:service-url="serviceUrl"
+                           v-bind:compatibility-mode="compatibilityMode"
                            v-bind:server-options="serverOptions"
                            v-bind:highlighted-range="highlightedCodeRange"
                            v-bind:execution-flow="result.type === 'run' && result.value ? result.value.flow : null"

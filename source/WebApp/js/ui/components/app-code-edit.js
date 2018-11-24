@@ -6,11 +6,12 @@ import groupToMap from '../../helpers/group-to-map.js';
 
 Vue.component('app-code-edit', {
     props: {
-        initialText:      String,
-        serviceUrl:       String,
-        serverOptions:    Object,
-        highlightedRange: Object,
-        executionFlow:    Array
+        initialText:       String,
+        serviceUrl:        String,
+        serverOptions:     Object,
+        highlightedRange:  Object,
+        executionFlow:     Array,
+        compatibilityMode: Boolean
     },
     async mounted() {
         await Vue.nextTick();
@@ -27,7 +28,8 @@ Vue.component('app-code-edit', {
                 connectionChange: type => this.$emit('connection-change', type),
                 textChange: getText => this.$emit('text-change', getText),
                 serverError: message => this.$emit('server-error', message)
-            }
+            },
+            sharplabPreQuickInfoCompatibilityMode: this.compatibilityMode
         };
         instance = mirrorsharp(textarea, options);
         if (this.serverOptions)
@@ -43,12 +45,20 @@ Vue.component('app-code-edit', {
 
         this.$watch('initialText', v => instance.setText(v));
         this.$watch('serverOptions', o => instance.sendServerOptions(o), { deep: true });
-        this.$watch('serviceUrl', u => {
+
+        const recreate = () => {
             instance.destroy({ keepCodeMirror: true });
-            options.serviceUrl = u;
             instance = mirrorsharp(textarea, options);
             if (this.serverOptions)
                 instance.sendServerOptions(this.serverOptions);
+        };
+        this.$watch('compatibilityMode', m => {
+            options.sharplabPreQuickInfoCompatibilityMode = m;
+            recreate();
+        });
+        this.$watch('serviceUrl', u => {
+            options.serviceUrl = u;
+            recreate();
         });
 
         let currentMarker = null;

@@ -149,6 +149,7 @@ async function createAppAsync() {
         data.branch = branches.filter(b => b.id === data.options.branchId)[0];
     }
     data.serviceUrl = getServiceUrl(data.branch);
+    data.compatibilityMode = !!data.branch;
 
     return {
         data,
@@ -194,6 +195,7 @@ async function createAppAsync() {
             trackFeature('Branch: ' + value.id);
         data.loading = true;
         data.serviceUrl = getServiceUrl(value);
+        data.compatibilityMode = !!value;
     });
 
     ui.watch('options.language', (newLanguage, oldLanguage) => {
