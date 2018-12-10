@@ -49,7 +49,7 @@ function Get-RoslynBranchFeatureMap($artifactsRoot) {
         }
     } | Out-Null
     
-    Set-Content $mapPath (ConvertTo-Json $map)
+    Set-Content-UTF8 $mapPath (ConvertTo-Json $map)
     return $map
 }
 
@@ -77,6 +77,15 @@ function Get-PredefinedBranches() {
         name = 'x64'
         url = $x64Url
     })
+}
+
+function Set-Content-UTF8($file, $content) {
+    if ($HOST.Version.Major -ge 6) {
+        # PowerShell Core 6.0+ natively support UTF-8 output but no more -Encoding Byte support
+        return Set-Content $file $content
+    } else {
+        return Set-Content $file -Encoding Byte ([Text.Encoding]::UTF8.GetBytes($content))
+    }
 }
 
 # Code ------
@@ -126,7 +135,7 @@ try {
         Write-Output "*** $_"
 
         $siteRoslynArtifactsRoot = Resolve-Path "$roslynArtifactsRoot\$($_.Name)"
-        $branchInfo = ConvertFrom-Json ([IO.File]::ReadAllText("$siteRoslynArtifactsRoot\BranchInfo.json"))
+        $branchInfo = ConvertFrom-Json ([IO.File]::ReadAllText((Resolve-Path "$siteRoslynArtifactsRoot\BranchInfo.json")))
 
         $webAppName = "sl-b-$($branchFsName.ToLowerInvariant())"
         if ($webAppName.Length -gt 60) {
@@ -196,7 +205,7 @@ try {
 
     $branchesFileName = "!branches.json"
     Write-Output "Updating $branchesFileName..."
-    Set-Content "$sitesRoot\$branchesFileName" $(ConvertTo-Json $branchesJson -Depth 100)
+    Set-Content-UTF8 "$sitesRoot\$branchesFileName" $(ConvertTo-Json $branchesJson -Depth 100)
 
     $brachesJsLocalRoot = "$sourceRoot\WebApp\wwwroot"
     if (!(Test-Path $brachesJsLocalRoot)) {
