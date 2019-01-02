@@ -1,6 +1,7 @@
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = "SilentlyContinue" # https://www.amido.com/powershell-win32-error-handle-invalid-0x6/
+[Console]::OutputEncoding = [Text.Encoding]::UTF8 # This allows PowerShell to preserve UTF-8 output from git log
 
 # This mostly uses Write-Output because it was an Azure WebJob before, and Write-Warning/etc
 # didn't work properly in WebJobs
@@ -164,7 +165,7 @@ try {
                                 message = @(Invoke-Git $repositorySourceRoot log "$_" -n 1 --pretty=format:"%B" ) -join "`r`n"
                             })
                         }
-                        Set-Content "$branchArtifactsRoot\BranchInfo.json" (ConvertTo-Json $branchInfo -Depth 100)
+                        Set-Content "$branchArtifactsRoot\BranchInfo.json" (ConvertTo-Json $branchInfo -Depth 100) -Encoding UTF8
                     }
             }
             catch {

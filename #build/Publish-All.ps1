@@ -49,7 +49,7 @@ function Get-RoslynBranchFeatureMap($artifactsRoot) {
         }
     } | Out-Null
     
-    Set-Content $mapPath (ConvertTo-Json $map)
+    Set-Content $mapPath (ConvertTo-Json $map) -Encoding UTF8
     return $map
 }
 
@@ -126,7 +126,7 @@ try {
         Write-Output "*** $_"
 
         $siteRoslynArtifactsRoot = Resolve-Path "$roslynArtifactsRoot\$($_.Name)"
-        $branchInfo = ConvertFrom-Json ([IO.File]::ReadAllText("$siteRoslynArtifactsRoot\BranchInfo.json"))
+        $branchInfo = ConvertFrom-Json ([IO.File]::ReadAllText((Join-Path $siteRoslynArtifactsRoot 'BranchInfo.json')))
 
         $webAppName = "sl-b-$($branchFsName.ToLowerInvariant())"
         if ($webAppName.Length -gt 60) {
@@ -196,7 +196,7 @@ try {
 
     $branchesFileName = "!branches.json"
     Write-Output "Updating $branchesFileName..."
-    Set-Content "$sitesRoot\$branchesFileName" $(ConvertTo-Json $branchesJson -Depth 100)
+    Set-Content "$sitesRoot\$branchesFileName" $(ConvertTo-Json $branchesJson -Depth 100) -Encoding UTF8
 
     $brachesJsLocalRoot = "$sourceRoot\WebApp\wwwroot"
     if (!(Test-Path $brachesJsLocalRoot)) {
