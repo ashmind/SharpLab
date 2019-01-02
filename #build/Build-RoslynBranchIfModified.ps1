@@ -65,6 +65,9 @@ try {
     }
     Write-Output "  .\Restore.cmd"
     .\Restore.cmd >> "$buildLogPath"
+    if ($LastExitCode -ne 0) {
+        throw New-Object BranchBuildException("Build failed, see $buildLogPath", $buildLogPath)
+    }
 
     $givtPath = '.\build\Targets\RepoToolset\GenerateInternalsVisibleTo.targets'
     if (Test-Path $givtPath) {
