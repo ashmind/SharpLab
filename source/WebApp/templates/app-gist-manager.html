@@ -1,5 +1,7 @@
 <div class="fragment header-block gist-manager">
-  <button v-show="!gist" class="header-text-button" v-on:click="openModalAsync">Create Gist</button>
+  <button v-show="!gist"
+          class="header-text-button gist-create"
+          v-on:click="openModalAsync">Create Gist</button>
   <a class="gist-link"
      v-if="gist"
      v-bind:href="gist.url"

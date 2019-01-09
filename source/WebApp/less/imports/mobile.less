@@ -116,6 +116,7 @@
             position: absolute;
             left: 8px;
             width: ~"calc(@{menu-width} - 16px)";
+            max-width: auto;
             margin-left: 0;
             z-index: 15;
         }
@@ -140,10 +141,11 @@
             top: @row-top-margin + 2*@row-margin-multiplier;
             border-top: 1px solid @row-separator-color;
             padding-top: @row-separator-extra;
+        }
 
-            button {
-                margin-left: auto;
-            }
+        .gist-create {
+            margin-left: auto;
+            margin-right: 0;
         }
     }
 
