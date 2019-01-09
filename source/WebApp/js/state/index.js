@@ -5,7 +5,9 @@ import url from './handlers/url.js';
 export default {
     save: state => {
         lastUsed.saveOptions(state.options);
-        url.save(state.code, state.options);
+        const { keepGist } = url.save(state.code, state.options, { gist: state.gist });
+        if (!keepGist)
+            state.gist = null;
     },
 
     loadAsync: async state => {
@@ -22,7 +24,8 @@ export default {
 
         state.options = options;
         state.code = code;
-        if (options === lastUsedOptions) // need to resync implicit options into URL
+        state.gist = fromUrl.gist;
+        if (options === lastUsedOptions) // need to re-sync implicit options into URL
             url.save(fromUrl.code, state.options);
     }
 };

@@ -19,7 +19,7 @@ Vue.component('app-output-view', {
         }
     },
     template: `<div class="output result-content">
-      <small class="output-disclaimer">
+      <small class="disclaimer">
         This is a new feature — might be unstable/too strict. Please <a href="https://github.com/ashmind/SharpLab/issues">report</a> any issues.
       </small>
       <div class="output-empty" v-show="output.length === 0">Completed — no output.</div>

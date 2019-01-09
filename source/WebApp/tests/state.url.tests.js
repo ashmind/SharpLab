@@ -1,4 +1,4 @@
-import * as getGistAsync from '../js/state/handlers/url/get-gist-async.js';
+import * as gists from '../js/helpers/github/gists.js';
 import languages from '../js/helpers/languages.js';
 import targets from '../js/helpers/targets.js';
 import url from '../js/state/handlers/url.js';
@@ -41,7 +41,7 @@ describe('v2', () => {
 
 describe('gist', () => {
     test(`load returns code from gist`, async () => {
-        getGistAsync.default = id => Promise.resolve({ code: 'code of ' + id });
+        gists.getGistAsync = id => Promise.resolve({ code: 'code of ' + id, options: {} });
 
         window.location.hash = '#gist:test';
         const { code } = await url.loadAsync();
@@ -49,7 +49,7 @@ describe('gist', () => {
     });
 
     test(`load returns language from gist`, async () => {
-        getGistAsync.default = id => Promise.resolve({ language: 'language of ' + id });
+        gists.getGistAsync = id => Promise.resolve({ options: { language: 'language of ' + id } });
 
         window.location.hash = '#gist:test';
         const { options } = await url.loadAsync();
@@ -59,7 +59,7 @@ describe('gist', () => {
     for (let [key, target] of Object.entries(targets)) { // eslint-disable-line prefer-const
         key = key !== 'csharp' ? key : 'cs';
         test(`load returns target '${target}' for key '${key}'`, async () => {
-            getGistAsync.default = () => Promise.resolve({});
+            gists.getGistAsync = () => Promise.resolve({ options: {} });
 
             window.location.hash = '#gist:_/'+ key;
             const { options } = await url.loadAsync();
@@ -67,22 +67,18 @@ describe('gist', () => {
         });
     }
 
-    for (const [language, target] of [
-        [languages.csharp, targets.csharp],
-        [languages.vb, targets.vb],
-        [languages.fsharp, targets.csharp],
-    ]) {
-        test(`load returns default target '${target}' for language '${language}'`, async () => {
-            getGistAsync.default = () => Promise.resolve({ language });
+    for (const language of Object.values(languages)) {
+        test(`load returns default target '${targets.csharp}' for language '${language}'`, async () => {
+            gists.getGistAsync = () => Promise.resolve({ options: { language } });
 
             window.location.hash = '#gist:_';
             const { options } = await url.loadAsync();
-            expect(options.target).toBe(target);
+            expect(options.target).toBe(targets.csharp);
         });
     }
 
     test(`load returns branchId if specified`, async () => {
-        getGistAsync.default = () => Promise.resolve({});
+        gists.getGistAsync = () => Promise.resolve({ options: {} });
 
         window.location.hash = '#gist:_//branch';
         const { options } = await url.loadAsync();
@@ -90,7 +86,7 @@ describe('gist', () => {
     });
 
     test(`load returns null branchId if not specified`, async () => {
-        getGistAsync.default = () => Promise.resolve({});
+        gists.getGistAsync = () => Promise.resolve({ options: {} });
 
         window.location.hash = '#gist:_/_';
         const { options } = await url.loadAsync();
@@ -99,7 +95,7 @@ describe('gist', () => {
 
     for (const [suffix,release] of [['///debug',false],['',true]]) {
         test(`load returns release ${release} for url options ${suffix}`, async () => {
-            getGistAsync.default = () => Promise.resolve({});
+            gists.getGistAsync = () => Promise.resolve({ options: {} });
 
             window.location.hash = '#gist:_' + suffix;
             const { options } = await url.loadAsync();
@@ -107,36 +103,30 @@ describe('gist', () => {
         });
     }
 
-    for (const [key, value, expected] of [
-        ['target',   targets.vb, '#gist:xyz/vb'],
-        ['branchId', 'branch',   '#gist:xyz//branch'],
-        ['release',  false,      '#gist:xyz///debug'],
+    for (const [key, gistValue, newValue] of [
+        ['language', targets.cs, targets.vb],
+        ['target',   targets.cs, targets.vb],
+        ['branchId', null, 'branch'],
+        ['branchId', 'branch', null],
+        ['release',  false, true],
+        ['release',  true, false]
     ]) {
-        test(`save (option '${key}') preserves gist if code is the same`, async () => {
-            getGistAsync.default = id => Promise.resolve({ id, code: 'test' });
+        test(`save (option '${key}') changes format to v2 if option changed`, async () => {
+            gists.getGistAsync = id => Promise.resolve({ id, code: 'test', options: { [key]: gistValue } });
 
             window.location.hash = '#gist:xyz';
             await url.loadAsync();
-            url.save('test', { release: true, [key]: value });
-            expect(window.location.hash).toBe(expected);
+            url.save('test', { release: true, [key]: newValue });
+            expect(window.location.hash).toMatch(/^#v2:/);
         });
     }
 
     test(`save changes format to v2 if gist code changed`, async () => {
-        getGistAsync.default = id => Promise.resolve({ id, code: 'original' });
+        gists.getGistAsync = id => Promise.resolve({ id, code: 'original', options: {} });
 
         window.location.hash = '#gist:xyz';
         await url.loadAsync();
         url.save('updated', {});
-        expect(window.location.hash).toMatch(/^#v2:/);
-    });
-
-    test(`save changes format to v2 if gist language changed`, async () => {
-        getGistAsync.default = id => Promise.resolve({ id, code: 'test', language: languages.csharp });
-
-        window.location.hash = '#gist:xyz';
-        await url.loadAsync();
-        url.save('test', { language: languages.fsharp });
         expect(window.location.hash).toMatch(/^#v2:/);
     });
 });

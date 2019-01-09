@@ -56,7 +56,7 @@
             white 80%, white 90%,
             transparent 90%, transparent 100%
         );
-        .header-button();
+        .header-icon-button();
     }
 
     section {
@@ -68,10 +68,10 @@
                 display: none;
             }
         }
-    }
 
-    .option-language {
-        position: static;
+        .header-block {
+            display: none;
+        }
     }
 
     .code,
@@ -110,8 +110,9 @@
             padding-left: @menu-width;
         }
 
-        header .option {
-            display: block;
+        header .option,
+        .header-block {
+            display: flex;
             position: absolute;
             left: 8px;
             width: ~"calc(@{menu-width} - 16px)";
@@ -123,14 +124,26 @@
             width: 100%;
         }
 
-        @option-top-margin: @header-height+0.5em;
-        @option-margin-multiplier: 2em;
+        @row-top-margin: @header-height+0.5em;
+        @row-margin-multiplier: 2em;
+        @row-separator-color: #ffffff50;
+        @row-separator-extra: 0.5em;
         .option-language, .option-target-language {
-            top: @option-top-margin + 0*@option-margin-multiplier;
+            top: @row-top-margin + 0*@row-margin-multiplier;
         }
 
         .option-branch, .option-optimizations {
-            top: @option-top-margin + 1*@option-margin-multiplier;
+            top: @row-top-margin + 1*@row-margin-multiplier;
+        }
+
+        .gist-manager {
+            top: @row-top-margin + 2*@row-margin-multiplier;
+            border-top: 1px solid @row-separator-color;
+            padding-top: @row-separator-extra;
+
+            button {
+                margin-left: auto;
+            }
         }
     }
 

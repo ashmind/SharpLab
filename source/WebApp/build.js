@@ -139,7 +139,7 @@ task('html', async () => {
     ]
 });
 
-task('default', async () => {
+task('default', () => {
     const htmlAll = async () => {
         await parallel(tasks.less(), tasks.js());
         await tasks.html();

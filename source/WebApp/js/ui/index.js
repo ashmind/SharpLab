@@ -9,6 +9,7 @@ import './components/app-ast-view.js';
 import './components/app-verify-view.js';
 import './components/app-explain-view.js';
 import './components/app-output-view.js';
+import './components/app-gist-manager.js';
 import './directives/app-class-toggle.js';
 import './hooks/app-cloak.js';
 import './hooks/app-mobile-codemirror-fullscreen.js';
@@ -21,6 +22,7 @@ const documentReadyPromise = new Promise(resolve => {
 function createUIAsync(app) {
     return new Promise((resolve, reject) => {
         try {
+            app.data.eventHub = new Vue();
             // ReSharper disable once ConstructorCallNotUsed
             new Vue({
                 el:       'main',

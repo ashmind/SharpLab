@@ -20,7 +20,9 @@ using SharpLab.Server.Monitoring;
 
 namespace SharpLab.Server {
     public class Startup {
-        public void Configuration(IAppBuilder app) {
+        public virtual void Configuration(IAppBuilder app) {
+            DotEnv.Load();
+
             var corsPolicyTask = Task.FromResult(new CorsPolicy {
                 AllowAnyHeader = true,
                 AllowAnyMethod = true,
@@ -46,6 +48,8 @@ namespace SharpLab.Server {
             var monitor = container.Resolve<IMonitor>();
             monitor.Event("Application Startup", null);
             HostingEnvironment.RegisterObject(new ShutdownMonitor(monitor));
+
+            app.UseAutofacLifetimeScopeInjector(container);
         }
 
         public static MirrorSharpOptions CreateMirrorSharpOptions(IContainer container) {

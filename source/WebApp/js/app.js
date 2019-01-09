@@ -106,6 +106,11 @@ function applyCursorMove(getCursorOffset) {
     this.$refs.astView.selectDeepestByOffset(getCursorOffset());
 }
 
+function applyGistSave(gist) {
+    url.save(gist.code, gist.options, { gist });
+    this.gist = gist;
+}
+
 async function createAppAsync() {
     const data = Object.assign({
         languages,
@@ -177,7 +182,8 @@ async function createAppAsync() {
             applyConnectionChange,
             applyCodeViewRange,
             applyAstSelect,
-            applyCursorMove
+            applyCursorMove,
+            applyGistSave
         }
     };
 }

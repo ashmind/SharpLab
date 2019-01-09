@@ -35,6 +35,11 @@
               <option v-bind:value="languages.vb">Visual Basic</option>
               <option v-bind:value="languages.fsharp">F#</option>
             </app-select>
+            <app-gist-manager v-bind:gist="gist"
+                              v-bind:code="code"
+                              v-bind:options="options"
+                              v-bind:result="result"
+                              v-on:save="applyGistSave"></app-gist-manager>
             <div class="offline-only">[connection lost, reconnecting…]</div>
 
             <app-select v-model="branch" class="option-branch option" v-show="options.language !== languages.fsharp">
@@ -46,7 +51,6 @@
                         v-bind:value="branch">{{branch.displayName}}</option>
               </optgroup>
             </app-select>
-
             <div class="mobile-menu"></div>
           </header>
           <div class="content">
@@ -167,6 +171,8 @@
           </div>
         </section>
       </div>
+
+      <portal-target name="modals" multiple slim></portal-target>
     </main>
     <footer>
       Built by Andrey Shchekin (<a href="http://twitter.com/ashmind">@ashmind</a>) — see <a href="http://github.com/ashmind/SharpLab">SharpLab</a> on GitHub.

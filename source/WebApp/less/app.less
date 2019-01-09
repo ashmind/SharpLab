@@ -101,17 +101,14 @@ section {
     flex-direction: column;
 
     > header {
+        .header();
         position: relative;
         display: flex;
-        padding: 5px;
-        padding-left: 7px;
-        color: #fff;
-        background-color: @primary-color;
-        font-family: 'Roboto Condensed', sans-serif;
+        align-items: center;
     }
 
     h1 {
-        display: inline;
+        display: inline-block;
         margin-top: auto;
         margin-bottom: auto;
 
@@ -125,12 +122,23 @@ section {
     }
 }
 
-.results section > header {
-    border-left: 1px solid #fff;
+.results {
+    section > header {
+        border-left: 1px solid #fff;
+    }
+
+    .content {
+        border-left: 1px solid @border-color;
+    }
 }
 
-.results section .content {
-    border-left: 1px solid @border-color;
+.content .loader {
+    position: absolute;
+    z-index: 1000;
+    top: 10px;
+    right: 10px;
+    font-size: 25px;
+    color: @primary-color;
 }
 
 .option-language {
@@ -213,6 +221,10 @@ section.details-only {
     .warnings {
         display: none;
     }
+
+    .loader {
+        color: @error-color;
+    }
 }
 
 .root-status-offline  {
@@ -242,6 +254,26 @@ section.details-only {
     padding: 4px;
 }
 
+.disclaimer {
+    display: block;
+    width: 100%;
+    background-color: #ffeb90;
+    padding: 2px 4px;
+
+    a {
+        color: inherit;
+        text-decoration: underline;
+    }
+
+    p + p {
+        margin-top: 4px;
+    }
+}
+
+.fragment {
+    display: contents;
+}
+
 @import 'imports/loader.less';
 @import 'imports/expanders.less';
 @import 'imports/markdown.less';
@@ -251,5 +283,7 @@ section.details-only {
 @import 'imports/explanations.less';
 @import 'imports/codemirror.less';
 @import 'imports/output.less';
+@import 'imports/modals.less';
+@import 'imports/github.less';
 @import 'imports/offline.less';
 @import 'imports/dark.less';

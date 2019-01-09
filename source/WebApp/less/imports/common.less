@@ -14,13 +14,28 @@
     line-height: 1.2;
 }
 
-.header-button(@width: 18px) {
+.custom-button() {
     appearance: none;
-    padding: 0;
-    border: none;
     border-radius: 0;
+}
+
+.header-icon-button(@width: 18px) {
+    border: none;
     display: inline-block;
     vertical-align: middle;
+    padding: 0;
     width: @width;
     height: 18px;
+}
+
+.header() {
+    padding: 5px;
+    padding-left: 7px;
+    color: #fff;
+    background-color: @primary-color;
+    font-family: 'Roboto Condensed', sans-serif;
+
+    a, a:visited, a:active {
+        color: #fff;
+    }
 }

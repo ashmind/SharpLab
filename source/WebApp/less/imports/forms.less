@@ -1,5 +1,15 @@
-select {
+@import 'common.less';
+
+select,
+label,
+input,
+.header-text-button,
+.form-button,
+.form-line {
     font-family: 'Roboto Condensed', sans-serif;
+}
+
+select {
     background: transparent;
     outline: none;
     border: none;
@@ -22,5 +32,55 @@ option, optgroup {
         right: 2px;
         top: 0;
         pointer-events: none;
+    }
+}
+
+.form-line {
+    display: flex;
+    align-items: center;
+    & + & {
+        margin-top: 10px;
+    }
+}
+
+.form-errors {
+    color: @error-color;
+
+    &:empty {
+        display: none;
+    }
+}
+
+label {
+    display: inline-block;
+}
+
+label + input {
+    margin-left: 10px;
+    flex-grow: 1;
+}
+
+input {
+    padding: 1px 5px;
+}
+
+header button {
+    .custom-button();
+}
+
+.header-text-button {
+    border: 1px solid #fff;
+    background: none;
+}
+
+.form-button {
+    .custom-button();
+    border: none;
+    padding: 3px 6px;
+    background-color: @primary-color;
+    color: #fff;
+
+    &[disabled] {
+        background-color: @border-color;
     }
 }

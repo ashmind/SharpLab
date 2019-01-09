@@ -1,7 +1,16 @@
 {
+    "plugins": ["import"],
     "env": {
-        "jest": true
+        "jest": true,
+        "browser": true
     },
+    "parserOptions": {
+        "sourceType": "module"
+    },
+    "extends": [
+        "plugin:import/errors",
+        "plugin:import/warnings"
+    ],
     "rules": {
         "import/namespace": "off"
     }

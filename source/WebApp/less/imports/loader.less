@@ -1,17 +1,8 @@
-@import 'common.less';
-@loader-size: 25px;
-
 .loader {
     display: none;
-    position: absolute;
-    z-index: 1000;
-    top: 10px;
-    right: 10px;
 
     font-family: Consolas, Menlo, Monaco, monospace;
     font-weight: bold;
-    font-size: @loader-size;
-    color: @primary-color;
 
     &::before, &::after {
         display: inline-block;
@@ -27,12 +18,8 @@
         animation-delay: 0.4s;
     }
 
-    .loading & {
+    .loading &, &.loading {
         display: block;
-    }
-
-    .errors & {
-        color: @error-color;
     }
 }
 
