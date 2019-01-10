@@ -54,7 +54,7 @@ function saveGist(code, options, gist) {
 
 function saveHash(hash) {
     last.hash = hash;
-    window.location.hash = hash;
+    history.replaceState(null, null, '#' + hash);
 }
 
 function loadAsync() {
