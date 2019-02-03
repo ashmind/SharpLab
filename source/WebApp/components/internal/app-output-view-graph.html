@@ -1,0 +1,60 @@
+<div class="inspection inspection-graph" v-bind:class="{ loading: layoutInProgress }">
+  <div class="loader"></div>
+
+  <svg class="inspection-graph-reference-layer">
+    <defs>
+      <marker id="arrow" refX="6" refY="3"
+          markerWidth="6" markerHeight="6"
+          orient="auto-start-reverse"
+          class="inspection-graph-reference-end-marker">
+        <path d="M 0 0 L 6 3 L 0 6 z" />
+      </marker>
+    </defs>
+
+    <path v-for="link in svgLinks"
+          class="inspection-graph-reference"
+          v-bind:d="link.path"
+          v-bind:key="link.key"
+          marker-end="url(#arrow)"></path>
+  </svg>
+
+  <section class="inspection-graph-stack">
+    <header>Stack</header>
+    <ol class="inspection-graph-nodes">
+      <template v-for="node in sortedStack">
+        <li v-if="!node.isSeparator" class="inspection-graph-node inspection-graph-node-top-level" v-bind:data-app-node="node.id">
+          <header v-if="node.title">{{node.title}}</header>
+          <div v-if="!node.nestedNodes" class="inspection-value">{{node.value}}</div>
+          <ol class="inspection-nested-items" v-else>
+            <li class="inspection-graph-node" v-for="nested in node.nestedNodes" v-bind:data-app-node="nested.id">
+              <header>{{nested.title}}</header>
+              <div class="inspection-value">{{nested.value}}</div>
+            </li>
+            <li v-if="node.nestedNodesLimit" class="inspection-node-list-text-item">(truncated)</li>
+          </ol>
+        </li>
+        <li v-else class="inspection-node-list-text-item">{{node.size}} bytes (other)</li>
+      </template>
+    </ol>
+  </section>
+
+  <section class="inspection-graph-heap">
+    <header>Heap</header>
+    <div class="inspection-graph-nodes" ref="heap">
+      <div class="inspection-graph-node inspection-graph-node-top-level"
+          v-for="node in inspection.heap"
+          v-bind:data-app-node="node.id"
+          v-bind:class="{ 'inspection-multiline': node.nestedNodes }">
+        <header>{{node.title}}</header>
+        <div v-if="!node.nestedNodes" class="inspection-value">{{node.value}}</div>
+        <ol class="inspection-nested-items" v-else>
+          <li class="inspection-graph-node" v-for="nested in node.nestedNodes" v-bind:data-app-node="nested.id">
+            <header>{{nested.title}}</header>
+            <div class="inspection-value">{{nested.value}}</div>
+          </li>
+          <li v-if="node.nestedNodesLimit" class="inspection-node-list-text-item">(truncated)</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+</div>

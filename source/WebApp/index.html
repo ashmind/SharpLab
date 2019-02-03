@@ -25,8 +25,8 @@
       'root-status-offline': !status.online,
       'root-status-error':   status.error,
     }">
-      <div class="section-group">
-        <section class="code">
+      <div class="top-section-group">
+        <section class="top-section code">
           <header>
             <button class="mobile-menu-button" v-app-class-toggle="{ target: '.code', class: 'mobile-menu-open' }"></button>
             <h1>Code</h1>
@@ -69,7 +69,7 @@
           </div>
         </section>
 
-        <section v-if="branch && branch.commits" class="details-only branch-details non-code">
+        <section v-if="branch && branch.commits" class="top-section details-only branch-details non-code">
           <header>
             <h1>Branch {{branch.displayName}}</h1>
           </header>
@@ -87,8 +87,8 @@
         </section>
       </div>
 
-      <div class="section-group results" v-bind:class="{ loading: loading }">
-        <section class="result">
+      <div class="top-section-group results" v-bind:class="{ loading: loading }">
+        <section class="top-section result">
           <header>
             <button class="mobile-menu-button" v-app-class-toggle="{ target: '.results', class: 'mobile-menu-open' }"></button>
             <h1>Results</h1>
@@ -142,7 +142,7 @@
           </div>
         </section>
 
-        <section class="errors" v-show="result.errors.length > 0">
+        <section class="top-section errors" v-show="result.errors.length > 0">
           <header>
             <button class="expander" v-app-class-toggle="{ target: '.errors', class: 'collapsed' }"></button>
             <h1>Errors</h1>
@@ -157,7 +157,7 @@
           </div>
         </section>
 
-        <section class="warnings collapsed" v-show="result.warnings.length > 0">
+        <section class="top-section warnings collapsed" v-show="result.warnings.length > 0">
           <header>
             <button class="expander" v-app-class-toggle="{ target: '.warnings', class: 'collapsed' }"></button>
             <h1>Warnings</h1>

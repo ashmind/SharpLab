@@ -77,6 +77,25 @@ namespace SharpLab.Server.Execution.Internal {
             return il.Create(OpCodes.Call, method);
         }
 
+        public static void InsertBeforeAndRetargetAll(this ILProcessor il, Instruction target, Instruction instruction) {
+            il.InsertBefore(target, instruction);
+            RetargetAll(il, target, instruction);
+        }
+
+        private static void RetargetAll(this ILProcessor il, Instruction from, Instruction to) {
+            foreach (var other in il.Body.Instructions) {
+                if (other.Operand == from)
+                    other.Operand = to;
+            }
+
+            if (!il.Body.HasExceptionHandlers)
+                return;
+
+            foreach (var handler in il.Body.ExceptionHandlers) {
+                handler.RetargetAll(from, to);
+            }
+        }
+
         public static void RetargetAll(this ExceptionHandler handler, Instruction from, Instruction to) {
             if (handler.TryStart == from)
                 handler.TryStart = to;

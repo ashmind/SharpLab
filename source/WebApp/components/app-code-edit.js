@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import mirrorsharp from 'mirrorsharp';
 import 'codemirror/mode/mllike/mllike';
-import '../codemirror/addon-jump-arrows.js';
-import groupToMap from '../../helpers/group-to-map.js';
+import './internal/codemirror/addon-jump-arrows.js';
+import groupToMap from '../js/helpers/group-to-map.js';
 
 Vue.component('app-code-edit', {
     props: {

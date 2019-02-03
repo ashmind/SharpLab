@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import '../mixins/markdown.js';
+import '../js/ui/mixins/markdown.js';
 
 Vue.component('app-explain-view', {
     props: {

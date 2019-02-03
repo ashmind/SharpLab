@@ -6,6 +6,7 @@
      GetHashCode: Allowed
      GetType: Allowed
      Heap: Allowed
+     MemoryGraph: Allowed
      ReferenceEquals: Allowed
      Stack: Allowed
      ToString: Allowed
@@ -262,6 +263,10 @@ Microsoft.FSharp.Core
   AllowNullLiteralAttribute: Denied
   AutoOpenAttribute: Denied
   AutoSerializableAttribute: Denied
+  ByRefKinds: Denied
+  ByRefKinds+In: Denied
+  ByRefKinds+InOut: Denied
+  ByRefKinds+Out: Denied
   ClassAttribute: Denied
   CLIEventAttribute: Denied
   CLIMutableAttribute: Denied
@@ -337,6 +342,7 @@ Microsoft.FSharp.Core
   ExtraTopLevelOperators: Allowed
      CreateArray2D: Denied
      CreateDictionary: Allowed (CollectedEnumerableArgumentRewriter)
+     CreateReadOnlyDictionary: Denied
      CreateSet: Allowed (CollectedEnumerableArgumentRewriter)
      Equals: Denied
      get_DefaultAsyncBuilder: Denied
@@ -446,6 +452,8 @@ Microsoft.FSharp.Core
   FSharpResult`2: Denied
   FSharpResult`2+Tags: Denied
   FSharpTypeFunc: Denied
+  FSharpValueOption`1: Denied
+  FSharpValueOption`1+Tags: Denied
   FuncConvert: Denied
   GeneralizableValueAttribute: Denied
   InterfaceAttribute: Denied
@@ -561,6 +569,7 @@ Microsoft.FSharp.Core
      CreateSequence: Allowed
      Decrement: Allowed
      DefaultArg: Allowed
+     DefaultValueArg: Allowed
      Equals: Allowed
      Exit: Allowed
      Exp: Allowed
@@ -977,11 +986,23 @@ SharpLab.Runtime.Internal
      ReportValue: Allowed (NoGuardRewriter)
      ToString: Denied
   Flow+Step: Denied
+  IInspection: Denied
   InspectionSettings: Denied
+  MemoryGraphArgumentNames: Allowed
+     AddToNext: Allowed (NoGuardRewriter)
+     AllocateNext: Allowed (CountArgumentRewriter(count))
+     Collect: Denied
+     Equals: Denied
+     GetHashCode: Denied
+     GetType: Denied
+     ToString: Denied
+  MemoryGraphInspection: Denied
+  MemoryGraphNode: Denied
+  MemoryGraphReference: Denied
+  MemoryInspection: Denied
   MemoryInspectionLabel: Denied
-  MemoryInspectionResult: Denied
   Output: Denied
-  SimpleInspectionResult: Denied
+  SimpleInspection: Denied
 System
   _AppDomain: Denied
   AccessViolationException: Denied

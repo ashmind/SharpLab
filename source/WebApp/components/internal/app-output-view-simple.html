@@ -1,0 +1,5 @@
+<div class="inspection inspection-simple"
+     v-bind:class="{ 'inspection-multiline': isMultiline, 'inspection-exception': isException, 'inspection-warning': isWarning }">
+  <header>{{inspection.title}}</header>
+  <div class="inspection-value">{{inspection.value}}</div>
+</div>

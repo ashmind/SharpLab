@@ -12,7 +12,6 @@ namespace SharpLab.Server.Common.Languages
             if (!session.Roslyn.Project.TryGetCompilation(out var compilation))
                 return null;
             var syntaxTree = compilation.SyntaxTrees.First();
-            var semanticModel = compilation.GetSemanticModel(syntaxTree);
             if (!syntaxTree.TryGetText(out var text))
                 return null;
             var textLine = text.Lines[line - 1];

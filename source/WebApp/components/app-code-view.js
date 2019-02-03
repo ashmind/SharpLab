@@ -3,10 +3,10 @@ import CodeMirror from 'codemirror';
 import debounce from 'throttle-debounce/debounce';
 import 'codemirror/mode/clike/clike';
 import 'codemirror/mode/vb/vb';
-import '../codemirror/mode-cil.js';
-import '../codemirror/mode-asm.js';
-import '../codemirror/addon-cil-infotip.js';
-import targets from '../../helpers/targets.js';
+import './internal/codemirror/mode-cil.js';
+import './internal/codemirror/mode-asm.js';
+import './internal/codemirror/addon-cil-infotip.js';
+import targets from '../js/helpers/targets.js';
 
 Vue.component('app-code-view', {
     props: {

@@ -28,8 +28,7 @@ const paths = {
         less: `${__dirname}/less/app.less`,
         js: `${__dirname}/js/app.js`,
         favicon: `${__dirname}/favicon.svg`,
-        html: `${__dirname}/index.html`,
-        templates: `${__dirname}/templates`
+        html: `${__dirname}/index.html`
     },
     to: {
         css: `${outputRoot}/app.min.css`,
@@ -72,7 +71,11 @@ task('js', async () => {
         input: paths.from.js,
         plugins: [
             rollupPluginCommonJS({
-                include: ['node_modules/**', 'js/ui/codemirror/**', 'js/ui/helpers/**' ]
+                include: [
+                    'node_modules/**',
+                    'components/internal/codemirror/**',
+                    'js/ui/helpers/**'
+                ]
             }),
             {
                 name: 'rollup-plugin-adhoc-resolve-vue',
@@ -91,6 +94,7 @@ task('js', async () => {
 }, {
     inputs: [
         `${__dirname}/js/**/*.js`,
+        `${__dirname}/components/**/*.js`,
         `${__dirname}/package.json`
     ]
 });
@@ -131,7 +135,7 @@ task('html', async () => {
     await jetpack.writeAsync(paths.to.html, html);
 }, {
     inputs: [
-        `${__dirname}/templates/**/*.html`,
+        `${__dirname}/components/**/*.html`,
         paths.to.css,
         paths.to.js,
         paths.from.html,
@@ -176,9 +180,12 @@ async function getFaviconDataUrl() {
 }
 
 async function getCombinedTemplates() {
-    const htmlPromises = (await jetpack.listAsync(paths.from.templates)).map(async name => {
-        const template = await jetpack.readAsync(paths.from.templates + '/' + name);
-        return `<script type="text/x-template" id="${path.basename(name, '.html')}">${template}</script>`;
+    const basePath = `${__dirname}/components`;
+    const htmlPaths = await jetpack.findAsync(basePath, { matching: '*.html' });
+    const htmlPromises = htmlPaths.map(async htmlPath => {
+        const template = await jetpack.readAsync(htmlPath);
+        const minified = htmlMinifier.minify(template, { collapseWhitespace: true });
+        return `<script type="text/x-template" id="${path.basename(htmlPath, '.html')}">${minified}</script>`;
     });
     return (await Promise.all(htmlPromises)).join('\r\n');
 }

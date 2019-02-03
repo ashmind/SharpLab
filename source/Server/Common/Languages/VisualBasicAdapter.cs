@@ -103,5 +103,21 @@ namespace SharpLab.Server.Common.Languages {
             }
             return ImmutableArray.Create(results);
         }
+
+        public ImmutableArray<string> GetCallArgumentIdentifiers([NotNull] IWorkSession session, int callStartLine, int callStartColumn) {
+            var call = RoslynAdapterHelper.FindSyntaxNodeInSession(session, callStartLine, callStartColumn) as InvocationExpressionSyntax;
+            if (call == null)
+                return ImmutableArray<string>.Empty;
+
+            var arguments = call.ArgumentList.Arguments;
+            if (arguments.Count == 0)
+                return ImmutableArray<string>.Empty;
+
+            var results = new string[arguments.Count];
+            for (var i = 0; i < arguments.Count; i++) {
+                results[i] = (arguments[i].GetExpression() is IdentifierNameSyntax n) ? n.Identifier.ValueText : null;
+            }
+            return ImmutableArray.Create(results);
+        }
     }
 }

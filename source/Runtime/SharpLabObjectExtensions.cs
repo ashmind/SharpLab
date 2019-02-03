@@ -11,9 +11,6 @@ public static class SharpLabObjectExtensions {
     }
 
     public static void Inspect<T>(this T value, string title = "Inspect") {
-        var builder = new StringBuilder();
-        ObjectAppender.Append(builder, value);
-        var data = new SimpleInspectionResult(title, builder);
-        Output.Write(data);
+        Output.Write(new SimpleInspection(title, ValuePresenter.ToStringBuilder(value)));
     }
 }

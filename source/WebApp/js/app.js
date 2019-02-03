@@ -1,4 +1,4 @@
-import './polyfills/iterable-dom.js';
+import './polyfills/index.js';
 import trackFeature from './helpers/track-feature.js';
 import languages from './helpers/languages.js';
 import targets from './helpers/targets.js';

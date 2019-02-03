@@ -67,7 +67,7 @@ namespace SharpLab.Server.Execution.Internal {
                     if (i == 0)
                         TryInsertReportMethodArguments(il, instruction, method, flow, session, ref i);
 
-                    InsertBeforeAndRetargetAll(il, instruction, il.CreateLdcI4Best(sequencePoint.StartLine));
+                    il.InsertBeforeAndRetargetAll(instruction, il.CreateLdcI4Best(sequencePoint.StartLine));
                     il.InsertBefore(instruction, il.CreateCall(flow.ReportLineStart));
                     i += 2;
                     lastLine = sequencePoint.StartLine;
@@ -186,7 +186,7 @@ namespace SharpLab.Server.Execution.Internal {
         }
 
         private void RewriteCatch(Instruction start, ILProcessor il, ReportMethods flow) {
-            InsertBeforeAndRetargetAll(il, start, il.Create(OpCodes.Dup));
+            il.InsertBeforeAndRetargetAll(start, il.Create(OpCodes.Dup));
             il.InsertBefore(start, il.CreateCall(flow.ReportException));
         }
 
@@ -206,7 +206,7 @@ namespace SharpLab.Server.Execution.Internal {
             var reportCall = il.CreateCall(flow.ReportException);
             var catchHandler = il.Create(OpCodes.Pop);
 
-            InsertBeforeAndRetargetAll(il, outerTryLeave, innerTryLeave);
+            il.InsertBeforeAndRetargetAll(outerTryLeave, innerTryLeave);
             il.InsertBefore(outerTryLeave, reportCall);
             il.InsertBefore(outerTryLeave, il.Create(OpCodes.Ldc_I4_0));
             il.InsertBefore(outerTryLeave, il.Create(OpCodes.Endfilter));
@@ -230,25 +230,6 @@ namespace SharpLab.Server.Execution.Internal {
             il.InsertAfter(target, instruction);
             target = instruction;
             index += 1;
-        }
-
-        private void InsertBeforeAndRetargetAll(ILProcessor il, Instruction target, Instruction instruction) {
-            il.InsertBefore(target, instruction);
-            RetargetAll(il, target, instruction);
-        }
-
-        private static void RetargetAll(ILProcessor il, Instruction from, Instruction to) {
-            foreach (var other in il.Body.Instructions) {
-                if (other.Operand == from)
-                    other.Operand = to;
-            }
-
-            if (!il.Body.HasExceptionHandlers)
-                return;
-
-            foreach (var handler in il.Body.ExceptionHandlers) {
-                handler.RetargetAll(from, to);
-            }
         }
 
         private int? GetIndexIfStloc(Instruction instruction) {

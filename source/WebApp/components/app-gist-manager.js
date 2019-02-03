@@ -1,7 +1,7 @@
-import '../setup/portal-vue.js';
+import '../js/ui/setup/portal-vue.js';
 import Vue from 'vue';
-import auth from '../../helpers/github/auth.js';
-import { createGistAsync } from '../../helpers/github/gists.js';
+import auth from '../js/helpers/github/auth.js';
+import { createGistAsync } from '../js/helpers/github/gists.js';
 
 Vue.component('app-gist-manager', {
     props: {

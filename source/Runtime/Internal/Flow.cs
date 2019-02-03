@@ -87,10 +87,10 @@ namespace SharpLab.Runtime.Internal {
             }
             
             if (name != null) {
-                ObjectAppender.AppendString(notes, name, ReportLimits.MaxValueNameLength);
+                ValuePresenter.AppendStringTo(notes, name, ReportLimits.MaxValueNameLength);
                 notes.Append(": ");
             }
-            ObjectAppender.Append(notes, value, ReportLimits.MaxEnumerableItems, ReportLimits.MaxValueValueLength);
+            ValuePresenter.AppendTo(notes, value, ReportLimits.MaxEnumerableItems, ReportLimits.MaxValueValueLength);
             // Have to reassign in case we set Notes
             _steps[stepIndex] = step;
         }

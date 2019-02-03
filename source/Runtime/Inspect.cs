@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
 using Microsoft.Diagnostics.Runtime;
 using SharpLab.Runtime.Internal;
 
-public static class Inspect {
+public static partial class Inspect {
     private static ClrRuntime _runtime;
 
     public static void Heap(object @object) {
@@ -33,7 +31,7 @@ public static class Inspect {
         labels[0] = new MemoryInspectionLabel("header", 0, IntPtr.Size);
         labels[1] = new MemoryInspectionLabel("type handle", IntPtr.Size, IntPtr.Size);
 
-        Output.Write(new MemoryInspectionResult($"{objectType.Name} at 0x{address:X}", labels, data));
+        Output.Write(new MemoryInspection($"{objectType.Name} at 0x{address:X}", labels, data));
     }
 
     private static byte[] ReadMemory(ulong address, ulong size) {
@@ -68,7 +66,7 @@ public static class Inspect {
         var title = type.IsValueType
             ? $"{type.FullName}"
             : $"Pointer to {type.FullName}";
-        Output.Write(new MemoryInspectionResult(title, labels, data));
+        Output.Write(new MemoryInspection(title, labels, data));
     }
 
     private static MemoryInspectionLabel[] CreateLabelsFromType(

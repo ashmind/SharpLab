@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 namespace SharpLab.Runtime.Internal {
     [Serializable]
-    public class MemoryInspectionResult {
-        public MemoryInspectionResult(string title, IReadOnlyList<MemoryInspectionLabel> labels, byte[] data) {
+    public class MemoryInspection : IInspection {
+        public MemoryInspection(string title, IReadOnlyList<MemoryInspectionLabel> labels, byte[] data) {
             Title = title;
             Labels = labels;
             Data = data;

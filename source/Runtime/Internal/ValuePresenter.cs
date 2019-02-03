@@ -4,8 +4,14 @@ using System.Linq;
 using System.Text;
 
 namespace SharpLab.Runtime.Internal {
-    internal static class ObjectAppender {
-        public static void Append<T>(StringBuilder builder, T value, int? maxEnumerableItemCount = null, int? maxValueLength = null) {
+    internal static class ValuePresenter {
+        public static StringBuilder ToStringBuilder<T>(T value, int? maxEnumerableItemCount = null, int? maxValueLength = null) {
+            var builder = new StringBuilder();
+            AppendTo(builder, value, maxEnumerableItemCount, maxValueLength);
+            return builder;
+        }
+
+        public static void AppendTo<T>(StringBuilder builder, T value, int? maxEnumerableItemCount = null, int? maxValueLength = null) {
             if (value == null) {
                 builder.Append("null");
                 return;
@@ -13,18 +19,18 @@ namespace SharpLab.Runtime.Internal {
 
             switch (value) {
                 case ICollection<int> c:
-                    AppendEnumerable(builder, c, maxEnumerableItemCount, maxValueLength);
+                    AppendEnumerableTo(builder, c, maxEnumerableItemCount, maxValueLength);
                     break;
                 case ICollection c:
-                    AppendEnumerable(builder, c.Cast<object>(), maxEnumerableItemCount, maxValueLength);
+                    AppendEnumerableTo(builder, c.Cast<object>(), maxEnumerableItemCount, maxValueLength);
                     break;
                 default:
-                    AppendString(builder, value.ToString(), maxValueLength);
+                    AppendStringTo(builder, value.ToString(), maxValueLength);
                     break;
             }
         }
 
-        private static void AppendEnumerable<T>(StringBuilder builder, IEnumerable<T> enumerable, int? maxItemCount, int? maxValueLength) {
+        private static void AppendEnumerableTo<T>(StringBuilder builder, IEnumerable<T> enumerable, int? maxItemCount, int? maxValueLength) {
             builder.Append("{ ");
             var index = 0;
             foreach (var item in enumerable) {
@@ -36,13 +42,13 @@ namespace SharpLab.Runtime.Internal {
                     break;
                 }
 
-                Append(builder, item, maxItemCount, maxValueLength);
+                AppendTo(builder, item, maxItemCount, maxValueLength);
                 index += 1;
             }
             builder.Append(" }");
         }
 
-        public static void AppendString(StringBuilder builder, string value, int? maxLength) {
+        public static void AppendStringTo(StringBuilder builder, string value, int? maxLength) {
             if (maxLength == null || value.Length <= maxLength) {
                 builder.Append(value);
             }

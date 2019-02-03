@@ -3,13 +3,13 @@ using System.Text;
 
 namespace SharpLab.Runtime.Internal {
     [Serializable]
-    public class SimpleInspectionResult {
-        public SimpleInspectionResult(string title, string value) {
+    public class SimpleInspection : IInspection {
+        public SimpleInspection(string title, string value) {
             Title = title;
             Value = value;
         }
 
-        public SimpleInspectionResult(string title, StringBuilder value) {
+        public SimpleInspection(string title, StringBuilder value) {
             Title = title;
             Value = value;
         }

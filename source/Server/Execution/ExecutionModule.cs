@@ -23,6 +23,10 @@ namespace SharpLab.Server.Execution {
                    .As<IAssemblyRewriter>()
                    .SingleInstance();
 
+            builder.RegisterType<MemoryGraphArgumentNamesRewriter>()
+                   .As<IAssemblyRewriter>()
+                   .SingleInstance();
+
             builder.RegisterType<FSharpEntryPointRewriter>()
                    .As<IAssemblyRewriter>()
                    .SingleInstance();

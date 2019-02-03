@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MirrorSharp.Advanced;
+using MirrorSharp.Internal;
 using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Server.Execution.Internal {
@@ -39,21 +40,26 @@ namespace SharpLab.Server.Execution.Internal {
 
         private void SerializeOutput(IReadOnlyList<object> output, IFastJsonWriter writer) {
             TextWriter openStringWriter = null;
+            void CloseStringWriter() {
+                if (openStringWriter != null) {
+                    openStringWriter.Close();
+                    openStringWriter = null;
+                }
+            }
+
             foreach (var item in output) {
                 switch (item) {
-                    case SimpleInspectionResult inspection:
-                        if (openStringWriter != null) {
-                            openStringWriter.Close();
-                            openStringWriter = null;
-                        }
-                        SerializeSimpleInspectionResult(inspection, writer);
+                    case SimpleInspection inspection:
+                        CloseStringWriter();
+                        SerializeSimpleInspection(inspection, writer);
                         break;
-                    case MemoryInspectionResult memory:
-                        if (openStringWriter != null) {
-                            openStringWriter.Close();
-                            openStringWriter = null;
-                        }
-                        SerializeMemoryInspectionResult(memory, writer);
+                    case MemoryInspection memory:
+                        CloseStringWriter();
+                        SerializeMemoryInspection(memory, writer);
+                        break;
+                    case MemoryGraphInspection graph:
+                        CloseStringWriter();
+                        SerializeMemoryGraphInspection(graph, writer);
                         break;
                     case string @string:
                         if (openStringWriter == null)
@@ -68,10 +74,7 @@ namespace SharpLab.Server.Execution.Internal {
                     case null:
                         break;
                     default:
-                        if (openStringWriter != null) {
-                            openStringWriter.Close();
-                            openStringWriter = null;
-                        }
+                        CloseStringWriter();
                         writer.WriteValue("Unsupported output object type: " + item.GetType().Name);
                         break;
                 }
@@ -79,7 +82,7 @@ namespace SharpLab.Server.Execution.Internal {
             openStringWriter?.Close();
         }
 
-        private void SerializeSimpleInspectionResult(SimpleInspectionResult inspection, IFastJsonWriter writer) {
+        private void SerializeSimpleInspection(SimpleInspection inspection, IFastJsonWriter writer) {
             writer.WriteStartObject();
             writer.WriteProperty("type", "inspection:simple");
             writer.WriteProperty("title", inspection.Title);
@@ -93,7 +96,7 @@ namespace SharpLab.Server.Execution.Internal {
             writer.WriteEndObject();
         }
 
-        private void SerializeMemoryInspectionResult(MemoryInspectionResult memory, IFastJsonWriter writer) {
+        private void SerializeMemoryInspection(MemoryInspection memory, IFastJsonWriter writer) {
             writer.WriteStartObject();
             writer.WriteProperty("type", "inspection:memory");
             writer.WriteProperty("title", memory.Title);
@@ -122,6 +125,63 @@ namespace SharpLab.Server.Execution.Internal {
                 }
                 writer.WriteEndArray();
             }
+            writer.WriteEndObject();
+        }
+
+        private void SerializeMemoryGraphInspection(MemoryGraphInspection graph, IFastJsonWriter writer) {
+            writer.WriteStartObject();
+            writer.WriteProperty("type", "inspection:memory-graph");
+            writer.WritePropertyStartArray("stack");
+            foreach (var node in graph.Stack) {
+                SerializeMemoryGraphNode(writer, node);
+            }
+            writer.WriteEndArray();
+            writer.WritePropertyStartArray("heap");
+            foreach (var node in graph.Heap) {
+                SerializeMemoryGraphNode(writer, node);
+            }
+            writer.WriteEndArray();
+            writer.WritePropertyStartArray("references");
+            foreach (var reference in graph.References) {
+                SerializeMemoryGraphReference(writer, reference);
+            }
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }
+
+        private void SerializeMemoryGraphNode(IFastJsonWriter writer, MemoryGraphNode node) {
+            writer.WriteStartObject();
+            writer.WriteProperty("id", node.Id);
+            if (node.StackOffset != null) {
+                writer.WriteProperty("offset", node.StackOffset.Value);
+                writer.WriteProperty("size", node.StackSize.Value);
+            }
+            writer.WriteProperty("title", node.Title);
+            writer.WritePropertyName("value");
+            if (node.Value is StringBuilder builder) {
+                writer.WriteValue(builder);
+            }
+            else {
+                writer.WriteValue((string)node.Value);
+            }
+            if (node.NestedNodes.Count > 0) {
+                writer.WritePropertyStartArray("nestedNodes");
+                foreach (var nested in node.NestedNodes) {
+                    SerializeMemoryGraphNode(writer, nested);
+                }
+                writer.WriteEndArray();
+
+                if (node.NestedNodesLimitReached)
+                    writer.WriteProperty("nestedNodesLimit", true);
+            }
+
+            writer.WriteEndObject();
+        }
+
+        private void SerializeMemoryGraphReference(IFastJsonWriter writer, MemoryGraphReference reference) {
+            writer.WriteStartObject();
+            writer.WriteProperty("from", reference.From.Id);
+            writer.WriteProperty("to", reference.To.Id);
             writer.WriteEndObject();
         }
     }
