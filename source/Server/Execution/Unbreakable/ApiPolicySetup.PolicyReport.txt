@@ -134,7 +134,6 @@ Microsoft.FSharp.Collections
      ToArray: Denied
      ToSeq: Denied
      ToString: Denied
-     Transpose: Denied
      Truncate: Denied
      TryFind: Denied
      TryFindBack: Denied
@@ -242,7 +241,6 @@ Microsoft.FSharp.Collections
      ToArray: Allowed (CollectedEnumerableArgumentRewriter)
      ToList: Allowed (CollectedEnumerableArgumentRewriter)
      ToString: Denied
-     Transpose: Denied
      Truncate: Denied
      TryFind: Denied
      TryFindBack: Denied
@@ -263,10 +261,6 @@ Microsoft.FSharp.Core
   AllowNullLiteralAttribute: Denied
   AutoOpenAttribute: Denied
   AutoSerializableAttribute: Denied
-  ByRefKinds: Denied
-  ByRefKinds+In: Denied
-  ByRefKinds+InOut: Denied
-  ByRefKinds+Out: Denied
   ClassAttribute: Denied
   CLIEventAttribute: Denied
   CLIMutableAttribute: Denied
@@ -342,7 +336,6 @@ Microsoft.FSharp.Core
   ExtraTopLevelOperators: Allowed
      CreateArray2D: Denied
      CreateDictionary: Allowed (CollectedEnumerableArgumentRewriter)
-     CreateReadOnlyDictionary: Denied
      CreateSet: Allowed (CollectedEnumerableArgumentRewriter)
      Equals: Denied
      get_DefaultAsyncBuilder: Denied
@@ -452,8 +445,6 @@ Microsoft.FSharp.Core
   FSharpResult`2: Denied
   FSharpResult`2+Tags: Denied
   FSharpTypeFunc: Denied
-  FSharpValueOption`1: Denied
-  FSharpValueOption`1+Tags: Denied
   FuncConvert: Denied
   GeneralizableValueAttribute: Denied
   InterfaceAttribute: Denied
@@ -569,7 +560,6 @@ Microsoft.FSharp.Core
      CreateSequence: Allowed
      Decrement: Allowed
      DefaultArg: Allowed
-     DefaultValueArg: Allowed
      Equals: Allowed
      Exit: Allowed
      Exp: Allowed

@@ -31,7 +31,7 @@ namespace SharpLab.Runtime.Internal {
 
             var stackNode = isStack
                 ? MemoryGraphNode.OnStack(name, ValuePresenter.ToStringBuilder(value), stackAddress, stackSize)
-                : MemoryGraphNode.OnStack(name, GetTitleForReference(value), stackAddress, stackSize);
+                : MemoryGraphNode.OnStack(name, GetTitleForReference(typeof(T)), stackAddress, stackSize);
             _stack.Add(stackNode);
 
             if (isStack) {
@@ -61,7 +61,8 @@ namespace SharpLab.Runtime.Internal {
             var objectType = @object.GetType();
             if (objectType.IsArray) {
                 var index = 0;
-                var arrayIsValue = objectType.GetElementType().IsValueType;
+                var staticItemType = objectType.GetElementType();
+                var arrayIsValue = staticItemType.IsValueType;
                 foreach (var item in (IEnumerable)@object) {
                     if (!parentNode.ValidateNestedLimit())
                         break;
@@ -70,7 +71,7 @@ namespace SharpLab.Runtime.Internal {
                     var itemIsValue = arrayIsValue || item == null;
                     var itemNode = itemIsValue
                         ? MemoryGraphNode.Nested(index.ToString(), ValuePresenter.ToStringBuilder(item))
-                        : MemoryGraphNode.Nested(index.ToString(), GetTitleForReference(item));
+                        : MemoryGraphNode.Nested(index.ToString(), GetTitleForReference(staticItemType));
                     parentNode.AddNestedNode(itemNode);
                     if (!itemIsValue)
                         AddHeapObject(itemNode, item);
@@ -91,7 +92,7 @@ namespace SharpLab.Runtime.Internal {
                 if (!parentNode.ValidateNestedLimit())
                     break;
 
-                var fieldNode = MemoryGraphNode.Nested(field.Name, GetTitleForReference(value));
+                var fieldNode = MemoryGraphNode.Nested(field.Name, GetTitleForReference(field.FieldType));
                 parentNode.AddNestedNode(fieldNode);
                 AddHeapObject(fieldNode, value);
             }
@@ -107,8 +108,8 @@ namespace SharpLab.Runtime.Internal {
             return null;
         }
 
-        private string GetTitleForReference<T>(T value) {
-            return value.GetType().Name + " ref";
+        private string GetTitleForReference(Type staticType) {
+            return staticType.Name + " ref";
         }
 
         public MemoryGraphInspection ToInspection() {
