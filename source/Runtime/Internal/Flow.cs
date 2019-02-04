@@ -9,10 +9,12 @@ namespace SharpLab.Runtime.Internal {
         private static class ReportLimits {
             public const int MaxStepCount = 50;
             public const int MaxValueNameLength = 10;
-            public const int MaxValueValueLength = 10;
-            public const int MaxEnumerableItems = 3;
             public const int MaxStepNotesPerLine = 3;
             public const int MaxValuesPerStep = 3;
+
+            public static readonly ValuePresenterLimits ForPresenter = new ValuePresenterLimits(
+                maxDepth: 2, maxEnumerableItemCount: 3, maxValueLength: 10
+            );
         }
 
         private static readonly IDictionary<int, int> _stepNotesCountPerLine = new Dictionary<int, int>();
@@ -87,10 +89,10 @@ namespace SharpLab.Runtime.Internal {
             }
             
             if (name != null) {
-                ValuePresenter.AppendStringTo(notes, name, ReportLimits.MaxValueNameLength);
+                ValuePresenter.AppendStringTo(notes, name, ReportLimits.ForPresenter);
                 notes.Append(": ");
             }
-            ValuePresenter.AppendTo(notes, value, ReportLimits.MaxEnumerableItems, ReportLimits.MaxValueValueLength);
+            ValuePresenter.AppendTo(notes, value, ReportLimits.ForPresenter);
             // Have to reassign in case we set Notes
             _steps[stepIndex] = step;
         }

@@ -5,55 +5,68 @@ using System.Text;
 
 namespace SharpLab.Runtime.Internal {
     internal static class ValuePresenter {
-        public static StringBuilder ToStringBuilder<T>(T value, int? maxEnumerableItemCount = null, int? maxValueLength = null) {
+        public static StringBuilder ToStringBuilder<T>(T value, ValuePresenterLimits limits = default) {
             var builder = new StringBuilder();
-            AppendTo(builder, value, maxEnumerableItemCount, maxValueLength);
+            AppendTo(builder, value, limits);
             return builder;
         }
 
-        public static void AppendTo<T>(StringBuilder builder, T value, int? maxEnumerableItemCount = null, int? maxValueLength = null) {
-            if (value == null) {
+        public static void AppendTo<T>(StringBuilder builder, T value, ValuePresenterLimits limits = default) {
+            AppendTo(builder, value, depth: 1, limits);
+        }
+
+        private static void AppendTo<T>(StringBuilder builder, T value, int depth, ValuePresenterLimits limits = default)
+        {
+            if (value == null)
+            {
                 builder.Append("null");
                 return;
             }
 
-            switch (value) {
+            if (depth > limits.MaxDepth)
+            {
+                builder.Append("…");
+                return;
+            }
+
+            switch (value)
+            {
                 case ICollection<int> c:
-                    AppendEnumerableTo(builder, c, maxEnumerableItemCount, maxValueLength);
+                    AppendEnumerableTo(builder, c, depth, limits);
                     break;
                 case ICollection c:
-                    AppendEnumerableTo(builder, c.Cast<object>(), maxEnumerableItemCount, maxValueLength);
+                    AppendEnumerableTo(builder, c.Cast<object>(), depth, limits);
                     break;
                 default:
-                    AppendStringTo(builder, value.ToString(), maxValueLength);
+                    AppendStringTo(builder, value.ToString(), limits);
                     break;
             }
         }
 
-        private static void AppendEnumerableTo<T>(StringBuilder builder, IEnumerable<T> enumerable, int? maxItemCount, int? maxValueLength) {
+        private static void AppendEnumerableTo<T>(StringBuilder builder, IEnumerable<T> enumerable, int depth, ValuePresenterLimits limits) {
             builder.Append("{ ");
             var index = 0;
             foreach (var item in enumerable) {
                 if (index > 0)
                     builder.Append(", ");
 
-                if (index > maxItemCount) {
+                if (index > limits.MaxEnumerableItemCount) {
                     builder.Append("…");
                     break;
                 }
 
-                AppendTo(builder, item, maxItemCount, maxValueLength);
+                AppendTo(builder, item, depth + 1, limits);
                 index += 1;
             }
             builder.Append(" }");
         }
 
-        public static void AppendStringTo(StringBuilder builder, string value, int? maxLength) {
-            if (maxLength == null || value.Length <= maxLength) {
+        public static void AppendStringTo(StringBuilder builder, string value, ValuePresenterLimits limits) {
+            if (limits.MaxValueLength == null || value.Length <= limits.MaxValueLength) {
                 builder.Append(value);
             }
             else {
-                builder.Append(value, 0, maxLength.Value - 1);
+                builder.Append(value, 0, limits.MaxValueLength.Value - 1);
                 builder.Append("…");
             }
         }
