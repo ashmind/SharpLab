@@ -79,7 +79,8 @@ export default {
                     isDomLayout: isStack,
                     element,
                     width,
-                    height
+                    height,
+                    topLevelLinked: []
                 };
                 if (parentId) {
                     const parentD3Node = d3NodesById[parentId];
@@ -110,13 +111,21 @@ export default {
                 d3Node.y = heapBoundary.top + height / 2;
             }
 
-            const d3Links = references.map(r => ({
-                data: {
-                    svgLink: svgLinksByKey[r.from + '-' + r.to]
-                },
-                source: d3NodesById[r.from],
-                target: d3NodesById[r.to]
-            }));
+            const d3Links = references.map(r => {
+                const source = d3NodesById[r.from];
+                const target = d3NodesById[r.to];
+                const topLevelSource = !source.data.nested ? source : source.data.nested.parent;
+                const topLevelTarget = !target.data.nested ? target : target.data.nested.parent;
+                topLevelSource.data.topLevelLinked.push(topLevelTarget);
+                topLevelTarget.data.topLevelLinked.push(topLevelSource);
+                return {
+                    data: {
+                        svgLink: svgLinksByKey[r.from + '-' + r.to]
+                    },
+                    source,
+                    target
+                };
+            });
 
             d3.forceSimulation(d3Nodes)
               .force('link', d3.forceLink().links(d3Links).strength(l => l.source.data.isStack ? 5 : 2))
@@ -258,7 +267,6 @@ export default {
             if (!this.wasResized(containerRect, this.lastKnownContainerRect))
                 return;
 
-            console.log('resize');
             this.lastKnownContainerRect = containerRect;
             debouncedLayout();
         });

@@ -37,6 +37,7 @@
         "pageview",
         "parens",
         "plusplus",
+        "polyfill",
         "polyfills",
         "precompressed",
         "precompressor",
