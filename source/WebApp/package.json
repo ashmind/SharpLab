@@ -42,6 +42,7 @@
     "lz-string": "1.4.4",
     "marked": "0.3.19",
     "mirrorsharp": "0.12.0-test-1",
+    "normalize.css": "8.0.1",
     "portal-vue": "1.5.1",
     "resize-observer-polyfill": "1.5.1",
     "throttle-debounce": "1.0.1",
