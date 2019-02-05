@@ -2,8 +2,8 @@
 {
     public struct ValuePresenterLimits
     {
-        private bool _maxDepthSet;
-        private int? _maxDepth;
+        private readonly bool _maxDepthSet;
+        private readonly int? _maxDepth;
 
         public ValuePresenterLimits(int? maxDepth = 5, int? maxEnumerableItemCount = null, int? maxValueLength = null)
         {

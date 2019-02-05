@@ -8,11 +8,11 @@ namespace SharpLab.Runtime.Internal {
 
         private static class ReportLimits {
             public const int MaxStepCount = 50;
-            public const int MaxValueNameLength = 10;
             public const int MaxStepNotesPerLine = 3;
             public const int MaxValuesPerStep = 3;
 
-            public static readonly ValuePresenterLimits ForPresenter = new ValuePresenterLimits(
+            public static readonly ValuePresenterLimits ValueName = new ValuePresenterLimits(maxValueLength: 10);
+            public static readonly ValuePresenterLimits ValueValue = new ValuePresenterLimits(
                 maxDepth: 2, maxEnumerableItemCount: 3, maxValueLength: 10
             );
         }
@@ -89,10 +89,10 @@ namespace SharpLab.Runtime.Internal {
             }
             
             if (name != null) {
-                ValuePresenter.AppendStringTo(notes, name, ReportLimits.ForPresenter);
+                ValuePresenter.AppendStringTo(notes, name, ReportLimits.ValueName);
                 notes.Append(": ");
             }
-            ValuePresenter.AppendTo(notes, value, ReportLimits.ForPresenter);
+            ValuePresenter.AppendTo(notes, value, ReportLimits.ValueValue);
             // Have to reassign in case we set Notes
             _steps[stepIndex] = step;
         }
