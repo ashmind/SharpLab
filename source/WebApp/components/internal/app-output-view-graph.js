@@ -12,8 +12,7 @@ export default {
         inspection: Object
     },
     data: () => ({
-        svgLinks: [],
-        layoutInProgress: false
+        svgLinks: []
     }),
     computed: {
         sortedStack() {
@@ -48,7 +47,6 @@ export default {
                 this.resetSvgLinks();
                 this.mustResetSvgLinks = false;
             }
-            this.layoutInProgress = true;
 
             const { stack, heap, references } = this.inspection;
             const nodes = [];
@@ -161,7 +159,6 @@ export default {
             this.$refs.heap.style.height = maxBottom - heapRect.top + 'px';
             this.$refs.heap.style.minWidth = maxRight - heapRect.left + 'px';
             this.lastKnownContainerRect = this.$el.getBoundingClientRect();
-            this.layoutInProgress = false;
         },
 
         collectNodes(result, source, extras = null) {
