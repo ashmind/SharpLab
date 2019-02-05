@@ -35,7 +35,7 @@ namespace SharpLab.Runtime.Internal {
             _stack.Add(stackNode);
 
             if (isStack) {
-                AddNestedReferences(stackNode, value);
+                AddNestedNodes(stackNode, value);
             }
             else {
                 AddHeapObject(stackNode, value);
@@ -51,30 +51,25 @@ namespace SharpLab.Runtime.Internal {
                 heapNode = MemoryGraphNode.OnHeap(objectType.Name, ValuePresenter.ToStringBuilder(@object), @object);
                 _heap.Add(heapNode);
 
-                AddNestedReferences(heapNode, @object);
+                AddNestedNodes(heapNode, @object);
             }
 
             _references.Add(new MemoryGraphReference(referencingNode, heapNode));
         }
 
-        private void AddNestedReferences(MemoryGraphNode parentNode, object @object) {
+        private void AddNestedNodes(MemoryGraphNode parentNode, object @object) {
             var objectType = @object.GetType();
+            if (@object is string || objectType.IsPrimitive)
+                return;
+
             if (objectType.IsArray) {
                 var index = 0;
-                var staticItemType = objectType.GetElementType();
-                var arrayIsValue = staticItemType.IsValueType;
+                var itemType = objectType.GetElementType();
                 foreach (var item in (IEnumerable)@object) {
                     if (!parentNode.ValidateNestedLimit())
                         break;
 
-                    var itemType = item.GetType();
-                    var itemIsValue = arrayIsValue || item == null;
-                    var itemNode = itemIsValue
-                        ? MemoryGraphNode.Nested(index.ToString(), ValuePresenter.ToStringBuilder(item))
-                        : MemoryGraphNode.Nested(index.ToString(), GetTitleForReference(staticItemType));
-                    parentNode.AddNestedNode(itemNode);
-                    if (!itemIsValue)
-                        AddHeapObject(itemNode, item);
+                    AddNestedNode(parentNode, index.ToString(), itemType, item);
                     index += 1;
                 }
                 return;
@@ -82,20 +77,22 @@ namespace SharpLab.Runtime.Internal {
 
             var fields = objectType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var field in fields) {
-                if (field.FieldType.IsValueType)
-                    continue;
-
-                var value = field.GetValue(@object);
-                if (value == null)
-                    continue;
-
                 if (!parentNode.ValidateNestedLimit())
                     break;
 
-                var fieldNode = MemoryGraphNode.Nested(field.Name, GetTitleForReference(field.FieldType));
-                parentNode.AddNestedNode(fieldNode);
-                AddHeapObject(fieldNode, value);
+                AddNestedNode(parentNode, field.Name, field.FieldType, field.GetValue(@object));
             }
+        }
+
+        private void AddNestedNode(MemoryGraphNode parentNode, string title, Type staticType, object value)
+        {
+            var isReference = !staticType.IsValueType && value != null;
+            var nestedNode = isReference
+                ? MemoryGraphNode.Nested(title, GetTitleForReference(staticType))
+                : MemoryGraphNode.Nested(title, ValuePresenter.ToStringBuilder(value));
+            parentNode.AddNestedNode(nestedNode);
+            if (isReference)
+                AddHeapObject(nestedNode, value);
         }
 
         private MemoryGraphNode FindExistingNode(object heapKey) {
