@@ -22,29 +22,30 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Server.Azure\Server.Azure.csproj" />
+    <ProjectReference Include="..\Server\Server.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Server\Server.csproj" />
+    <PackageReference Include="Autofac.Owin" Version="4.2.0" />
+    <PackageReference Include="Microsoft.Owin" Version="3.0.1" />
+    <PackageReference Include="Octokit" Version="0.32.0" />
   </ItemGroup>
   <PropertyGroup>
     <NpmPath Condition="'$(TR_BUILD_NPM_PATH)' != ''">"$(TR_BUILD_NPM_PATH)"</NpmPath>
     <NpmPath Condition="'$(TR_BUILD_NPM_PATH)' == ''">npm</NpmPath>
   </PropertyGroup>
+  <ItemGroup>
+    <_StaticOutputs Include="wwwroot\**\*.*" Exclude="wwwroot\!branches.json" />
+    <_StaticInputs Include="@(None)" Exclude="**\!*.*; @(_StaticOutputs)" />
+  </ItemGroup>
+  <ItemGroup Condition="'@(_StaticOutputs)' == ''">
+    <_StaticOutputs Include="$(wwwroot)\.any" />
+  </ItemGroup>
   <Target Name="NpmInstall" BeforeTargets="NpmBuild" Inputs="package.json" Outputs="!package.json.installed">
     <Exec Command="$(NpmPath) install" EnvironmentVariables="NODE_ENV=" />
     <Copy SourceFiles="package.json" DestinationFiles="!package.json.installed" />
   </Target>
-  <ItemGroup>
-    <_StaticOutputs Include="wwwroot\**\*.*" Exclude="wwwroot\!branches.json" />
-    <PackageReference Include="Autofac.Owin" Version="4.2.0" />
-    <PackageReference Include="Microsoft.Owin" Version="3.0.1" />
-    <PackageReference Include="Octokit" Version="0.32.0" />
-    <_StaticInputs Include="@(None)" Exclude="**\!*.*; @(_StaticOutputs)" />
-  </ItemGroup>
-  <ItemGroup Condition="'@(_StaticOutputs)' == ''">
-      <_StaticOutputs Include="$(wwwroot)\.any" />
-  </ItemGroup>
   <Target Name="NpmBuild" AfterTargets="Build" Inputs="@(_StaticInputs)" Outputs="@(_StaticOutputs)">
+    <Delete Files="@(_StaticOutputs)" />
     <Exec Command="$(NpmPath) run build" />
     <ItemGroup>
       <Content Include="wwwroot\**\*.*" />
@@ -53,7 +54,8 @@
   <!--  https://github.com/dotnet/sdk/issues/1458#issuecomment-401497095 -->
   <Target Name="_ResolveCopyLocalNuGetPackageXmls" Condition="$(CopyLocalLockFileAssemblies) == true" AfterTargets="ResolveReferences">
     <ItemGroup>
-      <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' != ''&#xD;&#xA;                    and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
+      <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')"
+                               Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' != '' and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
     </ItemGroup>
   </Target>
   <!-- Required since Azure doesn't have MSBuild 15, so we can only build through .NET publish. -->
