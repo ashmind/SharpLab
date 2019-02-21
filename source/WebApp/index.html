@@ -25,7 +25,7 @@
       'root-status-offline': !status.online,
       'root-status-error':   status.error,
     }">
-      <div class="top-section-group">
+      <div class="top-section-group top-section-group-code">
         <section class="top-section code">
           <header>
             <button class="mobile-menu-button" v-app-class-toggle="{ target: '.code', class: 'mobile-menu-open' }"></button>
@@ -88,10 +88,10 @@
         </section>
       </div>
 
-      <div class="top-section-group results" v-bind:class="{ loading: loading }">
+      <div class="top-section-group top-section-group-results" v-bind:class="{ loading: loading }">
         <section class="top-section result">
           <header>
-            <button class="mobile-menu-button" v-app-class-toggle="{ target: '.results', class: 'mobile-menu-open' }"></button>
+            <button class="mobile-menu-button" v-app-class-toggle="{ target: '.top-section-group-results', class: 'mobile-menu-open' }"></button>
             <h1>Results</h1>
 
             <app-select v-model="options.target" class="option-target-language option">
