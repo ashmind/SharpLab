@@ -1,9 +1,0 @@
-{
-  "RoslynRepositories": [
-    {
-      "Name":    "dotnet",
-      "Url":     "https://github.com/dotnet/roslyn.git",
-      "Include": "^master$|^features|^demos"
-    }
-  ]
-}

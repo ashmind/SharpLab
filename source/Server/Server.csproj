@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net47</TargetFramework>
@@ -9,6 +9,9 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>7.3</LangVersion>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <MSBuildWarningsAsMessages>MSB3836</MSBuildWarningsAsMessages>
   </PropertyGroup>
 
   <ItemGroup>
@@ -42,9 +45,9 @@
     <PackageReference Include="Mono.Cecil" Version="0.10.0" />
     <PackageReference Include="SharpDisasm" Version="1.1.5" />
     <PackageReference Include="SharpYaml" Version="1.6.2" />
-    <PackageReference Include="System.Memory" Version="4.5.0-preview2-26406-04" />
+    <PackageReference Include="System.Memory" Version="4.5.2" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0-preview2-26406-04" />
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.4.0" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.2" />
     <PackageReference Include="Unbreakable" Version="0.13.0-unproven" />
     <PackageReference Include="Unbreakable.Build.PolicyReport" Version="0.0.11" />
     <PackageReference Include="Unbreakable.Policy" Version="0.6.0" />
@@ -69,4 +72,19 @@
       <UnbreakablePolicyMethodName>CreatePolicy</UnbreakablePolicyMethodName>
     </Compile>
   </ItemGroup>
+
+  <Target Name="EnsureGenerateBindingRedirectsUsesWebConfig" BeforeTargets="GenerateBindingRedirects">
+    <ItemGroup>
+      <AppConfigWithTargetPath Include="web.config" />
+    </ItemGroup>
+  </Target>
+  
+  <Target Name="UpdateWebConfigWithGeneratedBindingRedirects"
+          Inputs="@(AppConfigWithTargetPath)"
+          Outputs="web.config"
+          AfterTargets="GenerateBindingRedirectsUpdateAppConfig">
+    <Copy SourceFiles="@(AppConfigWithTargetPath)"
+          DestinationFiles="web.config"
+          SkipUnchangedFiles="true" />
+  </Target>
 </Project>

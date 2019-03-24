@@ -88,24 +88,31 @@ try {
     Write-Output "  Current Path:          $(Get-Location)"    
     Write-Output "  Script Root:           $PSScriptRoot"
 
-    $sourceRoot = Resolve-Path "$PSScriptRoot\..\source"
-    Write-Output "  Source Root:           $sourceRoot"
+    $sourceRoot = Resolve-Path "$PSScriptRoot\..\..\source"
+    Write-Output "  Source Root:           $sourceRoot"    
+    
+    $toolsRoot = Join-Path $PSScriptRoot '!tools'
+    if (!(Test-Path $toolsRoot)) {
+        New-Item -ItemType Directory -Path $toolsRoot | Out-Null
+    }
+    Write-Output "  Tools Root:           $toolsRoot"
 
-    $roslynArtifactsRoot = Resolve-Path "$PSScriptRoot\..\!roslyn\artifacts"
-    Write-Output "  Roslyn Artifacts Root: $roslynArtifactsRoot"
-
-    $sitesRoot = Resolve-Path "$PSScriptRoot\..\!sites"
-    Write-Output "  Sites Root:            $sitesRoot"
-
-    &"$PSScriptRoot\#tools\nuget" install ftpush -Pre -OutputDirectory "$sourceRoot\!tools"
-    $ftpushExe = @(Get-Item "$sourceRoot\!tools\ftpush*\tools\ftpush.exe")[0].FullName
+    $roslynBranchesRoot = Resolve-Path "$PSScriptRoot\..\..\!roslyn-branches"
+    Write-Output "  Roslyn Branches Root: $roslynBranchesRoot"
+    
+    $nugetExe = "$toolsRoot\nuget.exe"
+    if (!(Test-Path $nugetExe)) {
+        Invoke-WebRequest "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" -OutFile $nugetExe
+    }
+    &$nugetExe install ftpush -Pre -OutputDirectory $toolsRoot
+    $ftpushExe = @(Get-Item "$toolsRoot\ftpush*\tools\ftpush.exe")[0].FullName
     Write-Output "  ftpush.exe:            $ftpushExe"
 
     Write-Output "Getting Roslyn feature map..."
-    $roslynBranchFeatureMap = Get-RoslynBranchFeatureMap -ArtifactsRoot $roslynArtifactsRoot
+    $roslynBranchFeatureMap = Get-RoslynBranchFeatureMap -ArtifactsRoot $roslynBranchesRoot
 
     if ($azure) {
-        $azureConfigPath = ".\!Azure.config.json"
+        $azureConfigPath = ".\!roslyn-branches-azure.json"
         if (!(Test-Path $azureConfigPath)) {
             throw "Path '$azureConfigPath' was not found."
         }
@@ -114,19 +121,19 @@ try {
     }
 
     $branchesJson = @(Get-PredefinedBranches)
-    Get-ChildItem $sitesRoot | ? { $_ -is [IO.DirectoryInfo] } | % {
+    Get-ChildItem $roslynBranchesRoot | ? { $_ -is [IO.DirectoryInfo] } | % {
         $branchFsName = $_.Name
 
-        $siteRoot = $_.FullName
-        if (!(Get-ChildItem $siteRoot\bin -Recurse | ? { $_ -is [IO.FileInfo] })) {
+        $siteRoot = Join-Path $_.FullName 'site'
+        if (!(Test-PAth $siteRoot) -or !(Get-ChildItem $siteRoot\bin -Recurse | ? { $_ -is [IO.FileInfo] })) {
             return
         }
 
         Write-Output ''
         Write-Output "*** $_"
 
-        $siteRoslynArtifactsRoot = Resolve-Path "$roslynArtifactsRoot\$($_.Name)"
-        $branchInfo = ConvertFrom-Json ([IO.File]::ReadAllText((Join-Path $siteRoslynArtifactsRoot 'BranchInfo.json')))
+        $branchArtifactsRoot = Join-Path $_.FullName 'artifacts'
+        $branchInfo = ConvertFrom-Json ([IO.File]::ReadAllText((Join-Path $branchArtifactsRoot 'roslyn-branch-info.json')))
 
         $webAppName = "sl-b-$($branchFsName.ToLowerInvariant())"
         if ($webAppName.Length -gt 60) {
@@ -196,13 +203,13 @@ try {
 
     $branchesFileName = "!branches.json"
     Write-Output "Updating $branchesFileName..."
-    Set-Content "$sitesRoot\$branchesFileName" $(ConvertTo-Json $branchesJson -Depth 100) -Encoding UTF8
+    Set-Content "$roslynBranchesRoot\$branchesFileName" $(ConvertTo-Json $branchesJson -Depth 100) -Encoding UTF8
 
     $brachesJsLocalRoot = "$sourceRoot\WebApp\wwwroot"
     if (!(Test-Path $brachesJsLocalRoot)) {
         New-Item -ItemType Directory -Path $brachesJsLocalRoot | Out-Null    
     }
-    Copy-Item "$sitesRoot\$branchesFileName" "$brachesJsLocalRoot\$branchesFileName" -Force
+    Copy-Item "$roslynBranchesRoot\$branchesFileName" "$brachesJsLocalRoot\$branchesFileName" -Force
 
     if ($azure) {
         &$PublishToAzure `
@@ -210,7 +217,7 @@ try {
             -ResourceGroupName $($azureConfig.ResourceGroupName) `
             -AppServicePlanName $($azureConfig.AppServicePlanName) `
             -WebAppName "sharplab" `
-            -SourcePath "$sitesRoot\$branchesFileName" `
+            -SourcePath "$roslynBranchesRoot\$branchesFileName" `
             -TargetPath "wwwroot/$branchesFileName"
     }
 }

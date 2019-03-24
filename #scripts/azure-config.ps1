@@ -30,7 +30,7 @@ $options = $appServicePlans | % {
 $result = $Host.UI.PromptForChoice("Choose Azure app service plan", "", $options, 0)
 $json.AppServicePlanName = $appServicePlans[$result].Name
 
-Set-Content '.\!Azure.config.json' (ConvertTo-Json $json)
+Set-Content '.\!roslyn-branches-azure.json' (ConvertTo-Json $json)
 
-Write-Host "Saved config at .\!Azure.config.json. Environment variable for build:"
+Write-Host "Saved config at .\!roslyn-branches-azure.json. Environment variable for build:"
 Write-Host "SET TR_AZURE_PASSWORD_KEY=$([Convert]::ToBase64String($key))"
