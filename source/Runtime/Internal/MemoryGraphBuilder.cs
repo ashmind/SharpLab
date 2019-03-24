@@ -22,7 +22,7 @@ namespace SharpLab.Runtime.Internal {
 
         public unsafe MemoryGraphBuilder Add<T>(in T value) {
             var stackAddress = (ulong)Unsafe.AsPointer(ref Unsafe.AsRef(in value));
-            var stackSize = typeof(T).IsValueType ? Marshal.SizeOf(value) : IntPtr.Size;
+            var stackSize = Unsafe.SizeOf<T>();
 
             var name = _argumentNames.ElementAtOrDefault(_nextArgumentIndex);
             _nextArgumentIndex += 1;

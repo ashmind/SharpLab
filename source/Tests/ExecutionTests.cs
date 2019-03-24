@@ -220,6 +220,7 @@ namespace SharpLab.Tests {
         [InlineData("Output.Inspect.MemoryGraph.String.cs2output")]
         [InlineData("Output.Inspect.MemoryGraph.Arrays.cs2output")]
         [InlineData("Output.Inspect.MemoryGraph.Variables.cs2output")]
+        [InlineData("Output.Inspect.MemoryGraph.DateTime.cs2output")] // https://github.com/ashmind/SharpLab/issues/379
         public async Task SlowUpdate_IncludesInspectMemoryGraphInOutput(string resourceName) {
             var code = TestCode.FromResource("Execution." + resourceName);
             var driver = await NewTestDriverAsync(code.Original);
