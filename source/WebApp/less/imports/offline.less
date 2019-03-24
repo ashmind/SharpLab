@@ -10,15 +10,10 @@
 
 .offline-only {
     display: none;
-
-    .code header & {
-        margin-left: 10px;
-    }
 }
 
 .root-status-offline {
     .option-language {
-        display: none;
         .if-mobile-menu({
             /* if it's in menu, no reason to hide it */
             display: inline-block;
@@ -31,7 +26,7 @@
         margin-bottom: auto;
     }
 
-    select {
+    select, button {
         opacity: 0.5;
         pointer-events: none;
     }

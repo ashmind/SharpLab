@@ -193,6 +193,11 @@
 .inspection-nested-items {
     padding: 10px;
     width: 100%;
+
+    .inspection-value {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
 
 .inspection-node-list-text-item {
@@ -228,10 +233,14 @@
         color: #fff;
     }
 
-    .inspection {
+    .inspection, .inspection-graph-node {
         border-color: @offline-color;
+    }
+
+    .inspection {
         header {
             background-color: @offline-color;
+            color: #fff;
         }
     }
 }
