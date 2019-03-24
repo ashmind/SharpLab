@@ -216,6 +216,21 @@ namespace SharpLab.Tests {
         }
 
         [Theory]
+        [InlineData("Output.Inspect.MemoryGraph.Int32.cs2output")]
+        [InlineData("Output.Inspect.MemoryGraph.String.cs2output")]
+        [InlineData("Output.Inspect.MemoryGraph.Arrays.cs2output")]
+        [InlineData("Output.Inspect.MemoryGraph.Variables.cs2output")]
+        public async Task SlowUpdate_IncludesInspectMemoryGraphInOutput(string resourceName) {
+            var code = TestCode.FromResource("Execution." + resourceName);
+            var driver = await NewTestDriverAsync(code.Original);
+
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+
+            AssertIsSuccess(result);
+            code.AssertIsExpected(result.ExtensionResult.GetOutputAsString(), _testOutputHelper);
+        }
+
+        [Theory]
         [InlineData("Console.Write(\"abc\");", "abc")]
         [InlineData("Console.WriteLine(\"abc\");", "abc{newline}")]
         [InlineData("Console.Write('a');", "a")]

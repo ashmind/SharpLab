@@ -8,7 +8,7 @@ namespace SharpLab.Runtime.Internal {
     public class MemoryGraphNode {
         private List<MemoryGraphNode> _nestedNodes = null;
 
-        private static int NextId;
+        private static int NextId = 1;
 
         private MemoryGraphNode(
             string title,
