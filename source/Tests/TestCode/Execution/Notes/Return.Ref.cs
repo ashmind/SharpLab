@@ -4,5 +4,5 @@ public static class Program {
     static int value;
     public static ref int M() {
         return ref value;
-    }
+    } // [return: 0]
 }

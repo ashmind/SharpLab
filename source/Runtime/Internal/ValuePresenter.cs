@@ -38,7 +38,7 @@ namespace SharpLab.Runtime.Internal {
                     AppendEnumerableTo(builder, c.Cast<object>(), depth, limits);
                     break;
                 default:
-                    AppendStringTo(builder, value.ToString(), limits);
+                    AppendStringTo(builder, value.ToString() ?? "", limits);
                     break;
             }
         }

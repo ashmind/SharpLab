@@ -14,6 +14,7 @@ using MirrorSharp.Testing;
 using MirrorSharp.Testing.Results;
 using SharpLab.Server.Common;
 using SharpLab.Tests.Internal;
+using System.Text.RegularExpressions;
 
 namespace SharpLab.Tests {
     public class ExecutionTests {
@@ -46,21 +47,35 @@ namespace SharpLab.Tests {
         }
 
         [Theory]
-        [InlineData("Variable.AssignCall.cs", 3, "x: 0")]
-        [InlineData("Variable.ManyVariables.cs", 12, "x10: 0")]
-        [InlineData("Return.Simple.cs", 8, "return: 0")]
-        [InlineData("Return.Ref.cs", 7, "return: 0")]
-        [InlineData("Return.Ref.Readonly.cs", 6, "return: 0")]
-        public async Task SlowUpdate_ReportsValueNotes(string resourceName, int expectedLineNumber, string expectedNotes) {
-            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName));
+        [InlineData("Notes.Variable.AssignCall.cs")]
+        [InlineData("Notes.Variable.ManyVariables.cs")]
+        [InlineData("Notes.Return.Simple.cs")]
+        [InlineData("Notes.Return.Ref.cs")]
+        [InlineData("Notes.Return.Ref.Readonly.cs")]
+        [InlineData("Notes.Loop.For.10Iterations.cs")]
+        [InlineData("Notes.Variable.MultipleDeclarationsOnTheSameLine.cs")]
+        [InlineData("Notes.Variable.LongName.cs")]
+        [InlineData("Notes.Variable.LongValue.cs")]
+        [InlineData("Notes.Regression.ToStringNull.cs")] // https://github.com/ashmind/SharpLab/issues/380
+        public async Task SlowUpdate_ReportsValueNotes(string resourceName) {
+            var code = LoadCodeFromResource(resourceName);
+            var expected = code.Split("\r\n").Select((line, index) => new {
+                Line = index + 1,
+                Notes = Regex.Match(line, @"//\s+\[(.+)\]\s*$").Groups[1].Value
+            }).Where(x => !string.IsNullOrEmpty(x.Notes)).ToArray();
+
+            var driver = await NewTestDriverAsync(code);
 
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
-            var steps = result.ExtensionResult.Flow
+            var steps = result.ExtensionResult?.Flow
                 .Select(s => new { s.Line, s.Notes })
+                .Where(s => !string.IsNullOrEmpty(s.Notes))
+                .GroupBy(s => s.Line)
+                .Select(g => new { Line = g.Key, Notes = string.Join("; ", g.Select(s => s.Notes)) })
                 .ToArray();
 
             AssertIsSuccess(result);
-            Assert.Contains(new { Line = expectedLineNumber, Notes = expectedNotes }, steps);
+            Assert.Equal(expected, steps);
         }
 
         [Theory]
@@ -130,27 +145,6 @@ namespace SharpLab.Tests {
 
             AssertIsSuccess(result);
             Assert.Contains(new { Line = 4, Notes = "a: 1" }, steps);
-        }
-
-        [Theory]
-        [InlineData("Loop.For.10Iterations.cs", 3, "i: 0; i: 1; i: 2; …")]
-        [InlineData("Variable.MultipleDeclarationsOnTheSameLine.cs", 3, "a: 0, b: 0, c: 0, …")]
-        [InlineData("Variable.LongName.cs", 3, "abcdefghi…: 0")]
-        [InlineData("Variable.LongValue.cs", 3, "x: 123456789…")]
-        public async Task SlowUpdate_ReportsValueNotes_WithLengthLimits(string resourceName, int lineNumber, string expectedNotes) {
-            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName));
-
-            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
-
-            var notes = string.Join(
-                "; ",
-                result.ExtensionResult.Flow
-                    .Where(s => s.Line == lineNumber && s.Notes != null)
-                    .Select(s => s.Notes)
-            );
-
-            AssertIsSuccess(result);
-            Assert.Equal(expectedNotes, notes);
         }
 
         [Fact]
@@ -335,9 +329,9 @@ namespace SharpLab.Tests {
         }
 
         [Theory]
-        //[InlineData("Regression.CertainLoop.cs")]
-        //[InlineData("Regression.FSharpNestedLambda.fs", LanguageNames.FSharp)]
-        //[InlineData("Regression.NestedAnonymousObject.cs")]
+        [InlineData("Regression.CertainLoop.cs")]
+        [InlineData("Regression.FSharpNestedLambda.fs", LanguageNames.FSharp)]
+        [InlineData("Regression.NestedAnonymousObject.cs")]
         [InlineData("Regression.ReturnRef.cs")]
         public async Task SlowUpdate_DoesNotFail(string resourceName, string languageName = LanguageNames.CSharp) {
             var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), languageName);
