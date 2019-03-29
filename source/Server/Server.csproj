@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net47</TargetFramework>
@@ -43,6 +43,7 @@
     <PackageReference Include="MirrorSharp.Owin" Version="0.12.0-test-1" />
     <PackageReference Include="MirrorSharp.VisualBasic" Version="0.12.0-test-1" />
     <PackageReference Include="Mono.Cecil" Version="0.10.0" />
+    <PackageReference Include="Octokit" Version="0.32.0" />
     <PackageReference Include="SharpDisasm" Version="1.1.5" />
     <PackageReference Include="SharpYaml" Version="1.6.2" />
     <PackageReference Include="System.Memory" Version="4.5.2" />
@@ -79,12 +80,7 @@
     </ItemGroup>
   </Target>
   
-  <Target Name="UpdateWebConfigWithGeneratedBindingRedirects"
-          Inputs="@(AppConfigWithTargetPath)"
-          Outputs="web.config"
-          AfterTargets="GenerateBindingRedirectsUpdateAppConfig">
-    <Copy SourceFiles="@(AppConfigWithTargetPath)"
-          DestinationFiles="web.config"
-          SkipUnchangedFiles="true" />
+  <Target Name="UpdateWebConfigWithGeneratedBindingRedirects" Inputs="@(AppConfigWithTargetPath)" Outputs="web.config" AfterTargets="GenerateBindingRedirectsUpdateAppConfig">
+    <Copy SourceFiles="@(AppConfigWithTargetPath)" DestinationFiles="web.config" SkipUnchangedFiles="true" />
   </Target>
 </Project>

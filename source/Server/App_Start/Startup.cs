@@ -15,6 +15,7 @@ using Owin;
 using SharpLab.Server;
 using SharpLab.Server.Common;
 using SharpLab.Server.Monitoring;
+using SharpLab.WebApp.Middleware.GitHub;
 
 [assembly: OwinStartup(typeof(Startup), nameof(Startup.Configuration))]
 
@@ -50,6 +51,9 @@ namespace SharpLab.Server {
             HostingEnvironment.RegisterObject(new ShutdownMonitor(monitor));
 
             app.UseAutofacLifetimeScopeInjector(container);
+
+            app.Map("/github/auth/start", a => a.UseMiddlewareFromContainer<GitHubOAuthStartMiddleware>());
+            app.Map("/github/auth/complete", a => a.UseMiddlewareFromContainer<GitHubOAuthCompleteMiddleware>());
         }
 
         public static MirrorSharpOptions CreateMirrorSharpOptions(IContainer container) {

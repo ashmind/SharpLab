@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net47</TargetFramework>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
@@ -23,11 +23,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Server.Azure\Server.Azure.csproj" />
     <ProjectReference Include="..\Server\Server.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Autofac.Owin" Version="4.2.0" />
-    <PackageReference Include="Microsoft.Owin" Version="3.0.1" />
-    <PackageReference Include="Octokit" Version="0.32.0" />
   </ItemGroup>
   <PropertyGroup>
     <NpmPath Condition="'$(TR_BUILD_NPM_PATH)' != ''">"$(TR_BUILD_NPM_PATH)"</NpmPath>
@@ -54,8 +49,7 @@
   <!--  https://github.com/dotnet/sdk/issues/1458#issuecomment-401497095 -->
   <Target Name="_ResolveCopyLocalNuGetPackageXmls" Condition="$(CopyLocalLockFileAssemblies) == true" AfterTargets="ResolveReferences">
     <ItemGroup>
-      <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')"
-                               Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' != '' and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
+      <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' != '' and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
     </ItemGroup>
   </Target>
   <!-- Required since Azure doesn't have MSBuild 15, so we can only build through .NET publish. -->

@@ -6,9 +6,14 @@ using Octokit;
 namespace SharpLab.WebApp.Middleware.GitHub {
     [UsedImplicitly]
     public class GitHubModule : Module {
+        public static bool Enabled { get; }
+
         protected override void Load(ContainerBuilder builder) {
             var clientId = Environment.GetEnvironmentVariable("SHARPLAB_GITHUB_CLIENT_ID");
             var clientSecret = Environment.GetEnvironmentVariable("SHARPLAB_GITHUB_CLIENT_SECRET");
+            if (string.IsNullOrEmpty(clientId))
+                return;
+
             var settings = new GitHubClientSettings(clientId, clientSecret);
             builder.RegisterInstance(settings).AsSelf();
 
