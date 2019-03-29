@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp", "WebApp\WebApp.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "external", "external", "{298DF95B-B1E8-4E16-AF0F-C2F9CC0AEFB3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.Azure", "Server.Azure\Server.Azure.csproj", "{3A8AEA1E-E3CC-46E2-A8B9-D0777AC33C12}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8496C554-BC9D-4A47-AD04-5E580DF7F55C}"
 	ProjectSection(SolutionItems) = preProject
 		Directory.Build.props = Directory.Build.props
@@ -62,12 +60,6 @@ Global
 		{8C5359F9-5A55-4078-AFB6-E524321DA6C3}.Debug-Vsix|Any CPU.Build.0 = Debug|Any CPU
 		{8C5359F9-5A55-4078-AFB6-E524321DA6C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C5359F9-5A55-4078-AFB6-E524321DA6C3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A8AEA1E-E3CC-46E2-A8B9-D0777AC33C12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A8AEA1E-E3CC-46E2-A8B9-D0777AC33C12}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A8AEA1E-E3CC-46E2-A8B9-D0777AC33C12}.Debug-Vsix|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A8AEA1E-E3CC-46E2-A8B9-D0777AC33C12}.Debug-Vsix|Any CPU.Build.0 = Debug|Any CPU
-		{3A8AEA1E-E3CC-46E2-A8B9-D0777AC33C12}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A8AEA1E-E3CC-46E2-A8B9-D0777AC33C12}.Release|Any CPU.Build.0 = Release|Any CPU
 		{245CE37C-F63C-42D8-9074-A7528A71C2EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{245CE37C-F63C-42D8-9074-A7528A71C2EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{245CE37C-F63C-42D8-9074-A7528A71C2EF}.Debug-Vsix|Any CPU.ActiveCfg = Debug-Vsix|Any CPU
