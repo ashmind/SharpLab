@@ -9,18 +9,9 @@ using SharpLab.Server.Decompilation.Internal;
 namespace SharpLab.Server.Decompilation {
     public class CSharpDecompiler : IDecompiler {
         private static readonly CSharpFormattingOptions FormattingOptions = CreateFormattingOptions();
-        private static readonly DecompilerSettings DecompilerSettings = new DecompilerSettings {
-            AnonymousMethods = false,
-            AnonymousTypes = false,
-            YieldReturn = false,
-            AsyncAwait = false,
-            AutomaticProperties = false,
-            ExpressionTrees = false,
+        private static readonly DecompilerSettings DecompilerSettings = new DecompilerSettings(ICSharpCode.Decompiler.CSharp.LanguageVersion.CSharp1) {
             ArrayInitializers = false,
-            ObjectOrCollectionInitializers = false,
             UsingStatement = false,
-            LiftNullables = false,
-            NullPropagation = false,
             DecimalConstants = false,
             AutomaticEvents = false
         };
