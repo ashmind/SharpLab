@@ -147,7 +147,7 @@ function Build-SharpLab($root, $branchRoot, $artifactsRoot, $roslynPackagesRoot,
     if ($LastExitCode -ne 0) { throw "dotnet restore exited with error code $LastExitCode" }
     
     "Building SharpLab" | Out-Default
-    dotnet msbuild "$branchSourceRoot/Server.Azure/Server.Azure.csproj" `
+    dotnet msbuild "$branchSourceRoot/Server/Server.csproj" `
         /m /nodeReuse:false `
         /p:Configuration=Release `
         /p:UnbreakablePolicyReportEnabled=false | Out-Default
@@ -155,7 +155,7 @@ function Build-SharpLab($root, $branchRoot, $artifactsRoot, $roslynPackagesRoot,
 
     return @{
         webConfigRoot = "$branchSourceRoot/Server"
-        binRoot = "$branchSourceRoot/Server.Azure/bin/Release"
+        binRoot = "$branchSourceRoot/Server/bin/Release"
     }
 }
 
