@@ -5,9 +5,10 @@ using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using AshMind.Extensions;
 using System;
+using SharpLab.Server.Common.Internal;
 
-namespace SharpLab.Server.Common.Internal {
-    public class AssemblyDocumentationResolver : IAssemblyDocumentationResolver {
+namespace SharpLab.Server.Owin.Platform {
+    public class Net47AssemblyDocumentationResolver : IAssemblyDocumentationResolver {
         private static readonly string ReferenceAssemblyRootPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
             + @"\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7";
 

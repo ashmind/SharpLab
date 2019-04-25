@@ -1,8 +1,7 @@
 using System;
-using System.Configuration;
 using Autofac;
 using JetBrains.Annotations;
-using Microsoft.CodeAnalysis;
+using SharpLab.Server.Common;
 using SharpLab.Server.Explanation.Internal;
 using SourcePath;
 using SourcePath.Roslyn;
@@ -11,9 +10,6 @@ namespace SharpLab.Server.Explanation {
     [UsedImplicitly]
     public class ExplanationModule : Module {
         protected override void Load(ContainerBuilder builder) {
-            var csharpSourceUrl = new Uri(ConfigurationManager.AppSettings["App.Explanations.Urls.CSharp"]);
-            var updatePeriod = TimeSpan.Parse(ConfigurationManager.AppSettings["App.Explanations.UpdatePeriod"]);
-
             RegisterSourcePath(builder);
 
             builder.RegisterType<Explainer>()
@@ -22,9 +18,15 @@ namespace SharpLab.Server.Explanation {
 
             builder.RegisterType<ExternalSyntaxExplanationProvider>()
                    .As<ISyntaxExplanationProvider>()
-                   .WithParameter("sourceUrl", csharpSourceUrl)
-                   .WithParameter("updatePeriod", updatePeriod)
                    .SingleInstance();
+
+            builder.Register(c => {
+                var configuration = c.Resolve<IConfigurationAdapter>();
+                return new ExternalSyntaxExplanationSettings(
+                    configuration.GetValue<Uri>("App:Explanations:Urls:CSharp"),
+                    configuration.GetValue<TimeSpan>("App:Explanations:UpdatePeriod")
+                );
+            }).SingleInstance();
         }
 
         private void RegisterSourcePath(ContainerBuilder builder) {

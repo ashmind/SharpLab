@@ -4,12 +4,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Emit;
+#if !NETCOREAPP
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Compiler;
 using Microsoft.FSharp.Compiler.SourceCodeServices;
 using Microsoft.FSharp.Control;
+#endif
 using MirrorSharp.Advanced;
+#if !NETCOREAPP
 using MirrorSharp.FSharp.Advanced;
+#endif
 
 namespace SharpLab.Server.Compilation {
     public class Compiler : ICompiler {
@@ -19,10 +23,12 @@ namespace SharpLab.Server.Compilation {
         );
 
         public async Task<(bool assembly, bool symbols)> TryCompileToStreamAsync(MemoryStream assemblyStream, MemoryStream symbolStream, IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
+            #if !NETCOREAPP
             if (session.IsFSharp()) {
                 var compiled = await TryCompileFSharpToStreamAsync(assemblyStream, session, diagnostics, cancellationToken).ConfigureAwait(false);
                 return (compiled, false);
             }
+            #endif
 
             var compilation = await session.Roslyn.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false);
             var emitResult = compilation.Emit(assemblyStream, pdbStream: symbolStream, options: RoslynEmitOptions);
@@ -35,6 +41,7 @@ namespace SharpLab.Server.Compilation {
             return (true, true);
         }
 
+        #if !NETCOREAPP
         private async Task<bool> TryCompileFSharpToStreamAsync(MemoryStream assemblyStream, IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
             var fsharp = session.FSharp();
 
@@ -59,5 +66,6 @@ namespace SharpLab.Server.Compilation {
                 return virtualAssemblyFile.Stream.Length > 0;
             }
         }
+        #endif
     }
 }

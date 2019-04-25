@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <AssemblyName>SharpLab.Tests.NetCore</AssemblyName>
+    <RootNamespace>SharpLab.Tests</RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;NETCORE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;NETCORE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0-preview4.19216.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.0.0-preview4.19216.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.0.0-preview4.19216.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.0-preview-20181205-02" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <PackageReference Include="AshMind.Extensions" Version="3.0.0-pre-20190406-01" />
+    <PackageReference Include="MirrorSharp.Testing" version="1.0.1" />
+    <PackageReference Include="Pedantic.IO.EmbeddedResource" version="0.9.0-pre-02" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Server\Server.csproj" />
+    <ProjectReference Include="..\Server.AspNetCore\Server.AspNetCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="../Tests/**/*.cs" Exclude="../Tests/TestCode/**/*.*;../Tests/obj/**/*.*" />
+
+    <EmbeddedResource Include="../Tests/TestCode/**/*.*" Exclude="../Tests/TestCode/**/*.fs2*;../Tests/TestCode/**/*.cs2il;../Tests/TestCode/**/*.cs2asm;../Tests/TestCode/**/Inspect.Heap.*;../Tests/TestCode/**/Inspect.Memory*">
+      <Link>TestCode/%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../Tests/TestData/language-syntax-explanations/*.yml">
+      <Link>TestData/language-syntax-explanations/%(Filename)%(Extension)</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="TestCode\**\*.*" />
+    <None Remove="TestCode\**\*.*" />
+    <EmbeddedResource Include="TestCode\**\*.*" />
+  </ItemGroup>
+
+  <Target Name="AddNetCoreAppXmlToCopyLocal" Condition="$(CopyLocalLockFileAssemblies) == true" AfterTargets="ResolveReferences">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Include="@(Reference->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(Reference.NuGetPackageId)' == 'Microsoft.NETCore.App.Ref' And Exists('%(RootDir)%(Directory)%(Filename).xml')" />
+    </ItemGroup>
+  </Target>
+</Project>

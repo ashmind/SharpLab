@@ -14,11 +14,12 @@ namespace SharpLab.Server.Decompilation.Internal {
 
     public class RoslynOperationPropertySerializer : IRoslynOperationPropertySerializer {
         private static readonly MethodInfo ObjectToString = typeof(object).GetMethod(nameof(ToString));
-        private static readonly HashSet<Type> DirectlyWritableTypes = typeof(IFastJsonWriter)
-            .GetMethods()
-            .Where(m => m.Name == nameof(IFastJsonWriter.WriteValue))
-            .Select(m => m.GetParameters()[0].ParameterType)
-            .ToSet();
+        private static readonly HashSet<Type> DirectlyWritableTypes = new HashSet<Type>(
+            typeof(IFastJsonWriter)
+                .GetMethods()
+                .Where(m => m.Name == nameof(IFastJsonWriter.WriteValue))
+                .Select(m => m.GetParameters()[0].ParameterType)
+        );
 
         private readonly ConcurrentDictionary<Type, SerializePropertiesAction> _cache
             = new ConcurrentDictionary<Type, SerializePropertiesAction>();
@@ -46,7 +47,7 @@ namespace SharpLab.Server.Decompilation.Internal {
         private Expression SlowExpressSerializeProperty(ParameterExpression operation, PropertyInfo property, ParameterExpression writer) {
             var propertyValue = Expression.Property(Expression.Convert(operation, property.DeclaringType), property);
 
-            if (property.PropertyType.IsGenericTypeDefinedAs(typeof(Optional<>))) {
+            if (property.PropertyType.GetTypeInfo().IsGenericTypeDefinedAs(typeof(Optional<>))) {
                 return Expression.Condition(
                     Expression.Property(propertyValue, nameof(Optional<object>.HasValue)),
                     SlowExpressWriteNameAndValue(
@@ -83,7 +84,8 @@ namespace SharpLab.Server.Decompilation.Internal {
 
         private static readonly Expression Skipped = Expression.Constant("<skipped>");
         private Expression SlowGetValueToWrite(Expression value) {
-            if (value.Type.IsAssignableTo<IEnumerable>() || value.Type.IsAssignableTo<SyntaxNode>())
+            var type = value.Type.GetTypeInfo();
+            if (type.IsAssignableTo<IEnumerable>() || type.IsAssignableTo<SyntaxNode>())
                 return Skipped;
 
             if (!DirectlyWritableTypes.Contains(value.Type)) {

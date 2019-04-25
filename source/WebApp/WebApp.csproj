@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net47</TargetFramework>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
@@ -18,10 +18,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="1.2.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Server\Server.csproj" />
+    <DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="2.0.0" />
   </ItemGroup>
   <PropertyGroup>
     <NpmPath Condition="'$(TR_BUILD_NPM_PATH)' != ''">"$(TR_BUILD_NPM_PATH)"</NpmPath>
@@ -29,6 +26,7 @@
   </PropertyGroup>
   <ItemGroup>
     <_StaticOutputs Include="wwwroot\**\*.*" Exclude="wwwroot\!branches.json" />
+    <ProjectReference Include="..\Server.Owin\Server.Owin.csproj" />
     <_StaticInputs Include="@(None)" Exclude="**\!*.*; @(_StaticOutputs)" />
   </ItemGroup>
   <ItemGroup Condition="'@(_StaticOutputs)' == ''">
@@ -46,13 +44,11 @@
     </ItemGroup>
   </Target>
   <!--  https://github.com/dotnet/sdk/issues/1458#issuecomment-401497095 -->
-  <Target Name="_ResolveCopyLocalNuGetPackageXmls" Condition="$(CopyLocalLockFileAssemblies) == true" AfterTargets="ResolveReferences">
+  <Target Name="ResolveCopyLocalNuGetPackageXmls" Condition="$(CopyLocalLockFileAssemblies) == true" AfterTargets="ResolveReferences">
     <ItemGroup>
       <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' != '' and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
     </ItemGroup>
   </Target>
-  <!-- Required since Azure doesn't have MSBuild 15, so we can only build through .NET publish. -->
-  <!-- Should be removed after https://github.com/projectkudu/kudu/issues/2350 is resolved. -->
   <Target Name="PreparePublishFilesForNonCoreAspNet" AfterTargets="ComputeFilesToPublish">
     <ItemGroup>
       <_ResolvedFileToIgnore Include="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').StartsWith('runtimes\'))" />

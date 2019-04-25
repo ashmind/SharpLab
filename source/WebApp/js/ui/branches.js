@@ -37,17 +37,19 @@ function groupAndSortBranches(branches) {
     result.groups.sort(groupSortOrder);
 
     for (const group of result.groups) {
+        if (group.name === 'Platforms')
+            continue; // do not sort Platforms
+
         group.branches.sort(branchSortOrder);
     }
 
     return result;
 }
 
-
 function groupSortOrder(a, b) {
-    // dotnet always goes first
-    if (a.name === 'dotnet') return -1;
-    if (b.name === 'dotnet') return +1;
+    // 'Platform' always goes first
+    if (a.name === 'Platforms') return -1;
+    if (b.name === 'Platforms') return +1;
 
     // otherwise by name
     if (a.name > b.name) return +1;

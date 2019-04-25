@@ -1,4 +1,5 @@
-﻿using Microsoft.FSharp.Core;
+#if !NETCOREAPP
+using Microsoft.FSharp.Core;
 using MirrorSharp.Advanced;
 using MirrorSharp.FSharp.Advanced;
 using Mono.Cecil;
@@ -65,3 +66,4 @@ namespace SharpLab.Server.Execution.Internal {
         }
     }
 }
+#endif

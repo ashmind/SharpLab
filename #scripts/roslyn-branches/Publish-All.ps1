@@ -68,14 +68,22 @@ function Login-ToAzure($azureConfig) {
 
 function Get-PredefinedBranches() {
     $x64Url = "http://sl-a-x64.sharplab.local"
+    $coreX64Url = "http://sl-a-core-x64.sharplab.local"
     if ($azure) {
         $x64Url = "https://sl-a-x64.azurewebsites.net"
+        $coreX64Url = "https://sl-a-core-x64.azurewebsites.net"
     }
     
     return @([ordered]@{
         id = 'x64'
         name = 'x64'
         url = $x64Url
+        group = 'Platforms'
+    }, [ordered]@{
+        id = 'core-x64'
+        name = '.NET Core x64'
+        url = $coreX64Url
+        group = 'Platforms'
     })
 }
 
@@ -95,10 +103,10 @@ try {
     if (!(Test-Path $toolsRoot)) {
         New-Item -ItemType Directory -Path $toolsRoot | Out-Null
     }
-    Write-Output "  Tools Root:           $toolsRoot"
+    Write-Output "  Tools Root:            $toolsRoot"
 
     $roslynBranchesRoot = Resolve-Path "$PSScriptRoot\..\..\!roslyn-branches"
-    Write-Output "  Roslyn Branches Root: $roslynBranchesRoot"
+    Write-Output "  Roslyn Branches Root:  $roslynBranchesRoot"
     
     $nugetExe = "$toolsRoot\nuget.exe"
     if (!(Test-Path $nugetExe)) {
@@ -189,7 +197,7 @@ try {
         $branchJson = [ordered]@{
             id = $branchFsName -replace '^dotnet-',''
             name = $branchInfo.name
-            group = $branchInfo.repository
+            group = 'Roslyn branches'
             url = $url
             feature = $roslynBranchFeatureMap[$branchInfo.name]
             commits = $branchInfo.commits

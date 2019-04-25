@@ -18,10 +18,6 @@ namespace SharpLab.Server.Common {
                    .As<IAssemblyReferenceCollector>()
                    .SingleInstance();
 
-            builder.RegisterType<AssemblyDocumentationResolver>()
-                   .As<IAssemblyDocumentationResolver>()
-                   .SingleInstance();
-
             builder.RegisterType<PreCachedAssemblyResolver>()
                    .As<ICSharpCode.Decompiler.Metadata.IAssemblyResolver>()
                    .As<Mono.Cecil.IAssemblyResolver>()
@@ -35,9 +31,11 @@ namespace SharpLab.Server.Common {
                    .As<ILanguageAdapter>()
                    .SingleInstance();
 
+            #if !NETCOREAPP
             builder.RegisterType<FSharpAdapter>()
                    .As<ILanguageAdapter>()
                    .SingleInstance();
+            #endif
         }
 
         private void RegisterExternals(ContainerBuilder builder) {

@@ -84,6 +84,9 @@ namespace SharpLab.Server.Execution.Internal {
 
         private static void RetargetAll(this ILProcessor il, Instruction from, Instruction to) {
             foreach (var other in il.Body.Instructions) {
+                if (other == to)
+                    continue;
+
                 if (other.Operand == from)
                     other.Operand = to;
             }

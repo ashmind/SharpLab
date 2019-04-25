@@ -1,6 +1,5 @@
 <Project>
   <PropertyGroup>
-    <RestoreAdditionalProjectSources>https://ci.appveyor.com/nuget/ilspy-masterfeed</RestoreAdditionalProjectSources>
     <SolutionDir Condition="'$(SolutionDir)'==''">$(MSBuildThisFileDirectory)</SolutionDir>
     <SourcePathSharpLabTargetFrameworksFix>true</SourcePathSharpLabTargetFrameworksFix>
   </PropertyGroup>

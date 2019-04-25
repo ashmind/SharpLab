@@ -1,7 +1,7 @@
+#if !NETCOREAPP
 using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
@@ -67,3 +67,4 @@ namespace SharpLab.Server.Common.Languages {
         }
     }
 }
+#endif

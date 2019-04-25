@@ -198,11 +198,20 @@ namespace SharpLab.Server.Execution.Internal {
                 // in some cases (e.g. exception throw) outer handler does
                 // not end with `leave` -- but we do need it once we wrap
                 // that throw
-                outerTryLeave = il.Create(OpCodes.Leave, handler.TryEnd);
+
+                // if the handler is the last thing in the method
+                if (handler.HandlerEnd == null)
+                {
+                    var finalReturn = il.Create(OpCodes.Ret);
+                    il.Append(finalReturn);
+                    handler.HandlerEnd = finalReturn;
+                }
+
+                outerTryLeave = il.Create(OpCodes.Leave, handler.HandlerEnd);
                 il.InsertBefore(handler.TryEnd, outerTryLeave);
             }
 
-            var innerTryLeave = il.Create(OpCodes.Leave_S, (Instruction)outerTryLeave.Operand);
+            var innerTryLeave = il.Create(OpCodes.Leave_S, outerTryLeave);
             var reportCall = il.CreateCall(flow.ReportException);
             var catchHandler = il.Create(OpCodes.Pop);
 
@@ -211,6 +220,7 @@ namespace SharpLab.Server.Execution.Internal {
             il.InsertBefore(outerTryLeave, il.Create(OpCodes.Ldc_I4_0));
             il.InsertBefore(outerTryLeave, il.Create(OpCodes.Endfilter));
             il.InsertBefore(outerTryLeave, catchHandler);
+            il.InsertBefore(outerTryLeave, il.Create(OpCodes.Leave_S, outerTryLeave));
 
             for (var i = 0; i < handlerIndex; i++) {
                 il.Body.ExceptionHandlers[i].RetargetAll(outerTryLeave.Next, innerTryLeave.Next);
@@ -221,7 +231,7 @@ namespace SharpLab.Server.Execution.Internal {
                 TryEnd = reportCall,
                 FilterStart = reportCall,
                 HandlerStart = catchHandler,
-                HandlerEnd = outerTryLeave.Next
+                HandlerEnd = outerTryLeave
             });
             handlerIndex += 1;
         }

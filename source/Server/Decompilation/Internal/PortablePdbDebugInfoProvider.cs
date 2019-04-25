@@ -38,7 +38,7 @@ namespace SharpLab.Server.Decompilation.Internal {
         public IList<Variable> GetVariables(MethodDefinitionHandle method) {
             var variables = new List<Variable>();
             foreach (var local in EnumerateLocals(method)) {
-                variables.Add(new Variable { Name = _reader.GetString(local.Name) });
+                variables.Add(new Variable(local.Index, _reader.GetString(local.Name)));
             }
             return variables;
         }

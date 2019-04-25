@@ -47,7 +47,7 @@ namespace SharpLab.Server.MirrorSharp {
         public async Task<object> ProcessAsync(IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
             var targetName = session.GetTargetName();
             if (targetName == TargetNames.Ast || targetName == TargetNames.Explain) {
-                var astTarget = _astTargets.GetValueOrDefault(session.LanguageName);
+                var astTarget = _astTargets[session.LanguageName];
                 var ast = await astTarget.GetAstAsync(session, cancellationToken).ConfigureAwait(false);
                 if (targetName == TargetNames.Explain)
                     return await _explainer.ExplainAsync(ast, session, cancellationToken).ConfigureAwait(false);
@@ -113,7 +113,7 @@ namespace SharpLab.Server.MirrorSharp {
 
             var targetName = session.GetTargetName();
             if (targetName == TargetNames.Ast) {
-                var astTarget = _astTargets.GetValueOrDefault(session.LanguageName);
+                var astTarget = _astTargets[session.LanguageName];
                 astTarget.SerializeAst(result, writer, session);
                 return;
             }

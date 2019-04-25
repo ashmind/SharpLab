@@ -147,15 +147,15 @@ function Build-SharpLab($root, $branchRoot, $artifactsRoot, $roslynPackagesRoot,
     if ($LastExitCode -ne 0) { throw "dotnet restore exited with error code $LastExitCode" }
     
     "Building SharpLab" | Out-Default
-    dotnet msbuild "$branchSourceRoot/Server/Server.csproj" `
+    dotnet msbuild "$branchSourceRoot/Server.Owin/Server.Owin.csproj" `
         /m /nodeReuse:false `
         /p:Configuration=Release `
         /p:UnbreakablePolicyReportEnabled=false | Out-Default
     if ($LastExitCode -ne 0) { throw "dotnet msbuild exited with error code $LastExitCode" }
 
     return @{
-        webConfigRoot = "$branchSourceRoot/Server"
-        binRoot = "$branchSourceRoot/Server/bin/Release"
+        webConfigRoot = "$branchSourceRoot/Server.Owin"
+        binRoot = "$branchSourceRoot/Server.Owin/bin/Release"
     }
 }
 

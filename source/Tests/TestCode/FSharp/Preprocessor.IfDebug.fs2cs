@@ -20,11 +20,11 @@ using System.Runtime.CompilerServices;
 public static class _
 {
     [CompilationMapping(SourceConstructFlags.Value)]
-    internal static PrintfFormat<Unit, TextWriter, Unit, Unit> fp@1-1
+    internal static PrintfFormat<Unit, TextWriter, Unit, Unit> fp@1
     {
         get
         {
-            return $_.fp@1-1;
+            return $_.fp@1;
         }
     }
 }
@@ -33,7 +33,7 @@ namespace <StartupCode$_>
     internal static class $_
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        internal static readonly PrintfFormat<Unit, TextWriter, Unit, Unit> fp@1-1;
+        internal static readonly PrintfFormat<Unit, TextWriter, Unit, Unit> fp@1;
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         [CompilerGenerated]
@@ -42,8 +42,8 @@ namespace <StartupCode$_>
 
         static $_()
         {
-            fp@1-1 = new PrintfFormat<Unit, TextWriter, Unit, Unit, Unit>("Debug");
-            PrintfModule.PrintFormatLineToTextWriter(Console.Out, _.fp@1-1);
+            fp@1 = new PrintfFormat<Unit, TextWriter, Unit, Unit, Unit>("Debug");
+            PrintfModule.PrintFormatLineToTextWriter(Console.Out, _.fp@1);
         }
     }
 }

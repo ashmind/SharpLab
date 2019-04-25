@@ -1,25 +1,21 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Cors;
 using System.Web.Hosting;
 using Autofac;
-using Autofac.Extras.FileSystemRegistration;
 using Microsoft.Owin;
 using Microsoft.Owin.Cors;
-using MirrorSharp;
-using MirrorSharp.Advanced;
 using MirrorSharp.Owin;
 using Owin;
-using SharpLab.Server;
 using SharpLab.Server.Common;
 using SharpLab.Server.Monitoring;
+using SharpLab.Server.Owin;
 using SharpLab.WebApp.Middleware.GitHub;
 
 [assembly: OwinStartup(typeof(Startup), nameof(Startup.Configuration))]
 
-namespace SharpLab.Server {
+namespace SharpLab.Server.Owin {
     public class Startup {
         public virtual void Configuration(IAppBuilder app) {
             DotEnv.Load();
@@ -28,7 +24,7 @@ namespace SharpLab.Server {
                 AllowAnyHeader = true,
                 AllowAnyMethod = true,
                 AllowAnyOrigin = true,
-                PreflightMaxAge = 60 * 60 * 1000 // 1 hour, though Chrome would limit to 10 mins I believe
+                PreflightMaxAge = (long)StartupHelper.CorsPreflightMaxAge.TotalMilliseconds
             });
             var corsOptions = new CorsOptions {
                 PolicyProvider = new CorsPolicyProvider {
@@ -37,8 +33,8 @@ namespace SharpLab.Server {
             };
             app.UseCors(corsOptions);
 
-            var container = CreateContainer();
-            var mirrorSharpOptions = CreateMirrorSharpOptions(container);
+            var container = StartupHelper.CreateContainerBuilder().Build();
+            var mirrorSharpOptions = StartupHelper.CreateMirrorSharpOptions(container);
             app.UseMirrorSharp(mirrorSharpOptions);
 
             app.Map("/status", a => a.Use((c, next) => {
@@ -54,29 +50,6 @@ namespace SharpLab.Server {
 
             app.Map("/github/auth/start", a => a.UseMiddlewareFromContainer<GitHubOAuthStartMiddleware>());
             app.Map("/github/auth/complete", a => a.UseMiddlewareFromContainer<GitHubOAuthCompleteMiddleware>());
-        }
-
-        public static MirrorSharpOptions CreateMirrorSharpOptions(IContainer container) {
-            var options = new MirrorSharpOptions {
-                SetOptionsFromClient = container.Resolve<ISetOptionsFromClientExtension>(),
-                SlowUpdate = container.Resolve<ISlowUpdateExtension>(),
-                IncludeExceptionDetails = true,
-                ExceptionLogger = container.Resolve<IExceptionLogger>()
-            };
-            var languages = container.Resolve<ILanguageAdapter[]>();
-            foreach (var language in languages) {
-                language.SlowSetup(options);
-            }
-            return options;
-        }
-
-        public static IContainer CreateContainer() {
-            var builder = new ContainerBuilder();
-            var assembly = Assembly.GetExecutingAssembly();
-
-            builder.RegisterAssemblyModulesInDirectoryOf(assembly);
-
-            return builder.Build();
         }
 
         private class ShutdownMonitor : IRegisteredObject {

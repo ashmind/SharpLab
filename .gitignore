@@ -2,9 +2,11 @@
 .env
 packages/
 \#packages/
+
 *.user
+*.pubxml
+
 \!*
-\roslyn_build_root
 .vs/
 node_modules/
 bin/

@@ -7,10 +7,6 @@ namespace SharpLab.Server.Execution {
     [UsedImplicitly]
     public class ExecutionModule : Module {
         protected override void Load(ContainerBuilder builder) {
-            builder.RegisterType<Executor>()
-                   .As<IExecutor>()
-                   .SingleInstance();
-
             builder.RegisterInstance(ApiPolicySetup.CreatePolicy())
                    .AsSelf()
                    .SingleInstance();
@@ -27,9 +23,11 @@ namespace SharpLab.Server.Execution {
                    .As<IAssemblyRewriter>()
                    .SingleInstance();
 
+            #if !NETCOREAPP
             builder.RegisterType<FSharpEntryPointRewriter>()
                    .As<IAssemblyRewriter>()
                    .SingleInstance();
+            #endif
         }
     }
 }

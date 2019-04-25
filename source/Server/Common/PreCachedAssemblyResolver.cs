@@ -56,7 +56,6 @@ namespace SharpLab.Server.Common {
         }
 
         public void Dispose() {
-            throw new NotSupportedException();
         }
     }
 }

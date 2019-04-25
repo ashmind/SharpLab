@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,7 +62,7 @@ namespace SharpLab.Server.Decompilation.Internal {
             foreach (var property in parentSyntaxType.GetProperties(BindingFlags.Public | BindingFlags.Instance)) {
                 if (property.Name == nameof(SyntaxNode.Parent))
                     continue;
-                if (!property.PropertyType.IsSameAsOrSubclassOf<T>())
+                if (!property.PropertyType.GetTypeInfo().IsSameAsOrSubclassOf<T>())
                     continue;
                 var propertyEqualsNode = Expression.Equal(Expression.Property(parentTyped, property), value);
                 statements.Add(Expression.IfThen(propertyEqualsNode, Expression.Return(end, Expression.Constant(property.Name))));

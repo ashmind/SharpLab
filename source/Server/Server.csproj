@@ -1,12 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net47</TargetFramework>
+    <TargetFrameworks>net47; netcoreapp30</TargetFrameworks>
     <AssemblyName>SharpLab.Server</AssemblyName>
     <RootNamespace>SharpLab.Server</RootNamespace>
     <Company>Andrey Shchekin</Company>
     <Authors>Andrey Shchekin</Authors>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>7.3</LangVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -19,40 +18,35 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AppDomainToolkit" Version="1.0.4.3" />
     <PackageReference Include="Argument" Version="1.1.0" />
-    <PackageReference Include="AshMind.Extensions" Version="2.0.0-pre-20180304" />
-    <PackageReference Include="Autofac" Version="3.5.2" />
-    <PackageReference Include="Autofac.Extras.FileSystemRegistration" Version="0.1.3" />
-    <PackageReference Include="Autofac.Owin" Version="4.2.0" />
-    <PackageReference Include="fasterflect" Version="2.1.3" />
-    <PackageReference Include="ICSharpCode.Decompiler" Version="4.0.0.4272-beta1" />
+    <PackageReference Include="AshMind.Extensions" Version="3.0.0-pre-20190406-01" />
+    <PackageReference Include="Autofac" Version="4.9.2" />
+    <PackageReference Include="Autofac.Extras.FileSystemRegistration" Version="1.0.0-pre-03" />
+    <PackageReference Include="ICSharpCode.Decompiler" Version="4.0.0.4521" />
     <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.4.0" />
-    <PackageReference Include="Microsoft.AspNet.Cors" Version="5.2.3" />
     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="2.9.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="2.9.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Features" Version="2.9.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.9.0" />
-    <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="0.9.180305.1" />
-    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.1" />
-    <PackageReference Include="Microsoft.Owin" Version="3.0.1" />
-    <PackageReference Include="Microsoft.Owin.Cors" Version="3.0.1" />
-    <PackageReference Include="Microsoft.Owin.Host.SystemWeb" Version="3.0.1" />
-    <PackageReference Include="MirrorSharp.Common" Version="0.12.0-test-1" />
-    <PackageReference Include="MirrorSharp.FSharp" Version="0.12.0-test-1" />
-    <PackageReference Include="MirrorSharp.Owin" Version="0.12.0-test-1" />
-    <PackageReference Include="MirrorSharp.VisualBasic" Version="0.12.0-test-1" />
+    <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="1.0.5" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.2" />
+    <PackageReference Include="MirrorSharp.Common" Version="1.0.0" />
+    <PackageReference Include="MirrorSharp.VisualBasic" Version="1.0.0" />
     <PackageReference Include="Mono.Cecil" Version="0.10.0" />
-    <PackageReference Include="Octokit" Version="0.32.0" />
-    <PackageReference Include="SharpDisasm" Version="1.1.5" />
+    <PackageReference Include="SharpDisasm" Version="1.1.11" />
     <PackageReference Include="SharpYaml" Version="1.6.2" />
+    <PackageReference Include="System.IO.Pipelines" Version="4.5.3" />
     <PackageReference Include="System.Memory" Version="4.5.2" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0-preview2-26406-04" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.2" />
-    <PackageReference Include="Unbreakable" Version="0.13.0-unproven" />
+    <PackageReference Include="Unbreakable" Version="0.14.0-unproven" />
+    <PackageReference Include="Unbreakable.Policy" Version="0.7.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
+    <PackageReference Include="MirrorSharp.FSharp" Version="0.12.0" />
     <PackageReference Include="Unbreakable.Build.PolicyReport" Version="0.0.11" />
-    <PackageReference Include="Unbreakable.Policy" Version="0.6.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -61,11 +55,13 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
+    <Reference Include="System.Web" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Web" />
   </ItemGroup>
   
   <ItemGroup>
@@ -74,14 +70,4 @@
       <UnbreakablePolicyMethodName>CreatePolicy</UnbreakablePolicyMethodName>
     </Compile>
   </ItemGroup>
-
-  <Target Name="EnsureGenerateBindingRedirectsUsesWebConfig" BeforeTargets="GenerateBindingRedirects">
-    <ItemGroup>
-      <AppConfigWithTargetPath Include="web.config" />
-    </ItemGroup>
-  </Target>
-  
-  <Target Name="UpdateWebConfigWithGeneratedBindingRedirects" Inputs="@(AppConfigWithTargetPath)" Outputs="web.config" AfterTargets="GenerateBindingRedirectsUpdateAppConfig">
-    <Copy SourceFiles="@(AppConfigWithTargetPath)" DestinationFiles="web.config" SkipUnchangedFiles="true" />
-  </Target>
 </Project>

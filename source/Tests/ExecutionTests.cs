@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
@@ -14,7 +17,6 @@ using MirrorSharp.Testing;
 using MirrorSharp.Testing.Results;
 using SharpLab.Server.Common;
 using SharpLab.Tests.Internal;
-using System.Text.RegularExpressions;
 
 namespace SharpLab.Tests {
     public class ExecutionTests {
@@ -22,6 +24,20 @@ namespace SharpLab.Tests {
 
         public ExecutionTests(ITestOutputHelper testOutputHelper) {
             _testOutputHelper = testOutputHelper;
+
+            #if DEBUG
+            var testName = ((ITest)
+                _testOutputHelper
+                    .GetType()
+                    .GetField("test", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .GetValue(_testOutputHelper)
+            ).DisplayName.Replace(GetType().Namespace + ".", "");
+            var safeTestName = Regex.Replace(testName, "[^a-zA-Z._-]+", "_");
+            if (safeTestName.Length > 100)
+                safeTestName = safeTestName.Substring(0, 100) + "-" + safeTestName.GetHashCode();
+
+            AssemblyLog.Enable(Path.Combine(AppContext.BaseDirectory, "assembly-log", safeTestName + ".{0}.dll"));
+            #endif
         }
 
         [Theory]
@@ -249,6 +265,22 @@ namespace SharpLab.Tests {
             );
         }
 
+        [Fact]
+        public async Task SlowUpdate_DoesNotIncludePreviousConsoleOutput_IfRunTwice() {
+            var driver = await NewTestDriverAsync(@"
+                using System;
+                public static class Program {
+                    public static void Main() { Console.Write('I'); }
+                }
+            ");
+
+            await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+
+            AssertIsSuccess(result);
+            Assert.Equal("I", result.ExtensionResult.GetOutputAsString());
+        }
+
         [Theory]
         [InlineData("Console.Write(3.1);", "cs-CZ", "3.1")]
         public async Task SlowUpdate_IncludesConsoleInOutput_UsingInvariantCulture(string code, string currentCultureName, string expectedOutput) {
@@ -298,6 +330,7 @@ namespace SharpLab.Tests {
             Assert.Equal("Test", result.ExtensionResult.GetOutputAsString());
         }
 
+        #if !NETCOREAPP
         [Fact]
         public async Task SlowUpdate_ExecutesFSharp() {
             var driver = await NewTestDriverAsync(@"
@@ -327,10 +360,13 @@ namespace SharpLab.Tests {
             AssertIsSuccess(result);
             Assert.Equal("Test\nReturn: 0", result.ExtensionResult.GetOutputAsString());
         }
+        #endif
 
         [Theory]
         [InlineData("Regression.CertainLoop.cs")]
+        #if !NETCOREAPP
         [InlineData("Regression.FSharpNestedLambda.fs", LanguageNames.FSharp)]
+        #endif
         [InlineData("Regression.NestedAnonymousObject.cs")]
         [InlineData("Regression.ReturnRef.cs")]
         public async Task SlowUpdate_DoesNotFail(string resourceName, string languageName = LanguageNames.CSharp) {

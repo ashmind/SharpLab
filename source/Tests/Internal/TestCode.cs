@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -55,7 +56,7 @@ namespace SharpLab.Tests.Internal {
             if (result == null)
                 return null;
 
-            result = Regex.Replace(result, @"0x[\dA-Fa-f]{7,8}(?=$|[^\dA-Fa-f])", "0x<IGNORE>");
+            result = Regex.Replace(result, @"0x[\dA-Fa-f]{7,12}(?=$|[^\dA-Fa-f])", "0x<IGNORE>");
 
             if (TargetName == TargetNames.JitAsm)
                 result = Regex.Replace(result, @"CLR v[\d\.]+", "CLR v<IGNORE>");
@@ -63,8 +64,8 @@ namespace SharpLab.Tests.Internal {
             if (TargetName == TargetNames.Run) {
                 // we need to ignore type handle in memory inspection output
                 var pattern = @"(?<prefix>""inspection:memory"",.+""data"":\s*\[\s*)"
-                    + @"(?<header>(?:\d+,\s*){4})"
-                    + @"(?<typeHandle>(?:\d+,\s*){4})";
+                    + @"(?<header>(?:\d+,\s*){" + IntPtr.Size + "})"
+                    + @"(?<typeHandle>(?:\d+,\s*){" + IntPtr.Size + "})";
                 result = Regex.Replace(result, pattern, m => {
                     var ignored = Regex.Replace(m.Groups["typeHandle"].Value, @"\d+", "<IGNORE>");
                     return m.Groups["prefix"].Value

@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using SharpYaml.Serialization;
-using Microsoft.CodeAnalysis;
 using SourcePath;
 using SourcePath.Roslyn;
 using SharpLab.Server.Monitoring;
@@ -12,14 +11,13 @@ using SharpLab.Server.Monitoring;
 namespace SharpLab.Server.Explanation.Internal {
     public class ExternalSyntaxExplanationProvider : ISyntaxExplanationProvider, IDisposable {
         private readonly Func<HttpClient> _httpClientFactory;
-        private readonly Uri _sourceUrl;
+        private readonly ExternalSyntaxExplanationSettings _settings;
 
         private IReadOnlyCollection<SyntaxExplanation> _explanations;
         private readonly SemaphoreSlim _explanationsLock = new SemaphoreSlim(1);
 
         private Task _updateTask;
         private CancellationTokenSource _updateCancellationSource;
-        private readonly TimeSpan _updatePeriod;
 
         private readonly Serializer _serilializer = new Serializer(new SerializerSettings {
             NamingConvention = new FlatNamingConvention()
@@ -29,14 +27,12 @@ namespace SharpLab.Server.Explanation.Internal {
 
         public ExternalSyntaxExplanationProvider(
             Func<HttpClient> httpClientFactory,
-            Uri sourceUrl,
-            TimeSpan updatePeriod,
+            ExternalSyntaxExplanationSettings settings,
             ISourcePathParser<RoslynNodeContext> sourcePathParser,
             IMonitor monitor
         ) {
             _httpClientFactory = httpClientFactory;
-            _sourceUrl = sourceUrl;
-            _updatePeriod = updatePeriod;
+            _settings = settings;
             _sourcePathParser = sourcePathParser;
             _monitor = monitor;
         }
@@ -63,7 +59,7 @@ namespace SharpLab.Server.Explanation.Internal {
             var explanations = new List<SyntaxExplanation>();
             var serializer = new Serializer();
             using (var client = _httpClientFactory()) {
-                var response = await client.GetAsync(_sourceUrl, cancellationToken).ConfigureAwait(false);
+                var response = await client.GetAsync(_settings.SourceUrl, cancellationToken).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
 
                 var yamlString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -99,7 +95,7 @@ namespace SharpLab.Server.Explanation.Internal {
         private async Task UpdateLoopAsync() {
             while (!_updateCancellationSource.IsCancellationRequested) {
                 try {
-                    await Task.Delay(_updatePeriod, _updateCancellationSource.Token).ConfigureAwait(false);
+                    await Task.Delay(_settings.UpdatePeriod, _updateCancellationSource.Token).ConfigureAwait(false);
                 }
                 catch (TaskCanceledException) {
                     return;

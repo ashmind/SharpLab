@@ -11,8 +11,10 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Web;
+#if !NETCOREAPP
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
+#endif
 using Microsoft.VisualBasic.CompilerServices;
 using AshMind.Extensions;
 using Unbreakable;
@@ -53,6 +55,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
                 n => n.Type(typeof(SharpLabObjectExtensions), Allowed)
                       .Type(typeof(Inspect), Allowed)
             )
+            #if !NETCOREAPP
             .Namespace("Microsoft.FSharp.Core", Neutral, SetupFSharpCore)
             .Namespace("Microsoft.FSharp.Collections", Neutral,
                 n => n.Type(typeof(FSharpList<>), Allowed)
@@ -64,6 +67,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
                                 .Member(nameof(SeqModule.ToList), Allowed, CollectedEnumerableArgumentRewriter.Default)
                       )
             )
+            #endif
             .Namespace("Microsoft.VisualBasic", Neutral, SetupMicrosoftVisualBasic)
             .Namespace("Microsoft.VisualBasic.CompilerServices", Neutral,
                 n => n.Type(typeof(Conversions), Allowed,
@@ -192,7 +196,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
                     return;
                 }
 
-                if (!type.IsSameAsOrSubclassOf<Expression>())
+                if (!type.GetTypeInfo().IsSameAsOrSubclassOf<Expression>())
                     return;
 
                 namespacePolicy.Type(type, Allowed, typePolicy => {
@@ -221,7 +225,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
                     return;
                 }
 
-                if (!type.IsSameAsOrSubclassOf<MemberInfo>())
+                if (!type.GetTypeInfo().IsSameAsOrSubclassOf<MemberInfo>())
                     return;
 
                 namespacePolicy.Type(type, Neutral, typePolicy => {
@@ -231,7 +235,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
                         typePolicy.Getter(property.Name, Allowed);
                     }
                     foreach (var method in type.GetMethods()) {
-                        if (method.ReturnType.IsSameAsOrSubclassOf<MemberInfo>())
+                        if (method.ReturnType.GetTypeInfo().IsSameAsOrSubclassOf<MemberInfo>())
                             typePolicy.Member(method.Name, Allowed);
                     }
                 });
@@ -247,7 +251,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
 
         private static void SetupSystemSecurityCryptography(NamespacePolicy namespacePolicy) {
             ForEachTypeInNamespaceOf<HashAlgorithm>(type => {
-                if (!type.IsSameAsOrSubclassOf<HashAlgorithm>())
+                if (!type.GetTypeInfo().IsSameAsOrSubclassOf<HashAlgorithm>())
                     return;
 
                 namespacePolicy.Type(type, Neutral,
@@ -259,6 +263,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
 
         private static void SetupSystemWeb(NamespacePolicy namespacePolicy) {
             namespacePolicy
+                #if !NETCOREAPP
                 .Type(typeof(HttpServerUtility), Neutral,
                     t => t.Member(nameof(HttpServerUtility.HtmlDecode), Allowed)
                           .Member(nameof(HttpServerUtility.HtmlEncode), Allowed).Member(nameof(HttpServerUtility.UrlDecode), Allowed)
@@ -266,6 +271,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
                           .Member(nameof(HttpServerUtility.UrlTokenDecode), Allowed, ArrayReturnRewriter.Default)
                           .Member(nameof(HttpServerUtility.UrlTokenEncode), Allowed)
                 )
+                #endif
                 .Type(typeof(HttpUtility), Neutral,
                     t => t.Member(nameof(HttpUtility.HtmlDecode), Allowed)
                           .Member(nameof(HttpUtility.HtmlEncode), Allowed)
@@ -277,6 +283,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
                 );
         }
 
+        #if !NETCOREAPP
         private static void SetupFSharpCore(NamespacePolicy namespacePolicy) {
             namespacePolicy
                 .Type(typeof(CompilationArgumentCountsAttribute), Allowed)
@@ -331,10 +338,13 @@ namespace SharpLab.Server.Execution.Unbreakable {
                 )
                 .Type(typeof(Unit), Allowed);
         }
+        #endif
 
         private static void SetupMicrosoftVisualBasic(NamespacePolicy namespacePolicy) {
             namespacePolicy
+                #if !NETCOREAPP
                 .Type(nameof(Microsoft.VisualBasic.Globals), Allowed)
+                #endif
                 .Type(nameof(Microsoft.VisualBasic.Strings), Allowed);
         }
 

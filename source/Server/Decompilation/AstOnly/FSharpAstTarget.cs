@@ -1,4 +1,5 @@
-﻿using System;
+#if !NETCOREAPP
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -333,3 +334,4 @@ namespace SharpLab.Server.Decompilation.AstOnly {
         public IReadOnlyCollection<string> SupportedLanguageNames { get; } = new[] {"F#"};
     }
 }
+#endif

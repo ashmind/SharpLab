@@ -1,3 +1,4 @@
+console.time('requires');
 // Common:
 const { task, tasks, run } = require('oldowan');
 const path = require('path');
@@ -7,7 +8,7 @@ const md5File = require('md5-file/promise');
 const less = require('less');
 const autoprefixer = require('autoprefixer');
 const postcss = require('postcss');
-const cssnano = require('cssnano');
+const csso = require('postcss-csso');
 // JS:
 const rollup = require('rollup');
 const rollupPluginNodeResolve = require('rollup-plugin-node-resolve');
@@ -17,6 +18,7 @@ const rollupPluginTerser = require('rollup-plugin-terser').terser;
 const sharp = require('sharp');
 // HTML:
 const htmlMinifier = require('html-minifier');
+console.timeEnd('requires');
 
 const outputRoot = `${__dirname}/wwwroot`;
 const production = process.env.NODE_ENV === 'production';
@@ -50,7 +52,10 @@ task('less', async () => {
             outputSourceFiles: true
         }
     });
-    result = await postcss([autoprefixer, cssnano()]).process(result.css, {
+    result = await postcss([
+        autoprefixer,
+        csso({ restructure: false })
+    ]).process(result.css, {
         from: paths.from.less,
         map: {
             inline: false,
