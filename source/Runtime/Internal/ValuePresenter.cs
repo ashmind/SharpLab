@@ -12,6 +12,12 @@ namespace SharpLab.Runtime.Internal {
             return builder;
         }
 
+        public static StringBuilder ToStringBuilder<T>(ReadOnlySpan<T> value, ValuePresenterLimits limits = default) {
+            var builder = new StringBuilder();
+            AppendTo(builder, value, limits);
+            return builder;
+        }
+
         public static void AppendTo<T>(StringBuilder builder, T value, ValuePresenterLimits limits = default) {
             AppendTo(builder, value, depth: 1, limits);
         }
