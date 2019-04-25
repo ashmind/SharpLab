@@ -12,6 +12,7 @@
         "plugin:import/warnings"
     ],
     "rules": {
-        "import/namespace": "off"
+        "import/namespace": "off",
+        "require-await": "off"
     }
 }

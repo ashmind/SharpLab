@@ -54,7 +54,7 @@ export async function getGistAsync(id) {
     const name = codeFileName.replace(/\.[^.]+$/, '');
     const language = (
         Object.entries(extensionMap)
-              .find(([,value]) => codeFile.filename.endsWith(value))
+              .find(([,value]) => codeFileName.endsWith(value))
         || [languages.csharp]
     )[0];
 
@@ -65,7 +65,7 @@ export async function getGistAsync(id) {
         language,
         target: gistOptions.target || language,
         release: gistOptions.mode === 'Release',
-        branchId: gistOptions.branchId
+        branchId: gistOptions.branch
     };
 
     return {
