@@ -12,5 +12,9 @@ public static class SharpLabObjectExtensions {
 
     public static void Inspect<T>(this T value, string title = "Inspect") {
         Output.Write(new SimpleInspection(title, ValuePresenter.ToStringBuilder(value)));
+
+        var lineNumber = Flow.GetLastReportedLineNumber();
+        if (lineNumber != null)
+            Flow.ReportValue(value, title, lineNumber.Value);
     }
 }

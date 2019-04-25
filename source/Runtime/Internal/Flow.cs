@@ -145,6 +145,13 @@ namespace SharpLab.Runtime.Internal {
             _steps[_steps.Count - 1] = step;
         }
 
+        internal static int? GetLastReportedLineNumber() {
+            if (_steps.Count == 0)
+                return null;
+
+            return _steps[_steps.Count - 1].LineNumber;
+        }
+
         [Serializable]
         public struct Step {
             public Step(int lineNumber) {

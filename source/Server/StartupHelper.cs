@@ -15,7 +15,9 @@ namespace SharpLab.Server {
             var builder = new ContainerBuilder();
             var assembly = Assembly.GetExecutingAssembly();
 
-            builder.RegisterAssemblyModulesInDirectoryOf(assembly);
+            builder
+                .RegisterAssemblyModulesInDirectoryOf(assembly)
+                .WhereFileMatches("SharpLab.*");
 
             return builder;
         }
