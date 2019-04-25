@@ -46,6 +46,10 @@ namespace SharpLab.Server.Execution.Unbreakable {
                                .Member(nameof(Flow.ReportLineStart), Allowed, NoGuardRewriter.Default)
                                .Member(nameof(Flow.ReportValue), Allowed, NoGuardRewriter.Default)
                                .Member(nameof(Flow.ReportRefValue), Allowed, NoGuardRewriter.Default)
+                               .Member(nameof(Flow.ReportSpanValue), Allowed, NoGuardRewriter.Default)
+                               .Member(nameof(Flow.ReportRefSpanValue), Allowed, NoGuardRewriter.Default)
+                               .Member(nameof(Flow.ReportReadOnlySpanValue), Allowed, NoGuardRewriter.Default)
+                               .Member(nameof(Flow.ReportRefReadOnlySpanValue), Allowed, NoGuardRewriter.Default)
                      ).Type(typeof(MemoryGraphArgumentNames), Neutral,
                          t => t.Member(nameof(MemoryGraphArgumentNames.AllocateNext), Allowed, CountArgumentRewriter.Default)
                                .Member(nameof(MemoryGraphArgumentNames.AddToNext), Allowed, NoGuardRewriter.Default)

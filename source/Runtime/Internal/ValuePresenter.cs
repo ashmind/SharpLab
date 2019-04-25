@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,10 @@ namespace SharpLab.Runtime.Internal {
 
         public static void AppendTo<T>(StringBuilder builder, T value, ValuePresenterLimits limits = default) {
             AppendTo(builder, value, depth: 1, limits);
+        }
+
+        public static void AppendTo<T>(StringBuilder builder, ReadOnlySpan<T> value, ValuePresenterLimits limits = default) {
+            AppendSpanTo(builder, value, depth: 1, limits);
         }
 
         private static void AppendTo<T>(StringBuilder builder, T value, int depth, ValuePresenterLimits limits = default)
@@ -47,6 +52,24 @@ namespace SharpLab.Runtime.Internal {
             builder.Append("{ ");
             var index = 0;
             foreach (var item in enumerable) {
+                if (index > 0)
+                    builder.Append(", ");
+
+                if (index > limits.MaxEnumerableItemCount) {
+                    builder.Append("…");
+                    break;
+                }
+
+                AppendTo(builder, item, depth + 1, limits);
+                index += 1;
+            }
+            builder.Append(" }");
+        }
+
+        private static void AppendSpanTo<T>(StringBuilder builder, ReadOnlySpan<T> value, int depth, ValuePresenterLimits limits) {
+            builder.Append("{ ");
+            var index = 0;
+            foreach (var item in value) {
                 if (index > 0)
                     builder.Append(", ");
 

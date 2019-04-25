@@ -17,6 +17,14 @@ namespace SharpLab.Server.Execution.Internal {
             typeof(Flow).GetMethod(nameof(Flow.ReportValue));
         private static readonly MethodInfo ReportRefValueMethod =
             typeof(Flow).GetMethod(nameof(Flow.ReportRefValue));
+        private static readonly MethodInfo ReportSpanValueMethod =
+            typeof(Flow).GetMethod(nameof(Flow.ReportSpanValue));
+        private static readonly MethodInfo ReportRefSpanValueMethod =
+            typeof(Flow).GetMethod(nameof(Flow.ReportRefSpanValue));
+        private static readonly MethodInfo ReportReadOnlySpanValueMethod =
+            typeof(Flow).GetMethod(nameof(Flow.ReportReadOnlySpanValue));
+        private static readonly MethodInfo ReportRefReadOnlySpanValueMethod =
+            typeof(Flow).GetMethod(nameof(Flow.ReportRefReadOnlySpanValue));
         private static readonly MethodInfo ReportExceptionMethod =
             typeof(Flow).GetMethod(nameof(Flow.ReportException));
 
@@ -32,6 +40,10 @@ namespace SharpLab.Server.Execution.Internal {
                     ReportLineStart = module.ImportReference(ReportLineStartMethod),
                     ReportValue = module.ImportReference(ReportValueMethod),
                     ReportRefValue = module.ImportReference(ReportRefValueMethod),
+                    ReportSpanValue = module.ImportReference(ReportSpanValueMethod),
+                    ReportRefSpanValue = module.ImportReference(ReportRefSpanValueMethod),
+                    ReportReadOnlySpanValue = module.ImportReference(ReportReadOnlySpanValueMethod),
+                    ReportRefReadOnlySpanValue = module.ImportReference(ReportRefReadOnlySpanValueMethod),
                     ReportException = module.ImportReference(ReportExceptionMethod),
                 };
                 foreach (var type in module.Types) {
@@ -149,18 +161,26 @@ namespace SharpLab.Server.Execution.Internal {
             il.InsertBefore(instruction, valueName != null ? il.Create(OpCodes.Ldstr, valueName) : il.Create(OpCodes.Ldnull));
             il.InsertBefore(instruction, il.CreateLdcI4Best(line));
 
-            var report = flow.ReportValue;
             if (valueType is RequiredModifierType requiredType)
                 valueType = requiredType.ElementType; // not the same as GetElementType() which unwraps nested ref-types etc
 
-            if (valueType.IsByReference) {
-                report = flow.ReportRefValue;
-                valueType = valueType.GetElementType();
-            }
-            il.InsertBefore(instruction, il.CreateCall(new GenericInstanceMethod(report) {
-                GenericArguments = { valueType }
-            }));
+            var report = PrepareReportValue(valueType, flow.ReportValue, flow.ReportSpanValue, flow.ReportReadOnlySpanValue);
+            if (valueType is ByReferenceType byRef)
+                report = PrepareReportValue(byRef.ElementType, flow.ReportRefValue, flow.ReportRefSpanValue, flow.ReportRefReadOnlySpanValue);
+
+            il.InsertBefore(instruction, il.CreateCall(report));
             index += 4;
+        }
+
+        private GenericInstanceMethod PrepareReportValue(TypeReference valueType, MethodReference reportAnyNonSpan, MethodReference reportSpan, MethodReference reportReadOnlySpan) {
+            if (valueType is GenericInstanceType generic) {
+                if (generic.ElementType.FullName == "System.Span`1")
+                    return new GenericInstanceMethod(reportSpan) { GenericArguments = { generic.GenericArguments[0] } };
+                if (generic.ElementType.FullName == "System.ReadOnlySpan`1")
+                    return new GenericInstanceMethod(reportReadOnlySpan) { GenericArguments = { generic.GenericArguments[0] } };
+            }
+
+            return new GenericInstanceMethod(reportAnyNonSpan) { GenericArguments = { valueType } };
         }
 
         private void RewriteExceptionHandlers(ILProcessor il, ReportMethods flow) {
@@ -261,6 +281,10 @@ namespace SharpLab.Server.Execution.Internal {
             public MethodReference ReportLineStart { get; set; }
             public MethodReference ReportValue { get; set; }
             public MethodReference ReportRefValue { get; set; }
+            public MethodReference ReportSpanValue { get; set; }
+            public MethodReference ReportRefSpanValue { get; set; }
+            public MethodReference ReportReadOnlySpanValue { get; set; }
+            public MethodReference ReportRefReadOnlySpanValue { get; set; }
             public MethodReference ReportException { get; set; }
         }
     }

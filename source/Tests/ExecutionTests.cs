@@ -31,12 +31,17 @@ namespace SharpLab.Tests {
                     .GetType()
                     .GetField("test", BindingFlags.Instance | BindingFlags.NonPublic)
                     .GetValue(_testOutputHelper)
-            ).DisplayName.Replace(GetType().Namespace + ".", "");
+            ).DisplayName.Replace(GetType().FullName + ".", "");
             var safeTestName = Regex.Replace(testName, "[^a-zA-Z._-]+", "_");
             if (safeTestName.Length > 100)
                 safeTestName = safeTestName.Substring(0, 100) + "-" + safeTestName.GetHashCode();
 
-            AssemblyLog.Enable(Path.Combine(AppContext.BaseDirectory, "assembly-log", safeTestName + ".{0}.dll"));
+            var testPath = Path.Combine(
+                AppContext.BaseDirectory, "assembly-log",
+                GetType().Name, safeTestName,
+                "{0}.dll"
+            );
+            AssemblyLog.Enable(testPath);
             #endif
         }
 
@@ -371,6 +376,25 @@ namespace SharpLab.Tests {
         [InlineData("Regression.ReturnRef.cs")]
         public async Task SlowUpdate_DoesNotFail(string resourceName, string languageName = LanguageNames.CSharp) {
             var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), languageName);
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            AssertIsSuccess(result);
+        }
+
+        [Theory] // https://github.com/ashmind/SharpLab/issues/388
+        [InlineData("void M(Span<int> s) {}", "M(new Span<int>())")]
+        [InlineData("void M(ref Span<int> s) {}", "var s = new Span<int>(); M(ref s)")]
+        [InlineData("void M(ReadOnlySpan<int> s) {}", "M(new ReadOnlySpan<int>())")]
+        [InlineData("void M(ref ReadOnlySpan<int> s) {}", "var s = new ReadOnlySpan<int>(); M(ref s)")]
+        public async Task SlowUpdate_DoesNotFail_OnSpanArguments(string methodCode, string methodCallCode) {
+            var driver = await NewTestDriverAsync(@"
+                using System;
+                public static class Program {
+                    public static void Main() {
+                        " + methodCallCode + @";
+                    }
+                    static " + methodCode + @"
+                }
+            ");
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
             AssertIsSuccess(result);
         }

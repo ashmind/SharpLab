@@ -42,15 +42,44 @@ namespace SharpLab.Runtime.Internal {
         }
 
         public static void ReportValue<T>(T value, string name, int lineNumber) {
+            var notes = PrepareToReportValue(name, lineNumber);
+            if (notes == null)
+                return;
+            ValuePresenter.AppendTo(notes, value, ReportLimits.ValueValue);
+        }
+
+        public static void ReportRefSpanValue<T>(ref Span<T> value, string name, int lineNumber) {
+            ReportSpanValue(value, name, lineNumber);
+        }
+
+        public static void ReportSpanValue<T>(Span<T> value, string name, int lineNumber) {
+            var notes = PrepareToReportValue(name, lineNumber);
+            if (notes == null)
+                return;
+            ValuePresenter.AppendTo(notes, (ReadOnlySpan<T>)value, ReportLimits.ValueValue);
+        }
+
+        public static void ReportRefReadOnlySpanValue<T>(ref ReadOnlySpan<T> value, string name, int lineNumber) {
+            ReportReadOnlySpanValue(value, name, lineNumber);
+        }
+
+        public static void ReportReadOnlySpanValue<T>(ReadOnlySpan<T> value, string name, int lineNumber) {
+            var notes = PrepareToReportValue(name, lineNumber);
+            if (notes == null)
+                return;
+            ValuePresenter.AppendTo(notes, value, ReportLimits.ValueValue);
+        }
+
+        private static StringBuilder PrepareToReportValue(string name, int lineNumber) {
             if (!TryFindLastStepAtLineNumber(lineNumber, out var step, out var stepIndex)) {
                 if (_steps.Count >= ReportLimits.MaxStepCount)
-                    return;
+                    return null;
                 step = new Step(lineNumber) { LineSkipped = true };
                 _steps.Add(step);
                 stepIndex = _steps.Count - 1;
             }
 
-            if (!_stepNotesCountPerLine.TryGetValue(step.LineNumber, out int countPerLine))
+            if (!_stepNotesCountPerLine.TryGetValue(step.LineNumber, out var countPerLine))
                 countPerLine = 0;
 
             if (step.Notes == null) {
@@ -60,23 +89,23 @@ namespace SharpLab.Runtime.Internal {
                 if (countPerLine == ReportLimits.MaxStepNotesPerLine + 1) {
                     step.Notes = new StringBuilder("…");
                     _steps[stepIndex] = step;
-                    return;
+                    return null;
                 }
             }
 
             if (countPerLine >= ReportLimits.MaxStepNotesPerLine + 1)
-                return;
+                return null;
 
             step.ValueCount += 1;
-            if (step.ValueCount > ReportLimits.MaxValuesPerStep + 1) {
-                _steps[stepIndex] = step;
-                return;
-            }
+            _steps[stepIndex] = step;
+            if (step.ValueCount > ReportLimits.MaxValuesPerStep + 1)
+                return null;
 
             var notes = step.Notes;
             if (notes == null) {
                 notes = new StringBuilder();
                 step.Notes = notes;
+                _steps[stepIndex] = step;
             }
 
             if (notes.Length > 0)
@@ -84,17 +113,15 @@ namespace SharpLab.Runtime.Internal {
 
             if (step.ValueCount == ReportLimits.MaxValuesPerStep + 1) {
                 notes.Append("…");
-                _steps[stepIndex] = step;
-                return;
+                return null;
             }
-            
+
             if (name != null) {
                 ValuePresenter.AppendStringTo(notes, name, ReportLimits.ValueName);
                 notes.Append(": ");
             }
-            ValuePresenter.AppendTo(notes, value, ReportLimits.ValueValue);
-            // Have to reassign in case we set Notes
-            _steps[stepIndex] = step;
+
+            return notes;
         }
 
         private static bool TryFindLastStepAtLineNumber(int lineNumber, out Step step, out int stepIndex) {
