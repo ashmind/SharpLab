@@ -41,8 +41,5 @@ dotnet_naming_style.camel_case_with_underscore_prefix.required_prefix = _
 
 dotnet_naming_style.pascal_case.capitalization = pascal_case
 
-[*.{html,config,csproj,targets,props}]
-indent_size = 2
-
-[appsettings*.json]
+[*.{html,config,csproj,targets,props},appsettings*.json,package.json]
 indent_size = 2

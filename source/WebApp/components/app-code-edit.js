@@ -10,8 +10,7 @@ Vue.component('app-code-edit', {
         serviceUrl:        String,
         serverOptions:     Object,
         highlightedRange:  Object,
-        executionFlow:     Array,
-        compatibilityMode: Boolean
+        executionFlow:     Array
     },
     async mounted() {
         await Vue.nextTick();
@@ -28,8 +27,7 @@ Vue.component('app-code-edit', {
                 connectionChange: type => this.$emit('connection-change', type),
                 textChange: getText => this.$emit('text-change', getText),
                 serverError: message => this.$emit('server-error', message)
-            },
-            sharplabPreQuickInfoCompatibilityMode: this.compatibilityMode
+            }
         };
         instance = mirrorsharp(textarea, options);
         if (this.serverOptions)
@@ -52,10 +50,6 @@ Vue.component('app-code-edit', {
             if (this.serverOptions)
                 instance.sendServerOptions(this.serverOptions);
         };
-        this.$watch('compatibilityMode', m => {
-            options.sharplabPreQuickInfoCompatibilityMode = m;
-            recreate();
-        });
         this.$watch('serviceUrl', u => {
             options.serviceUrl = u;
             recreate();
