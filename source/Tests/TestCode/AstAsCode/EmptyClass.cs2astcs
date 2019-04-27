@@ -1,0 +1,25 @@
+﻿class C { }
+
+#=>
+
+CompilationUnit()
+.WithMembers(
+    SingletonList<MemberDeclarationSyntax>(
+        ClassDeclaration(
+            Identifier(
+                TriviaList(),
+                "C",
+                TriviaList(
+                    Space)))
+        .WithKeyword(
+            Token(
+                TriviaList(),
+                SyntaxKind.ClassKeyword,
+                TriviaList(
+                    Space)))
+        .WithOpenBraceToken(
+            Token(
+                TriviaList(),
+                SyntaxKind.OpenBraceToken,
+                TriviaList(
+                    Space)))))

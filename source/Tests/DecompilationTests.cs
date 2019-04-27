@@ -182,6 +182,18 @@ namespace SharpLab.Tests {
             data.AssertIsExpected(json, _output);
         }
 
+        [Theory]
+        [InlineData("AstAsCode.EmptyClass.cs2astcs")]
+        public async Task SlowUpdate_ReturnsExpectedResult_ForAstAsCode(string resourceName)
+        {
+            var data = TestCode.FromResource(resourceName);
+            var driver = await NewTestDriverAsync(data);
+
+            var result = await driver.SendSlowUpdateAsync<string>();
+
+            data.AssertIsExpected(result.ExtensionResult, _output);
+        }
+
         private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestCode code, string optimize = Optimize.Release) {
             var driver = MirrorSharpTestDriver.New(TestEnvironment.MirrorSharpOptions);
             await driver.SendSetOptionsAsync(code.SourceLanguageName, code.TargetName, optimize);

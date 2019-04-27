@@ -19,6 +19,7 @@ namespace SharpLab.Tests.Internal {
             { "il",     TargetNames.IL },
             { "asm",    TargetNames.JitAsm },
             { "ast",    TargetNames.Ast },
+            { "astcs",  TargetNames.AstAsCode },
             { "output", TargetNames.Run },
         };
 

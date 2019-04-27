@@ -5,6 +5,7 @@ namespace SharpLab.Server.Common {
         public const string CSharp = LanguageNames.CSharp;
         public const string IL = "IL";
         public const string Ast = "AST";
+        public const string AstAsCode = "AST as Code";
         public const string JitAsm = "JIT ASM";
         public const string Run = "Run";
         public const string Verify = "Verify";

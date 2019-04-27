@@ -21,7 +21,11 @@ namespace SharpLab.Server.Decompilation {
             builder.RegisterType<FSharpAstTarget>()
                    .As<IAstTarget>()
                    .SingleInstance();
-            #endif
+            #endif            
+            builder.RegisterType<CSharpAstAsRoslynCodeSerializer>()
+                   .As<CSharpAstAsRoslynCodeSerializer>()
+                   .SingleInstance();
+
 
             builder.RegisterType<CSharpDecompiler>()
                    .As<IDecompiler>()

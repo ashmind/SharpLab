@@ -22,6 +22,7 @@ namespace SharpLab.Server.MirrorSharp {
         private readonly ICompiler _compiler;
         private readonly IReadOnlyDictionary<string, IDecompiler> _decompilers;
         private readonly IReadOnlyDictionary<string, IAstTarget> _astTargets;
+        private readonly CSharpAstAsRoslynCodeSerializer _astCodeSerializer;
         private readonly IExecutor _executor;
         private readonly IExplainer _explainer;
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;
@@ -30,11 +31,13 @@ namespace SharpLab.Server.MirrorSharp {
             ICompiler compiler,
             IReadOnlyCollection<IDecompiler> decompilers,
             IReadOnlyCollection<IAstTarget> astTargets,
+            CSharpAstAsRoslynCodeSerializer astCodeSerializer,
             IExecutor executor,
             IExplainer explainer,
             RecyclableMemoryStreamManager memoryStreamManager
         ) {
             _compiler = compiler;
+            _astCodeSerializer = astCodeSerializer;
             _decompilers = decompilers.ToDictionary(d => d.LanguageName);
             _astTargets = astTargets
                 .SelectMany(t => t.SupportedLanguageNames.Select(n => (target: t, languageName: n)))
@@ -46,7 +49,7 @@ namespace SharpLab.Server.MirrorSharp {
 
         public async Task<object> ProcessAsync(IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
             var targetName = session.GetTargetName();
-            if (targetName == TargetNames.Ast || targetName == TargetNames.Explain) {
+            if (targetName == TargetNames.Ast || targetName == TargetNames.AstAsCode || targetName == TargetNames.Explain) {
                 var astTarget = _astTargets[session.LanguageName];
                 var ast = await astTarget.GetAstAsync(session, cancellationToken).ConfigureAwait(false);
                 if (targetName == TargetNames.Explain)
@@ -115,6 +118,11 @@ namespace SharpLab.Server.MirrorSharp {
             if (targetName == TargetNames.Ast) {
                 var astTarget = _astTargets[session.LanguageName];
                 astTarget.SerializeAst(result, writer, session);
+                return;
+            }
+
+            if (targetName == TargetNames.AstAsCode) {
+                _astCodeSerializer.SerializeAstAsCode(result, writer, session);
                 return;
             }
 
