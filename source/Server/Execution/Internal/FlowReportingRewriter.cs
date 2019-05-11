@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -36,6 +37,13 @@ namespace SharpLab.Server.Execution.Internal {
 
         public void Rewrite(AssemblyDefinition assembly, IWorkSession session) {
             foreach (var module in assembly.Modules) {
+                foreach (var type in module.Types) {
+                    if (HasFlowSupressingCalls(type))
+                        return;
+                }
+            }
+
+            foreach (var module in assembly.Modules) {
                 var flow = new ReportMethods {
                     ReportLineStart = module.ImportReference(ReportLineStartMethod),
                     ReportValue = module.ImportReference(ReportValueMethod),
@@ -48,16 +56,40 @@ namespace SharpLab.Server.Execution.Internal {
                 };
                 foreach (var type in module.Types) {
                     Rewrite(type, flow, session);
-                    foreach (var nested in type.NestedTypes) {
-                        Rewrite(nested, flow, session);
-                    }
                 }
             }
+        }
+
+        private bool HasFlowSupressingCalls(TypeDefinition type) {
+            foreach (var method in type.Methods) {
+                if (!method.HasBody || method.Body.Instructions.Count == 0)
+                    continue;
+                foreach (var instruction in method.Body.Instructions) {
+                    if (instruction.OpCode.FlowControl == FlowControl.Call && IsFlowSuppressing((MethodReference)instruction.Operand))
+                        return true;
+                }
+            }
+
+            foreach (var nested in type.NestedTypes) {
+                if (HasFlowSupressingCalls(nested))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private bool IsFlowSuppressing(MethodReference callee) {
+            return callee.Name == nameof(Inspect.Allocations)
+                && callee.DeclaringType.Name == nameof(Inspect);
         }
 
         private void Rewrite(TypeDefinition type, ReportMethods flow, IWorkSession session) {
             foreach (var method in type.Methods) {
                 Rewrite(method, flow, session);
+            }
+
+            foreach (var nested in type.NestedTypes) {
+                Rewrite(nested, flow, session);
             }
         }
 

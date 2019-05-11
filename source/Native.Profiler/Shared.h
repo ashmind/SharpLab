@@ -5,7 +5,8 @@
 #include "cor.h"
 #include "corprof.h"
 
-static const size_t MAX_MONITORED_ALLOCATIONS = 11; // 10 + 1 to show that there were more than 10
+static const size_t MAX_STORED_ALLOCATIONS = 10;
+static const size_t OBJECT_HEADER_SIZE = sizeof(void*);
 
 struct Allocation {
     ObjectID objectId;
@@ -14,9 +15,11 @@ struct Allocation {
 
 struct ProfilerThreadState {
     unsigned long gcCountWhenStartedMonitoring;
-	int nextAllocationIndex;
-    std::array<Allocation, MAX_MONITORED_ALLOCATIONS> allocations;
-    std::array<std::unique_ptr<BYTE[]>, MAX_MONITORED_ALLOCATIONS> gcSafeCopiesOfAllocations;
+	unsigned int nextAllocationIndex;
+    SIZE_T totalAllocationBytes;
+    unsigned int totalAllocationCount;
+    std::array<Allocation, MAX_STORED_ALLOCATIONS> allocations;
+    std::array<std::unique_ptr<BYTE[]>, MAX_STORED_ALLOCATIONS> gcSafeCopiesOfAllocations;
 };
 
 extern thread_local bool threadMonitoringActive;

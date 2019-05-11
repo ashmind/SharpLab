@@ -53,17 +53,19 @@ namespace SharpLab.Runtime.Internal {
             if (componentType.IsObjectReference || !componentType.IsPrimitive)
                 return Other(type);
 
+            var length = type.GetArrayLength(address);
             var builder = new StringBuilder();
             ValuePresenter.AppendEnumerableTo(
-                builder, ArrayAsEnumerable(type, address),
+                builder, ArrayAsEnumerable(type, address, length),
                 depth: 1,
                 new ValuePresenterLimits(maxDepth: 2, maxEnumerableItemCount: 10, maxValueLength: 10)
             );
-            return new SimpleInspection(type.Name.Replace("System.", ""), builder);
+
+            var title = componentType.Name.Replace("System.", "") + "[" + length + "]";
+            return new SimpleInspection(title, builder);
         }
 
-        private static IEnumerable<object> ArrayAsEnumerable(ClrType arrayType, ulong address) {
-            var length = arrayType.GetArrayLength(address);
+        private static IEnumerable<object> ArrayAsEnumerable(ClrType arrayType, ulong address, int length) {
             for (var i = 0; i < length; i++) {
                 yield return arrayType.GetArrayElementValue(address, i);
             }

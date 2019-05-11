@@ -20,21 +20,25 @@ partial class Inspect {
             ProfilerNativeMethods.StartMonitoringCurrentThreadAllocations();
         }
         finally {
-            ProfilerNativeMethods.StopMonitoringCurrentThreadAllocations(out var _, out var _, out var _);
+            ProfilerNativeMethods.StopMonitoringCurrentThreadAllocations(out var _, out var _, out var _, out var _);
         }
 
         int allocationCount;
         void* allocations;
-        byte allocationLimitReached;
+        int totalAllocationCount;
+        int totalAllocationBytes;
         ProfilerNativeMethods.AllocationMonitoringResult result;
         try {
-            Flow.ReportingPaused = true;
             ProfilerNativeMethods.StartMonitoringCurrentThreadAllocations();
             action();
         }
         finally {
-            result = ProfilerNativeMethods.StopMonitoringCurrentThreadAllocations(out allocationCount, out allocations, out allocationLimitReached);
-            Flow.ReportingPaused = false;
+            result = ProfilerNativeMethods.StopMonitoringCurrentThreadAllocations(
+                out allocationCount,
+                out allocations,
+                out totalAllocationCount,
+                out totalAllocationBytes
+            );
         }
 
         if (result == ProfilerNativeMethods.AllocationMonitoringResult.GC)
@@ -56,7 +60,8 @@ partial class Inspect {
             inspections.Add(AllocationInspector.Inspect(@object));
         }
 
-        Output.Write(new InspectionGroup("Allocations", inspections, allocationLimitReached == 1));
+        var title = "Allocations: " + totalAllocationCount + " (" + totalAllocationBytes + " bytes)";
+        Output.Write(new InspectionGroup(title, inspections, limitReached: totalAllocationCount > allocationCount));
         #endif
     }
 }

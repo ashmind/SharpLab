@@ -13,6 +13,8 @@ enum class AllocationMonitoringResult : int {
 extern "C" AllocationMonitoringResult StartMonitoringCurrentThreadAllocations()
 {
     threadMonitoringActive = true;
+    threadState->totalAllocationCount = 0;
+    threadState->totalAllocationBytes = 0;
     threadState->nextAllocationIndex = 0;
     threadState->gcCountWhenStartedMonitoring = gcCount;
 	return AllocationMonitoringResult::OK;
@@ -21,26 +23,25 @@ extern "C" AllocationMonitoringResult StartMonitoringCurrentThreadAllocations()
 extern "C" AllocationMonitoringResult StopMonitoringCurrentThreadAllocations(
 	_Out_ int32_t* allocationCount, // this will always be at most MAX_MONITORED_ALLOCATIONS-1
 	_Out_ void** allocations,
-    _Out_ uint8_t* allocationLimitReached
+    _Out_ int32_t* totalAllocationCount,
+    _Out_ int32_t* totalAllocationBytes
 )
 {
     threadMonitoringActive = false;
     auto allocationCountValue = threadState->nextAllocationIndex;
-    if (allocationCountValue == MAX_MONITORED_ALLOCATIONS) {
-        allocationCountValue -= 1;
-        *allocationLimitReached = 1;
-    }
 
 	*allocationCount = allocationCountValue;
+    *totalAllocationCount = threadState->totalAllocationCount;
+    *totalAllocationBytes = static_cast<int32_t>(threadState->totalAllocationBytes);
 
     if (threadState->gcCountWhenStartedMonitoring != gcCount)
         return AllocationMonitoringResult::GC;
-    for (auto i = 0; i < allocationCountValue; i++) {
+    for (auto i = 0u; i < allocationCountValue; i++) {
         auto allocation = threadState->allocations[i];
-        auto headerSize = sizeof(void*);
-        auto copyPtr = std::unique_ptr<uint8_t[]>{ new uint8_t[headerSize + allocation.objectSize] };
+        auto objectStart = allocation.objectId - OBJECT_HEADER_SIZE;
+        auto copyPtr = std::unique_ptr<uint8_t[]>{ new uint8_t[allocation.objectSize] };
 
-        std::copy((uint8_t*)(allocation.objectId - headerSize), (uint8_t*)(allocation.objectId + allocation.objectSize), copyPtr.get());
+        std::copy((uint8_t*)objectStart, (uint8_t*)(objectStart + allocation.objectSize), copyPtr.get());
 
         threadState->gcSafeCopiesOfAllocations[i] = std::move(copyPtr);
     }

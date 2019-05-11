@@ -279,11 +279,13 @@ HRESULT STDMETHODCALLTYPE CorProfiler::ObjectAllocated(ObjectID objectId, ClassI
 	if (!threadMonitoringActive)
 		return S_OK;
 
-	if (threadState->nextAllocationIndex >= MAX_MONITORED_ALLOCATIONS)
-		return S_OK;
-    
     SIZE_T objectSize;
     this->corProfilerInfo->GetObjectSize2(objectId, &objectSize);
+    threadState->totalAllocationCount += 1;
+    threadState->totalAllocationBytes += objectSize;
+
+	if (threadState->nextAllocationIndex >= MAX_STORED_ALLOCATIONS)
+		return S_OK;
 
 	threadState->allocations[threadState->nextAllocationIndex] = { objectId, objectSize };
     threadState->nextAllocationIndex += 1;
