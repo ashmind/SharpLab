@@ -8,7 +8,7 @@ namespace SharpLab.Server.Common.Languages
 {
     public static class RoslynAdapterHelper {
         [CanBeNull]
-        public static SyntaxNode FindSyntaxNodeInSession([NotNull] IWorkSession session, int line, int column) {
+        public static SyntaxNode? FindSyntaxNodeInSession([NotNull] IWorkSession session, int line, int column) {
             if (!session.Roslyn.Project.TryGetCompilation(out var compilation))
                 return null;
             var syntaxTree = compilation.SyntaxTrees.First();

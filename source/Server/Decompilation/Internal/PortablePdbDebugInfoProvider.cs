@@ -43,7 +43,7 @@ namespace SharpLab.Server.Decompilation.Internal {
             return variables;
         }
 
-        public bool TryGetName(MethodDefinitionHandle method, int index, out string name) {
+        public bool TryGetName(MethodDefinitionHandle method, int index, out string? name) {
             name = null;
             foreach (var local in EnumerateLocals(method)) {
                 if (local.Index == index) {

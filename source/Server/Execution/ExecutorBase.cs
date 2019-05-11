@@ -78,7 +78,7 @@ namespace SharpLab.Server.AspNetCore.Execution {
 
         protected abstract ExecutionResultWithException ExecuteWithIsolation(MemoryStream assemblyStream, RuntimeGuardToken guardToken, IWorkSession session) ;
         
-        private static bool ShouldMonitorException(Exception exception) {
+        private static bool ShouldMonitorException(Exception? exception) {
             return exception is GuardException
                 || exception is InvalidProgramException;
         }

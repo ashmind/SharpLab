@@ -5,8 +5,8 @@ using JetBrains.Annotations;
 
 namespace SharpLab.Server.Common.Internal {
     public class ReferencedAssembliesLoadTaskSource {
-        private IImmutableList<Assembly> _assemblies;
-        private Action<IImmutableList<Assembly>> _action;
+        private IImmutableList<Assembly>? _assemblies;
+        private Action<IImmutableList<Assembly>>? _action;
 
         public ReferencedAssembliesLoadTaskSource() {
             Task = new ReferencedAssembliesLoadTask(this);

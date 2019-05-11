@@ -44,7 +44,7 @@ namespace SharpLab.Server.MirrorSharp {
             _explainer = explainer;
         }
 
-        public async Task<object> ProcessAsync(IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
+        public async Task<object?> ProcessAsync(IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
             var targetName = session.GetTargetName();
             if (targetName == TargetNames.Ast || targetName == TargetNames.Explain) {
                 var astTarget = _astTargets[session.LanguageName];
@@ -63,8 +63,8 @@ namespace SharpLab.Server.MirrorSharp {
             if (targetName != TargetNames.Run && targetName != TargetNames.Verify && !_decompilers.ContainsKey(targetName))
                 throw new NotSupportedException($"Target '{targetName}' is not (yet?) supported by this branch.");
 
-            MemoryStream assemblyStream = null;
-            MemoryStream symbolStream = null;
+            MemoryStream? assemblyStream = null;
+            MemoryStream? symbolStream = null;
             try {
                 assemblyStream = _memoryStreamManager.GetStream();
                 if (targetName == TargetNames.Run || targetName == TargetNames.IL)
@@ -101,7 +101,7 @@ namespace SharpLab.Server.MirrorSharp {
 
         public void WriteResult(IFastJsonWriter writer, object result, IWorkSession session) {
             if (result == null) {
-                writer.WriteValue((string)null);
+                writer.WriteValue((string?)null);
                 return;
             }
 

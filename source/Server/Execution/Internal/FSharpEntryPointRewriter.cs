@@ -27,11 +27,11 @@ namespace SharpLab.Server.Execution.Internal {
             assembly.EntryPoint = entryPoint;
         }
 
-        private (MethodDefinition method, bool isStaticConstructor) FindBestEntryPointCandidate(AssemblyDefinition assembly) {
+        private (MethodDefinition? method, bool isStaticConstructor) FindBestEntryPointCandidate(AssemblyDefinition assembly) {
             // First priority -- explicit [<EntryPoint>]
             // Second priority -- top level code (gets compiled into a static ctor)
 
-            MethodDefinition startup = null;
+            MethodDefinition? startup = null;
             foreach (var type in assembly.MainModule.Types) {
                 if (type.Namespace == "<StartupCode$_>" && type.Name == "$_" && type.HasMethods) {
                     foreach (var method in type.Methods) {

@@ -9,7 +9,7 @@ namespace SharpLab.Server.AspNetCore.Decompilation {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class JitAsmDecompiler : JitAsmDecompilerBase {
         protected override JitAsmResultScope JitCompileAndGetMethods(MemoryStream assemblyStream) {
-            CustomAssemblyLoadContext context = null;
+            CustomAssemblyLoadContext? context = null;
             try {
                 context = new CustomAssemblyLoadContext(shouldShareAssembly: _ => true);
                 var assembly = context.LoadFromStream(assemblyStream);

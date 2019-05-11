@@ -82,13 +82,13 @@ namespace SharpLab.Server.Execution.Internal {
             }
         }
 
-        private SequencePoint FindClosestSequencePoint(MethodDefinition method, Instruction call) {
+        private SequencePoint? FindClosestSequencePoint(MethodDefinition method, Instruction call) {
             var debug = method.DebugInformation;
             if (debug == null || !debug.HasSequencePoints)
                 return null;
 
             var points = debug.SequencePoints;
-            SequencePoint candidate = null;
+            SequencePoint? candidate = null;
             foreach (var sequencePoint in debug.SequencePoints) {
                 if (call.Offset < sequencePoint.Offset)
                     break;

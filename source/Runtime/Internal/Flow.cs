@@ -42,11 +42,11 @@ namespace SharpLab.Runtime.Internal {
             _steps.Add(new Step(lineNumber));
         }
 
-        public static void ReportRefValue<T>(ref T value, string name, int lineNumber) {
+        public static void ReportRefValue<T>(ref T value, string? name, int lineNumber) {
             ReportValue(value, name, lineNumber);
         }
 
-        public static void ReportValue<T>(T value, string name, int lineNumber) {
+        public static void ReportValue<T>(T value, string? name, int lineNumber) {
             if (ReportingPaused)
                 return;
 
@@ -56,11 +56,11 @@ namespace SharpLab.Runtime.Internal {
             ValuePresenter.AppendTo(notes, value, ReportLimits.ValueValue);
         }
 
-        public static void ReportRefSpanValue<T>(ref Span<T> value, string name, int lineNumber) {
+        public static void ReportRefSpanValue<T>(ref Span<T> value, string? name, int lineNumber) {
             ReportSpanValue(value, name, lineNumber);
         }
 
-        public static void ReportSpanValue<T>(Span<T> value, string name, int lineNumber) {
+        public static void ReportSpanValue<T>(Span<T> value, string? name, int lineNumber) {
             if (ReportingPaused)
                 return;
 
@@ -70,11 +70,11 @@ namespace SharpLab.Runtime.Internal {
             ValuePresenter.AppendTo(notes, (ReadOnlySpan<T>)value, ReportLimits.ValueValue);
         }
 
-        public static void ReportRefReadOnlySpanValue<T>(ref ReadOnlySpan<T> value, string name, int lineNumber) {
+        public static void ReportRefReadOnlySpanValue<T>(ref ReadOnlySpan<T> value, string? name, int lineNumber) {
             ReportReadOnlySpanValue(value, name, lineNumber);
         }
 
-        public static void ReportReadOnlySpanValue<T>(ReadOnlySpan<T> value, string name, int lineNumber) {
+        public static void ReportReadOnlySpanValue<T>(ReadOnlySpan<T> value, string? name, int lineNumber) {
             if (ReportingPaused)
                 return;
 
@@ -84,7 +84,7 @@ namespace SharpLab.Runtime.Internal {
             ValuePresenter.AppendTo(notes, value, ReportLimits.ValueValue);
         }
 
-        private static StringBuilder? PrepareToReportValue(string name, int lineNumber) {
+        private static StringBuilder? PrepareToReportValue(string? name, int lineNumber) {
             if (!TryFindLastStepAtLineNumber(lineNumber, out var step, out var stepIndex)) {
                 if (_steps.Count >= ReportLimits.MaxStepCount)
                     return null;

@@ -6,14 +6,14 @@ using System.Threading;
 namespace SharpLab.Runtime.Internal {
     [Serializable]
     public class MemoryGraphNode {
-        private List<MemoryGraphNode> _nestedNodes = null;
+        private List<MemoryGraphNode>? _nestedNodes = null;
 
         private static int NextId = 1;
 
         private MemoryGraphNode(
             string title,
             object value,
-            object heapKey = null,
+            object? heapKey = null,
             ulong? stackAddress = null,
             int? stackSize = null
         ) {
@@ -76,7 +76,7 @@ namespace SharpLab.Runtime.Internal {
         public bool NestedNodesLimitReached { get; private set; }
 
         [field: NonSerialized]
-        public object HeapKey { get; }
+        public object? HeapKey { get; }
         [field: NonSerialized]
         public ulong? StackAddress { get; }
     }

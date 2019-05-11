@@ -3,6 +3,8 @@
     <TargetFramework>net47</TargetFramework>
     <AssemblyName>SharpLab.Tests</AssemblyName>
     <RootNamespace>SharpLab.Tests</RootNamespace>
+    <LangVersion>8.0</LangVersion>
+    <NullableContextOptions>enable</NullableContextOptions>
   </PropertyGroup>
 
   <ItemGroup>

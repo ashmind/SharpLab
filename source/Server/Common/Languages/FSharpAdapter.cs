@@ -62,8 +62,8 @@ namespace SharpLab.Server.Common.Languages {
             return ImmutableArray<int>.Empty; // not supported yet
         }
 
-        public ImmutableArray<string> GetCallArgumentIdentifiers([NotNull] IWorkSession session, int callStartLine, int callStartColumn) {
-            return ImmutableArray<string>.Empty; // not supported yet
+        public ImmutableArray<string?> GetCallArgumentIdentifiers([NotNull] IWorkSession session, int callStartLine, int callStartColumn) {
+            return ImmutableArray<string?>.Empty; // not supported yet
         }
     }
 }

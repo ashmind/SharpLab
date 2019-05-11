@@ -10,7 +10,7 @@ using SharpLab.Server.Common;
 
 namespace SharpLab.Server.Owin.Platform {
     public class LocalAssemblyDocumentationResolver : IAssemblyDocumentationResolver {
-        public DocumentationProvider GetDocumentation([NotNull] Assembly assembly) {
+        public DocumentationProvider? GetDocumentation([NotNull] Assembly assembly) {
             var fileName = Path.ChangeExtension(assembly.GetAssemblyFileFromCodeBase().Name, ".xml");
             if (fileName == "System.Private.CoreLib.xml")
                 fileName = "System.Runtime.xml";

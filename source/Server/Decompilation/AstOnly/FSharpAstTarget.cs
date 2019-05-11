@@ -24,8 +24,8 @@ namespace SharpLab.Server.Decompilation.AstOnly {
 
         private static readonly ConcurrentDictionary<Type, Lazy<SerializeChildrenAction>> ChildrenSerializers =
             new ConcurrentDictionary<Type, Lazy<SerializeChildrenAction>>();
-        private static readonly ConcurrentDictionary<Type, Lazy<GetRangeFunc>> RangeGetters =
-            new ConcurrentDictionary<Type, Lazy<GetRangeFunc>>();
+        private static readonly ConcurrentDictionary<Type, Lazy<GetRangeFunc?>> RangeGetters =
+            new ConcurrentDictionary<Type, Lazy<GetRangeFunc?>>();
         private static readonly Lazy<IReadOnlyDictionary<Type, Func<object, string>>> TagNameGetters =
             new Lazy<IReadOnlyDictionary<Type, Func<object, string>>>(CompileTagNameGetters, LazyThreadSafetyMode.ExecutionAndPublication);
         private static readonly Lazy<IReadOnlyDictionary<Type, Func<Ast.SynConst, string>>> ConstValueGetters =
@@ -56,9 +56,9 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             public static readonly IReadOnlyDictionary<TEnum, string> Strings = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToDictionary(e => e, e => e.ToString("G", null));
         }
 
-        public Task<object> GetAstAsync(IWorkSession session, CancellationToken cancellationToken) {
+        public Task<object?> GetAstAsync(IWorkSession session, CancellationToken cancellationToken) {
             var parseTree = session.FSharp().GetLastParseResults()?.ParseTree?.Value;
-            return Task.FromResult((object)(parseTree as Ast.ParsedInput.ImplFile));
+            return Task.FromResult((object?)(parseTree as Ast.ParsedInput.ImplFile));
         }
 
         public void SerializeAst(object ast, IFastJsonWriter writer, IWorkSession session) {
@@ -69,7 +69,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             writer.WriteEndArray();
         }
 
-        private static void SerializeNode(object node, IFastJsonWriter writer, [CanBeNull] string parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
+        private static void SerializeNode(object node, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
             EnsureChildrenStarted(ref parentChildrenStarted, writer);
             writer.WriteStartObject();
             writer.WriteProperty("kind", AstTypeNames.Value[node.GetType()]);
@@ -110,13 +110,13 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             writer.WriteEndObject();
         }
 
-        private static void SerializeList<T>(FSharpList<T> list, IFastJsonWriter writer, [CanBeNull] string parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
+        private static void SerializeList<T>(FSharpList<T> list, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
             foreach (var item in list) {
-                SerializeNode(item, writer, null /* UI does not support list property names at the moment */, ref parentChildrenStarted, session);
+                SerializeNode(item!, writer, null /* UI does not support list property names at the moment */, ref parentChildrenStarted, session);
             }
         }
 
-        private static void SerializeIdent(Ast.Ident ident, IFastJsonWriter writer, [CanBeNull] string parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
+        private static void SerializeIdent(Ast.Ident ident, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
             EnsureChildrenStarted(ref parentChildrenStarted, writer);
             writer.WriteStartObject();
             writer.WriteProperty("type", "token");
@@ -128,13 +128,13 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             writer.WriteEndObject();
         }
 
-        private static void SerializeIdentList(FSharpList<Ast.Ident> list, IFastJsonWriter writer, [CanBeNull]  string parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
+        private static void SerializeIdentList(FSharpList<Ast.Ident> list, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
             foreach (var ident in list) {
                 SerializeIdent(ident, writer, parentPropertyName, ref parentChildrenStarted, session);
             }
         }
 
-        private static void SerializeEnum<TEnum>(TEnum value, IFastJsonWriter writer, [CanBeNull] string parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session)
+        private static void SerializeEnum<TEnum>(TEnum value, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session)
             where TEnum: struct, IFormattable
         {
             EnsureChildrenStarted(ref parentChildrenStarted, writer);
@@ -208,7 +208,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             ).Compile();
         }
 
-        private static MethodInfo GetMethodToSerialize(Type propertyType) {
+        private static MethodInfo? GetMethodToSerialize(Type propertyType) {
             if (propertyType == typeof(Ast.Ident))
                 return Methods.SerializeIdent;
 
@@ -231,14 +231,14 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             return Methods.SerializeNode;
         }
 
-        private static GetRangeFunc GetRangeGetter(Type type) {
+        private static GetRangeFunc? GetRangeGetter(Type type) {
             return RangeGetters.GetOrAdd(
                 type,
-                t => new Lazy<GetRangeFunc>(() => CompileRangeGetter(t), LazyThreadSafetyMode.ExecutionAndPublication)
+                t => new Lazy<GetRangeFunc?>(() => CompileRangeGetter(t), LazyThreadSafetyMode.ExecutionAndPublication)
             ).Value;
         }
 
-        private static GetRangeFunc CompileRangeGetter(Type type) {
+        private static GetRangeFunc? CompileRangeGetter(Type type) {
             var rangeProperty = type.GetProperty("Range");
             if (rangeProperty == null)
                 return null;

@@ -12,7 +12,7 @@ namespace SharpLab.Server.Owin.Platform {
         private static readonly string ReferenceAssemblyRootPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
             + @"\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7";
 
-        public DocumentationProvider GetDocumentation([NotNull] Assembly assembly) {
+        public DocumentationProvider? GetDocumentation([NotNull] Assembly assembly) {
             foreach (var xmlPath in GetCandidatePaths(assembly)) {
                 if (File.Exists(xmlPath))
                     return XmlDocumentationProvider.CreateFromFile(xmlPath);

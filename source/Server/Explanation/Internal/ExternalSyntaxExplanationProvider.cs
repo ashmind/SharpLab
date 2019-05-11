@@ -13,11 +13,11 @@ namespace SharpLab.Server.Explanation.Internal {
         private readonly Func<HttpClient> _httpClientFactory;
         private readonly ExternalSyntaxExplanationSettings _settings;
 
-        private IReadOnlyCollection<SyntaxExplanation> _explanations;
+        private IReadOnlyCollection<SyntaxExplanation>? _explanations;
         private readonly SemaphoreSlim _explanationsLock = new SemaphoreSlim(1);
 
-        private Task _updateTask;
-        private CancellationTokenSource _updateCancellationSource;
+        private Task? _updateTask;
+        private CancellationTokenSource? _updateCancellationSource;
 
         private readonly Serializer _serilializer = new Serializer(new SerializerSettings {
             NamingConvention = new FlatNamingConvention()
@@ -89,11 +89,11 @@ namespace SharpLab.Server.Explanation.Internal {
             catch (Exception ex) {
                 throw new Exception($"Failed to parse path for '{item.Name}': {ex.Message}.", ex);
             }
-            return new SyntaxExplanation(path, item.Name, item.Text, item.Link);
+            return new SyntaxExplanation(path, item.Name!, item.Text!, item.Link!);
         }
 
         private async Task UpdateLoopAsync() {
-            while (!_updateCancellationSource.IsCancellationRequested) {
+            while (!_updateCancellationSource!.IsCancellationRequested) {
                 try {
                     await Task.Delay(_settings.UpdatePeriod, _updateCancellationSource.Token).ConfigureAwait(false);
                 }
@@ -118,16 +118,16 @@ namespace SharpLab.Server.Explanation.Internal {
             using (_updateCancellationSource) {
                 if (_updateTask == null)
                     return;
-                _updateCancellationSource.Cancel();
+                _updateCancellationSource!.Cancel();
                 await _updateTask.ConfigureAwait(true);
             }
         }
 
         private class YamlExplanation {
-            public string Name { get; set; }
-            public string Text { get; set; }
-            public string Link { get; set; }
-            public string Path { get; set; }
+            public string? Name { get; set; }
+            public string? Text { get; set; }
+            public string? Link { get; set; }
+            public string? Path { get; set; }
         }
     }
 }

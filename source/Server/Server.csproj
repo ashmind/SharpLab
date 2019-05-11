@@ -3,11 +3,9 @@
     <TargetFrameworks>net47; netcoreapp30</TargetFrameworks>
     <AssemblyName>SharpLab.Server</AssemblyName>
     <RootNamespace>SharpLab.Server</RootNamespace>
-    <Company>Andrey Shchekin</Company>
-    <Authors>Andrey Shchekin</Authors>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>8.0</LangVersion>
     <NullableContextOptions>enable</NullableContextOptions>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     <MSBuildWarningsAsMessages>MSB3836</MSBuildWarningsAsMessages>

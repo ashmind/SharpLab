@@ -13,7 +13,7 @@ namespace SharpLab.Server.Owin.Decompilation {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class JitAsmDecompiler : JitAsmDecompilerBase {
         protected override JitAsmResultScope JitCompileAndGetMethods(MemoryStream assemblyStream) {
-            AppDomainContext<AssemblyTargetLoader, PathBasedAssemblyResolver> context = null;
+            AppDomainContext<AssemblyTargetLoader, PathBasedAssemblyResolver>? context = null;
             try {
                 var currentSetup = AppDomain.CurrentDomain.SetupInformation;
                 context = AppDomainContext.Create(new AppDomainSetup {

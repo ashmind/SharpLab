@@ -52,7 +52,7 @@ namespace SharpLab.Tests.Internal {
             Assert.Equal(_expected, cleanResult);
         }
 
-        private string RemoveNonDeterminism(string result) {
+        private string? RemoveNonDeterminism(string result) {
             if (result == null)
                 return null;
 

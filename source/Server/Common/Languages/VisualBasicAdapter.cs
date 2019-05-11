@@ -98,22 +98,22 @@ namespace SharpLab.Server.Common.Languages {
 
             var parameters = method.BlockStatement.ParameterList.Parameters;
             var results = new int[parameters.Count];
-            for (int i = 0; i < parameters.Count; i++) {
+            for (var i = 0; i < parameters.Count; i++) {
                 results[i] = parameters[i].GetLocation().GetLineSpan().StartLinePosition.Line + 1;
             }
             return ImmutableArray.Create(results);
         }
 
-        public ImmutableArray<string> GetCallArgumentIdentifiers([NotNull] IWorkSession session, int callStartLine, int callStartColumn) {
+        public ImmutableArray<string?> GetCallArgumentIdentifiers(IWorkSession session, int callStartLine, int callStartColumn) {
             var call = RoslynAdapterHelper.FindSyntaxNodeInSession(session, callStartLine, callStartColumn) as InvocationExpressionSyntax;
             if (call == null)
-                return ImmutableArray<string>.Empty;
+                return ImmutableArray<string?>.Empty;
 
             var arguments = call.ArgumentList.Arguments;
             if (arguments.Count == 0)
-                return ImmutableArray<string>.Empty;
+                return ImmutableArray<string?>.Empty;
 
-            var results = new string[arguments.Count];
+            var results = new string?[arguments.Count];
             for (var i = 0; i < arguments.Count; i++) {
                 results[i] = (arguments[i].GetExpression() is IdentifierNameSyntax n) ? n.Identifier.ValueText : null;
             }

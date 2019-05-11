@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SharpLab.Runtime.Internal {
     public static class MemoryGraphArgumentNames {
-        private static string[] _next;
+        private static string[]? _next;
         private static int _nextAddIndex;
 
         public static void AllocateNext(int count) {
@@ -12,7 +12,7 @@ namespace SharpLab.Runtime.Internal {
         }
 
         public static void AddToNext(string value) {
-            _next[_nextAddIndex] = value;
+            _next![_nextAddIndex] = value;
             _nextAddIndex += 1;
         }
 

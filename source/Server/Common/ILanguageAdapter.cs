@@ -13,7 +13,7 @@ namespace SharpLab.Server.Common {
         void SetOptionsForTarget([NotNull] IWorkSession session, [NotNull] string target);
 
         ImmutableArray<int> GetMethodParameterLines([NotNull] IWorkSession session, int lineInMethod, int columnInMethod);
-        ImmutableArray<string> GetCallArgumentIdentifiers([NotNull] IWorkSession session, int callStartLine, int callStartColumn);
+        ImmutableArray<string?> GetCallArgumentIdentifiers([NotNull] IWorkSession session, int callStartLine, int callStartColumn);
 
         // Note: in some cases this Task is never resolved (e.g. if VB is never used)
         ReferencedAssembliesLoadTask ReferencedAssembliesTask { get; }

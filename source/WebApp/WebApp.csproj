@@ -5,6 +5,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SharpLab.WebApp</RootNamespace>
     <AssemblyName>SharpLab.WebApp</AssemblyName>
+    <LangVersion>8.0</LangVersion>
+    <NullableContextOptions>enable</NullableContextOptions>
     <UseIISExpress>true</UseIISExpress>
     <OutputPath>bin\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>

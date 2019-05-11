@@ -3,12 +3,10 @@
     <TargetFramework>net47</TargetFramework>
     <AssemblyName>SharpLab.Server.Owin</AssemblyName>
     <RootNamespace>SharpLab.Server.Owin</RootNamespace>
-    <Company>Andrey Shchekin</Company>
-    <Authors>Andrey Shchekin</Authors>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>8.0</LangVersion>
     <NullableContextOptions>enable</NullableContextOptions>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     <MSBuildWarningsAsMessages>MSB3836</MSBuildWarningsAsMessages>

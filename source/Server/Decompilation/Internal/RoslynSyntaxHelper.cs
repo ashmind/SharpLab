@@ -31,15 +31,15 @@ namespace SharpLab.Server.Decompilation.Internal {
             return KindNames[rawKind];
         }
 
-        public static string GetParentPropertyName(SyntaxToken token) {
+        public static string? GetParentPropertyName(SyntaxToken token) {
             return GetParentPropertyName(token, token.Parent, CompiledSyntaxTokenGetParentPropertyName);
         }
 
-        public static string GetParentPropertyName(SyntaxNode node) {
+        public static string? GetParentPropertyName(SyntaxNode node) {
             return GetParentPropertyName(node, node.Parent, CompiledSyntaxNodeGetParentPropertyName);
         }
 
-        private static string GetParentPropertyName<T>(T value, SyntaxNode parent, ConcurrentDictionary<Type, Lazy<Func<T, SyntaxNode, string>>> compiledCache) {
+        private static string? GetParentPropertyName<T>(T value, SyntaxNode parent, ConcurrentDictionary<Type, Lazy<Func<T, SyntaxNode, string>>> compiledCache) {
             if (parent == null)
                 return null;
             var compiled = compiledCache.GetOrAdd(

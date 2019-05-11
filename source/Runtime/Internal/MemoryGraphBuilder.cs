@@ -95,7 +95,7 @@ namespace SharpLab.Runtime.Internal {
                 AddHeapObject(nestedNode, value);
         }
 
-        private MemoryGraphNode FindExistingNode(object heapKey) {
+        private MemoryGraphNode? FindExistingNode(object heapKey) {
             // not using LINQ to avoid allocations
             // should be faster than creating a dictionary, given we only have a few nodes
             foreach (var node in _heap) {
@@ -112,10 +112,10 @@ namespace SharpLab.Runtime.Internal {
         public MemoryGraphInspection ToInspection() {
             var minStackAddress = ulong.MaxValue;
             foreach (var node in _stack) {
-                minStackAddress = Math.Min(node.StackAddress.Value, minStackAddress);
+                minStackAddress = Math.Min(node.StackAddress!.Value, minStackAddress);
             }
             foreach (var node in _stack) {
-                node.StackOffset = (int)(node.StackAddress - minStackAddress);
+                node.StackOffset = (int)(node.StackAddress - minStackAddress)!;
             }
 
             return new MemoryGraphInspection(
