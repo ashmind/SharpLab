@@ -1,18 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <AssemblyName>SharpLab.Tests.NetCore</AssemblyName>
     <RootNamespace>SharpLab.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;NETCORE</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;NETCORE</DefineConstants>
+    <DefineConstants>NETCORE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

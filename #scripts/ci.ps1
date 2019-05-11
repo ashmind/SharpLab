@@ -4,8 +4,13 @@ $ErrorActionPreference = 'Stop'
 Write-Output 'git submodule update --recursive --init'
 git submodule update --recursive --init
 
+Write-Output 'msbuild source\Native.Profiler\Native.Profiler.vcxproj'
+$msbuild = (@(Get-Item "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\*\MSBuild\Current\Bin\msbuild.exe")[0]).FullName
+&$msbuild source\Native.Profiler\Native.Profiler.vcxproj /p:Configuration=Release /p:Platform=x64 /p:SolutionName=SharpLab
+if ($LastExitCode -ne 0) { throw "msbuild exited with code $LastExitCode" }
+
 Write-Output 'dotnet build source'
-dotnet build source -c Release /p:UnbreakablePolicyReportEnabled=false
+dotnet build source -c Release-CI /p:UnbreakablePolicyReportEnabled=false
 if ($LastExitCode -ne 0) { throw "dotnet build exited with code $LastExitCode" }
 
 Write-Output 'dotnet publish source/Server.AspNetCore/Server.AspNetCore.csproj ...'

@@ -1,5 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net47; netcoreapp30</TargetFrameworks>
     <AssemblyName>SharpLab.Server</AssemblyName>

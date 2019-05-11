@@ -1,5 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net47</TargetFramework>
     <AssemblyName>SharpLab.Server.Owin</AssemblyName>
