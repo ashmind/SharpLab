@@ -89,7 +89,7 @@ function Get-PredefinedBranches() {
     }, [ordered]@{
         id = 'core-x64-profiled'
         name = '.NET Core (x64, Profiler)'
-        url = $coreX64Url
+        url = $coreX64ProfiledUrl
         group = 'Platforms'
     })
 }
