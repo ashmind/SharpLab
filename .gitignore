@@ -1,7 +1,5 @@
 
 .env
-packages/
-\#packages/
 
 *.user
 *.pubxml
@@ -12,3 +10,4 @@ node_modules/
 bin/
 obj/
 wwwroot/
+/source/Native.Profiler/x64/

@@ -43,14 +43,14 @@ namespace SharpLab.Server.Owin.Execution {
                 PrivateBinPath = currentSetup.PrivateBinPath
             })) {
                 context.LoadAssembly(LoadMethod.LoadFrom, Assembly.GetExecutingAssembly().GetAssemblyFile().FullName);
-                return RemoteFunc.Invoke(context.Domain, assemblyStream.ToArray(), guardToken, Current.ProcessId, Remote.Execute);
+                return RemoteFunc.Invoke(context.Domain, assemblyStream.ToArray(), guardToken, Current.ProcessId, ProfilerState.Active, Remote.Execute);
             }
         }
 
         private static class Remote {
-            public static ExecutionResultWithException Execute(byte[] assemblyBytes, RuntimeGuardToken guardToken, int processId) {
+            public static ExecutionResultWithException Execute(byte[] assemblyBytes, RuntimeGuardToken guardToken, int processId, bool profilerActive) {
                 var assembly = Assembly.Load(assemblyBytes);
-                return IsolatedExecutorCore.Execute(assembly, guardToken.Guid, processId);
+                return IsolatedExecutorCore.Execute(assembly, guardToken.Guid, processId, profilerActive);
             }
         }
     }

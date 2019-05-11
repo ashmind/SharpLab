@@ -26,22 +26,18 @@ namespace SharpLab.Runtime.Internal {
             AppendSpanTo(builder, value, depth: 1, limits);
         }
 
-        private static void AppendTo<T>(StringBuilder builder, T value, int depth, ValuePresenterLimits limits = default)
-        {
-            if (value == null)
-            {
+        private static void AppendTo<T>(StringBuilder builder, T value, int depth, ValuePresenterLimits limits = default) {
+            if (value == null) {
                 builder.Append("null");
                 return;
             }
 
-            if (depth > limits.MaxDepth)
-            {
+            if (depth > limits.MaxDepth) {
                 builder.Append("…");
                 return;
             }
 
-            switch (value)
-            {
+            switch (value) {
                 case ICollection<int> c:
                     AppendEnumerableTo(builder, c, depth, limits);
                     break;
@@ -54,7 +50,7 @@ namespace SharpLab.Runtime.Internal {
             }
         }
 
-        private static void AppendEnumerableTo<T>(StringBuilder builder, IEnumerable<T> enumerable, int depth, ValuePresenterLimits limits) {
+        internal static void AppendEnumerableTo<T>(StringBuilder builder, IEnumerable<T> enumerable, int depth, ValuePresenterLimits limits) {
             builder.Append("{ ");
             var index = 0;
             foreach (var item in enumerable) {

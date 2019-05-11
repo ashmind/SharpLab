@@ -4,7 +4,7 @@ export default {
     },
     computed: {
         isMultiline() {
-            return /[\r\n]/.test(this.inspection.value);
+            return this.inspection.value && /[\r\n]/.test(this.inspection.value);
         },
 
         isException() {
@@ -13,6 +13,10 @@ export default {
 
         isWarning() {
             return this.inspection.title === 'Warning';
+        },
+
+        isTitleOnly() {
+            return this.inspection.value === undefined;
         }
     },
     template: '#app-output-view-simple'

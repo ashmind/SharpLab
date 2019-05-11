@@ -2,6 +2,7 @@
   Argument: Denied
   Argument+Extensible: Denied
   Inspect: Allowed
+     Allocations: Allowed
      Equals: Allowed
      GetHashCode: Allowed
      GetType: Allowed
@@ -994,6 +995,7 @@ SharpLab.Runtime.Internal
      ToString: Denied
   Flow+Step: Denied
   IInspection: Denied
+  InspectionGroup: Denied
   InspectionSettings: Denied
   MemoryGraphArgumentNames: Allowed
      AddToNext: Allowed (NoGuardRewriter)
@@ -2777,7 +2779,7 @@ System
      FindInterfaces: Denied
      FindMembers: Denied
      get_Assembly: Denied
-     get_AssemblyQualifiedName: Denied
+     get_AssemblyQualifiedName: Allowed
      get_Attributes: Denied
      get_BaseType: Denied
      get_ContainsGenericParameters: Allowed

@@ -1,15 +1,14 @@
 import dateFormat from 'dateformat';
 
-function getBranchDisplayName(branch, roslynVersion) {
+function getBranchDisplayName(branch) {
     const feature = branch.feature;
-    const name = feature
+    let displayName = feature
         ? `${feature.language}: ${feature.name}`
         : branch.name;
-    const dateOrVersion = branch.commits
-        ? dateFormat(branch.commits[0].date, 'd mmm yyyy')
-        : roslynVersion;
+    if (branch.commits)
+        displayName += `(${dateFormat(branch.commits[0].date, 'd mmm yyyy')})`;
 
-    return `${name} (${dateOrVersion})`;
+    return displayName;
 }
 
 function groupAndSortBranches(branches) {

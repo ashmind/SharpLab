@@ -22,7 +22,12 @@ namespace SharpLab.Runtime.Internal {
 
         public static IReadOnlyList<Step> Steps => (IReadOnlyList<Step>)_steps;
 
+        internal static bool ReportingPaused { get; set; }
+
         public static void ReportLineStart(int lineNumber) {
+            if (ReportingPaused)
+                return;
+
             if (_steps.Count > 0) {
                 var lastStep = _steps[_steps.Count - 1];
                 if (lastStep.LineNumber == lineNumber & lastStep.LineSkipped) {
@@ -42,6 +47,9 @@ namespace SharpLab.Runtime.Internal {
         }
 
         public static void ReportValue<T>(T value, string name, int lineNumber) {
+            if (ReportingPaused)
+                return;
+
             var notes = PrepareToReportValue(name, lineNumber);
             if (notes == null)
                 return;
@@ -53,6 +61,9 @@ namespace SharpLab.Runtime.Internal {
         }
 
         public static void ReportSpanValue<T>(Span<T> value, string name, int lineNumber) {
+            if (ReportingPaused)
+                return;
+
             var notes = PrepareToReportValue(name, lineNumber);
             if (notes == null)
                 return;
@@ -64,13 +75,16 @@ namespace SharpLab.Runtime.Internal {
         }
 
         public static void ReportReadOnlySpanValue<T>(ReadOnlySpan<T> value, string name, int lineNumber) {
+            if (ReportingPaused)
+                return;
+
             var notes = PrepareToReportValue(name, lineNumber);
             if (notes == null)
                 return;
             ValuePresenter.AppendTo(notes, value, ReportLimits.ValueValue);
         }
 
-        private static StringBuilder PrepareToReportValue(string name, int lineNumber) {
+        private static StringBuilder? PrepareToReportValue(string name, int lineNumber) {
             if (!TryFindLastStepAtLineNumber(lineNumber, out var step, out var stepIndex)) {
                 if (_steps.Count >= ReportLimits.MaxStepCount)
                     return null;
@@ -138,6 +152,9 @@ namespace SharpLab.Runtime.Internal {
         }
 
         public static void ReportException(object exception) {
+            if (ReportingPaused)
+                return;
+
             if (_steps.Count == 0)
                 return;
             var step = _steps[_steps.Count - 1];
@@ -163,8 +180,8 @@ namespace SharpLab.Runtime.Internal {
             }
 
             public int LineNumber { get; }
-            public object Exception { get; internal set; }
-            public StringBuilder Notes { get; internal set; }
+            public object? Exception { get; internal set; }
+            public StringBuilder? Notes { get; internal set; }
             public bool LineSkipped { get; internal set; }
 
             internal int ValueCount { get; set; }

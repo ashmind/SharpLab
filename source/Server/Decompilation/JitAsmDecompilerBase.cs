@@ -19,7 +19,6 @@ namespace SharpLab.Server.Decompilation {
             Argument.NotNull(nameof(streams), streams);
             Argument.NotNull(nameof(codeWriter), codeWriter);
 
-            var currentSetup = AppDomain.CurrentDomain.SetupInformation;
             using (var dataTarget = DataTarget.AttachToProcess(Current.ProcessId, uint.MaxValue, AttachFlag.Passive))
             using (var resultScope = JitCompileAndGetMethods(streams.AssemblyStream)) {
                 var currentMethodAddressRef = new Reference<ulong>();
@@ -30,6 +29,8 @@ namespace SharpLab.Server.Decompilation {
                 };
 
                 WriteJitInfo(runtime.ClrInfo, codeWriter);
+                WriteProfilerState(codeWriter);
+                codeWriter.WriteLine();
 
                 var architecture = MapArchitecture(runtime.ClrInfo.DacInfo.TargetArchitecture);
                 foreach (var result in resultScope.Results) {
@@ -47,15 +48,21 @@ namespace SharpLab.Server.Decompilation {
                 "; {0:G} CLR {1} ({2}) on {3}.",
                 clr.Flavor, clr.Version, Path.GetFileName(clr.ModuleInfo.FileName), clr.DacInfo.TargetArchitecture.ToString("G").ToLowerInvariant()
             );
-            writer.WriteLine();
+        }
+
+        private void WriteProfilerState(TextWriter writer) {
+            if (!ProfilerState.Active)
+                return;
+
+            writer.WriteLine("; Note: Running under profiler, which affects JIT assembly in heap allocations.", ProfilerState.Flags);
         }
 
         private static string ResolveSymbol(ClrRuntime runtime, Instruction instruction, long addr, ulong currentMethodAddress) {
             var operand = instruction.Operands.Length > 0 ? instruction.Operands[0] : null;
             if (operand?.PtrOffset == 0) {
-                var lvalue = GetOperandLValue(operand);
+                var lvalue = GetOperandLValue(operand!);
                 if (lvalue == null)
-                    return $"{operand.RawValue} ; failed to resolve lval ({operand.Size}), please report at https://github.com/ashmind/SharpLab/issues";
+                    return $"{operand!.RawValue} ; failed to resolve lval ({operand.Size}), please report at https://github.com/ashmind/SharpLab/issues";
                 var baseOffset = instruction.PC - currentMethodAddress;
                 return $"L{baseOffset + lvalue:x4}";
             }
@@ -115,8 +122,8 @@ namespace SharpLab.Server.Decompilation {
             }
         }
 
-        private (ClrMethod method, HotColdRegions regions) ResolveJitResult(ClrRuntime runtime, MethodJitResult result) {
-            ClrMethod methodByPointer = null;
+        private (ClrMethod? method, HotColdRegions? regions) ResolveJitResult(ClrRuntime runtime, MethodJitResult result) {
+            ClrMethod? methodByPointer = null;
             if (result.Pointer != null) {
                 methodByPointer = runtime.GetMethodByAddress((ulong)result.Pointer.Value.ToInt64());
                 if (methodByPointer != null) {
@@ -141,7 +148,7 @@ namespace SharpLab.Server.Decompilation {
             return (methodByHandle, regionsByHandle);
         }
 
-        private HotColdRegions FindNonEmptyHotColdInfo(ClrMethod method) {
+        private HotColdRegions? FindNonEmptyHotColdInfo(ClrMethod method) {
             // I can't really explain this, but it seems that some methods 
             // are present multiple times in the same type -- one compiled
             // and one not compiled. A bug in clrmd?
@@ -170,7 +177,9 @@ namespace SharpLab.Server.Decompilation {
             }
         }
 
+        #pragma warning disable CS8618 // Non-nullable field is uninitialized.
         private class Reference<T> {
+        #pragma warning restore CS8618 // Non-nullable field is uninitialized.
             public T Value { get; set; }
         }
 

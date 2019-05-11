@@ -44,7 +44,7 @@ namespace SharpLab.Server.AspNetCore.Execution {
                 var coreType = serverAssembly.GetType(typeof(IsolatedExecutorCore).FullName);
                 var execute = coreType.GetMethod(nameof(IsolatedExecutorCore.Execute));
 
-                var wrapperInContext = execute.Invoke(null, new object[] { assembly, guardToken.Guid, Current.ProcessId });
+                var wrapperInContext = execute.Invoke(null, new object[] { assembly, guardToken.Guid, Current.ProcessId, ProfilerState.Active });
                 // Since wrapperInContext belongs to a different AssemblyLoadContext, it is not possible to convert
                 // it to same type in the default context without some trick (e.g. serialization).
                 using (var wrapperStream = _memoryStreamManager.GetStream())

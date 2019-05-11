@@ -8,6 +8,12 @@ end_of_line = crlf
 trim_trailing_whitespace = true
 insert_final_newline = false
 
+[*.{html,config,csproj,targets,props,package.json]
+indent_size = 2
+
+[*.appsettings*.json]
+indent_size = 2
+
 [*.cs]
 csharp_new_line_before_open_brace = none
 csharp_style_var_for_built_in_types = true:warning
@@ -40,6 +46,3 @@ dotnet_naming_style.camel_case_with_underscore_prefix.capitalization = camel_cas
 dotnet_naming_style.camel_case_with_underscore_prefix.required_prefix = _
 
 dotnet_naming_style.pascal_case.capitalization = pascal_case
-
-[*.{html,config,csproj,targets,props},appsettings*.json,package.json]
-indent_size = 2

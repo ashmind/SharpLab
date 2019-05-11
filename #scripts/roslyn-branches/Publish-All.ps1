@@ -69,9 +69,11 @@ function Login-ToAzure($azureConfig) {
 function Get-PredefinedBranches() {
     $x64Url = "http://sl-a-x64.sharplab.local"
     $coreX64Url = "http://sl-a-core-x64.sharplab.local"
+    $coreX64ProfiledUrl = "http://localhost:54100"
     if ($azure) {
         $x64Url = "https://sl-a-x64.azurewebsites.net"
         $coreX64Url = "https://sl-a-core-x64.azurewebsites.net"
+        $coreX64ProfiledUrl = "https://sl-a-core-x64-profiled.azurewebsites.net"
     }
     
     return @([ordered]@{
@@ -81,7 +83,12 @@ function Get-PredefinedBranches() {
         group = 'Platforms'
     }, [ordered]@{
         id = 'core-x64'
-        name = '.NET Core x64'
+        name = '.NET Core (x64)'
+        url = $coreX64Url
+        group = 'Platforms'
+    }, [ordered]@{
+        id = 'core-x64-profiled'
+        name = '.NET Core (x64, Profiler)'
         url = $coreX64Url
         group = 'Platforms'
     })

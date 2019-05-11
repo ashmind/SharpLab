@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Microsoft.Diagnostics.Runtime;
 using SharpLab.Runtime.Internal;
 
@@ -13,9 +14,9 @@ public static partial class Inspect {
         EnsureRuntime();
 
         var address = (ulong)GetHeapPointer(@object);
-        var objectType = _runtime.Heap.GetObjectType((ulong)GetHeapPointer(@object));
+        var objectType = _runtime.Heap.GetObjectType(address);
         if (objectType == null)
-            throw new Exception($"Failed to find object type for address 0x{(ulong)GetHeapPointer(@object):X}.");
+            throw new Exception($"Failed to find object type for address 0x{address:X}.");
 
         var objectSize = objectType.GetSize(address);
 
@@ -127,8 +128,11 @@ public static partial class Inspect {
     private static void EnsureRuntime() {
         if (_runtime != null)
             return;
-        var dataTarget = DataTarget.AttachToProcess(InspectionSettings.CurrentProcessId, UInt32.MaxValue, AttachFlag.Passive);
-        _runtime = dataTarget.ClrVersions.Single().CreateRuntime();
+        var dataTarget = DataTarget.AttachToProcess(InspectionSettings.CurrentProcessId, uint.MaxValue, AttachFlag.Passive);
+        var clrFlavor = RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.OrdinalIgnoreCase)
+            ? ClrFlavor.Core
+            : ClrFlavor.Desktop;
+        _runtime = dataTarget.ClrVersions.Single(c => c.Flavor == clrFlavor).CreateRuntime();
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]

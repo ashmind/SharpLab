@@ -5,13 +5,15 @@ using System.Text.RegularExpressions;
 using Unbreakable;
 using Unbreakable.Runtime;
 using SharpLab.Runtime.Internal;
+using SharpLab.Server.Common;
 
 namespace SharpLab.Server.Execution {
     public static class IsolatedExecutorCore {
-        public static unsafe ExecutionResultWithException Execute(Assembly assembly, Guid guardTokenGuid, int processId) {
+        public static unsafe ExecutionResultWithException Execute(Assembly assembly, Guid guardTokenGuid, int processId, bool profilerActive) {
             try {
                 Console.SetOut(Output.Writer);
                 InspectionSettings.CurrentProcessId = processId;
+                InspectionSettings.ProfilerActive = profilerActive;
 
                 var main = assembly.EntryPoint;
                 using (new RuntimeGuardToken(guardTokenGuid).Scope(NewRuntimeGuardSettings())) {
@@ -35,7 +37,7 @@ namespace SharpLab.Server.Execution {
                     throw new Exception($"{sgex.Message} {sgex.StackBaseline} {sgex.StackOffset} {sgex.StackLimit} {sgex.StackSize}");
 
                 Flow.ReportException(ex);
-                ex.Inspect("Exception");
+                Output.Write(new SimpleInspection("Exception", ex.ToString()));
                 return new ExecutionResultWithException(new ExecutionResult(Output.Stream, Flow.Steps), ex);
             }
         }
@@ -45,7 +47,7 @@ namespace SharpLab.Server.Execution {
             if (Debugger.IsAttached)
                 return new RuntimeGuardSettings { TimeLimit = TimeSpan.MaxValue };
             #endif
-            return null;
+            return new RuntimeGuardSettings { TimeLimit = TimeSpan.FromSeconds(1) };
         }
     }
 }

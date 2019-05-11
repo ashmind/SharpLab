@@ -110,6 +110,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
 
         private static void SetupSystemType(TypePolicy typePolicy) {
             typePolicy
+                .Getter(nameof(Type.AssemblyQualifiedName), Allowed)
                 .Getter(nameof(Type.GenericTypeArguments), Allowed, ArrayReturnRewriter.Default)
                 .Getter(nameof(Type.IsGenericType), Allowed)
                 .Getter(nameof(Type.IsConstructedGenericType), Allowed)

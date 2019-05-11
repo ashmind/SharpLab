@@ -49,9 +49,13 @@
 
 .inspection-simple {
     display: flex;
-    header::after {
+    & header::after {
         content: ':';
     }
+}
+
+.inspection-header-only header::after {
+    content: '';
 }
 
 .inspection-value {

@@ -1,0 +1,7 @@
+LIBRARY "SharpLab.Native.Profiler.dll"
+
+EXPORTS
+    DllCanUnloadNow PRIVATE
+    DllGetClassObject PRIVATE
+	StartMonitoringCurrentThreadAllocations
+	StopMonitoringCurrentThreadAllocations

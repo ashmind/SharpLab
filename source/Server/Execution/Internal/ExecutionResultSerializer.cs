@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MirrorSharp.Advanced;
-using MirrorSharp.Internal;
 using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Server.Execution.Internal {
@@ -39,7 +38,7 @@ namespace SharpLab.Server.Execution.Internal {
         }
 
         private void SerializeOutput(IReadOnlyList<object> output, IFastJsonWriter writer) {
-            TextWriter openStringWriter = null;
+            TextWriter? openStringWriter = null;
             void CloseStringWriter() {
                 if (openStringWriter != null) {
                     openStringWriter.Close();
@@ -49,17 +48,9 @@ namespace SharpLab.Server.Execution.Internal {
 
             foreach (var item in output) {
                 switch (item) {
-                    case SimpleInspection inspection:
+                    case IInspection inspection:
                         CloseStringWriter();
-                        SerializeSimpleInspection(inspection, writer);
-                        break;
-                    case MemoryInspection memory:
-                        CloseStringWriter();
-                        SerializeMemoryInspection(memory, writer);
-                        break;
-                    case MemoryGraphInspection graph:
-                        CloseStringWriter();
-                        SerializeMemoryGraphInspection(graph, writer);
+                        SerializeInspection(inspection, writer);
                         break;
                     case string @string:
                         if (openStringWriter == null)
@@ -82,16 +73,38 @@ namespace SharpLab.Server.Execution.Internal {
             openStringWriter?.Close();
         }
 
+        private void SerializeInspection(IInspection inspection, IFastJsonWriter writer) {
+            switch (inspection) {
+                case SimpleInspection simple:
+                    SerializeSimpleInspection(simple, writer);
+                    break;
+                case MemoryInspection memory:
+                    SerializeMemoryInspection(memory, writer);
+                    break;
+                case MemoryGraphInspection graph:
+                    SerializeMemoryGraphInspection(graph, writer);
+                    break;
+                case InspectionGroup group:
+                    SerializeInspectionGroup(group, writer);
+                    break;
+                default:
+                    writer.WriteValue("Unsupported inspection type: " + inspection.GetType().Name);
+                    break;
+            }
+        }
+
         private void SerializeSimpleInspection(SimpleInspection inspection, IFastJsonWriter writer) {
             writer.WriteStartObject();
             writer.WriteProperty("type", "inspection:simple");
             writer.WriteProperty("title", inspection.Title);
-            writer.WritePropertyName("value");
-            if (inspection.Value is StringBuilder builder) {
-                writer.WriteValue(builder);
-            }
-            else {
-                writer.WriteValue((string)inspection.Value);
+            if (inspection.HasValue) {
+                writer.WritePropertyName("value");
+                if (inspection.Value is StringBuilder builder) {
+                    writer.WriteValue(builder);
+                }
+                else {
+                    writer.WriteValue((string)inspection.Value!);
+                }
             }
             writer.WriteEndObject();
         }
@@ -154,7 +167,7 @@ namespace SharpLab.Server.Execution.Internal {
             writer.WriteProperty("id", node.Id);
             if (node.StackOffset != null) {
                 writer.WriteProperty("offset", node.StackOffset.Value);
-                writer.WriteProperty("size", node.StackSize.Value);
+                writer.WriteProperty("size", node.StackSize!.Value);
             }
             writer.WriteProperty("title", node.Title);
             writer.WritePropertyName("value");
@@ -182,6 +195,18 @@ namespace SharpLab.Server.Execution.Internal {
             writer.WriteStartObject();
             writer.WriteProperty("from", reference.From.Id);
             writer.WriteProperty("to", reference.To.Id);
+            writer.WriteEndObject();
+        }
+
+        private void SerializeInspectionGroup(InspectionGroup group, IFastJsonWriter writer) {
+            writer.WriteStartObject();
+            writer.WriteProperty("type", "inspection:group");
+            writer.WriteProperty("title", group.Title);
+            writer.WritePropertyStartArray("inspections");
+            foreach (var inspection in group.Inspections) {
+                SerializeInspection(inspection, writer);
+            }
+            writer.WriteEndArray();
             writer.WriteEndObject();
         }
     }

@@ -139,11 +139,10 @@ async function createAppAsync() {
     await state.loadAsync(data);
     data.lastLoadedCode = data.code;
 
-    const roslynVersion = window.appBuild.roslynVersion;
     const branchesPromise = (async () => {
         const branches = await getBranchesAsync();
         for (const branch of branches) {
-            branch.displayName = getBranchDisplayName(branch, roslynVersion);
+            branch.displayName = getBranchDisplayName(branch);
         }
         data.branches = groupAndSortBranches(branches);
         return branches;

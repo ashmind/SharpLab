@@ -44,6 +44,7 @@
         "printfn",
         "promisify",
         "recurse",
+        "rowspan",
         "sharplab",
         "sourcemap",
         "stroustrup",

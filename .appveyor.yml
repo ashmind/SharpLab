@@ -51,3 +51,11 @@ deploy:
   artifact: Server.AspNetCore.zip
   on:
     branch: master
+- provider: AzureAppServiceZipDeploy
+  website: sl-a-core-x64-profiled
+  username: ashmind
+  password:
+    secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
+  artifact: Server.AspNetCore.zip
+  on:
+    branch: edge

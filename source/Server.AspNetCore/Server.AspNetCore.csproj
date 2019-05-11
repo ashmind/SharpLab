@@ -1,23 +1,28 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <AssemblyName>SharpLab.Server.AspNetCore</AssemblyName>
     <RootNamespace>SharpLab.Server.AspNetCore</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>8.0</LangVersion>
+    <NullableContextOptions>enable</NullableContextOptions>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.dll" Link="SharpLab.Native.Profiler.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.pdb" Link="SharpLab.Native.Profiler.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.4.0" />
     <PackageReference Include="Autofac.Extras.FileSystemRegistration" Version="1.0.0-pre-03" />
+    <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="1.0.5" />
     <PackageReference Include="MirrorSharp.AspNetCore" Version="0.1.0" />
   </ItemGroup>
 

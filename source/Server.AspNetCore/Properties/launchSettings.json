@@ -1,27 +1,29 @@
-﻿{
+{
   "iisSettings": {
-    "windowsAuthentication": false, 
-    "anonymousAuthentication": true, 
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:56671",
+      "applicationUrl": "http://localhost:54100",
       "sslPort": 44374
     }
   },
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
-      "launchBrowser": true,
       "environmentVariables": {
+        "CORECLR_ENABLE_PROFILING": "1",
+        "CORECLR_PROFILER": "{67fb642f-51cd-4745-8b21-aacd2ec74e62}",
+        "CORECLR_PROFILER_PATH": "d:\\Development\\VS 2019\\SharpLab\\source\\Server.AspNetCore\\bin\\Debug\\netcoreapp3.0\\SharpLab.Native.Profiler.dll",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "Server.AspNetCore": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
     }
   }
 }
