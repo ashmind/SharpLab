@@ -19,12 +19,18 @@ extern "C" AllocationMonitoringResult StartMonitoringCurrentThreadAllocations()
 }
 
 extern "C" AllocationMonitoringResult StopMonitoringCurrentThreadAllocations(
-	_Out_ int* allocationCount,
-	_Out_ void** allocations
+	_Out_ int32_t* allocationCount, // this will always be at most MAX_MONITORED_ALLOCATIONS-1
+	_Out_ void** allocations,
+    _Out_ uint8_t* allocationLimitReached
 )
 {
     threadMonitoringActive = false;
     auto allocationCountValue = threadState->nextAllocationIndex;
+    if (allocationCountValue == MAX_MONITORED_ALLOCATIONS) {
+        allocationCountValue -= 1;
+        *allocationLimitReached = 1;
+    }
+
 	*allocationCount = allocationCountValue;
 
     if (threadState->gcCountWhenStartedMonitoring != gcCount)
@@ -32,9 +38,9 @@ extern "C" AllocationMonitoringResult StopMonitoringCurrentThreadAllocations(
     for (auto i = 0; i < allocationCountValue; i++) {
         auto allocation = threadState->allocations[i];
         auto headerSize = sizeof(void*);
-        auto copyPtr = std::unique_ptr<BYTE[]>{ new BYTE[headerSize + allocation.objectSize] };
+        auto copyPtr = std::unique_ptr<uint8_t[]>{ new uint8_t[headerSize + allocation.objectSize] };
 
-        std::copy((BYTE*)(allocation.objectId - headerSize), (BYTE*)(allocation.objectId + allocation.objectSize), copyPtr.get());
+        std::copy((uint8_t*)(allocation.objectId - headerSize), (uint8_t*)(allocation.objectId + allocation.objectSize), copyPtr.get());
 
         threadState->gcSafeCopiesOfAllocations[i] = std::move(copyPtr);
     }

@@ -16,7 +16,8 @@ namespace SharpLab.Runtime.Internal {
         [DllImport("SharpLab.Native.Profiler")]
         public static unsafe extern AllocationMonitoringResult StopMonitoringCurrentThreadAllocations(
             out int allocationCount,
-            out void* allocations
+            out void* allocations,
+            out byte allocationLimitReached
         );
     }
 }

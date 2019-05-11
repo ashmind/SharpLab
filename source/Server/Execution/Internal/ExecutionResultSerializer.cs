@@ -207,6 +207,8 @@ namespace SharpLab.Server.Execution.Internal {
                 SerializeInspection(inspection, writer);
             }
             writer.WriteEndArray();
+            if (group.LimitReached)
+                writer.WriteProperty("limitReached", true);
             writer.WriteEndObject();
         }
     }

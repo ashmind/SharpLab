@@ -28,10 +28,10 @@
               <header>{{nested.title}}</header>
               <div class="inspection-value">{{nested.value}}</div>
             </li>
-            <li v-if="node.nestedNodesLimit" class="inspection-node-list-text-item">(truncated)</li>
+            <li v-if="node.nestedNodesLimit" class="inspection-nested-text-item">(truncated)</li>
           </ol>
         </li>
-        <li v-else class="inspection-node-list-text-item">{{node.size}} bytes (other)</li>
+        <li v-else class="inspection-nested-text-item">{{node.size}} bytes (other)</li>
       </template>
     </ol>
   </section>
@@ -50,7 +50,7 @@
             <header>{{nested.title}}</header>
             <div class="inspection-value">{{nested.value}}</div>
           </li>
-          <li v-if="node.nestedNodesLimit" class="inspection-node-list-text-item">(truncated)</li>
+          <li v-if="node.nestedNodesLimit" class="inspection-nested-text-item">(truncated)</li>
         </ol>
       </div>
     </div>

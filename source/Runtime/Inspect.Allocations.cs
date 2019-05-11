@@ -1,7 +1,6 @@
 using System;
+#if NETCORE
 using System.Collections.Generic;
-#if !NETSTANDARD2_0
-using System.Text;
 using SharpLab.Runtime.Internal;
 #endif
 
@@ -21,11 +20,12 @@ partial class Inspect {
             ProfilerNativeMethods.StartMonitoringCurrentThreadAllocations();
         }
         finally {
-            ProfilerNativeMethods.StopMonitoringCurrentThreadAllocations(out var _, out var _);
+            ProfilerNativeMethods.StopMonitoringCurrentThreadAllocations(out var _, out var _, out var _);
         }
 
         int allocationCount;
         void* allocations;
+        byte allocationLimitReached;
         ProfilerNativeMethods.AllocationMonitoringResult result;
         try {
             Flow.ReportingPaused = true;
@@ -33,7 +33,7 @@ partial class Inspect {
             action();
         }
         finally {
-            result = ProfilerNativeMethods.StopMonitoringCurrentThreadAllocations(out allocationCount, out allocations);
+            result = ProfilerNativeMethods.StopMonitoringCurrentThreadAllocations(out allocationCount, out allocations, out allocationLimitReached);
             Flow.ReportingPaused = false;
         }
 
@@ -56,7 +56,7 @@ partial class Inspect {
             inspections.Add(AllocationInspector.Inspect(@object));
         }
 
-        Output.Write(new InspectionGroup("Allocations", inspections));
+        Output.Write(new InspectionGroup("Allocations", inspections, allocationLimitReached == 1));
         #endif
     }
 }

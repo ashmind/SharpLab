@@ -6,7 +6,7 @@ function getBranchDisplayName(branch) {
         ? `${feature.language}: ${feature.name}`
         : branch.name;
     if (branch.commits)
-        displayName += `(${dateFormat(branch.commits[0].date, 'd mmm yyyy')})`;
+        displayName += ` (${dateFormat(branch.commits[0].date, 'd mmm yyyy')})`;
 
     return displayName;
 }

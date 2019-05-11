@@ -5,5 +5,6 @@
       <app-output-view-group v-if="inspection.type === 'inspection:group'" v-bind:group="inspection"></app-output-view-group>
       <sub-output-view-simple v-else-if="inspection.type === 'inspection:simple'" v-bind:inspection="inspection"></sub-output-view-simple>
     </li>
+    <li v-if="group.limitReached" class="inspection-nested-text-item">(truncated)</li>
   </ol>
 </div>

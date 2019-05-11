@@ -5,7 +5,7 @@
 #include "cor.h"
 #include "corprof.h"
 
-static const size_t MAX_MONITORED_ALLOCATIONS = 10;
+static const size_t MAX_MONITORED_ALLOCATIONS = 11; // 10 + 1 to show that there were more than 10
 
 struct Allocation {
     ObjectID objectId;
