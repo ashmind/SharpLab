@@ -19,8 +19,8 @@ namespace SharpLab.Server.Decompilation {
             Argument.NotNull(nameof(streams), streams);
             Argument.NotNull(nameof(codeWriter), codeWriter);
 
-            using (var dataTarget = DataTarget.AttachToProcess(Current.ProcessId, uint.MaxValue, AttachFlag.Passive))
-            using (var resultScope = JitCompileAndGetMethods(streams.AssemblyStream)) {
+            using (var resultScope = JitCompileAndGetMethods(streams.AssemblyStream)) 
+            using (var dataTarget = DataTarget.AttachToProcess(Current.ProcessId, uint.MaxValue, AttachFlag.Passive)) {
                 var currentMethodAddressRef = new Reference<ulong>();
                 var runtime = dataTarget.ClrVersions.Single(v => v.Flavor == ClrFlavor).CreateRuntime();
                 var translator = new IntelTranslator {
