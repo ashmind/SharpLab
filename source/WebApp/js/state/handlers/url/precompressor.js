@@ -23,7 +23,12 @@ const dictionaries = {
         'Program',
         'Main',
         'Console.WriteLine',
-        help.run.csharp
+        help.run.csharp,
+        'using System;',
+        'public static void Main()',
+        'public static class Program',
+        'Inspect.Allocations(() =>',
+        'Inspect.MemoryGraph('
     )
 };
 
