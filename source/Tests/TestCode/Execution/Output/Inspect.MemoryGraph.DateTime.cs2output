@@ -17,7 +17,7 @@ public static class Program {
       "offset": 0,
       "size": 8,
       "title": null,
-      "value": "01.01.2000 0:00:00",
+      "value": "01.01.2000 00:00:00",
       "nestedNodes": [
         {
           "id": 2,

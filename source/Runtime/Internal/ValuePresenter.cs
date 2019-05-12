@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -43,6 +44,15 @@ namespace SharpLab.Runtime.Internal {
                     break;
                 case ICollection c:
                     AppendEnumerableTo(builder, c.Cast<object>(), depth, limits);
+                    break;
+                case DateTime date:
+                    AppendStringTo(builder, date.ToString("dd.MM.yyyy HH:mm:ss.FFFFFFF", CultureInfo.InvariantCulture), limits);
+                    break;
+                case DateTimeOffset date:
+                    AppendStringTo(builder, date.ToString("dd.MM.yyyy HH:mm:ss.FFFFFFFK", CultureInfo.InvariantCulture), limits);
+                    break;
+                case IFormattable f:
+                    AppendStringTo(builder, f.ToString(null, CultureInfo.InvariantCulture) ?? "", limits);
                     break;
                 default:
                     AppendStringTo(builder, value.ToString() ?? "", limits);
