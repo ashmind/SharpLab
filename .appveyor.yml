@@ -12,7 +12,6 @@ cache:
 - C:\Users\appveyor\AppData\Local\Temp\1\chocolatey\dotnetcore-sdk -> .appveyor.yml
 build_script:
 - cmd: sl ci
-test: off
 artifacts:
 - path: source/Server.AspNetCore/bin/Release/netcoreapp3.0/publish/Server.AspNetCore.zip
   name: Server.AspNetCore.zip
