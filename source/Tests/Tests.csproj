@@ -7,6 +7,10 @@
     <NullableContextOptions>enable</NullableContextOptions>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(APPVEYOR)'!=''">
+    <DefineConstants>$(DefineConstants); APPVEYOR</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="TestCode\**\*.cs" />
     <None Remove="TestCode\**\*.*" />
