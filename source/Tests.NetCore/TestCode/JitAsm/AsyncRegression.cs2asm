@@ -122,12 +122,12 @@ C+<Foo>d__1.SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)
     L000d: jz L0030
     L000f: cmp qword [rcx], 0x0
     L0013: jz L002b
-    L0015: mov ecx, 0x21
+    L0015: mov ecx, 0x23
     L001a: mov rax, 0x<IGNORE>
     L0024: add rsp, 0x28
     L0028: jmp rax
     L002b: add rsp, 0x28
     L002f: ret
-    L0030: mov ecx, 0x36
+    L0030: mov ecx, 0x3c
     L0035: call System.ThrowHelper.ThrowArgumentNullException(System.ExceptionArgument)
     L003a: int3

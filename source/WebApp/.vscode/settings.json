@@ -55,5 +55,12 @@
         "ungrouped",
         "wwwroot"
     ],
-    "jest.pathToJest": "npm run test --"
+    "jest.pathToJest": "npm run test --",
+    "search.exclude": {
+        "/.git/": true,
+        "/node_modules/": true,
+        "/bin/": true,
+        "/obj/": true,
+        "/wwwroot/": true
+    },
 }

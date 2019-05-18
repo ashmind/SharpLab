@@ -21,7 +21,6 @@
   
   <ItemGroup>
     <PackageReference Include="AshMind.Extensions" Version="3.0.0-pre-20190406-01" />
-    <PackageReference Include="MirrorSharp.FSharp" version="0.12.0" />
     <PackageReference Include="MirrorSharp.Testing" version="1.0.1" />
     <PackageReference Include="Pedantic.IO.EmbeddedResource" version="0.9.0-pre-02" />
     <PackageReference Include="xunit" version="2.3.1" />

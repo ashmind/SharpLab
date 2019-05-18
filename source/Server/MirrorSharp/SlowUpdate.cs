@@ -105,8 +105,7 @@ namespace SharpLab.Server.MirrorSharp {
                 return;
             }
 
-            if (result is string s)
-            {
+            if (result is string s) {
                 writer.WriteValue(s);
                 return;
             }

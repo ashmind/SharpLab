@@ -31,11 +31,9 @@ namespace SharpLab.Server.Common {
                    .As<ILanguageAdapter>()
                    .SingleInstance();
 
-            #if !NETCOREAPP
             builder.RegisterType<FSharpAdapter>()
                    .As<ILanguageAdapter>()
                    .SingleInstance();
-            #endif
         }
 
         private void RegisterExternals(ContainerBuilder builder) {

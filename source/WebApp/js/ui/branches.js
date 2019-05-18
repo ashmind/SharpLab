@@ -26,7 +26,7 @@ function groupAndSortBranches(branches) {
 
         let group = groups[branch.group];
         if (!group) {
-            group = { name: branch.group, branches: [] };
+            group = { name: branch.group, kind: branch.kind, branches: [] };
             groups[branch.group] = group;
             result.groups.push(group);
         }

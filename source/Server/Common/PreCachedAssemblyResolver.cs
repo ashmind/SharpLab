@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Reflection;
-using AshMind.Extensions;
 using ICSharpCode.Decompiler.Metadata;
 using Mono.Cecil;
 
@@ -13,23 +11,27 @@ namespace SharpLab.Server.Common {
 
         public PreCachedAssemblyResolver(IReadOnlyCollection<ILanguageAdapter> languages) {
             foreach (var language in languages) {
-                language.ReferencedAssembliesTask.ContinueWith(assemblies => AddToCaches(assemblies));
+                language.AssemblyReferenceDiscoveryTask.ContinueWith(assemblyPaths => AddToCaches(assemblyPaths));
             }
         }
 
-        private void AddToCaches(IReadOnlyCollection<Assembly> assemblies) {
-            foreach (var assembly in assemblies) {
-                var file = new PEFile(assembly.GetAssemblyFile().FullName);
+        private void AddToCaches(IReadOnlyCollection<string> assemblyPaths) {
+            foreach (var path in assemblyPaths) {
+                var file = new PEFile(path);
                 _peFileCache.TryAdd(file.Name, file);
 
-                var definition = AssemblyDefinition.ReadAssembly(assembly.GetAssemblyFile().FullName);
+                var definition = AssemblyDefinition.ReadAssembly(path);
                 _cecilCache.TryAdd(definition.Name.Name, definition);
             }
         }
 
-        public PEFile Resolve(IAssemblyReference reference) {
-            if (!_peFileCache.TryGetValue(reference.Name, out var assembly))
+        public PEFile? Resolve(IAssemblyReference reference) {
+            if (!_peFileCache.TryGetValue(reference.Name, out var assembly)) {
+                if (reference is AssemblyReference assemblyReference && assemblyReference.Module.Name == "mscorlib")
+                    return null;
+
                 throw new Exception($"Assembly {reference.Name} was not found in cache.");
+            }
             return assembly;
         }
 

@@ -42,11 +42,11 @@
                               v-on:save="applyGistSave"></app-gist-manager>
             <div class="offline-only">[connection lost, reconnecting…]</div>
 
-            <app-select v-model="branch" class="option-branch option" v-show="options.language !== languages.fsharp">
+            <app-select v-model="branch" class="option-branch option">
               <option v-bind:value="null">Default ({build:roslyn-version})</option>
               <option v-for="branch in branches.ungrouped"
                       v-bind:value="branch">{{branch.displayName}}</option>
-              <optgroup v-bind:label="group.name" v-for="group in branches.groups">
+              <optgroup v-bind:label="group.name" v-for="group in branches.groups" v-show="group.kind !== 'roslyn' || options.language !== languages.fsharp">
                 <option v-for="branch in group.branches"
                         v-bind:value="branch">{{branch.displayName}}</option>
               </optgroup>

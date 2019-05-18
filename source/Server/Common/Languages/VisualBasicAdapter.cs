@@ -24,7 +24,7 @@ namespace SharpLab.Server.Common.Languages {
         private static readonly ImmutableArray<KeyValuePair<string, object>> ReleasePreprocessorSymbols = ImmutableArray<KeyValuePair<string, object>>.Empty;
 
         private readonly IAssemblyReferenceCollector _referenceCollector;
-        private ReferencedAssembliesLoadTaskSource _referencedAssembliesTaskSource = new ReferencedAssembliesLoadTaskSource();
+        private AssemblyReferenceDiscoveryTaskSource _assemblyReferenceDiscoveryTaskSource = new AssemblyReferenceDiscoveryTaskSource();
         private readonly IAssemblyDocumentationResolver _documentationResolver;
 
         public VisualBasicAdapter(IAssemblyReferenceCollector referenceCollector, IAssemblyDocumentationResolver documentationResolver) {
@@ -33,7 +33,7 @@ namespace SharpLab.Server.Common.Languages {
         }
 
         public string LanguageName => LanguageNames.VisualBasic;
-        public ReferencedAssembliesLoadTask ReferencedAssembliesTask => _referencedAssembliesTaskSource.Task;
+        public AssemblyReferenceDiscoveryTask AssemblyReferenceDiscoveryTask => _assemblyReferenceDiscoveryTaskSource.Task;
 
         public void SlowSetup(MirrorSharpOptions options) {
             // ReSharper disable HeapView.ObjectAllocation.Evident
@@ -61,7 +61,7 @@ namespace SharpLab.Server.Common.Languages {
                     typeof(XDocument).Assembly, // System.Xml.Linq
                     typeof(HttpUtility).Assembly // System.Web
                 ).ToImmutableList();
-                _referencedAssembliesTaskSource.Complete(referencedAssemblies);
+                _assemblyReferenceDiscoveryTaskSource.Complete(referencedAssemblies.Select(a => a.Location).ToImmutableList());
                 o.MetadataReferences = referencedAssemblies
                     .Select(a => (MetadataReference)MetadataReference.CreateFromFile(a.Location, documentation: _documentationResolver.GetDocumentation(a)))
                     .ToImmutableList();

@@ -150,7 +150,7 @@ async function createAppAsync() {
 
     if (data.options.branchId) {
         const branches = await branchesPromise;
-        data.branch = branches.filter(b => b.id === data.options.branchId)[0];
+        data.branch = branches.find(b => b.id === data.options.branchId);
     }
     data.serviceUrl = getServiceUrl(data.branch);
 
@@ -203,7 +203,7 @@ async function createAppAsync() {
 
     ui.watch('options.language', (newLanguage, oldLanguage) => {
         trackFeature('Language: ' + newLanguage);
-        if (newLanguage === languages.fsharp)
+        if (newLanguage === languages.fsharp && data.branch.kind === 'roslyn')
             data.branch = null;
 
         const target = data.options.target;

@@ -16,6 +16,6 @@ namespace SharpLab.Server.Common {
         ImmutableArray<string?> GetCallArgumentIdentifiers([NotNull] IWorkSession session, int callStartLine, int callStartColumn);
 
         // Note: in some cases this Task is never resolved (e.g. if VB is never used)
-        ReferencedAssembliesLoadTask ReferencedAssembliesTask { get; }
+        AssemblyReferenceDiscoveryTask AssemblyReferenceDiscoveryTask { get; }
     }
 }

@@ -48,9 +48,9 @@ namespace SharpLab.Server.Common.Languages {
                 typeof(HttpUtility).Assembly // System.Web
             ).ToImmutableList();
 
-            var referencedAssembliesTaskSource = new ReferencedAssembliesLoadTaskSource();
-            referencedAssembliesTaskSource.Complete(referencedAssemblies);
-            ReferencedAssembliesTask = referencedAssembliesTaskSource.Task;
+            var assemblyReferenceTaskSource = new AssemblyReferenceDiscoveryTaskSource();
+            assemblyReferenceTaskSource.Complete(referencedAssemblies.Select(a => a.Location).ToImmutableList());
+            AssemblyReferenceDiscoveryTask = assemblyReferenceTaskSource.Task;
 
             _references = referencedAssemblies
                 .Select(a => (MetadataReference)MetadataReference.CreateFromFile(a.Location, documentation: documentationResolver.GetDocumentation(a)))
@@ -58,7 +58,7 @@ namespace SharpLab.Server.Common.Languages {
         }
 
         public string LanguageName => LanguageNames.CSharp;
-        public ReferencedAssembliesLoadTask ReferencedAssembliesTask { get; }
+        public AssemblyReferenceDiscoveryTask AssemblyReferenceDiscoveryTask { get; }
 
         public void SlowSetup(MirrorSharpOptions options) {
             // ReSharper disable HeapView.ObjectAllocation.Evident

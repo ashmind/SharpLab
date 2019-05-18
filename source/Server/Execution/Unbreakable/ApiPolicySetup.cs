@@ -11,10 +11,8 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Web;
-#if !NETCOREAPP
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
-#endif
 using Microsoft.VisualBasic.CompilerServices;
 using AshMind.Extensions;
 using Unbreakable;
@@ -59,7 +57,6 @@ namespace SharpLab.Server.Execution.Unbreakable {
                 n => n.Type(typeof(SharpLabObjectExtensions), Allowed)
                       .Type(typeof(Inspect), Allowed)
             )
-            #if !NETCOREAPP
             .Namespace("Microsoft.FSharp.Core", Neutral, SetupFSharpCore)
             .Namespace("Microsoft.FSharp.Collections", Neutral,
                 n => n.Type(typeof(FSharpList<>), Allowed)
@@ -71,7 +68,6 @@ namespace SharpLab.Server.Execution.Unbreakable {
                                 .Member(nameof(SeqModule.ToList), Allowed, CollectedEnumerableArgumentRewriter.Default)
                       )
             )
-            #endif
             .Namespace("Microsoft.VisualBasic", Neutral, SetupMicrosoftVisualBasic)
             .Namespace("Microsoft.VisualBasic.CompilerServices", Neutral,
                 n => n.Type(typeof(Conversions), Allowed,
@@ -288,7 +284,6 @@ namespace SharpLab.Server.Execution.Unbreakable {
                 );
         }
 
-        #if !NETCOREAPP
         private static void SetupFSharpCore(NamespacePolicy namespacePolicy) {
             namespacePolicy
                 .Type(typeof(CompilationArgumentCountsAttribute), Allowed)
@@ -343,7 +338,6 @@ namespace SharpLab.Server.Execution.Unbreakable {
                 )
                 .Type(typeof(Unit), Allowed);
         }
-        #endif
 
         private static void SetupMicrosoftVisualBasic(NamespacePolicy namespacePolicy) {
             namespacePolicy

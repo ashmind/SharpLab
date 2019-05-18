@@ -335,7 +335,6 @@ namespace SharpLab.Tests {
             Assert.Equal("Test", result.ExtensionResult.GetOutputAsString());
         }
 
-        #if !NETCOREAPP
         [Fact]
         public async Task SlowUpdate_ExecutesFSharp() {
             var driver = await NewTestDriverAsync(@"
@@ -365,13 +364,10 @@ namespace SharpLab.Tests {
             AssertIsSuccess(result);
             Assert.Equal("Test\nReturn: 0", result.ExtensionResult.GetOutputAsString());
         }
-        #endif
 
         [Theory]
         [InlineData("Regression.CertainLoop.cs")]
-        #if !NETCOREAPP
         [InlineData("Regression.FSharpNestedLambda.fs", LanguageNames.FSharp)]
-        #endif
         [InlineData("Regression.NestedAnonymousObject.cs")]
         [InlineData("Regression.ReturnRef.cs")]
         public async Task SlowUpdate_DoesNotFail(string resourceName, string languageName = LanguageNames.CSharp) {

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <AssemblyName>SharpLab.Tests.NetCore</AssemblyName>
@@ -29,7 +29,8 @@
   <ItemGroup>
     <Compile Include="../Tests/**/*.cs" Exclude="../Tests/TestCode/**/*.*;../Tests/obj/**/*.*" />
 
-    <EmbeddedResource Include="../Tests/TestCode/**/*.*" Exclude="../Tests/TestCode/**/*.fs2*;../Tests/TestCode/**/*.cs2il;../Tests/TestCode/**/*.cs2asm;../Tests/TestCode/**/Inspect.Heap.*;../Tests/TestCode/**/Inspect.Memory*">
+    <EmbeddedResource Include="../Tests/TestCode/**/*.*"
+                      Exclude="../Tests/TestCode/**/*.fs2cs;../Tests/TestCode/**/*.fs2il;../Tests/TestCode/**/*.fs2asm;../Tests/TestCode/**/*.cs2il;../Tests/TestCode/**/*.cs2asm;../Tests/TestCode/**/Inspect.Heap.*;../Tests/TestCode/**/Inspect.Memory*">
       <Link>TestCode/%(RecursiveDir)%(Filename)%(Extension)</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="../Tests/TestData/language-syntax-explanations/*.yml">

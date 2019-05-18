@@ -68,8 +68,8 @@ function Login-ToAzure($azureConfig) {
 
 function Get-PredefinedBranches() {
     $x64Url = "http://sl-a-x64.sharplab.local"
-    $coreX64Url = "http://sl-a-core-x64.sharplab.local"
-    $coreX64ProfiledUrl = "http://localhost:54100"
+    $coreX64Url = "http://localhost:54100"
+    $coreX64ProfiledUrl = "http://localhost:54200"
     if ($azure) {
         $x64Url = "https://sl-a-x64.azurewebsites.net"
         $coreX64Url = "https://sl-a-core-x64.azurewebsites.net"
@@ -81,16 +81,19 @@ function Get-PredefinedBranches() {
         name = 'x64'
         url = $x64Url
         group = 'Platforms'
+        kind = 'platform'
     }, [ordered]@{
         id = 'core-x64'
         name = '.NET Core (x64)'
         url = $coreX64Url
         group = 'Platforms'
+        kind = 'platform'
     }, [ordered]@{
         id = 'core-x64-profiled'
         name = '.NET Core (x64, Profiler)'
         url = $coreX64ProfiledUrl
         group = 'Platforms'
+        kind = 'platform'
     })
 }
 
@@ -205,6 +208,7 @@ try {
             id = $branchFsName -replace '^dotnet-',''
             name = $branchInfo.name
             group = 'Roslyn branches'
+            kind = 'roslyn'
             url = $url
             feature = $roslynBranchFeatureMap[$branchInfo.name]
             commits = $branchInfo.commits

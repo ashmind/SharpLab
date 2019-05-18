@@ -23,11 +23,9 @@ namespace SharpLab.Server.Execution {
                    .As<IAssemblyRewriter>()
                    .SingleInstance();
 
-            #if !NETCOREAPP
             builder.RegisterType<FSharpEntryPointRewriter>()
                    .As<IAssemblyRewriter>()
                    .SingleInstance();
-            #endif
         }
     }
 }

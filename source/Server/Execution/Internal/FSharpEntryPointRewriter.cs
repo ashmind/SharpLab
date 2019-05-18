@@ -1,4 +1,3 @@
-#if !NETCOREAPP
 using Microsoft.FSharp.Core;
 using MirrorSharp.Advanced;
 using MirrorSharp.FSharp.Advanced;
@@ -66,4 +65,3 @@ namespace SharpLab.Server.Execution.Internal {
         }
     }
 }
-#endif

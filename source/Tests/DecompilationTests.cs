@@ -62,9 +62,7 @@ namespace SharpLab.Tests {
         //[InlineData("Variable.FromArgumentToCall.cs2cs")] // https://github.com/ashmind/SharpLab/issues/128
         [InlineData("Preprocessor.IfDebug.cs2cs")] // https://github.com/ashmind/SharpLab/issues/161
         [InlineData("Preprocessor.IfDebug.vb2cs")] // https://github.com/ashmind/SharpLab/issues/161
-        #if !NETCOREAPP
         [InlineData("FSharp.Preprocessor.IfDebug.fs2cs")] // https://github.com/ashmind/SharpLab/issues/161
-        #endif
         [InlineData("Using.Simple.cs2cs")] // https://github.com/ashmind/SharpLab/issues/185
         [InlineData("StringInterpolation.Simple.cs2cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_InDebug(string resourceName) {
@@ -104,7 +102,6 @@ namespace SharpLab.Tests {
             Assert.Empty(result.Diagnostics);
         }
 
-        #if !NETCOREAPP
         [Theory]
         [InlineData("FSharp.EmptyType.fs2il")]
         [InlineData("FSharp.SimpleMethod.fs2cs")] // https://github.com/ashmind/SharpLab/issues/119
@@ -120,7 +117,6 @@ namespace SharpLab.Tests {
             Assert.True(errors.IsNullOrEmpty(), errors);
             data.AssertIsExpected(decompiledText, _output);
         }
-        #endif
 
         [Theory]
         [InlineData("JitAsm.Simple.cs2asm")]
@@ -173,10 +169,8 @@ namespace SharpLab.Tests {
         [InlineData("Ast.EmptyClass.cs2ast")]
         [InlineData("Ast.StructuredTrivia.cs2ast")]
         [InlineData("Ast.LiteralTokens.cs2ast")]
-        #if !NETCOREAPP
         [InlineData("Ast.EmptyType.fs2ast")]
         [InlineData("Ast.LiteralTokens.fs2ast")]
-        #endif
         public async Task SlowUpdate_ReturnsExpectedResult_ForAst(string resourceName) {
             var data = TestCode.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);

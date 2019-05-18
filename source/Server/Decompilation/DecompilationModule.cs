@@ -17,11 +17,9 @@ namespace SharpLab.Server.Decompilation {
             builder.RegisterType<RoslynAstTarget>()
                    .As<IAstTarget>()
                    .SingleInstance();
-            #if !NETCOREAPP
             builder.RegisterType<FSharpAstTarget>()
                    .As<IAstTarget>()
                    .SingleInstance();
-            #endif
 
             builder.RegisterType<CSharpDecompiler>()
                    .As<IDecompiler>()

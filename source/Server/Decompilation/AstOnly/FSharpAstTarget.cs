@@ -1,4 +1,3 @@
-#if !NETCOREAPP
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,15 +7,15 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using AshMind.Extensions;
-using JetBrains.Annotations;
 using Microsoft.FSharp.Collections;
-using Microsoft.FSharp.Compiler;
+using FSharp.Compiler;
 using MirrorSharp.Advanced;
 using MirrorSharp.FSharp.Advanced;
 using SharpLab.Server.Decompilation.Internal;
 
 namespace SharpLab.Server.Decompilation.AstOnly {
+    using Range = FSharp.Compiler.Range;
+
     public class FSharpAstTarget : IAstTarget {
         private delegate void SerializeChildAction<T>(T item, IFastJsonWriter writer, string parentPropertyName, ref bool childrenStarted, IFSharpSession session);
         private delegate void SerializeChildrenAction(object parent, IFastJsonWriter writer, ref bool childrenStarted, IFSharpSession session);
@@ -87,8 +86,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                     writer.WriteValueFromParts("'", @char.Item, "'");
                 }
                 else {
-                    var getter = ConstValueGetters.Value.GetValueOrDefault(@const.GetType());
-                    if (getter != null) {
+                    if (ConstValueGetters.Value.TryGetValue(@const.GetType(), out var getter)) {
                         writer.WritePropertyName("value");
                         writer.WriteValue(getter(@const));
                     }
@@ -215,7 +213,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             if (propertyType == typeof(FSharpList<Ast.Ident>))
                 return Methods.SerializeIdentList;
 
-            if (propertyType.IsGenericTypeDefinedAs(typeof(FSharpList<>))) {
+            if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(FSharpList<>)) {
                 var elementType = propertyType.GetGenericArguments()[0];
                 if (!IsNodeType(elementType))
                     return null;
@@ -258,12 +256,14 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 && type != typeof(Ast.QualifiedNameOfFile)
                 && type != typeof(Ast.XmlDocCollector)
                 && type != typeof(Ast.PreXmlDoc)
+                && type != typeof(Ast.SynModuleOrNamespaceKind)
                 && !(type.Name.StartsWith("SequencePoint"));
         }
 
-        private static string GetTagName(object node) {
-            var getter = TagNameGetters.Value.GetValueOrDefault(node.GetType());
-            return getter?.Invoke(node);
+        private static string? GetTagName(object node) {
+            return TagNameGetters.Value.TryGetValue(node.GetType(), out var getter)
+                 ? getter.Invoke(node)
+                 : null;
         }
 
         private static IReadOnlyDictionary<Type, Func<object, string>> CompileTagNameGetters() {
@@ -334,4 +334,3 @@ namespace SharpLab.Server.Decompilation.AstOnly {
         public IReadOnlyCollection<string> SupportedLanguageNames { get; } = new[] {"F#"};
     }
 }
-#endif

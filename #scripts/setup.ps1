@@ -61,7 +61,6 @@ if ($principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
     Start-IISCommitDelay
     New-SLSiteUnlessExists "sharplab.local" -RelativePath "source/WebApp" -Use32Bit
     New-SLSiteUnlessExists "sl-a-x64.sharplab.local" -RelativePath "source/Server.Owin"
-    New-SLSiteUnlessExists "sl-a-core-x64.sharplab.local" -RelativePath "source/Server.AspNetCore/bin/Debug/netcoreapp3.0/publish"
     Stop-IISCommitDelay
 }
 else {
@@ -71,8 +70,9 @@ else {
 Write-Host "Generating stub !branches.json"
 if (!(Test-Path './source/WebApp/wwwroot/!branches.json')) {
     $json = ConvertTo-Json @(
-        @{ id = 'x64'; name = 'x64'; url = 'http://sl-a-x64.sharplab.local'; group = 'Platforms' },
-        @{ id = 'core-x64'; name = '.NET Core x64'; url = 'http://sl-a-core-x64.sharplab.local'; group = 'Platforms' }
+        @{ id = 'x64'; name = 'x64'; url = 'http://sl-a-x64.sharplab.local'; group = 'Platforms'; kind = 'platform' },
+        @{ id = 'core-x64'; name = '.NET Core (x64)'; url = 'http://localhost:54100'; group = 'Platforms'; kind = 'platform' },
+        @{ id = 'core-x64-profiled'; name = '.NET Core (x64, Profiler)'; url = 'http://localhost:54200'; group = 'Platforms'; kind = 'platform' }
     )
     [IO.File]::WriteAllText("$(Get-Location)/source/WebApp/wwwroot/!branches.json", $json)
 }
