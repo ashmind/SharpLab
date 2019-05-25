@@ -48,7 +48,8 @@
                       v-bind:value="branch">{{branch.displayName}}</option>
               <optgroup v-bind:label="group.name" v-for="group in branches.groups" v-show="group.kind !== 'roslyn' || options.language !== languages.fsharp">
                 <option v-for="branch in group.branches"
-                        v-bind:value="branch">{{branch.displayName}}</option>
+                        v-bind:value="branch"
+                        v-show="branch.id !== 'core-x64-profiled' || options.language !== languages.fsharp">{{branch.displayName}}</option>
               </optgroup>
             </app-select>
             <div class="mobile-menu"></div>

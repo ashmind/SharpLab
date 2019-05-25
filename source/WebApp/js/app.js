@@ -203,8 +203,10 @@ async function createAppAsync() {
 
     ui.watch('options.language', (newLanguage, oldLanguage) => {
         trackFeature('Language: ' + newLanguage);
-        if (newLanguage === languages.fsharp && data.branch.kind === 'roslyn')
-            data.branch = null;
+        if (newLanguage === languages.fsharp) {
+            if (data.branch.kind === 'roslyn' || data.branch.id === 'core-x64-profiled')
+                data.branch = null;
+        }
 
         const target = data.options.target;
         if (data.code !== defaults.getCode(oldLanguage, target))
