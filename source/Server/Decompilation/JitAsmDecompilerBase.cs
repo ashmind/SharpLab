@@ -54,7 +54,7 @@ namespace SharpLab.Server.Decompilation {
             if (!ProfilerState.Active)
                 return;
 
-            writer.WriteLine("; Note: Running under profiler, which affects JIT assembly in heap allocations.", ProfilerState.Flags);
+            writer.WriteLine("; Note: Running under profiler, which affects JIT assembly in heap allocations.");
         }
 
         private static string ResolveSymbol(ClrRuntime runtime, Instruction instruction, long addr, ulong currentMethodAddress) {
