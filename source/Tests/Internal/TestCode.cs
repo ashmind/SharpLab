@@ -72,6 +72,9 @@ namespace SharpLab.Tests.Internal {
                          + m.Groups["header"].Value
                          + ignored;
                 }, RegexOptions.Singleline);
+
+                // ignoring paths in exception stack traces
+                result = Regex.Replace(result, @"(?:/[A-Za-z]{2,}/|[A-Za-z]:[/\\])[^\r\n]+", "<IGNORE>");
             }
 
             return result;

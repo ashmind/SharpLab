@@ -214,19 +214,19 @@ namespace SharpLab.Tests {
             Assert.Equal(expectedOutput, result.ExtensionResult.GetOutputAsString());
         }
 
-
         [Theory]
         [InlineData("Output.Inspect.Heap.Simple.cs2output")]
         [InlineData("Output.Inspect.Heap.Struct.cs2output")]
         [InlineData("Output.Inspect.Heap.Struct.Nested.cs2output")]
         [InlineData("Output.Inspect.Heap.Int32.cs2output")]
-        public async Task SlowUpdate_IncludesInspectHeapInOutput(string resourceName) {
+        [InlineData("Output.Inspect.Heap.Null.cs2output", true)]
+        public async Task SlowUpdate_IncludesInspectHeapInOutput(string resourceName, bool allowExceptions = false) {
             var code = TestCode.FromResource("Execution." + resourceName);
             var driver = await NewTestDriverAsync(code.Original);
 
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
 
-            AssertIsSuccess(result);
+            AssertIsSuccess(result, allowRuntimeException: allowExceptions);
             code.AssertIsExpected(result.ExtensionResult.GetOutputAsString(), _testOutputHelper);
         }
 
@@ -236,6 +236,7 @@ namespace SharpLab.Tests {
         [InlineData("Output.Inspect.MemoryGraph.Arrays.cs2output")]
         [InlineData("Output.Inspect.MemoryGraph.Variables.cs2output")]
         [InlineData("Output.Inspect.MemoryGraph.DateTime.cs2output")] // https://github.com/ashmind/SharpLab/issues/379
+        [InlineData("Output.Inspect.MemoryGraph.Null.cs2output")]
         public async Task SlowUpdate_IncludesInspectMemoryGraphInOutput(string resourceName) {
             var code = TestCode.FromResource("Execution." + resourceName);
             var driver = await NewTestDriverAsync(code.Original);

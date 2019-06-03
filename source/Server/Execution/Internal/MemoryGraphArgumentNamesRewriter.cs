@@ -56,7 +56,7 @@ namespace SharpLab.Server.Execution.Internal {
                     continue;
 
                 var callee = (instruction.Operand as MethodReference)?.Resolve();
-                if (!IsInspectMemoryGraph(callee))
+                if (callee == null || !IsInspectMemoryGraph(callee))
                     continue;
 
                 RewriteInspectMemoryGraph(method, il, instruction, session, argumentMethods);

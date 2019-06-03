@@ -11,6 +11,9 @@ public static partial class Inspect {
     private static ClrRuntime _runtime;
 
     public static void Heap(object @object) {
+        if (@object == null)
+            throw new Exception($"Inspect.Heap can't inspect null, as it does not point to a valid location on the heap.");
+
         EnsureRuntime();
 
         var address = (ulong)GetHeapPointer(@object);

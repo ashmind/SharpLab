@@ -55,9 +55,8 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             public static readonly IReadOnlyDictionary<TEnum, string> Strings = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToDictionary(e => e, e => e.ToString("G", null));
         }
 
-        public Task<object?> GetAstAsync(IWorkSession session, CancellationToken cancellationToken) {
-            var parseTree = session.FSharp().GetLastParseResults()?.ParseTree?.Value;
-            return Task.FromResult((object?)(parseTree as Ast.ParsedInput.ImplFile));
+        public Task<object> GetAstAsync(IWorkSession session, CancellationToken cancellationToken) {
+            return Task.FromResult((object)session.FSharp().GetLastParseResults().ParseTree.Value);
         }
 
         public void SerializeAst(object ast, IFastJsonWriter writer, IWorkSession session) {

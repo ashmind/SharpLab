@@ -2,5 +2,7 @@
   <PropertyGroup>
     <SolutionDir Condition="'$(SolutionDir)'==''">$(MSBuildThisFileDirectory)</SolutionDir>
     <SourcePathSharpLabTargetFrameworksFix>true</SourcePathSharpLabTargetFrameworksFix>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>RS1022</NoWarn>
   </PropertyGroup>
 </Project>

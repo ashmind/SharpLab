@@ -17,9 +17,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             _operationPropertySerializer = operationPropertySerializer;
         }
 
-        #pragma warning disable CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
         public async Task<object> GetAstAsync(IWorkSession session, CancellationToken cancellationToken) {
-        #pragma warning restore CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
             var document = session.Roslyn.Project.Documents.Single();
             var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);

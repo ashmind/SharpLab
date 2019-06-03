@@ -38,7 +38,7 @@ namespace SharpLab.Runtime.Internal {
                 AddNestedNodes(stackNode, value);
             }
             else {
-                AddHeapObject(stackNode, value);
+                AddHeapObject(stackNode, value!);
             }
             return this;
         }
@@ -57,7 +57,10 @@ namespace SharpLab.Runtime.Internal {
             _references.Add(new MemoryGraphReference(referencingNode, heapNode));
         }
 
-        private void AddNestedNodes(MemoryGraphNode parentNode, object @object) {
+        private void AddNestedNodes(MemoryGraphNode parentNode, object? @object) {
+            if (@object == null)
+                return;
+
             var objectType = @object.GetType();
             if (@object is string || objectType.IsPrimitive)
                 return;

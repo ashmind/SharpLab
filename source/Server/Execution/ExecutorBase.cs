@@ -69,7 +69,7 @@ namespace SharpLab.Server.AspNetCore.Execution {
                     rewrittenStream.Seek(0, SeekOrigin.Begin);
                     var (result, exception) = ExecuteWithIsolation(rewrittenStream, guardToken, session);
                     if (ShouldMonitorException(exception))
-                        _monitor.Exception(exception, session);
+                        _monitor.Exception(exception!, session);
 
                     return result;
                 }
