@@ -73,8 +73,8 @@ namespace SharpLab.Tests.Internal {
                          + ignored;
                 }, RegexOptions.Singleline);
 
-                // ignoring paths in exception stack traces
-                result = Regex.Replace(result, @"(?:/[A-Za-z]{2,}/|[A-Za-z]:[/\\])[^\r\n]+", "<IGNORE>");
+                // ignoring paths in exception stack traces. can't use <IGNORE> as paths are simply not present in Release mode
+                result = Regex.Replace(result, @" in (?:/[A-Za-z]{2,}/|[A-Za-z]:[/\\])[^\r\n]+", "");
             }
 
             return result;
