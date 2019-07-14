@@ -46,13 +46,13 @@ namespace SharpLab.Tests.Internal {
             return new TestCode(code, expected, fromTo[0], fromTo[1]);
         }
 
-        public void AssertIsExpected(string result, ITestOutputHelper output) {
+        public void AssertIsExpected(string? result, ITestOutputHelper output) {
             var cleanResult = RemoveNonDeterminism(result);
             output.WriteLine(cleanResult ?? "<null>");
             Assert.Equal(_expected, cleanResult);
         }
 
-        private string? RemoveNonDeterminism(string result) {
+        private string? RemoveNonDeterminism(string? result) {
             if (result == null)
                 return null;
 

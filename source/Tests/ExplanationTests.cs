@@ -65,13 +65,13 @@ namespace SharpLab.Tests {
             return driver;
         }
 
-        #pragma warning disable CS8618 // Non-nullable field is uninitialized.
         private class ExplanationData {
-        #pragma warning restore CS8618 // Non-nullable field is uninitialized.
+            #pragma warning disable CS8618 // Non-nullable field is uninitialized.
             public string Code { get; set; }
             public string Name { get; set; }
             public string Text { get; set; }
             public string Link { get; set; }
+            #pragma warning restore CS8618 // Non-nullable field is uninitialized.
         }
     }
 }

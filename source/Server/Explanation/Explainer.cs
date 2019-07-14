@@ -63,7 +63,9 @@ namespace SharpLab.Server.Explanation {
 
         public void Serialize(ExplanationResult result, IFastJsonWriter writer) {
             writer.WriteStartArray();
+            #pragma warning disable CS8619 // https://github.com/dotnet/roslyn/issues/35131
             foreach (var (fragment, explanation) in result.Explanations) {
+            #pragma warning restore CS8619
                 writer.WriteStartObject();
                 writer.WritePropertyName("code");
                 using (var code = writer.OpenString()) {

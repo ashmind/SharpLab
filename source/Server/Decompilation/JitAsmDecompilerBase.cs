@@ -57,7 +57,7 @@ namespace SharpLab.Server.Decompilation {
             writer.WriteLine("; Note: Running under profiler, which affects JIT assembly in heap allocations.");
         }
 
-        private static string ResolveSymbol(ClrRuntime runtime, Instruction instruction, long addr, ulong currentMethodAddress) {
+        private static string? ResolveSymbol(ClrRuntime runtime, Instruction instruction, long addr, ulong currentMethodAddress) {
             var operand = instruction.Operands.Length > 0 ? instruction.Operands[0] : null;
             if (operand?.PtrOffset == 0) {
                 var lvalue = GetOperandLValue(operand!);
@@ -177,10 +177,10 @@ namespace SharpLab.Server.Decompilation {
             }
         }
 
-        #pragma warning disable CS8618 // Non-nullable field is uninitialized.
         private class Reference<T> {
-        #pragma warning restore CS8618 // Non-nullable field is uninitialized.
+            #pragma warning disable CS8618 // Non-nullable field is uninitialized.
             public T Value { get; set; }
+            #pragma warning restore CS8618 // Non-nullable field is uninitialized.
         }
 
         private static class Remote {

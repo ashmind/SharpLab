@@ -95,7 +95,7 @@ namespace SharpLab.Runtime.Internal {
                 : MemoryGraphNode.Nested(title, ValuePresenter.ToStringBuilder(value));
             parentNode.AddNestedNode(nestedNode);
             if (isReference)
-                AddHeapObject(nestedNode, value);
+                AddHeapObject(nestedNode, value!);
         }
 
         private MemoryGraphNode? FindExistingNode(object heapKey) {

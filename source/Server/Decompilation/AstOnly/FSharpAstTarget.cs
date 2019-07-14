@@ -193,7 +193,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 if (method == null)
                     continue;
 
-                var propertyName = property.Name;
+                var propertyName = (string?)property.Name;
                 if (Regex.IsMatch(propertyName, @"^Item\d*$"))
                     propertyName = null;
                 body.Add(Expression.Call(method, Expression.Property(node, property), writer, Expression.Constant(propertyName, typeof(string)), refChildrenStarted, session));

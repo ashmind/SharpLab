@@ -107,9 +107,9 @@ namespace SharpLab.Server.Execution.Internal {
                 if (!hasSequencePoint && lastLine == null)
                     continue;
 
-                if (hasSequencePoint && sequencePoint.StartLine != lastLine) {
+                if (hasSequencePoint && sequencePoint!.StartLine != lastLine) {
                     if (i == 0)
-                        TryInsertReportMethodArguments(il, instruction, method, flow, session, ref i);
+                        TryInsertReportMethodArguments(il, instruction, sequencePoint, method, flow, session, ref i);
 
                     il.InsertBeforeAndRetargetAll(instruction, il.CreateLdcI4Best(sequencePoint.StartLine));
                     il.InsertBefore(instruction, il.CreateCall(flow.ReportLineStart));
@@ -133,11 +133,10 @@ namespace SharpLab.Server.Execution.Internal {
             RewriteExceptionHandlers(il, flow);
         }
 
-        private void TryInsertReportMethodArguments(ILProcessor il, Instruction instruction, MethodDefinition method, ReportMethods flow, IWorkSession session, ref int index) {
+        private void TryInsertReportMethodArguments(ILProcessor il, Instruction instruction, SequencePoint sequencePoint, MethodDefinition method, ReportMethods flow, IWorkSession session, ref int index) {
             if (!method.HasParameters)
                 return;
 
-            var sequencePoint = method.DebugInformation?.GetSequencePoint(instruction);
             var parameterLines = _languages[session.LanguageName]
                 .GetMethodParameterLines(session, sequencePoint.StartLine, sequencePoint.StartColumn);
 
