@@ -50,7 +50,7 @@ namespace SharpLab.Server.Common.Languages {
 
                 var referencedAssemblyPaths = referencedAssemblies.Select(a => a.Location).ToImmutableArray();
                 if (assemblyOfObject.GetName().Name != "mscorlib") {
-                    var mscorlibPath = Path.Combine(Path.GetDirectoryName(assemblyOfObject.Location), "mscorlib.dll");
+                    var mscorlibPath = Path.Combine(Path.GetDirectoryName(assemblyOfObject.Location)!, "mscorlib.dll");
                     referencedAssemblyPaths = referencedAssemblyPaths.Add(mscorlibPath);
                 }
                 _referencedAssembliesTaskSource.Complete(referencedAssemblyPaths);

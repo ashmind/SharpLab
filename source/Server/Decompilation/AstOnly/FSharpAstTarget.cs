@@ -284,7 +284,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
         private static Func<object, string> CompileTagNameGetter(Type astType, Type tagsType) {
             var tagMap = tagsType
                 .GetFields()
-                .OrderBy(f => (int)f.GetValue(null))
+                .OrderBy(f => (int)f.GetValue(null)!)
                 .Select(f => f.Name)
                 .ToArray();
             var nodeUntyped = Expression.Parameter(typeof(object));

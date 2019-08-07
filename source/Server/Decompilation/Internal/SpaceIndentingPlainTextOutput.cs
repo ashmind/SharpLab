@@ -26,7 +26,7 @@ namespace SharpLab.Server.Decompilation.Internal {
 
         private int IndentSize => _indentLevel * IndentString.Length;
 
-        public override string ToString() {
+        public override string? ToString() {
             return _writer.ToString();
         }
 

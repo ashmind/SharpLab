@@ -13,7 +13,8 @@ namespace SharpLab.Server.AspNetCore.Platform {
         }
 
         protected override Assembly Load(AssemblyName assemblyName) {
-            if (assemblyName.Name == "netstandard" || assemblyName.Name == "mscorlib" || assemblyName.Name.StartsWith("System.") || _shouldShareAssembly(assemblyName))
+            var name = assemblyName.Name ?? "";
+            if (name == "netstandard" || name == "mscorlib" || name.StartsWith("System.") || _shouldShareAssembly(assemblyName))
                 return Assembly.Load(assemblyName);
 
             return LoadFromAssemblyPath(Path.Combine(AppContext.BaseDirectory, assemblyName.Name + ".dll"));

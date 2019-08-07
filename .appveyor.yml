@@ -5,7 +5,7 @@ environment:
 install:
 - ps: |-
     Install-Product node 8.11 x64
-    choco install dotnetcore-sdk --version 3.0.100-preview3-010431 --pre
+    choco install dotnetcore-sdk --version 3.0.100-preview7-012821 --pre
 cache:
 - source/WebApp/node_modules
 - C:\Users\appveyor\AppData\Local\Temp\1\chocolatey\vcredist140 -> .appveyor.yml

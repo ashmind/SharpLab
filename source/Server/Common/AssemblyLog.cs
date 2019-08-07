@@ -16,10 +16,11 @@ namespace SharpLab.Server.Common {
         [Conditional("DEBUG")]
         public static void Log(string stepName, AssemblyDefinition assembly) {
             #if DEBUG
-            if (_pathFormat.Value == null)
+            var format = _pathFormat.Value;
+            if (format == null)
                 return;
 
-            var path = string.Format(_pathFormat.Value, stepName);
+            var path = string.Format(format, stepName);
             var directoryPath = Path.GetDirectoryName(path);
             if (!Directory.Exists(directoryPath))
                 Directory.CreateDirectory(directoryPath);

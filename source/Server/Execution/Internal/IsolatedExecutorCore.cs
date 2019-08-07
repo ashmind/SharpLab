@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using Unbreakable;
 using Unbreakable.Runtime;
 using SharpLab.Runtime.Internal;
-using SharpLab.Server.Common;
 
 namespace SharpLab.Server.Execution {
     public static class IsolatedExecutorCore {
@@ -16,6 +15,8 @@ namespace SharpLab.Server.Execution {
                 InspectionSettings.ProfilerActive = profilerActive;
 
                 var main = assembly.EntryPoint;
+                if (main == null)
+                    throw new ArgumentException("Entry point not found in " + assembly, nameof(assembly));
                 using (new RuntimeGuardToken(guardTokenGuid).Scope(NewRuntimeGuardSettings())) {
                     var args = main.GetParameters().Length > 0 ? new object[] { new string[0] } : null;
                     var stackStart = stackalloc byte[1];
@@ -28,7 +29,7 @@ namespace SharpLab.Server.Execution {
             }
             catch (Exception ex) {
                 if (ex is TargetInvocationException invocationEx)
-                    ex = invocationEx.InnerException;
+                    ex = invocationEx.InnerException ?? ex;
 
                 if (ex is RegexMatchTimeoutException)
                     ex = new TimeGuardException("Time limit reached while evaluating a Regex.\r\nNote that timeout was added by SharpLab — in real code this would not throw, but might run for a very long time.", ex);

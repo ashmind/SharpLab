@@ -5,6 +5,9 @@ namespace SharpLab.Server.Common {
     public static class DotEnv {
         public static void Load() {
             var rootPath = AppDomain.CurrentDomain.BaseDirectory;
+            if (rootPath == null)
+                return;
+
             var envPath = Path.Combine(rootPath, ".env");
             if (!File.Exists(envPath))
                 return;

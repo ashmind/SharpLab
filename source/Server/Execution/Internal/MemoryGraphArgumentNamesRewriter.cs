@@ -13,9 +13,9 @@ namespace SharpLab.Server.Execution.Internal {
         private readonly IReadOnlyDictionary<string, ILanguageAdapter> _languages;
 
         private static readonly MethodInfo AllocateNextMethod =
-            typeof(MemoryGraphArgumentNames).GetMethod(nameof(MemoryGraphArgumentNames.AllocateNext));
+            typeof(MemoryGraphArgumentNames).GetMethod(nameof(MemoryGraphArgumentNames.AllocateNext))!;
         private static readonly MethodInfo AddToNextMethod =
-            typeof(MemoryGraphArgumentNames).GetMethod(nameof(MemoryGraphArgumentNames.AddToNext));
+            typeof(MemoryGraphArgumentNames).GetMethod(nameof(MemoryGraphArgumentNames.AddToNext))!;
 
         public MemoryGraphArgumentNamesRewriter(IReadOnlyList<ILanguageAdapter> languages) {
             _languages = languages.ToDictionary(l => l.LanguageName);

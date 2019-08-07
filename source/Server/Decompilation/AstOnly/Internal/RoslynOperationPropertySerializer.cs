@@ -13,7 +13,7 @@ namespace SharpLab.Server.Decompilation.Internal {
     using SerializePropertiesAction = Action<IOperation, IFastJsonWriter>;
 
     public class RoslynOperationPropertySerializer : IRoslynOperationPropertySerializer {
-        private static readonly MethodInfo ObjectToString = typeof(object).GetMethod(nameof(ToString));
+        private static readonly MethodInfo ObjectToString = typeof(object).GetMethod(nameof(ToString))!;
         private static readonly HashSet<Type> DirectlyWritableTypes = new HashSet<Type>(
             typeof(IFastJsonWriter)
                 .GetMethods()

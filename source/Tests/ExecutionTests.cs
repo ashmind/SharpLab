@@ -29,8 +29,8 @@ namespace SharpLab.Tests {
             var testName = ((ITest)
                 _testOutputHelper
                     .GetType()
-                    .GetField("test", BindingFlags.Instance | BindingFlags.NonPublic)
-                    .GetValue(_testOutputHelper)
+                    .GetField("test", BindingFlags.Instance | BindingFlags.NonPublic)!
+                    .GetValue(_testOutputHelper)!
             ).DisplayName.Replace(GetType().FullName + ".", "");
             var safeTestName = Regex.Replace(testName, "[^a-zA-Z._-]+", "_");
             if (safeTestName.Length > 100)

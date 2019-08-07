@@ -13,21 +13,21 @@ namespace SharpLab.Server.Execution.Internal {
         private const int HiddenLine = 0xFEEFEE;
 
         private static readonly MethodInfo ReportLineStartMethod =
-            typeof(Flow).GetMethod(nameof(Flow.ReportLineStart));
+            typeof(Flow).GetMethod(nameof(Flow.ReportLineStart))!;
         private static readonly MethodInfo ReportValueMethod =
-            typeof(Flow).GetMethod(nameof(Flow.ReportValue));
+            typeof(Flow).GetMethod(nameof(Flow.ReportValue))!;
         private static readonly MethodInfo ReportRefValueMethod =
-            typeof(Flow).GetMethod(nameof(Flow.ReportRefValue));
+            typeof(Flow).GetMethod(nameof(Flow.ReportRefValue))!;
         private static readonly MethodInfo ReportSpanValueMethod =
-            typeof(Flow).GetMethod(nameof(Flow.ReportSpanValue));
+            typeof(Flow).GetMethod(nameof(Flow.ReportSpanValue))!;
         private static readonly MethodInfo ReportRefSpanValueMethod =
-            typeof(Flow).GetMethod(nameof(Flow.ReportRefSpanValue));
+            typeof(Flow).GetMethod(nameof(Flow.ReportRefSpanValue))!;
         private static readonly MethodInfo ReportReadOnlySpanValueMethod =
-            typeof(Flow).GetMethod(nameof(Flow.ReportReadOnlySpanValue));
+            typeof(Flow).GetMethod(nameof(Flow.ReportReadOnlySpanValue))!;
         private static readonly MethodInfo ReportRefReadOnlySpanValueMethod =
-            typeof(Flow).GetMethod(nameof(Flow.ReportRefReadOnlySpanValue));
+            typeof(Flow).GetMethod(nameof(Flow.ReportRefReadOnlySpanValue))!;
         private static readonly MethodInfo ReportExceptionMethod =
-            typeof(Flow).GetMethod(nameof(Flow.ReportException));
+            typeof(Flow).GetMethod(nameof(Flow.ReportException))!;
 
         private readonly IReadOnlyDictionary<string, ILanguageAdapter> _languages;
 

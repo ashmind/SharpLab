@@ -4,7 +4,6 @@
     <AssemblyName>SharpLab.Server.Owin</AssemblyName>
     <RootNamespace>SharpLab.Server.Owin</RootNamespace>
     <LangVersion>8.0</LangVersion>
-    <NullableContextOptions>enable</NullableContextOptions>
     <Nullable>enable</Nullable>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

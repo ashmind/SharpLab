@@ -41,7 +41,7 @@ namespace SharpLab.Tests.Internal {
             var code = parts[0].Trim();
             var expected = parts[1].Trim();
             // ReSharper disable once PossibleNullReferenceException
-            var fromTo = Path.GetExtension(name).TrimStart('.').Split('2').Select(x => LanguageAndTargetMap[x]).ToList();
+            var fromTo = Path.GetExtension(name)!.TrimStart('.').Split('2').Select(x => LanguageAndTargetMap[x]).ToList();
 
             return new TestCode(code, expected, fromTo[0], fromTo[1]);
         }
