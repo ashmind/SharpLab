@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="Argument" Version="1.1.0" />
-    <PackageReference Include="AshMind.Extensions" Version="3.0.0-pre-20190406-01" />
+    <PackageReference Include="AshMind.Extensions" Version="3.0.0-pre-20190808-01" />
     <PackageReference Include="Autofac" Version="4.9.2" />
     <PackageReference Include="Autofac.Extras.FileSystemRegistration" Version="1.0.0-pre-03" />
     <PackageReference Include="ICSharpCode.Decompiler" Version="4.0.0.4521" />
