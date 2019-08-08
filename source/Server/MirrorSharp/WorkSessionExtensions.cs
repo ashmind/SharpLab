@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using AshMind.Extensions;
 using MirrorSharp.Advanced;
 
 namespace SharpLab.Server.MirrorSharp {
     public static class WorkSessionExtensions {
-        public static string GetTargetName(this IWorkSession session) {
-            return (string)session.ExtensionData.GetValueOrDefault("TargetName");
+        public static string? GetTargetName(this IWorkSession session) {
+            return (string?)session.ExtensionData.GetValueOrDefault("TargetName");
         }
 
         public static void SetTargetName(this IWorkSession session, string value) {
@@ -13,7 +13,7 @@ namespace SharpLab.Server.MirrorSharp {
         }
 
         public static string GetSessionId(this IWorkSession session) {
-            var id = (string)session.ExtensionData.GetValueOrDefault("SessionId");
+            var id = (string?)session.ExtensionData.GetValueOrDefault("SessionId");
             if (id == null) {
                 id = Guid.NewGuid().ToString();
                 session.ExtensionData["SessionId"] = id;

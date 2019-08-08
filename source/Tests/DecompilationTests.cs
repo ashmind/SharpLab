@@ -27,7 +27,7 @@ namespace SharpLab.Tests {
             var result = await driver.SendSlowUpdateAsync<string>();
             var errors = result.JoinErrors();
 
-            Assert.True(errors.IsNullOrEmpty(), errors);
+            Assert.True(string.IsNullOrEmpty(errors), errors);
             Assert.NotNull(result.ExtensionResult);
             Assert.NotEmpty(result.ExtensionResult);
         }
@@ -53,7 +53,7 @@ namespace SharpLab.Tests {
             var errors = result.JoinErrors();
 
             var decompiledText = result.ExtensionResult?.Trim();
-            Assert.True(errors.IsNullOrEmpty(), errors);
+            Assert.True(string.IsNullOrEmpty(errors), errors);
             data.AssertIsExpected(decompiledText, _output);
         }
 
@@ -73,7 +73,7 @@ namespace SharpLab.Tests {
             var errors = result.JoinErrors();
 
             var decompiledText = result.ExtensionResult?.Trim();
-            Assert.True(errors.IsNullOrEmpty(), errors);
+            Assert.True(string.IsNullOrEmpty(errors), errors);
             data.AssertIsExpected(decompiledText, _output);
         }
 
@@ -114,7 +114,7 @@ namespace SharpLab.Tests {
             var errors = result.JoinErrors();
 
             var decompiledText = result.ExtensionResult?.Trim();
-            Assert.True(errors.IsNullOrEmpty(), errors);
+            Assert.True(string.IsNullOrEmpty(errors), errors);
             data.AssertIsExpected(decompiledText, _output);
         }
 
@@ -150,7 +150,7 @@ namespace SharpLab.Tests {
             var errors = result.JoinErrors();
 
             var decompiledText = result.ExtensionResult?.Trim();
-            Assert.True(errors.IsNullOrEmpty(), errors);
+            Assert.True(string.IsNullOrEmpty(errors), errors);
             data.AssertIsExpected(decompiledText, _output);
         }
 

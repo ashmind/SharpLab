@@ -116,11 +116,11 @@ C+<Foo>d__1.MoveNext()
 
 C+<Foo>d__1.SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)
     L0000: sub rsp, 0x28
-    L0004: cmp [rcx], ecx
-    L0006: add rcx, 0x8
-    L000a: test rdx, rdx
-    L000d: jz L0030
-    L000f: cmp qword [rcx], 0x0
+    L0004: add rcx, 0x8
+    L0008: mov rcx, [rcx]
+    L000b: test rdx, rdx
+    L000e: jz L0030
+    L0010: test rcx, rcx
     L0013: jz L002b
     L0015: mov ecx, 0x23
     L001a: mov rax, 0x<IGNORE>

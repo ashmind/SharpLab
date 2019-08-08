@@ -408,7 +408,7 @@ namespace SharpLab.Tests {
 
         private static void AssertIsSuccess(SlowUpdateResult<ExecutionResultData> result, bool allowRuntimeException = false) {
             var errors = result.JoinErrors();
-            Assert.True(errors.IsNullOrEmpty(), errors);
+            Assert.True(string.IsNullOrEmpty(errors), errors);
             var output = result.ExtensionResult.GetOutputAsString();
             Assert.DoesNotMatch("InvalidProgramException", output);
 

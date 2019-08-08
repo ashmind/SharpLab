@@ -45,7 +45,8 @@ namespace SharpLab.Server.MirrorSharp {
         }
 
         public async Task<object?> ProcessAsync(IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
-            var targetName = session.GetTargetName();
+            var targetName = GetAndEnsureTargetName(session);
+
             if (targetName == TargetNames.Ast || targetName == TargetNames.Explain) {
                 var astTarget = _astTargets[session.LanguageName];
                 var ast = await astTarget.GetAstAsync(session, cancellationToken).ConfigureAwait(false);
@@ -110,7 +111,7 @@ namespace SharpLab.Server.MirrorSharp {
                 return;
             }
 
-            var targetName = session.GetTargetName();
+            var targetName = GetAndEnsureTargetName(session);
             if (targetName == TargetNames.Ast) {
                 var astTarget = _astTargets[session.LanguageName];
                 astTarget.SerializeAst(result, writer, session);
@@ -139,5 +140,12 @@ namespace SharpLab.Server.MirrorSharp {
             "' \r\n" +
             "' All decompilation in SharpLab is provided by ILSpy, and latest ILSpy does not suport VB.\r\n" +
             "' If you are interested in VB, please discuss or contribute at https://github.com/icsharpcode/ILSpy.";
+
+        private string GetAndEnsureTargetName(IWorkSession session) {
+            var targetName = session.GetTargetName();
+            if (targetName == null)
+                throw new InvalidOperationException("Target is not set on the session (timing issue?). Please try reloading.");
+            return targetName;
+        }
     }
 }
