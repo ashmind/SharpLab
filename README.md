@@ -1,7 +1,7 @@
 This repository contains source code for https://sharplab.io.
 
 SharpLab is a .NET code playground that shows intermediate steps and results of code compilation.
-Some language features are thin wrappers on top of other features -- e.g. `using()` becomes `try/catch`.
+Some language features are thin wrappers on top of other features -- e.g. `using()` becomes `try/finally`.
 SharpLab allows you to see the code as compiler sees it, and get a better understanding of .NET languages.
 
 Recent versions include experimental support for running code, with some limitations.
@@ -30,7 +30,7 @@ Note that C#=>VB or VB=>C# disassembly shouldn't be used to convert between lang
 ### Execution
 
 You can use "Run" target to execute your code and see the output.  
-Execution enables a few nice features such as flow arrows — see here:  
+Execution enables a few nice features such as flow arrows â€” see here:  
 https://twitter.com/ashmind/status/894058159223955456.
 
 Execution is intentionally limited, however the limits are continuously improved and corrected.
