@@ -24,7 +24,7 @@ There are currently four targets for decompilation/disassembly:
 2. IL
 3. JIT Asm (Native Asm Code)
 
-Note that C#=>VB disassembly shouldn't be used to convert between languages, as the produced code is intentionally overly verbose.
+Note that VB=>C# disassembly shouldn't be used to convert between languages, as the produced code is intentionally overly verbose.
 
 ### Execution
 
