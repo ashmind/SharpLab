@@ -18,14 +18,13 @@ Due to complexity of F#'s compiler library, some features might not be available
 
 ### Decompilation/Disassembly
 
-There are currently four targets for decompilation/disassembly:
+There are currently three targets for decompilation/disassembly:
 
 1. C#
-2. Visual Basic
-3. IL
-4. JIT Asm (Native Asm Code)
+2. IL
+3. JIT Asm (Native Asm Code)
 
-Note that C#=>VB or VB=>C# disassembly shouldn't be used to convert between languages, as the produced code is intentionally overly verbose.
+Note that VB=>C# disassembly shouldn't be used to convert between languages, as the produced code is intentionally overly verbose.
 
 ### Execution
 
