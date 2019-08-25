@@ -1,6 +1,6 @@
 import registry from './registry.js';
 
-registry.ready.push(() => {
+registry.main.ready.push(() => {
     const body = document.getElementsByTagName('body')[0];
     const className = body.dataset.mobileCodemirrorFullscreenClass;
     for (const element of document.querySelectorAll('.CodeMirror')) {

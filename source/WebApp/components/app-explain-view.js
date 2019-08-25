@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import '../js/ui/mixins/markdown.js';
 
-Vue.component('app-explain-view', {
+export default Vue.component('app-explain-view', {
     props: {
         explanations: Array
     },

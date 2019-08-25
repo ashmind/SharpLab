@@ -2,8 +2,15 @@
 @error-color: #dc3912;
 @warning-color: #ff9900;
 @offline-color: #aaa;
-@highlight-color: #efefef;
-@border-color: #aaa;
+@disclaimer-color: #ffeb90;
+
+:root {
+    --highlight-color: #efefef;
+
+    --header-color: @primary-color;
+    --header-text-color: #fff;
+    --border-color: #aaa;
+}
 
 @header-block-margin: 10px;
 
@@ -33,11 +40,11 @@
 .header() {
     padding: 5px;
     padding-left: 7px;
-    color: #fff;
-    background-color: @primary-color;
+    color: var(--header-text-color);
+    background-color: var(--header-color);
     font-family: 'Roboto Condensed', sans-serif;
 
     a, a:visited, a:active {
-        color: #fff;
+        color: var(--header-text-color);
     }
 }

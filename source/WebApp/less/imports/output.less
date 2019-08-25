@@ -1,8 +1,14 @@
 @import 'common.less';
 
-@inspection-border-color: #cecece;
-@inspection-header-color: #ececec;
-@inspection-secondary-text-color: #aaa;
+:root {
+    --inspection-border-color: #cecece;
+    --inspection-header-color: #ececec;
+    --inspection-exception-header-color: @error-color;
+    --inspection-exception-border-color: @error-color;
+    --inspection-warning-header-color: @warning-color;
+    --inspection-warning-border-color: @warning-color;
+    --inspection-secondary-text-color: #aaa;
+}
 
 .output {
     position: absolute;
@@ -32,9 +38,9 @@
 .inspection {
     .code-font();
     width: fit-content;
-    border: 1px solid @inspection-border-color;
+    border: 1px solid var(--inspection-border-color);
     header {
-        background-color: @inspection-header-color;
+        background-color: var(--inspection-header-color);
         padding: 2px 4px;
 
         .select-wrapper {
@@ -80,7 +86,7 @@
     }
 
     tr + tr {
-        border-top: 1px solid @inspection-border-color;
+        border-top: 1px solid var(--inspection-border-color);
     }
 }
 
@@ -101,11 +107,11 @@
 
 .inspection-data-label + .inspection-data-label,
 .inspection-data-cell + .inspection-data-cell {
-    border-left: 1px solid @inspection-border-color;
+    border-left: 1px solid var(--inspection-border-color);
 }
 
 .inspection-data-zero {
-    color: @inspection-secondary-text-color;
+    color: var(--inspection-secondary-text-color);
 }
 
 .inspection-graph {
@@ -132,12 +138,12 @@
 }
 
 .inspection-graph-reference {
-    stroke: @inspection-border-color;
+    stroke: var(--inspection-border-color);
     fill: none;
 }
 
 .inspection-graph-reference-end-marker {
-    fill: @inspection-border-color;
+    fill: var(--inspection-border-color);
 }
 
 .inspection-graph-stack,
@@ -152,7 +158,7 @@
 
 .inspection-graph-stack {
     max-width: 300px;
-    border-right: 1px solid @inspection-border-color;
+    border-right: 1px solid var(--inspection-border-color);
 }
 
 .inspection-graph-heap {
@@ -172,7 +178,7 @@
 
 .inspection-graph-node {
     display: flex;
-    border: 1px solid @inspection-border-color;
+    border: 1px solid var(--inspection-border-color);
     header::after {
         content: ':';
     }
@@ -216,17 +222,17 @@
 }
 
 .inspection-exception {
-    border-color: @error-color;
+    border-color: var(--inspection-exception-border-color);
     header {
-        background-color: @error-color;
+        background-color: var(--inspection-exception-header-color);
         color: #fff;
     }
 }
 
 .inspection-warning {
-    border-color: @warning-color;
+    border-color: var(--inspection-warning-border-color);
     header {
-        background-color: @warning-color;
+        background-color: var(--inspection-warning-header-color);
         color: #fff;
     }
 }

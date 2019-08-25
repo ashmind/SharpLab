@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import AstViewItem from './internal/app-ast-view-item.js';
 
-Vue.component('app-ast-view', {
+const AstView = Vue.component('app-ast-view', {
     props: {
         roots: Array
     },
@@ -102,7 +102,10 @@ Vue.component('app-ast-view', {
     },
     render(h) {
         this.itemsById = {};
-        return h('div', [renderTree(h, this.processedRoots, this)]);
+        return h(
+            'div', { class: { ast: true } },
+            [renderTree(h, this.processedRoots, this)]
+        );
     }
 });
 
@@ -178,3 +181,5 @@ function matchesOffset(item, offset) {
     return offset >= parseInt(start)
         && offset <= parseInt(end);
 }
+
+export default AstView;

@@ -1,3 +1,5 @@
 export default Object.freeze({
-    ready: []
+    main: {
+        ready: []
+    }
 });

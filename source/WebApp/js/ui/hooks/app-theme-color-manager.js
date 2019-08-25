@@ -1,6 +1,6 @@
 ﻿import registry from './registry.js';
 
-registry.ready.push(vue => {
+registry.main.ready.push(vue => {
     const head = document.getElementsByTagName('head')[0];
     const colorPropertyName = head.dataset.themeColorManagerBind;
 

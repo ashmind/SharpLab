@@ -6,3 +6,4 @@ import './app-verify-view.js';
 import './app-explain-view.js';
 import './app-output-view.js';
 import './app-gist-manager.js';
+import './app-theme-manager.js';

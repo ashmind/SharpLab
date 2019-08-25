@@ -11,3 +11,4 @@ bin/
 obj/
 wwwroot/
 /source/Native.Profiler/x64/
+__diff_output__/

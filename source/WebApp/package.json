@@ -8,30 +8,43 @@
     "test": "jest"
   },
   "jest": {
+    "setupFiles": [
+      "<rootDir>/js/polyfills/index.js"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/rendering/setup.js"
+    ],
     "testMatch": [
       "<rootDir>/tests/**/*.tests.js"
-    ]
+    ],
+    "moduleNameMapper": {
+      "^vue$": "<rootDir>/node_modules/vue/dist/vue.js"
+    }
   },
   "devDependencies": {
+    "@vue/test-utils": "1.0.0-beta.29",
     "autoprefixer": "9.5.0",
-    "babel-jest": "20.0.3",
+    "babel-jest": "24.9.0",
     "babel-plugin-transform-es2015-modules-commonjs": "6.24.1",
     "d3": "4.13.0",
-    "eslint": "3.19.0",
-    "eslint-plugin-import": "2.8.0",
+    "eslint": "6.2.1",
+    "eslint-plugin-import": "2.18.2",
     "fs-jetpack": "2.1.0",
     "html-minifier": "3.5.19",
-    "jest": "23.5.0",
+    "jest": "24.9.0",
+    "jest-image-snapshot": "2.9.0",
     "less": "3.8.1",
     "md5-file": "3.1.1",
     "oldowan": "1.0.0-preview-2",
     "postcss": "7.0.2",
     "postcss-csso": "3.0.0",
+    "puppeteer": "1.19.0",
     "rollup": "1.8.0",
     "rollup-plugin-commonjs": "9.1.4",
     "rollup-plugin-node-resolve": "3.0.0",
     "rollup-plugin-terser": "1.0.1",
-    "sharp": "0.20.5"
+    "sharp": "0.20.5",
+    "vue-template-compiler": "2.5.16"
   },
   "dependencies": {
     "codemirror": "5.38.0",

@@ -1,4 +1,9 @@
-﻿@import 'mobile.less';
+﻿@import 'common.less';
+@import 'mobile.less';
+
+:root {
+    --offline-header-color: @offline-color;
+}
 
 /* TODO: https://github.com/ashmind/mirrorsharp/issues/48 */
 .CodeMirror.mirrorsharp-connection-has-issue {
@@ -13,6 +18,12 @@
 }
 
 .root-status-offline {
+    .code, .result, .warnings, .errors {
+        header {
+            background-color: var(--offline-header-color);
+        }
+    }
+
     .option-language {
         .if-mobile-menu({
             /* if it's in menu, no reason to hide it */

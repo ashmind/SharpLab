@@ -1,5 +1,9 @@
 @import 'common.less';
 
+:root {
+    --modal-background-color: #fff;
+}
+
 .modal-wrapper {
     z-index: 10000;
     display: flex;
@@ -23,7 +27,7 @@
 }
 
 .modal {
-    background: #fff;
+    background: var(--modal-background-color);
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 

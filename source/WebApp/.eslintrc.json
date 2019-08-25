@@ -102,6 +102,7 @@
         "one-var": ["error", "never"],
         "operator-assignment": "warn",
         "quotes": ["warn", "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
+        "quote-props": ["error", "as-needed"],
         "semi": ["error", "always"],
 
         "arrow-body-style": "warn",

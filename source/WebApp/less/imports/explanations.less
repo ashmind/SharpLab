@@ -1,5 +1,9 @@
 @import 'common.less';
 
+:root {
+    --explanation-separator-color: #ddd;
+}
+
 .explanations {
     position: absolute;
     left: 0;
@@ -28,7 +32,7 @@
 
 .explanations dd+dt {
     padding-top: 10px;
-    border-top: 1px solid lighten(@border-color, 20%);
+    border-top: 1px solid var(--explanation-separator-color);
 }
 
 .explanation-doc-link {

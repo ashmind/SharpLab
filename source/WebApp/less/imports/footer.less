@@ -1,0 +1,32 @@
+:root {
+    --footer-color: #eee;
+}
+
+main + footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    padding: 5px;
+    padding-left: 7px;
+
+    font-family: 'Roboto Condensed', sans-serif;
+    background-color: var(--footer-color);
+
+    font-size: 90%;
+
+    a {
+        color: inherit;
+    }
+
+    > * + * {
+        border-left: 1px solid var(--border-color);
+        padding-left: 5px;
+        margin-left: 5px;
+    }
+
+    button {
+        border: 1px solid var(--border-color);
+        background: none;
+    }
+}

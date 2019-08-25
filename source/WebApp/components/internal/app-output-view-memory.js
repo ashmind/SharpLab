@@ -7,7 +7,7 @@ const specialChars = {
     '\0': '\\0'
 };
 
-export default {
+const settings = {
     props: {
         inspection: Object
     },
@@ -74,10 +74,10 @@ function addLabelsToLevelRecursive(levels, labels, index) {
         level = [];
         levels[index] = level;
     }
-    for (const label of labels) {
-        level.push(label);
-        if (label.nested && label.nested.length > 0)
-            addLabelsToLevelRecursive(levels, label.nested, index + 1);
+    for (const { name, length, nested } of labels) {
+        level.push({ name, length, nested });
+        if (nested && nested.length > 0)
+            addLabelsToLevelRecursive(levels, nested, index + 1);
     }
 }
 
@@ -119,3 +119,5 @@ function sortAndAddPaddingBetweenLabels(labels, dataLength) {
     }
     return results;
 }
+
+export default settings;

@@ -34,7 +34,7 @@ textarea, .CodeMirror {
 }
 
 .highlighted {
-    background-color: @highlight-color;
+    background-color: var(--highlight-color);
 }
 
 .CodeMirror-widget[cm-ignore-events=true] {
@@ -58,7 +58,7 @@ textarea, .CodeMirror {
     color: #fff;
 
     .root-status-offline & {
-        background: @offline-color;
+        background: var(--offline-header-color);
         color: #fff !important;
     }
 }

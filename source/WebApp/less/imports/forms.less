@@ -1,7 +1,12 @@
 @import 'common.less';
 
+:root {
+    --header-control-border-color: #fff;
+}
+
 select,
-button {
+button,
+input {
     color: inherit;
 }
 
@@ -29,7 +34,7 @@ option, optgroup {
 
 .select-wrapper {
     position: relative;
-    border: 1px solid #fff;
+    border: 1px solid var(--header-control-border-color);
 
     &::after {
         content: '\0025be'; /* ▾ */
@@ -73,12 +78,12 @@ button {
     cursor: pointer;
 }
 
-header button {
+header button, footer button {
     .custom-button();
 }
 
 .header-text-button {
-    border: 1px solid #fff;
+    border: 1px solid var(--header-control-border-color);
     background: none;
 }
 
@@ -90,6 +95,6 @@ header button {
     color: #fff;
 
     &[disabled] {
-        background-color: @border-color;
+        background-color: var(--border-color);
     }
 }

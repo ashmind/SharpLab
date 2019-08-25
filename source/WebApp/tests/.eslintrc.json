@@ -2,10 +2,12 @@
     "plugins": ["import"],
     "env": {
         "jest": true,
-        "browser": true
+        "browser": true,
+        "es6": true
     },
     "parserOptions": {
-        "sourceType": "module"
+        "sourceType": "module",
+        "ecmaVersion": 2018
     },
     "extends": [
         "plugin:import/errors",

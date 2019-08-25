@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-Vue.component('app-verify-view', {
+export default Vue.component('app-verify-view', {
     props: {
         value: String
     },

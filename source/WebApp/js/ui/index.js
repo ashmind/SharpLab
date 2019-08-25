@@ -12,24 +12,28 @@ const documentReadyPromise = new Promise(resolve => {
     document.addEventListener('DOMContentLoaded', () => resolve());
 });
 
-function createUIAsync(app) {
+async function createUIAsync(app) {
+    const main = await createTopLevelUIComponentAsync(app, 'main', hooks.main);
+    await createTopLevelUIComponentAsync(app, 'main + footer', hooks.footer);
+
+    return main;
+}
+
+function createTopLevelUIComponentAsync(app, selector, specificHooks) {
     return new Promise((resolve, reject) => {
         try {
-            app.data.eventHub = new Vue();
             // ReSharper disable once ConstructorCallNotUsed
             new Vue({
-                el:       'main',
+                el:       selector,
                 data:     app.data,
                 computed: app.computed,
                 methods:  app.methods,
                 mounted: function() {
                     Vue.nextTick(() => {
-                        for (const hook of hooks.ready) {
+                        for (const hook of (specificHooks || {}).ready || []) {
                             hook(this);
                         }
-                        attachToFooter();
-                        const ui = wrap(this);
-                        resolve(ui);
+                        resolve(wrap(this));
                     });
                 }
             });

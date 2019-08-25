@@ -3,7 +3,7 @@ import Vue from 'vue';
 import auth from '../js/helpers/github/auth.js';
 import { createGistAsync } from '../js/helpers/github/gists.js';
 
-Vue.component('app-gist-manager', {
+export default Vue.component('app-gist-manager', {
     props: {
         gist: Object,
         code: String,

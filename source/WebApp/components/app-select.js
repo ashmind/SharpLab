@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-Vue.component('app-select', {
+export default Vue.component('app-select', {
     props: {
         value: null
     },

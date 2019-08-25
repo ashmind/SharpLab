@@ -4,7 +4,7 @@ import OutputViewSimple from './internal/app-output-view-simple.js';
 import OutputViewMemory from './internal/app-output-view-memory.js';
 import OutputViewGraph from './internal/app-output-view-graph.js';
 
-Vue.component('app-output-view', {
+export default Vue.component('app-output-view', {
     props: {
         output: Array
     },

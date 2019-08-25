@@ -8,7 +8,7 @@ import './internal/codemirror/mode-asm.js';
 import './internal/codemirror/addon-cil-infotip.js';
 import targets from '../js/helpers/targets.js';
 
-Vue.component('app-code-view', {
+export default Vue.component('app-code-view', {
     props: {
         value:    String,
         language: String,
