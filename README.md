@@ -18,7 +18,7 @@ Due to complexity of F#'s compiler library, some features might not be available
 
 ### Decompilation/Disassembly
 
-There are currently four targets for decompilation/disassembly:
+There are currently three targets for decompilation/disassembly:
 
 1. C#
 2. IL
