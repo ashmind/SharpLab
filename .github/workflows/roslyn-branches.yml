@@ -9,6 +9,9 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.0.100-preview7-012821'
     - name: Build-All (test)
       run: |
-        powershell '.\#scripts\roslyn-branches\Build-All.ps1'
+        powershell .\#scripts\roslyn-branches\Build-All.ps1
