@@ -1,0 +1,12 @@
+name: roslyn-branches (WIP)
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build-All (test)
+      run: |
+        powershell '.\#scripts\roslyn-branches\Build-All.ps1'
