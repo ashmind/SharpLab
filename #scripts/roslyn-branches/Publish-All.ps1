@@ -121,9 +121,9 @@ function Publish-ToAzure(
     Compress-Archive -Path $sourcePath -DestinationPath $zipPath -Force
 
     Write-Output "  Publishing..."
-    Write-Output "     ⏱️ $([DateTime]::Now.ToString('HH:mm:ss'))"
+    Write-Output "    ⏱️ $([DateTime]::Now.ToString('HH:mm:ss'))"
     Publish-AzWebApp -WebApp $webApp -ArchivePath $zipPath -Force | Out-Null
-    Write-Output "     ✔️ $([DateTime]::Now.ToString('HH:mm:ss'))"
+    Write-Output "    ✔️ $([DateTime]::Now.ToString('HH:mm:ss'))"
 
     Write-Output "  Done."
 }
@@ -183,11 +183,21 @@ try {
     Write-Output "Getting Roslyn feature map..."
     $roslynBranchFeatureMap = Get-RoslynBranchFeatureMap -ArtifactsRoot $roslynBranchesRoot
 
+    $branchesJsonFileName = "branches.json"
+    $branchesJsonPath = (Join-Path $roslynBranchesRoot $branchesJsonFileName)
     if ($azure) {
         Login-ToAzure
+
+        Write-Output "Getting branches.json from Azure..."
+        $storageContext = New-AzStorageContext -StorageAccountName "slbs"
+        $branchesBlob = (Get-AzStorageBlob -Container 'public' -Blob 'branches.json' -Context $storageContext).ICloudBlob
+        Get-AzStorageBlobContent -CloudBlob $branchesBlob -Context $storageContext -Destination $branchesJsonPath -Force | Out-Null
+        $branchesJson = ConvertFrom-Json ([IO.File]::ReadAllText($branchesJsonPath))
+    }
+    else {
+        $branchesJson = @(Get-PredefinedBranches)
     }
 
-    $branchesJson = @(Get-PredefinedBranches)
     Get-ChildItem $roslynBranchesRoot | ? { $_ -is [IO.DirectoryInfo] } | % {
         $branchFsName = $_.Name
 
@@ -204,8 +214,8 @@ try {
 
         $webAppName = "sl-b-$($branchFsName.ToLowerInvariant())"
         if ($webAppName.Length -gt 60) {
-             $webAppName = $webAppName.Substring(0, 57) + "-01"; # no uniqueness check at the moment, we can add later
-             Write-Output "[WARNING] Name is too long, using '$webAppName'."
+            $webAppName = $webAppName.Substring(0, 57) + "-01"; # no uniqueness check at the moment, we can add later
+            Write-Output "[WARNING] Name is too long, using '$webAppName'."
         }
 
         $iisSiteName = "$webAppName.sharplab.local"
@@ -248,8 +258,9 @@ try {
         }
 
         # Success!
+        $branchId = $branchFsName -replace '^dotnet-',''
         $branchJson = [ordered]@{
-            id = $branchFsName -replace '^dotnet-',''
+            id = $branchId
             name = $branchInfo.name
             group = 'Roslyn branches'
             kind = 'roslyn'
@@ -261,24 +272,26 @@ try {
             $branchJson.Remove('feature')
         }
 
-        $branchesJson += $branchJson
+        $branchesJson = @($branchesJson | ? { $_.id -ne $branchId }) + $branchJson
     }
 
-    $branchesFileName = "!branches.json"
-    Write-Output "Updating $branchesFileName..."
-    Set-Content "$roslynBranchesRoot\$branchesFileName" $(ConvertTo-Json $branchesJson -Depth 100) -Encoding UTF8
+    Write-Output ""
+    Write-Output "Updating $branchesJsonFileName..."
+    Set-Content $branchesJsonPath $(ConvertTo-Json $branchesJson -Depth 100) -Encoding UTF8
 
-    $brachesJsLocalRoot = "$sourceRoot\WebApp\wwwroot"
-    if (!(Test-Path $brachesJsLocalRoot)) {
-        New-Item -ItemType Directory -Path $brachesJsLocalRoot | Out-Null    
+    $branchesJsLocalRoot = "$sourceRoot\WebApp\wwwroot"
+    if (!(Test-Path $branchesJsLocalRoot)) {
+        New-Item -ItemType Directory -Path $branchesJsLocalRoot | Out-Null
     }
-    Copy-Item "$roslynBranchesRoot\$branchesFileName" "$brachesJsLocalRoot\$branchesFileName" -Force
+    Copy-Item $branchesJsonPath "$branchesJsLocalRoot\!$branchesJsonFileName" -Force
 
     if ($azure) {
+        Write-Output "Uploading $branchesJsonFileName to Azure..."
+        Set-AzStorageBlobContent -CloudBlob $branchesBlob -File $branchesJsonPath -Context $storageContext -Force | Out-Null
         &"$PSScriptRoot\Publish-ToAzureObsolete.ps1" `
             -WebAppName "sharplab" `
             -SourcePath "$roslynBranchesRoot\$branchesFileName" `
-            -TargetPath "wwwroot/$branchesFileName"
+            -TargetPath "wwwroot/!$branchesFileName"
     }
 }
 catch {
