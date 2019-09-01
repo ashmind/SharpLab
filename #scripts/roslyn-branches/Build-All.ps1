@@ -150,7 +150,8 @@ function Build-SharpLab($root, $branchRoot, $artifactsRoot, $roslynPackagesRoot,
     dotnet msbuild "$branchSourceRoot/Server.Owin/Server.Owin.csproj" `
         /m /nodeReuse:false `
         /p:Configuration=Release `
-        /p:UnbreakablePolicyReportEnabled=false | Out-Default
+        /p:UnbreakablePolicyReportEnabled=false `
+        /p:TreatWarningsAsErrors=false | Out-Default
     if ($LastExitCode -ne 0) { throw "dotnet msbuild exited with error code $LastExitCode" }
 
     return @{
