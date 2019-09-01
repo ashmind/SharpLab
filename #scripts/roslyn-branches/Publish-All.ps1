@@ -53,17 +53,25 @@ function Get-RoslynBranchFeatureMap($artifactsRoot) {
     return $map
 }
 
-function Login-ToAzure($azureConfig) {
-    $passwordKey = $env:TR_AZURE_PASSWORD_KEY
-    if (!$passwordKey) {
-        throw "Azure credentials require TR_AZURE_PASSWORD_KEY to be set."
-    }
-    $passwordKey = [Convert]::FromBase64String($passwordKey)
-    $password = $azureConfig.Password | ConvertTo-SecureString -Key $passwordKey
-    $credential = New-Object Management.Automation.PSCredential($azureConfig.UserName, $password)
+function Login-ToAzure() {
+    $tenant = $env:SL_BUILD_AZURE_TENANT
+    if (!$tenant) { throw "Azure publish requires SL_BUILD_AZURE_TENANT environment variable." }
+    $appid = $env:SL_BUILD_AZURE_APP_ID
+    if (!$appid) { throw "Azure publish requires SL_BUILD_AZURE_APP_ID environment variable (service principal application id)." }
+    $secret = $env:SL_BUILD_AZURE_SECRET
+    if (!$secret) { throw "Azure publish requires SL_BUILD_AZURE_SECRET environment variable (service principal secret)." }
+    
+    $credential = New-Object System.Management.Automation.PSCredential(
+        $appid,
+        (ConvertTo-SecureString $secret -AsPlainText -Force)
+    )
 
-    "Logging to Azure as $($azureConfig.UserName)..." | Out-Default
-    Login-AzureRmAccount -Credential $credential | Out-Null
+    "Connecting to Azure..." | Out-Default
+    Connect-AzAccount `
+        -Tenant $tenant `
+        -Credential $credential `
+        -ServicePrincipal `
+        -Scope Process | Out-Null
 }
 
 function Get-PredefinedBranches() {
@@ -130,12 +138,7 @@ try {
     $roslynBranchFeatureMap = Get-RoslynBranchFeatureMap -ArtifactsRoot $roslynBranchesRoot
 
     if ($azure) {
-        $azureConfigPath = ".\!roslyn-branches-azure.json"
-        if (!(Test-Path $azureConfigPath)) {
-            throw "Path '$azureConfigPath' was not found."
-        }
-        $azureConfig = ConvertFrom-Json (Get-Content $azureConfigPath -Raw)
-        Login-ToAzure $azureConfig
+        Login-ToAzure
     }
 
     $branchesJson = @(Get-PredefinedBranches)
@@ -166,8 +169,6 @@ try {
         if ($azure) {
             &$PublishToAzure `
                 -FtpushExe $ftpushExe `
-                -ResourceGroupName $($azureConfig.ResourceGroupName) `
-                -AppServicePlanName $($azureConfig.AppServicePlanName) `
                 -WebAppName $webAppName `
                 -CanCreateWebApp `
                 -CanStopWebApp `
@@ -233,8 +234,6 @@ try {
     if ($azure) {
         &$PublishToAzure `
             -FtpushExe $ftpushExe `
-            -ResourceGroupName $($azureConfig.ResourceGroupName) `
-            -AppServicePlanName $($azureConfig.AppServicePlanName) `
             -WebAppName "sharplab" `
             -SourcePath "$roslynBranchesRoot\$branchesFileName" `
             -TargetPath "wwwroot/$branchesFileName"
