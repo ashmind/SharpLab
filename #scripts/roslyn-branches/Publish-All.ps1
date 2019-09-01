@@ -1,4 +1,4 @@
-param (
+﻿param (
     [switch] [boolean] $azure
 )
 
@@ -12,7 +12,6 @@ $ProgressPreference = "SilentlyContinue" # https://www.amido.com/powershell-win3
 $LangugageFeatureMapUrl = 'https://raw.githubusercontent.com/dotnet/roslyn/master/docs/Language%20Feature%20Status.md'
 
 $PublishToIIS = Resolve-Path "$PSScriptRoot\Publish-ToIIS.ps1"
-$PublishToAzure = Resolve-Path "$PSScriptRoot\Publish-ToAzure.ps1"
 
 function ConvertTo-Hashtable([PSCustomObject] $object) {
     $result = @{}
@@ -53,14 +52,21 @@ function Get-RoslynBranchFeatureMap($artifactsRoot) {
     return $map
 }
 
+function Get-EnvironmentVariableForAzure(
+    [Parameter(Mandatory=$true)] [string] $name
+) {
+    $variable = (Get-Item env:$name -ErrorAction SilentlyContinue)
+    if (!$variable) {
+        throw "Environment variable $name is required for Azure deployment."
+    }
+    return $variable.Value
+}
+
 function Login-ToAzure() {
-    $tenant = $env:SL_BUILD_AZURE_TENANT
-    if (!$tenant) { throw "Azure publish requires SL_BUILD_AZURE_TENANT environment variable." }
-    $appid = $env:SL_BUILD_AZURE_APP_ID
-    if (!$appid) { throw "Azure publish requires SL_BUILD_AZURE_APP_ID environment variable (service principal application id)." }
-    $secret = $env:SL_BUILD_AZURE_SECRET
-    if (!$secret) { throw "Azure publish requires SL_BUILD_AZURE_SECRET environment variable (service principal secret)." }
-    
+    $tenant = Get-EnvironmentVariableForAzure 'SL_BUILD_AZURE_TENANT'
+    $appid = Get-EnvironmentVariableForAzure 'SL_BUILD_AZURE_APP_ID' # service principal application id
+    $secret = Get-EnvironmentVariableForAzure 'SL_BUILD_AZURE_SECRET' # service principal secret
+
     $credential = New-Object System.Management.Automation.PSCredential(
         $appid,
         (ConvertTo-SecureString $secret -AsPlainText -Force)
@@ -72,6 +78,54 @@ function Login-ToAzure() {
         -Credential $credential `
         -ServicePrincipal `
         -Scope Process | Out-Null
+}
+
+function Publish-ToAzure(
+    [Parameter(Mandatory=$true)] [string] $webAppName,
+    [Parameter(Mandatory=$true)] [string] $sourcePath,
+    [Parameter(Mandatory=$true)] [string] $artifactsRoot
+) {
+    $resourceGroupName = Get-EnvironmentVariableForAzure 'SL_BUILD_AZURE_GROUP'
+    $appServicePlanName = Get-EnvironmentVariableForAzure 'SL_BUILD_AZURE_PLAN'
+    $telemetryKey = Get-EnvironmentVariableForAzure 'SHARPLAB_TELEMETRY_KEY'
+
+    Write-Output "Deploying to Azure, $webAppName..."
+    $webApp = ((Get-AzWebApp -ResourceGroupName $resourceGroupName) | ? { $_.Name -eq $webAppName })
+    if (!$webApp) {
+        Write-Output "  Creating web app $webAppName"
+        $location = (Get-AzResourceGroup -Name $resourceGroupName).Location
+        $webApp = (New-AzWebApp `
+            -ResourceGroupName $resourceGroupName `
+            -AppServicePlan $appServicePlanName `
+            -Location $location `
+            -Name $webAppName)
+        Set-AzWebApp `
+            -ResourceGroupName $resourceGroupName `
+            -Name $webAppName `
+            -WebSocketsEnabled $true | Out-Null
+        Set-AzWebApp `
+            -ResourceGroupName $resourceGroupName `
+            -Name $webAppName `
+            -AppSettings @{
+                SHARPLAB_WEBAPP_NAME = $webAppName
+                SHARPLAB_TELEMETRY_KEY = $telemetryKey
+            } | Out-Null
+    }
+    else {
+        Write-Output "  Found web app $($webApp.Name)"
+    }
+
+    Write-Output "  Zipping..."
+    $zipPath = Join-Path $artifactsRoot "Site.zip"
+    Write-Output "    => $zipPath"
+    Compress-Archive -Path $sourcePath -DestinationPath $zipPath -Force
+
+    Write-Output "  Publishing..."
+    Write-Output "     ⏱️ $([DateTime]::Now.ToString('HH:mm:ss'))"
+    Publish-AzWebApp -WebApp $webApp -ArchivePath $zipPath -Force | Out-Null
+    Write-Output "     ✔️ $([DateTime]::Now.ToString('HH:mm:ss'))"
+
+    Write-Output "  Done."
 }
 
 function Get-PredefinedBranches() {
@@ -126,14 +180,6 @@ try {
     $roslynBranchesRoot = Resolve-Path "$PSScriptRoot\..\..\!roslyn-branches"
     Write-Output "  Roslyn Branches Root:  $roslynBranchesRoot"
     
-    $nugetExe = "$toolsRoot\nuget.exe"
-    if (!(Test-Path $nugetExe)) {
-        Invoke-WebRequest "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" -OutFile $nugetExe
-    }
-    &$nugetExe install ftpush -Pre -OutputDirectory $toolsRoot
-    $ftpushExe = @(Get-Item "$toolsRoot\ftpush*\tools\ftpush.exe")[0].FullName
-    Write-Output "  ftpush.exe:            $ftpushExe"
-
     Write-Output "Getting Roslyn feature map..."
     $roslynBranchFeatureMap = Get-RoslynBranchFeatureMap -ArtifactsRoot $roslynBranchesRoot
 
@@ -167,13 +213,10 @@ try {
         &$PublishToIIS -SiteName $iisSiteName -SourcePath $siteRoot
 
         if ($azure) {
-            &$PublishToAzure `
-                -FtpushExe $ftpushExe `
+            Publish-ToAzure `
                 -WebAppName $webAppName `
-                -CanCreateWebApp `
-                -CanStopWebApp `
                 -SourcePath $siteRoot `
-                -TargetPath "."
+                -ArtifactsRoot $branchArtifactsRoot
             $url = "https://$($webAppName).azurewebsites.net"
         }
 
@@ -232,8 +275,7 @@ try {
     Copy-Item "$roslynBranchesRoot\$branchesFileName" "$brachesJsLocalRoot\$branchesFileName" -Force
 
     if ($azure) {
-        &$PublishToAzure `
-            -FtpushExe $ftpushExe `
+        &"$PSScriptRoot\Publish-ToAzureObsolete.ps1" `
             -WebAppName "sharplab" `
             -SourcePath "$roslynBranchesRoot\$branchesFileName" `
             -TargetPath "wwwroot/$branchesFileName"
