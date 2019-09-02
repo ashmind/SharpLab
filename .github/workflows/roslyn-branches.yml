@@ -9,7 +9,8 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
-    - uses: textbook/git-checkout-submodule-action@2.0.0
+      with:
+        submodules: true
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.0.100-preview7-012821'
