@@ -287,7 +287,15 @@ try {
 
     if ($azure) {
         Write-Output "Uploading $branchesJsonFileName to Azure..."
-        Set-AzStorageBlobContent -CloudBlob $branchesBlob -File $branchesJsonPath -Context $storageContext -Force | Out-Null
+        Set-AzStorageBlobContent `
+            -CloudBlob $branchesBlob `
+            -File $branchesJsonPath `
+            -Context $storageContext `
+            -Properties @{
+                ContentType = 'application/json'
+                CacheControl = 'max-age=43200' # 12 hours
+            } `
+            -Force | Out-Null
         &"$PSScriptRoot\Publish-ToAzureObsolete.ps1" `
             -WebAppName "sharplab" `
             -SourcePath "$roslynBranchesRoot\$branchesFileName" `
