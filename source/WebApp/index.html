@@ -78,12 +78,15 @@
             <div v-if="branch.feature && branch.feature.url" class="branch-feature-link">
               <a v-bind:href="branch.feature.url" target="_blank">{{branch.feature.url}}</a>
             </div>
+            <div>Note: commit info is temporarily unavailable due to an issue.</div>
+            <!--
             <div>
               Latest commit
               <a v-bind:href="'https://github.com/dotnet/roslyn/commit/' + branch.commits[0].hash" target="_blank">{{branch.commits[0].hash.substr(0, 7)}}</a>
               by {{branch.commits[0].author}}:
             </div>
             <div class="branch-commit-message">{{branch.commits[0].message.trim()}}</div>
+            -->
           </div>
         </section>
       </div>
@@ -177,7 +180,7 @@
     <footer>
       <app-theme-manager></app-theme-manager>
       <span>
-        Built by Andrey Shchekin (<a href="http://twitter.com/ashmind">@ashmind</a>) — see <a href="http://github.com/ashmind/SharpLab">SharpLab</a> on GitHub.
+        Built by Andrey Shchekin (<a href="http://twitter.com/ashmind">@ashmind</a>) — see <a href="http://github.com/ashmind/SharpLab">SharpLab on GitHub</a>.
       </span>
     </footer>
 
