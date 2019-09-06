@@ -279,11 +279,11 @@ try {
     Write-Output "Updating $branchesJsonFileName..."
     Set-Content $branchesJsonPath $(ConvertTo-Json $branchesJson -Depth 100) -Encoding UTF8
 
-    $branchesJsLocalRoot = "$sourceRoot\WebApp\wwwroot"
-    if (!(Test-Path $branchesJsLocalRoot)) {
-        New-Item -ItemType Directory -Path $branchesJsLocalRoot | Out-Null
+    $branchesJsonLocalRoot = "$sourceRoot\WebApp\wwwroot"
+    if (!(Test-Path $branchesJsonLocalRoot)) {
+        New-Item -ItemType Directory -Path $branchesJsonLocalRoot | Out-Null
     }
-    Copy-Item $branchesJsonPath "$branchesJsLocalRoot\!$branchesJsonFileName" -Force
+    Copy-Item $branchesJsonPath "$branchesJsonLocalRoot\!$branchesJsonFileName" -Force
 
     if ($azure) {
         Write-Output "Uploading $branchesJsonFileName to Azure..."
@@ -298,8 +298,8 @@ try {
             -Force | Out-Null
         &"$PSScriptRoot\Publish-ToAzureObsolete.ps1" `
             -WebAppName "sharplab" `
-            -SourcePath "$roslynBranchesRoot\$branchesFileName" `
-            -TargetPath "wwwroot/!$branchesFileName"
+            -SourcePath "$roslynBranchesRoot\$branchesJsonFileName" `
+            -TargetPath "wwwroot/!$branchesJsonFileName"
     }
 }
 catch {
