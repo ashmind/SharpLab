@@ -1,4 +1,9 @@
 {
   "plugins": ["transform-es2015-modules-commonjs"],
-  "ignore": [ "node_modules/**" ]
+  "ignore": [ "node_modules/**" ],
+  "env": {
+    "test": { "plugins": [
+        ["dynamic-import-node", { "noInterop": true }]
+    ] }
+  }
 }
