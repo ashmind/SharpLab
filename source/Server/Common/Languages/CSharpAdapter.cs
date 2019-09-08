@@ -103,13 +103,22 @@ namespace SharpLab.Server.Common.Languages {
         public ImmutableArray<int> GetMethodParameterLines(IWorkSession session, int lineInMethod, int columnInMethod) {
             var declaration = RoslynAdapterHelper.FindSyntaxNodeInSession(session, lineInMethod, columnInMethod)
                 ?.AncestorsAndSelf()
-                .OfType<MemberDeclarationSyntax>()
+                .Where(x => x is MemberDeclarationSyntax || x is ParenthesizedLambdaExpressionSyntax)
                 .FirstOrDefault();
 
-            if (!(declaration is BaseMethodDeclarationSyntax method))
-                return ImmutableArray<int>.Empty;
+            ParameterListSyntax parameterList;
 
-            var parameters = method.ParameterList.Parameters;
+            if (declaration is BaseMethodDeclarationSyntax method) {
+                parameterList = method.ParameterList;
+            }
+            else if (declaration is ParenthesizedLambdaExpressionSyntax lambda) {
+                parameterList = lambda.ParameterList;
+            }
+            else {
+                return ImmutableArray<int>.Empty;
+            }
+
+            var parameters = parameterList.Parameters;
             var results = new int[parameters.Count];
             for (var i = 0; i < parameters.Count; i++) {
                 results[i] = parameters[i].GetLocation().GetLineSpan().StartLinePosition.Line + 1;

@@ -396,6 +396,38 @@ namespace SharpLab.Tests {
             AssertIsSuccess(result);
         }
 
+        [Fact] // https://github.com/ashmind/SharpLab/issues/411
+        public async Task SlowUpdate_DoesNotFail_OnLambdaParameterList_Csharp() {
+            var driver = await NewTestDriverAsync(@"
+                    using System.Collections.Generic;
+                    class Program
+                    {
+                        static void Main(string[] args)
+                        {
+                            List<int> digits = new List<int>();
+                            digits.Sort((a, b) => a.CompareTo(b));
+                        }
+                    }
+                ");
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            AssertIsSuccess(result);
+        }
+
+        [Fact] // https://github.com/ashmind/SharpLab/issues/411
+        public async Task SlowUpdate_DoesNotFail_OnLambdaParameterList_VisualBasic() {
+            var driver = await NewTestDriverAsync(@"
+                    Imports System.Collections.Generic
+                    Public Module Program
+                        Public Sub Main(ByVal args() As String)
+                            Dim list as New List(of Integer)
+                            list.Sort(Function(a, b) a.CompareTo(b))
+                        End Sub
+                    End Module
+                ", LanguageNames.VisualBasic);
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            AssertIsSuccess(result);
+        }
+
         [Theory]
         [InlineData("Regression.Disposable.cs")]
         public async Task SlowUpdate_DoesNotFail_OnAnyGuard(string resourceName) {
