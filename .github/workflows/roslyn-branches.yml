@@ -14,6 +14,9 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.0.100-preview7-012821'
+    - name: Install Modules
+      run: |
+        powershell Install-Module -Name Az -RequiredVersion 2.6.0
     - name: Update-All (test)
       env:
         SHARPLAB_TELEMETRY_KEY: ${{secrets.AzureBranchTelemetryKey}}
