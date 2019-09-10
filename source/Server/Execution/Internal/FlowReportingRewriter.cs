@@ -143,9 +143,17 @@ namespace SharpLab.Server.Execution.Internal {
             if (parameterLines.Length == 0)
                 return;
 
+            // Note: method parameter lines are unreliable and can potentially return
+            // wrong lines if nested method syntax is unrecognized and code matches it
+            // to the containing method. That is acceptable, as long as parameter count
+            // mismatch does not crash things -> so check length here.
+            if (parameterLines.Length != method.Parameters.Count)
+                return;
+
             foreach (var parameter in method.Parameters) {
                 if (parameter.IsOut)
                     continue;
+
                 InsertReportValue(
                     il, instruction,
                     il.CreateLdargBest(parameter), parameter.ParameterType, parameter.Name,
