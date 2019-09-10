@@ -396,34 +396,36 @@ namespace SharpLab.Tests {
             AssertIsSuccess(result);
         }
 
-        [Fact] // https://github.com/ashmind/SharpLab/issues/411
-        public async Task SlowUpdate_DoesNotFail_OnLambdaParameterList_Csharp() {
+        [Theory]
+        [InlineData("digits.Sort((a, b) => a.CompareTo(b));")] // https://github.com/ashmind/SharpLab/issues/411
+        [InlineData("digits.Sort(delegate(int a, int b) { return a.CompareTo(b); });")]
+        [InlineData("int Compare(int a, int b) => a.CompareTo(b); digits.Sort(Compare);")]
+        [InlineData("digits.Find(a => a > 0);")]
+        public async Task SlowUpdate_DoesNotFail_OnNestedMethodCall_ForCSharp(string callWithAnonymousMethodCode) {
             var driver = await NewTestDriverAsync(@"
-                    using System.Collections.Generic;
-                    class Program
-                    {
-                        static void Main(string[] args)
-                        {
-                            List<int> digits = new List<int>();
-                            digits.Sort((a, b) => a.CompareTo(b));
-                        }
+                using System.Collections.Generic;
+                public static class Program {
+                    public static void Main(string[] args) {
+                        var digits = new List<int>();
+                        " + callWithAnonymousMethodCode + @"
                     }
-                ");
+                }
+            ");
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
             AssertIsSuccess(result);
         }
 
         [Fact] // https://github.com/ashmind/SharpLab/issues/411
-        public async Task SlowUpdate_DoesNotFail_OnLambdaParameterList_VisualBasic() {
+        public async Task SlowUpdate_DoesNotFail_OnLambdaParameterList_ForVisualBasic() {
             var driver = await NewTestDriverAsync(@"
-                    Imports System.Collections.Generic
-                    Public Module Program
-                        Public Sub Main(ByVal args() As String)
-                            Dim list as New List(of Integer)
-                            list.Sort(Function(a, b) a.CompareTo(b))
-                        End Sub
-                    End Module
-                ", LanguageNames.VisualBasic);
+                Imports System.Collections.Generic
+                Public Module Program
+                    Public Sub Main(ByVal args() As String)
+                        Dim list as New List(of Integer)
+                        list.Sort(Function(a, b) a.CompareTo(b))
+                    End Sub
+                End Module
+            ", LanguageNames.VisualBasic);
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
             AssertIsSuccess(result);
         }
