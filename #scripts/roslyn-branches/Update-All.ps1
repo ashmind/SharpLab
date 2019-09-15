@@ -10,13 +10,16 @@ $ErrorActionPreference = 'Stop'
 $LanguageFeatureMapUrl = 'https://raw.githubusercontent.com/dotnet/roslyn/master/docs/Language%20Feature%20Status.md'
 $BranchesJsonFileName = 'branches.json'
 
+$root = Resolve-Path "$PSScriptRoot/../.."
+$sourceRoot = Join-Path $root 'source'
+$buildRoot = Join-Path $root '!roslyn-branches'
+if (!(Test-Path $buildRoot)) { New-Item -ItemType Directory -Path $buildRoot | Out-Null }
+
 Write-Host "Environment:"
 Write-Host "  Current Path: $(Get-Location)"
 Write-Host "  Script Root:  $PSScriptRoot"
-$root = Resolve-Path "$PSScriptRoot/../.."
 Write-Host "  Root:         $root"
-$buildRoot = Join-Path $root '!roslyn-branches'
-if (!(Test-Path $buildRoot)) { New-Item -ItemType Directory -Path $buildRoot | Out-Null }
+Write-Host "  Source Root:  $sourceRoot"
 Write-Host "  Build Root:   $buildRoot"
 
 $branchesJsonPath = (Join-Path $buildRoot $BranchesJsonFileName)

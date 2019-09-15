@@ -1,4 +1,4 @@
-name: roslyn-branches (WIP)
+name: roslyn-branches
 
 on:
   schedule:
@@ -18,7 +18,7 @@ jobs:
       run: |
         powershell Install-Module -Name Az -RequiredVersion 2.6.0 -Force -AllowClobber
         powershell Uninstall-AzureRM
-    - name: Update-All (test)
+    - name: Update-All
       env:
         SHARPLAB_TELEMETRY_KEY: ${{secrets.AzureBranchTelemetryKey}}
         SL_BUILD_AZURE_TENANT:  ${{secrets.AzureTenant}}

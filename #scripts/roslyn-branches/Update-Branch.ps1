@@ -48,16 +48,16 @@ function Build-Branch() {
         $ProgressPreference = 'SilentlyContinue'
 
         $roslynBuildsUrl = "https://dev.azure.com/dnceng/public/_apis/build/builds?api-version=5.0&definitions=15&reasonfilter=individualCI&resultFilter=succeeded&`$top=1&branchName=refs/heads/$branchName"
-        "GET $roslynBuildsUrl" | Out-Default
+        Write-Host "GET $roslynBuildsUrl"
         $builds = Invoke-RestMethod $roslynBuildsUrl
         if ($builds.count -eq 0) {
-            "No successful Roslyn Azure builds found, skipping." | Out-Default
+            Write-Host "No successful Roslyn Azure builds found, skipping."
             return $null
         }
 
         $build = $builds.value[0]
         if ($build.id -eq $currentBuildId) {
-            "Roslyn Azure build $($build.id) same as current, skipping." | Out-Default
+            Write-Host "Roslyn Azure build $($build.id) same as current, skipping."
             return $null
         }
 
@@ -71,7 +71,7 @@ function Build-Branch() {
 
         $roslynArtifactsUrl = "$($build._links.self.href)/artifacts"
 
-        "GET $roslynArtifactsUrl" | Out-Default
+        Write-Host "GET $roslynArtifactsUrl"
         $roslynArtifacts = Invoke-RestMethod $roslynArtifactsUrl
         $roslynPackages = $roslynArtifacts.value | ? { $_.name -eq 'Packages - PreRelease' }
 
@@ -82,10 +82,15 @@ function Build-Branch() {
 
         $downloadUrl = $roslynPackages.resource.downloadUrl
 
-        $zipPath = Join-Path $branchArtifactsRoot "Packages.zip"
+        $zipPath = Join-Path $branchArtifactsRoot "Packages.$($build.id).zip"
 
-        "GET $($downloadUrl) => $zipPath" | Out-Default
-        Invoke-WebRequest $downloadUrl -OutFile $zipPath
+        if (!(Test-Path $zipPath)) { # Optimization for local only
+            Write-Host "GET $($downloadUrl) => $zipPath"
+            Invoke-WebRequest $downloadUrl -OutFile $zipPath
+        }
+        else {
+            Write-Host "Found cached $zipPath, no need to download"
+        }
 
         if (Test-Path $packagesRoot) { Remove-Item $packagesRoot -Recurse -Force }
         New-Item -ItemType Directory -Path $packagesRoot | Out-Null
@@ -94,10 +99,10 @@ function Build-Branch() {
         $packagesTempRoot = Join-Path $branchArtifactsRoot 'roslyn-packages-temp'
         if (Test-Path $packagesTempRoot) { Remove-Item $packagesRoot -Recurse -Force }
 
-        "Unpacking $zipPath => $packagesTempRoot" | Out-Default
+        Write-Host "Unpacking $zipPath => $packagesTempRoot"
         Expand-Archive $zipPath $packagesTempRoot
 
-        "Flattening $packagesTempRoot => $packagesRoot" | Out-Default
+        Write-Host "Flattening $packagesTempRoot => $packagesRoot"
         Get-ChildItem $packagesTempRoot -Recurse -File | Copy-Item -Destination $packagesRoot
         Remove-Item $packagesTempRoot -Recurse -Force
 
@@ -114,6 +119,8 @@ function Build-Branch() {
     }
 
     function Build-SharpLab($roslynPackagesRoot) {
+        $Runtime = 'win-x86'
+
         $branchSharpLabRoot = Join-Path $branchRoot 'sharplab'
         $branchSourceRoot = Join-Path $branchSharpLabRoot 'source'
         if (!(Test-Path $branchSourceRoot)) {
@@ -179,6 +186,7 @@ function Build-Branch() {
 
         "Restoring $roslynPackagesRoot => $restoredPackagesRoot" | Out-Default
         dotnet restore $branchSourceRoot `
+            --runtime $Runtime `
             --packages $restoredPackagesRoot `
             --source "https://api.nuget.org/v3/index.json" `
             --source $roslynPackagesRoot `
@@ -186,16 +194,19 @@ function Build-Branch() {
         if ($LastExitCode -ne 0) { throw "dotnet restore exited with error code $LastExitCode" }
 
         "Building SharpLab" | Out-Default
-        dotnet msbuild "$branchSourceRoot/Server.Owin/Server.Owin.csproj" `
+        dotnet msbuild "$branchSourceRoot/Server.AspNetCore/Server.AspNetCore.csproj" `
             /m /nodeReuse:false `
+            /t:Publish `
+            /p:SelfContained=True `
+            /p:AspNetCoreHostingModel=OutOfProcess `
+            /p:RuntimeIdentifier=$Runtime `
             /p:Configuration=Release `
             /p:UnbreakablePolicyReportEnabled=false `
             /p:TreatWarningsAsErrors=false | Out-Default
         if ($LastExitCode -ne 0) { throw "dotnet msbuild exited with error code $LastExitCode" }
 
         return @{
-            webConfigRoot = "$branchSourceRoot/Server.Owin"
-            binRoot = "$branchSourceRoot/Server.Owin/bin/Release"
+            publishRoot = "$branchSourceRoot/Server.AspNetCore/bin/Release/netcoreapp3.0/$runtime/publish"
         }
     }
 
@@ -275,15 +286,8 @@ function Build-Branch() {
     Write-Host ""
 
     Write-Host "Copying to site"
-    $siteBinRoot = Join-Path $branchSiteRoot 'bin'
-    if (!(Test-Path $siteBinRoot)) { New-Item -ItemType Directory -Path $siteBinRoot | Out-Null }
-
-    robocopy $siteSource.binRoot $siteBinRoot `
-        /xo `
-        /mir /np /ndl /njh | Out-Default
-    robocopy $siteSource.webConfigRoot $branchSiteRoot 'web.config' `
-        /xo `
-        /np /ndl /njh | Out-Default
+    robocopy $siteSource.publishRoot $branchSiteRoot `
+        /xo /mir /np /ndl /njh | Out-Default
 
     Write-Host "Updating branch version for Web App"
     $branchVersionPath = Update-BranchVersionArtifact `
@@ -388,7 +392,7 @@ function Publish-Branch() {
         Publish-ToAzure
     }
     else {
-        &"$PSScriptRoot\Publish-ToIIS.ps1" -SiteName $webAppName -SourcePath $branchSiteRoot
+        &"$PSScriptRoot\Publish-ToIIS.ps1" -SiteName $iisSiteName -SourcePath $branchSiteRoot
     }
 
     return (Test-BranchWebApp)

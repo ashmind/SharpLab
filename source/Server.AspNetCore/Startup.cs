@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
@@ -34,6 +35,12 @@ namespace Server.AspNetCore {
                 .AllowAnyMethod()
                 .SetPreflightMaxAge(StartupHelper.CorsPreflightMaxAge)
             );
+            
+            var okBytes = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes("OK"));
+            app.Map("/status", a => a.Use((c, next) => {
+                c.Response.ContentType = "text/plain";
+                return c.Response.BodyWriter.WriteAsync(okBytes).AsTask();
+            }));
 
             app.UseWebSockets();
             app.UseMirrorSharp(StartupHelper.CreateMirrorSharpOptions(_container));
