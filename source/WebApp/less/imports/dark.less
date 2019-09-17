@@ -6,6 +6,8 @@
     @dark-text-color: #d0d0d0;
     @dark-highlight-color: #3f3f46;
     @dark-border-color: #3f3f46;
+    @dark-cm-hint-active-color: #3875b2;
+    @dark-cm-elevated-background-color: #333333;
 
     --highlight-color: @dark-highlight-color;
 
@@ -50,12 +52,26 @@
     }
 
     .CodeMirror-selected {
-        background: #264f78;
+        background: darken(@dark-cm-hint-active-color, 20%);
     }
 
     .CodeMirror-gutters {
-        background: #333333;
+        background: @dark-cm-elevated-background-color;
         border-right-color: #262626;
+    }
+
+    .CodeMirror-hints {
+        background: @dark-cm-elevated-background-color;
+        color: #fff;
+        border-color: @dark-border-color;
+    }
+
+    .CodeMirror-hint {
+        color: inherit;
+    }
+
+    .CodeMirror-hint-active {
+        background-color: @dark-cm-hint-active-color;
     }
 
     .mirrorsharp-theme {
@@ -67,8 +83,11 @@
         .cm-tag     { color: #696969;}
     }
 
+    /* TODO: check why first one does not include the second */
+    .mirrorsharp-any-tooltip,
     .CodeMirror-infotip {
-        background-color: var(--highlight-color);
+        background-color: @dark-highlight-color;
+        border-color: @dark-border-color;
     }
 
     .warnings header,
@@ -87,7 +106,7 @@
     }
 
     .root-status-error .code header, .root-status-error .result header {
-        border-bottom-color: @error-color;
+        border-bottom: 1px solid @error-color;
     }
 
     input {
