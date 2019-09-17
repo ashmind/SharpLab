@@ -14,7 +14,7 @@
 
 .mobile-menu {
     position: absolute;
-    background-color: @primary-color;
+    background-color: var(--header-color);
 
     .root-status-error & {
         background-color: @error-color;
@@ -109,7 +109,6 @@
 
         @row-top-margin: @header-height+0.5em;
         @row-margin-multiplier: 2em;
-        @row-separator-color: #ffffff50;
         @row-separator-extra: 0.5em;
         .option-language, .option-target-language {
             top: @row-top-margin + 0*@row-margin-multiplier;
@@ -121,7 +120,7 @@
 
         .gist-manager {
             top: @row-top-margin + 2*@row-margin-multiplier;
-            border-top: 1px solid @row-separator-color;
+            border-top: 1px solid var(--header-separator-color);
             padding-top: @row-separator-extra;
         }
 
