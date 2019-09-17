@@ -10,6 +10,7 @@
     --header-separator-color: #fff;
     --error-header-color: @error-color;
     --warning-header-color: @warning-color;
+    --muted-header-color: #bbb;
 }
 
 * {
@@ -161,7 +162,7 @@ header .spacer {
 
 section.details-only {
     header {
-        background-color: #bbb;
+        background-color: var(--muted-header-color);
     }
 
     .content {
