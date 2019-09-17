@@ -66,11 +66,13 @@
         border-color: @dark-border-color;
     }
 
-    .CodeMirror-hint {
+    .CodeMirror-hint,
+    .CodeMirror-lintfix-fix {
         color: inherit;
     }
 
-    .CodeMirror-hint-active {
+    .CodeMirror-hint-active,
+    .CodeMirror-lintfix-fix-selected {
         background-color: @dark-cm-hint-active-color;
     }
 
@@ -85,7 +87,10 @@
 
     /* TODO: check why first one does not include the second */
     .mirrorsharp-any-tooltip,
-    .CodeMirror-infotip {
+    .CodeMirror-infotip,
+    .CodeMirror-lintfix-popup-marker,
+    .CodeMirror-lintfix-popup,
+    .CodeMirror-lintfix-list {
         background-color: @dark-highlight-color;
         border-color: @dark-border-color;
     }
