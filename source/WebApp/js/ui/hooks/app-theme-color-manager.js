@@ -1,4 +1,5 @@
-﻿import registry from './registry.js';
+﻿import { getEffectiveTheme, watchEffectiveTheme } from '../../helpers/theme.js';
+import registry from './registry.js';
 
 registry.main.ready.push(vue => {
     const head = document.getElementsByTagName('head')[0];
@@ -8,6 +9,7 @@ registry.main.ready.push(vue => {
     const favicons = Array.from(document.querySelectorAll('link[rel=icon]'));
 
     const defaultColor = meta.getAttribute('content');
+    const darkColor = '#2d2d30'; // TODO: grab from CSS?
 
     let faviconSvg;
     let faviconSvgUrl;
@@ -40,8 +42,8 @@ registry.main.ready.push(vue => {
         urls.svg = recoloredSvgUrl;
         await Promise.all(Object.keys(faviconsBySizes).map(async size => {
             const canvas = document.createElement('canvas');
-            canvas.width = size;
-            canvas.height = size;
+            canvas.width = parseInt(size);
+            canvas.height = parseInt(size);
             const context = canvas.getContext('2d');
             // Firefox bug #700533, SVG needs specific dimensions
             const finalSvgUrl = recoloredSvgUrl.replace('viewBox', encodeURIComponent(`width="${size}" height="${size}" viewBox`));
@@ -53,20 +55,39 @@ registry.main.ready.push(vue => {
         return urls;
     };
 
-    let lastColor;
-    vue.$watch(colorPropertyName, async color => {
-        meta.setAttribute('content', color);
+    let effectiveTheme = getEffectiveTheme();
+    const applyThemeColor = color => {
+        const themeColor = (effectiveTheme !== 'dark') ? color : darkColor;
+        meta.setAttribute('content', themeColor);
+    };
+
+    let generatingColor;
+    const applyFaviconColor = async color => {
         let urls = cache[color];
         if (!urls) {
-            lastColor = color;
+            generatingColor = color;
             urls = await generateDataUrls(color);
             cache[color] = urls;
-            if (color !== lastColor) // changed while we were awaiting urls
+            if (color !== generatingColor) // changed while we were awaiting urls
                 return;
         }
         faviconSvg.href = urls.svg;
         for (const size in faviconsBySizes) {
             faviconsBySizes[size].setAttribute('href', urls[size]);
         }
+    };
+
+    if (effectiveTheme === 'dark')
+        applyThemeColor();
+
+    let lastNonDarkColor = defaultColor;
+    vue.$watch(colorPropertyName, color => {
+        lastNonDarkColor = color;
+        applyThemeColor(color);
+        applyFaviconColor(color);
+    });
+    watchEffectiveTheme(t => {
+        effectiveTheme = t;
+        applyThemeColor(lastNonDarkColor);
     });
 });

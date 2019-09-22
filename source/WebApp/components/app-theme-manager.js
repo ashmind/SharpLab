@@ -1,6 +1,5 @@
 import Vue from 'vue';
-import { save, load } from '../js/state/theme.js';
-import trackFeature from '../js/helpers/track-feature.js';
+import { getUserTheme, setUserTheme } from '../js/helpers/theme.js';
 
 const component = Vue.component('app-theme-manager', {
     data: () => ({
@@ -16,8 +15,7 @@ const component = Vue.component('app-theme-manager', {
         }
     },
     mounted() {
-        this.theme = load() || 'auto';
-        trackDarkTheme(this.theme);
+        this.theme = getUserTheme();
         updateBodyClass(this.theme);
     },
     methods: {
@@ -29,28 +27,12 @@ const component = Vue.component('app-theme-manager', {
             }[this.theme];
             this.theme = next;
 
-            save(this.theme);
+            setUserTheme(this.theme);
             updateBodyClass(this.theme);
         }
     },
     template: '#app-theme-manager'
 });
-
-function trackDarkTheme(theme) {
-    switch (theme) {
-        case 'dark': {
-            trackFeature('Theme: Dark (manual)');
-            return;
-        }
-        case 'auto': {
-            const systemDarkTheme = window.matchMedia
-                && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            if (systemDarkTheme)
-                trackFeature('Theme: Dark (system)');
-            return; // eslint-disable-line no-useless-return
-        }
-    }
-}
 
 function updateBodyClass(theme) {
     const allClasses = ['theme-dark', 'theme-auto'];
