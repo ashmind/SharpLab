@@ -38,6 +38,12 @@ if (!(Test-Path './source/WebApp/.env')) {
     Copy-Item './source/WebApp/.env.template' './source/WebApp/.env'
 }
 
+Write-Host "Installing local tools"
+dotnet tool restore
+if ($LastExitCode -ne 0) {
+    throw "dotnet failed with exit code $LastExitCode"
+} 
+
 Write-Host "Building and publishing"
 Push-Location 'source'
 try {
