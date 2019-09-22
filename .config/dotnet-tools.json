@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "unbreakable.tools.policyreport": {
+      "version": "0.0.2",
+      "commands": [
+        "dotnet-unbreakable-policy-report"
+      ]
+    }
+  }
+}

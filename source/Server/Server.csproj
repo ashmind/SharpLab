@@ -9,6 +9,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     <MSBuildWarningsAsMessages>MSB3836</MSBuildWarningsAsMessages>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,12 +40,8 @@
     <PackageReference Include="System.Memory" Version="4.5.3" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0-preview2-26406-04" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.3" />
-    <PackageReference Include="Unbreakable" Version="0.16.0-unproven" />
-    <PackageReference Include="Unbreakable.Policy" Version="0.8.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
-    <PackageReference Include="Unbreakable.Build.PolicyReport" Version="0.0.11" />
+    <PackageReference Include="Unbreakable" Version="0.17.1-unproven" />
+    <PackageReference Include="Unbreakable.Policy" Version="0.10.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -63,9 +60,19 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Compile Update="Execution\Unbreakable\ApiPolicySetup.cs">
-      <UnbreakablePolicyTypeName>SharpLab.Server.Execution.Unbreakable.ApiPolicySetup</UnbreakablePolicyTypeName>
-      <UnbreakablePolicyMethodName>CreatePolicy</UnbreakablePolicyMethodName>
-    </Compile>
+    <Compile Update="Execution\Unbreakable\ApiPolicySetup.cs" />
   </ItemGroup>
+
+  <Target Name="_UpdatePolicyReport"
+          AfterTargets="Build"
+          Inputs="Execution\Unbreakable\ApiPolicySetup.cs"
+          Outputs="Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt"
+          Condition="'$(TargetFramework)' == 'netcoreapp30' And '$(Configuration)' == 'Debug'">
+    <Exec WorkingDirectory="$(OutputPath)" Command="
+      dotnet unbreakable-policy-report ^
+          --assembly &quot;$(TargetPath)&quot; ^
+          --factory SharpLab.Server.Execution.Unbreakable.ApiPolicySetup ^
+          --method CreatePolicy ^
+          --output &quot;$(MSBuildThisFileDirectory)Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt&quot;" />
+  </Target>
 </Project>

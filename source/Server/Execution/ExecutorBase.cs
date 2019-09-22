@@ -90,8 +90,13 @@ namespace SharpLab.Server.AspNetCore.Execution {
         private static AssemblyGuardSettings CreateGuardSettings(ApiPolicy apiPolicy) {
             var settings = AssemblyGuardSettings.DefaultForCSharpAssembly();
             settings.ApiPolicy = apiPolicy;
-            settings.AllowExplicitLayoutInTypesMatchingPattern = new Regex(settings.AllowExplicitLayoutInTypesMatchingPattern.ToString(), RegexOptions.Compiled);
-            settings.AllowPointerOperationsInTypesMatchingPattern = new Regex(settings.AllowPointerOperationsInTypesMatchingPattern.ToString(), RegexOptions.Compiled);
+
+            Regex? CompileRegex(Regex? original) => original != null
+                ? new Regex(original.ToString(), original.Options | RegexOptions.Compiled)
+                : null;
+            settings.AllowExplicitLayoutInTypesMatchingPattern = CompileRegex(settings.AllowExplicitLayoutInTypesMatchingPattern);
+            settings.AllowPointerOperationsInTypesMatchingPattern = CompileRegex(settings.AllowPointerOperationsInTypesMatchingPattern);
+
             return settings;
         }
     }
