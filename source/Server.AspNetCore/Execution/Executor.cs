@@ -11,6 +11,7 @@ using IAssemblyResolver = Mono.Cecil.IAssemblyResolver;
 using SharpLab.Server.Execution;
 using SharpLab.Server.AspNetCore.Platform;
 using System.Runtime.Serialization.Formatters.Binary;
+using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Server.AspNetCore.Execution {
     public class Executor : ExecutorBase {
@@ -22,6 +23,7 @@ namespace SharpLab.Server.AspNetCore.Execution {
             ApiPolicy apiPolicy,
             IReadOnlyCollection<IAssemblyRewriter> rewriters,
             RecyclableMemoryStreamManager memoryStreamManager,
+            IMemoryInspector heapInspector,
             ExecutionResultSerializer serializer,
             IMonitor monitor
         ) : base(
@@ -30,6 +32,7 @@ namespace SharpLab.Server.AspNetCore.Execution {
             apiPolicy,
             rewriters,
             memoryStreamManager,
+            heapInspector,
             serializer,
             monitor
         ) {
@@ -44,7 +47,7 @@ namespace SharpLab.Server.AspNetCore.Execution {
                 var coreType = serverAssembly.GetType(typeof(IsolatedExecutorCore).FullName!)!;
                 var execute = coreType.GetMethod(nameof(IsolatedExecutorCore.Execute))!;
 
-                var wrapperInContext = execute.Invoke(null, new object[] { assembly, guardToken.Guid, Current.ProcessId, ProfilerState.Active });
+                var wrapperInContext = execute.Invoke(null, new object[] { assembly, guardToken.Guid, HeapInspector, Current.ProcessId, ProfilerState.Active });
                 // Since wrapperInContext belongs to a different AssemblyLoadContext, it is not possible to convert
                 // it to same type in the default context without some trick (e.g. serialization).
                 using (var wrapperStream = _memoryStreamManager.GetStream())

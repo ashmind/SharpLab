@@ -8,11 +8,12 @@ using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Server.Execution {
     public static class IsolatedExecutorCore {
-        public static unsafe ExecutionResultWithException Execute(Assembly assembly, Guid guardTokenGuid, int processId, bool profilerActive) {
+        public static unsafe ExecutionResultWithException Execute(Assembly assembly, Guid guardTokenGuid, IMemoryInspector heapInspector, int processId, bool profilerActive) {
             try {
                 Console.SetOut(Output.Writer);
                 InspectionSettings.CurrentProcessId = processId;
                 InspectionSettings.ProfilerActive = profilerActive;
+                InspectionSettings.MemoryInspector = heapInspector;
 
                 var main = assembly.EntryPoint;
                 if (main == null)

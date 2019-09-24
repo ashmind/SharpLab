@@ -13,29 +13,11 @@ public static partial class Inspect {
     public static void Heap(object @object) {
         if (@object == null)
             throw new Exception($"Inspect.Heap can't inspect null, as it does not point to a valid location on the heap.");
-
-        EnsureRuntime();
-
+        
         var address = (ulong)GetHeapPointer(@object);
-        var objectType = _runtime.Heap.GetObjectType(address);
-        if (objectType == null)
-            throw new Exception($"Failed to find object type for address 0x{address:X}.");
+        var inspection = InspectionSettings.MemoryInspector.InspectHeap(address);
 
-        var objectSize = objectType.GetSize(address);
-
-        // Move by one pointer size back -- Object Header,
-        // see https://blogs.msdn.microsoft.com/seteplia/2017/05/26/managed-object-internals-part-1-layout/
-        //
-        // Not sure if there is a better way to get this through ClrMD yet.
-        // https://github.com/Microsoft/clrmd/issues/99
-        var objectStart = address - (uint)IntPtr.Size;
-        var data = ReadMemory(objectStart, objectSize);
-
-        var labels = CreateLabelsFromType(objectType, address, objectStart, first: (index: 2, offset: 2 * IntPtr.Size));
-        labels[0] = new MemoryInspectionLabel("header", 0, IntPtr.Size);
-        labels[1] = new MemoryInspectionLabel("type handle", IntPtr.Size, IntPtr.Size);
-
-        Output.Write(new MemoryInspection($"{objectType.Name} at 0x{address:X}", labels, data));
+        Output.Write(inspection);
     }
 
     private static byte[] ReadMemory(ulong address, ulong size) {
@@ -52,6 +34,8 @@ public static partial class Inspect {
     }
 
     public static unsafe void Stack<T>(in T value) {
+        EnsureRuntime();
+
         var type = typeof(T);
 
         var address = (ulong)Unsafe.AsPointer(ref Unsafe.AsRef(in value));

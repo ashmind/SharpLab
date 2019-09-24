@@ -14,6 +14,7 @@ using SharpLab.Server.Monitoring;
 using IAssemblyResolver = Mono.Cecil.IAssemblyResolver;
 using SharpLab.Server.Execution;
 using SharpLab.Server.AspNetCore.Execution;
+using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Server.Owin.Execution {
     public class Executor : ExecutorBase {
@@ -23,6 +24,7 @@ namespace SharpLab.Server.Owin.Execution {
             ApiPolicy apiPolicy,
             IReadOnlyCollection<IAssemblyRewriter> rewriters,
             RecyclableMemoryStreamManager memoryStreamManager,
+            IMemoryInspector heapInspector,
             ExecutionResultSerializer serializer,
             IMonitor monitor
         ) : base(
@@ -31,6 +33,7 @@ namespace SharpLab.Server.Owin.Execution {
             apiPolicy,
             rewriters,
             memoryStreamManager,
+            heapInspector,
             serializer,
             monitor
         ) {
@@ -43,15 +46,29 @@ namespace SharpLab.Server.Owin.Execution {
                 PrivateBinPath = currentSetup.PrivateBinPath
             })) {
                 context.LoadAssembly(LoadMethod.LoadFrom, Assembly.GetExecutingAssembly().GetAssemblyFile().FullName);
-                return RemoteFunc.Invoke(context.Domain, assemblyStream.ToArray(), guardToken, Current.ProcessId, ProfilerState.Active, Remote.Execute);
+                var otherArguments = new SerializableArguments(guardToken, Current.ProcessId, ProfilerState.Active);
+                return RemoteFunc.Invoke(context.Domain, assemblyStream.ToArray(), HeapInspector, otherArguments, Remote.Execute);
             }
         }
 
         private static class Remote {
-            public static ExecutionResultWithException Execute(byte[] assemblyBytes, RuntimeGuardToken guardToken, int processId, bool profilerActive) {
+            public static ExecutionResultWithException Execute(byte[] assemblyBytes, IMemoryInspector heapInspector, SerializableArguments arguments) {
                 var assembly = Assembly.Load(assemblyBytes);
-                return IsolatedExecutorCore.Execute(assembly, guardToken.Guid, processId, profilerActive);
+                return IsolatedExecutorCore.Execute(assembly, arguments.GuardToken.Guid, heapInspector, arguments.ProcessId, arguments.ProfilerActive);
             }
+        }
+
+        [Serializable]
+        private struct SerializableArguments {
+            public SerializableArguments(RuntimeGuardToken guardToken, int processId, bool profilerActive) : this() {
+                GuardToken = guardToken;
+                ProcessId = processId;
+                ProfilerActive = profilerActive;
+            }
+
+            public RuntimeGuardToken GuardToken { get; set; }
+            public int ProcessId { get; set; }
+            public bool ProfilerActive { get; set; }
         }
     }
 }

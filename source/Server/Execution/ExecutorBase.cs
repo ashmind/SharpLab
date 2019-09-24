@@ -13,6 +13,7 @@ using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.Monitoring;
 using IAssemblyResolver = Mono.Cecil.IAssemblyResolver;
 using SharpLab.Server.Execution;
+using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Server.AspNetCore.Execution {
     public abstract class ExecutorBase : IExecutor {
@@ -30,6 +31,7 @@ namespace SharpLab.Server.AspNetCore.Execution {
             ApiPolicy apiPolicy,
             IReadOnlyCollection<IAssemblyRewriter> rewriters,
             RecyclableMemoryStreamManager memoryStreamManager,
+            IMemoryInspector heapInspector,
             ExecutionResultSerializer serializer,
             IMonitor monitor
         ) {
@@ -38,9 +40,12 @@ namespace SharpLab.Server.AspNetCore.Execution {
             _guardSettings = CreateGuardSettings(apiPolicy);
             _rewriters = rewriters;
             _memoryStreamManager = memoryStreamManager;
+            HeapInspector = heapInspector;
             _serializer = serializer;
             _monitor = monitor;
         }
+
+        protected IMemoryInspector HeapInspector { get; }
 
         public ExecutionResult Execute(CompilationStreamPair streams, IWorkSession session) {
             var readerParameters = new ReaderParameters {
