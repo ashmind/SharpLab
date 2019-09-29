@@ -5,7 +5,7 @@ Write-Output 'git submodule update --recursive --init'
 git submodule update --recursive --init
 
 Write-Output 'msbuild source\Native.Profiler\Native.Profiler.vcxproj'
-$msbuild = (@(Get-Item "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\*\MSBuild\Current\Bin\msbuild.exe")[0]).FullName
+$msbuild = (@(Get-Item "${env:ProgramFiles(x86)}\Microsoft Visual Studio\*\*\MSBuild\Current\Bin\msbuild.exe")[0]).FullName
 &$msbuild source\Native.Profiler\Native.Profiler.vcxproj /p:Configuration=Release /p:Platform=x64 /p:SolutionName=SharpLab
 if ($LastExitCode -ne 0) { throw "msbuild exited with code $LastExitCode" }
 
