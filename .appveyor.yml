@@ -1,5 +1,5 @@
 version: '{branch}-{build}'
-image: Visual Studio 2019 Preview
+image: Visual Studio 2017
 environment:
   NODE_ENV: production
 install:
