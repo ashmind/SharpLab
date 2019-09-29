@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net47; netcoreapp30</TargetFrameworks>
     <AssemblyName>SharpLab.Server</AssemblyName>
@@ -24,15 +24,15 @@
     <PackageReference Include="ICSharpCode.Decompiler" Version="4.0.0.4521" />
     <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.4.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="2.9.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="2.9.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Features" Version="2.9.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.9.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.3.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="3.3.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Features" Version="3.3.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.3.1" />
     <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="1.0.5" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.2" />
-    <PackageReference Include="MirrorSharp.Common" Version="1.0.0" />
-    <PackageReference Include="MirrorSharp.FSharp" Version="0.14.0" />
-    <PackageReference Include="MirrorSharp.VisualBasic" Version="1.0.0" />
+    <PackageReference Include="MirrorSharp.Common" Version="2.0.0" />
+    <PackageReference Include="MirrorSharp.FSharp" Version="0.16.0" />
+    <PackageReference Include="MirrorSharp.VisualBasic" Version="2.0.0" />
     <PackageReference Include="Mono.Cecil" Version="0.10.0" />
     <PackageReference Include="SharpDisasm" Version="1.1.11" />
     <PackageReference Include="SharpYaml" Version="1.6.2" />
@@ -63,16 +63,7 @@
     <Compile Update="Execution\Unbreakable\ApiPolicySetup.cs" />
   </ItemGroup>
 
-  <Target Name="_UpdatePolicyReport"
-          AfterTargets="Build"
-          Inputs="Execution\Unbreakable\ApiPolicySetup.cs"
-          Outputs="Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt"
-          Condition="'$(TargetFramework)' == 'netcoreapp30' And '$(Configuration)' == 'Debug'">
-    <Exec WorkingDirectory="$(OutputPath)" Command="
-      dotnet unbreakable-policy-report ^
-          --assembly &quot;$(TargetPath)&quot; ^
-          --factory SharpLab.Server.Execution.Unbreakable.ApiPolicySetup ^
-          --method CreatePolicy ^
-          --output &quot;$(MSBuildThisFileDirectory)Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt&quot;" />
+  <Target Name="_UpdatePolicyReport" AfterTargets="Build" Inputs="Execution\Unbreakable\ApiPolicySetup.cs" Outputs="Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt" Condition="'$(TargetFramework)' == 'netcoreapp30' And '$(Configuration)' == 'Debug'">
+    <Exec WorkingDirectory="$(OutputPath)" Command="&#xD;&#xA;      dotnet unbreakable-policy-report ^&#xD;&#xA;          --assembly &quot;$(TargetPath)&quot; ^&#xD;&#xA;          --factory SharpLab.Server.Execution.Unbreakable.ApiPolicySetup ^&#xD;&#xA;          --method CreatePolicy ^&#xD;&#xA;          --output &quot;$(MSBuildThisFileDirectory)Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt&quot;" />
   </Target>
 </Project>

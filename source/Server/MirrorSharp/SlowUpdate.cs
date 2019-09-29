@@ -100,7 +100,7 @@ namespace SharpLab.Server.MirrorSharp {
             }
         }
 
-        public void WriteResult(IFastJsonWriter writer, object result, IWorkSession session) {
+        public void WriteResult(IFastJsonWriter writer, object? result, IWorkSession session) {
             if (result == null) {
                 writer.WriteValue((string?)null);
                 return;

@@ -7,6 +7,8 @@
     <DefineConstants>NETCORE</DefineConstants>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
+    <!-- https://github.com/microsoft/msbuild/issues/4740#issuecomment-533660031 -->
+    <EmbeddedResourceUseDependentUponConvention>false</EmbeddedResourceUseDependentUponConvention>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +19,7 @@
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <PackageReference Include="AshMind.Extensions" Version="3.0.0-pre-20190808-01" />
-    <PackageReference Include="MirrorSharp.Testing" version="1.0.1" />
+    <PackageReference Include="MirrorSharp.Testing" version="2.0.0" />
     <PackageReference Include="Pedantic.IO.EmbeddedResource" version="0.9.0-pre-02" />
   </ItemGroup>
 
@@ -29,8 +31,7 @@
   <ItemGroup>
     <Compile Include="../Tests/**/*.cs" Exclude="../Tests/TestCode/**/*.*;../Tests/obj/**/*.*" />
 
-    <EmbeddedResource Include="../Tests/TestCode/**/*.*"
-                      Exclude="../Tests/TestCode/**/*.fs2cs;../Tests/TestCode/**/*.fs2il;../Tests/TestCode/**/*.fs2asm;../Tests/TestCode/**/*.cs2il;../Tests/TestCode/**/*.cs2asm;../Tests/TestCode/**/Inspect.Heap.*;../Tests/TestCode/**/Inspect.Memory*">
+    <EmbeddedResource Include="../Tests/TestCode/**/*.*" Exclude="../Tests/TestCode/**/*.fs2cs;../Tests/TestCode/**/*.fs2il;../Tests/TestCode/**/*.fs2asm;../Tests/TestCode/**/*.cs2il;../Tests/TestCode/**/*.cs2asm;../Tests/TestCode/**/Inspect.Heap.*;../Tests/TestCode/**/Inspect.Memory*">
       <Link>TestCode/%(RecursiveDir)%(Filename)%(Extension)</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="../Tests/TestData/language-syntax-explanations/*.yml">

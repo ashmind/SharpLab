@@ -56,7 +56,10 @@ namespace SharpLab.Server.Decompilation.AstOnly {
         }
 
         public Task<object> GetAstAsync(IWorkSession session, CancellationToken cancellationToken) {
-            return Task.FromResult((object)session.FSharp().GetLastParseResults().ParseTree.Value);
+            var parseResult = session.FSharp().GetLastParseResults();
+            if (parseResult == null)
+                throw new InvalidOperationException("Current session does not include F# parse results yet.");
+            return Task.FromResult((object)parseResult.ParseTree.Value);
         }
 
         public void SerializeAst(object ast, IFastJsonWriter writer, IWorkSession session) {

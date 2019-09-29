@@ -70,20 +70,20 @@ namespace SharpLab.Server.Common.Languages {
             // ReSharper restore HeapView.ObjectAllocation.Evident
         }
 
-        public void SetOptimize([NotNull] IWorkSession session, [NotNull] string optimize) {
+        public void SetOptimize(IWorkSession session, string optimize) {
             var project = session.Roslyn.Project;
-            var parseOptions = ((VisualBasicParseOptions)project.ParseOptions);
-            var compilationOptions = ((VisualBasicCompilationOptions)project.CompilationOptions);
+            var parseOptions = ((VisualBasicParseOptions)project.ParseOptions!); // not null since this class always sets it
+            var compilationOptions = ((VisualBasicCompilationOptions)project.CompilationOptions!);
             session.Roslyn.Project = project
                 .WithParseOptions(parseOptions.WithPreprocessorSymbols(optimize == Optimize.Debug ? DebugPreprocessorSymbols : ReleasePreprocessorSymbols))
                 .WithCompilationOptions(compilationOptions.WithOptimizationLevel(optimize == Optimize.Debug ? OptimizationLevel.Debug : OptimizationLevel.Release));
         }
 
-        public void SetOptionsForTarget([NotNull] IWorkSession session, [NotNull] string target) {
+        public void SetOptionsForTarget(IWorkSession session, string target) {
             var outputKind = target != TargetNames.Run ? OutputKind.DynamicallyLinkedLibrary : OutputKind.ConsoleApplication;
 
             var project = session.Roslyn.Project;
-            var options = ((VisualBasicCompilationOptions)project.CompilationOptions);
+            var options = ((VisualBasicCompilationOptions)project.CompilationOptions!);
             session.Roslyn.Project = project.WithCompilationOptions(options.WithOutputKind(outputKind));
         }
 

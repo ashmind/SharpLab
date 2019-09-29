@@ -80,10 +80,10 @@ namespace SharpLab.Server.Common.Languages {
             // ReSharper restore HeapView.ObjectAllocation.Evident
         }
 
-        public void SetOptimize([NotNull] IWorkSession session, [NotNull] string optimize) {
+        public void SetOptimize(IWorkSession session, string optimize) {
             var project = session.Roslyn.Project;
-            var parseOptions = ((CSharpParseOptions)project.ParseOptions);
-            var compilationOptions = ((CSharpCompilationOptions)project.CompilationOptions);
+            var parseOptions = ((CSharpParseOptions)project.ParseOptions!);
+            var compilationOptions = ((CSharpCompilationOptions)project.CompilationOptions!);
             session.Roslyn.Project = project
                 .WithParseOptions(parseOptions.WithPreprocessorSymbols(optimize == Optimize.Debug ? DebugPreprocessorSymbols : ReleasePreprocessorSymbols))
                 .WithCompilationOptions(compilationOptions.WithOptimizationLevel(optimize == Optimize.Debug ? OptimizationLevel.Debug : OptimizationLevel.Release));
@@ -94,7 +94,7 @@ namespace SharpLab.Server.Common.Languages {
             var allowUnsafe = target != TargetNames.Run;
 
             var project = session.Roslyn.Project;
-            var options = ((CSharpCompilationOptions)project.CompilationOptions);
+            var options = ((CSharpCompilationOptions)project.CompilationOptions!);
             session.Roslyn.Project = project.WithCompilationOptions(
                 options.WithOutputKind(outputKind).WithAllowUnsafe(allowUnsafe)
             );

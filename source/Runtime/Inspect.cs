@@ -8,16 +8,14 @@ using Microsoft.Diagnostics.Runtime;
 using SharpLab.Runtime.Internal;
 
 public static partial class Inspect {
-    private static ClrRuntime _runtime;
-
     public static void Heap(object @object) {
         if (@object == null)
             throw new Exception($"Inspect.Heap can't inspect null, as it does not point to a valid location on the heap.");
 
-        EnsureRuntime();
+        var runtme = GetRuntime();
 
         var address = (ulong)GetHeapPointer(@object);
-        var objectType = _runtime.Heap.GetObjectType(address);
+        var objectType = runtme.Heap.GetObjectType(address);
         if (objectType == null)
             throw new Exception($"Failed to find object type for address 0x{address:X}.");
 
@@ -39,10 +37,8 @@ public static partial class Inspect {
     }
 
     private static byte[] ReadMemory(ulong address, ulong size) {
-        EnsureRuntime();
-
         var data = new byte[size];
-        _runtime.ReadMemory(address, data, (int)size, out var _);
+        GetRuntime().ReadMemory(address, data, (int)size, out var _);
         return data;
     }
 
@@ -60,7 +56,8 @@ public static partial class Inspect {
 
         MemoryInspectionLabel[] labels;
         if (type.IsValueType && !type.IsPrimitive) {
-            var runtimeType = _runtime.Heap.GetTypeByMethodTable((ulong)type.TypeHandle.Value);
+            var runtme = GetRuntime();
+            var runtimeType = runtme.Heap.GetTypeByMethodTable((ulong)type.TypeHandle.Value);
             labels = CreateLabelsFromType(runtimeType, address, address + (uint)IntPtr.Size);
         }
         else {
@@ -128,14 +125,16 @@ public static partial class Inspect {
         return CreateLabelsFromType(type, valueAddress, offsetBase + (uint)IntPtr.Size);
     }
 
-    private static void EnsureRuntime() {
-        if (_runtime != null)
-            return;
-        var dataTarget = DataTarget.AttachToProcess(InspectionSettings.CurrentProcessId, uint.MaxValue, AttachFlag.Passive);
-        var clrFlavor = RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.OrdinalIgnoreCase)
-            ? ClrFlavor.Core
-            : ClrFlavor.Desktop;
-        _runtime = dataTarget.ClrVersions.Single(c => c.Flavor == clrFlavor).CreateRuntime();
+    private static ClrRuntime? _runtime;
+    private static ClrRuntime GetRuntime() {
+        if (_runtime == null) {
+            var dataTarget = DataTarget.AttachToProcess(InspectionSettings.CurrentProcessId, uint.MaxValue, AttachFlag.Passive);
+            var clrFlavor = RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.OrdinalIgnoreCase)
+                ? ClrFlavor.Core
+                : ClrFlavor.Desktop;
+            _runtime = dataTarget.ClrVersions.Single(c => c.Flavor == clrFlavor).CreateRuntime();
+        }
+        return _runtime;
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]

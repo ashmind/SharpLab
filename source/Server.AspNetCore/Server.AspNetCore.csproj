@@ -22,7 +22,7 @@
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.4.0" />
     <PackageReference Include="Autofac.Extras.FileSystemRegistration" Version="1.0.0-pre-03" />
     <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="1.0.5" />
-    <PackageReference Include="MirrorSharp.AspNetCore" Version="0.1.0" />
+    <PackageReference Include="MirrorSharp.AspNetCore" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>

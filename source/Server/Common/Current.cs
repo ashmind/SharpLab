@@ -1,6 +1,6 @@
-using AshMind.Extensions;
 using System;
 using System.Diagnostics;
+using AshMind.Extensions;
 
 namespace SharpLab.Server.Common {
     public static class Current {

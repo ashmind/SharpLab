@@ -24,7 +24,8 @@ namespace SharpLab.Server.Compilation {
                 return (compiled, false);
             }
 
-            var compilation = await session.Roslyn.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false);
+            #warning TODO: Revisit after https://github.com/dotnet/docs/issues/14784
+            var compilation = (await session.Roslyn.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false))!;
             var emitResult = compilation.Emit(assemblyStream, pdbStream: symbolStream, options: RoslynEmitOptions);
             if (!emitResult.Success) {
                 foreach (var diagnostic in emitResult.Diagnostics) {
@@ -39,10 +40,9 @@ namespace SharpLab.Server.Compilation {
             var fsharp = session.FSharp();
 
             // GetLastParseResults are guaranteed to be available here as MirrorSharp's SlowUpdate does the parse
-            var parsed = fsharp.GetLastParseResults();
+            var parsed = fsharp.GetLastParseResults()!;
             using (var virtualAssemblyFile = FSharpFileSystem.RegisterVirtualFile(assemblyStream)) {
                 var compiled = await FSharpAsync.StartAsTask(fsharp.Checker.Compile(
-                    // ReSharper disable once PossibleNullReferenceException
                     FSharpList<Ast.ParsedInput>.Cons(parsed.ParseTree.Value, FSharpList<Ast.ParsedInput>.Empty),
                     "_", virtualAssemblyFile.Name,
                     fsharp.AssemblyReferencePathsAsFSharpList,

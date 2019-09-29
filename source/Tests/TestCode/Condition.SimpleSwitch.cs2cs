@@ -24,7 +24,7 @@ public class C
 {
     public void M(string n)
     {
-        if (n == "foo")
+        if (n != null && n == "foo")
         {
         }
     }

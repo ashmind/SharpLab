@@ -59,7 +59,7 @@ namespace SharpLab.Tests {
             var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), optimize: optimize);
 
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
-            var steps = result.ExtensionResult.Flow
+            var steps = result.ExtensionResult!.Flow
                 .Select(s => new { s.Line, s.Exception })
                 .ToArray();
 
@@ -179,7 +179,7 @@ namespace SharpLab.Tests {
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
 
             AssertIsSuccess(result);
-            Assert.Equal("Return: 3", result.ExtensionResult.GetOutputAsString());
+            Assert.Equal("Return: 3", result.ExtensionResult?.GetOutputAsString());
         }
 
         [Fact]
@@ -193,7 +193,7 @@ namespace SharpLab.Tests {
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
 
             AssertIsSuccess(result, allowRuntimeException: true);
-            Assert.Matches("^Exception: System.Exception: Test", result.ExtensionResult.GetOutputAsString());
+            Assert.Matches("^Exception: System.Exception: Test", result.ExtensionResult?.GetOutputAsString());
         }
 
         [Theory]
@@ -211,7 +211,7 @@ namespace SharpLab.Tests {
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
 
             AssertIsSuccess(result);
-            Assert.Equal(expectedOutput, result.ExtensionResult.GetOutputAsString());
+            Assert.Equal(expectedOutput, result.ExtensionResult?.GetOutputAsString());
         }
 
         [Theory]
@@ -227,7 +227,7 @@ namespace SharpLab.Tests {
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
 
             AssertIsSuccess(result, allowRuntimeException: allowExceptions);
-            code.AssertIsExpected(result.ExtensionResult.GetOutputAsString(), _testOutputHelper);
+            code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _testOutputHelper);
         }
 
         [Theory]
@@ -244,7 +244,7 @@ namespace SharpLab.Tests {
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
 
             AssertIsSuccess(result);
-            code.AssertIsExpected(result.ExtensionResult.GetOutputAsString(), _testOutputHelper);
+            code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _testOutputHelper);
         }
 
         [Theory]
@@ -267,7 +267,7 @@ namespace SharpLab.Tests {
             AssertIsSuccess(result);
             Assert.Equal(
                 expectedOutput.Replace("{newline}", Environment.NewLine),
-                result.ExtensionResult.GetOutputAsString()
+                result.ExtensionResult?.GetOutputAsString()
             );
         }
 
@@ -284,7 +284,7 @@ namespace SharpLab.Tests {
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
 
             AssertIsSuccess(result);
-            Assert.Equal("I", result.ExtensionResult.GetOutputAsString());
+            Assert.Equal("I", result.ExtensionResult?.GetOutputAsString());
         }
 
         [Theory]
@@ -306,7 +306,7 @@ namespace SharpLab.Tests {
             AssertIsSuccess(result);
             Assert.Equal(
                 expectedOutput.Replace("{newline}", Environment.NewLine),
-                result.ExtensionResult.GetOutputAsString()
+                result.ExtensionResult?.GetOutputAsString()
             );
         }
 
@@ -333,7 +333,7 @@ namespace SharpLab.Tests {
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
 
             AssertIsSuccess(result);
-            Assert.Equal("Test", result.ExtensionResult.GetOutputAsString());
+            Assert.Equal("Test", result.ExtensionResult?.GetOutputAsString());
         }
 
         [Fact]
@@ -346,7 +346,7 @@ namespace SharpLab.Tests {
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
 
             AssertIsSuccess(result);
-            Assert.Equal("Test", result.ExtensionResult.GetOutputAsString());
+            Assert.Equal("Test", result.ExtensionResult?.GetOutputAsString());
         }
 
         [Fact]
@@ -363,7 +363,7 @@ namespace SharpLab.Tests {
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
 
             AssertIsSuccess(result);
-            Assert.Equal("Test\nReturn: 0", result.ExtensionResult.GetOutputAsString());
+            Assert.Equal("Test\nReturn: 0", result.ExtensionResult?.GetOutputAsString());
         }
 
         [Theory]
@@ -437,13 +437,13 @@ namespace SharpLab.Tests {
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
 
             AssertIsSuccess(result, allowRuntimeException: true);
-            Assert.DoesNotMatch("GuardException", result.ExtensionResult.GetOutputAsString());
+            Assert.DoesNotMatch("GuardException", result.ExtensionResult?.GetOutputAsString());
         }
 
         private static void AssertIsSuccess(SlowUpdateResult<ExecutionResultData> result, bool allowRuntimeException = false) {
             var errors = result.JoinErrors();
             Assert.True(string.IsNullOrEmpty(errors), errors);
-            var output = result.ExtensionResult.GetOutputAsString();
+            var output = result.ExtensionResult?.GetOutputAsString();
             Assert.DoesNotMatch("InvalidProgramException", output);
 
             if (allowRuntimeException)

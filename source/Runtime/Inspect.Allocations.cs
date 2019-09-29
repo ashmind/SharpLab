@@ -49,13 +49,13 @@ partial class Inspect {
             return;
         }
 
-        EnsureRuntime();
+        var runtime = GetRuntime();
         var inspections = new List<IInspection>(allocationCount);
         foreach (var allocationPointer in new Span<IntPtr>(allocations, allocationCount)) {
             // Note that profiler returns allocations pointers pointing to the start of the object
             // and not after initial header, as CLR does.
             var objectPointer = allocationPointer + IntPtr.Size /* object header size */;
-            var @object = _runtime.Heap.GetObject(unchecked((ulong)objectPointer.ToInt64()));
+            var @object = runtime.Heap.GetObject(unchecked((ulong)objectPointer.ToInt64()));
 
             inspections.Add(AllocationInspector.Inspect(@object));
         }
