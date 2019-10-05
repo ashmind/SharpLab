@@ -3,7 +3,7 @@ using Autofac;
 using JetBrains.Annotations;
 using Octokit;
 
-namespace SharpLab.WebApp.Middleware.GitHub {
+namespace SharpLab.WebApp.Integration.GitHub {
     [UsedImplicitly]
     public class GitHubModule : Module {
         public static bool Enabled { get; }
@@ -14,15 +14,15 @@ namespace SharpLab.WebApp.Middleware.GitHub {
             if (string.IsNullOrEmpty(clientId))
                 return;
 
+            if (string.IsNullOrEmpty(clientSecret))
+                return;
+
             var settings = new GitHubClientSettings(clientId, clientSecret);
             builder.RegisterInstance(settings).AsSelf();
 
             var header = new ProductHeaderValue("SharpLab");
             builder.Register(_ => new GitHubClient(header))
                    .As<IGitHubClient>();
-
-            builder.RegisterType<GitHubOAuthStartMiddleware>().AsSelf();
-            builder.RegisterType<GitHubOAuthCompleteMiddleware>().AsSelf();
         }
     }
 }

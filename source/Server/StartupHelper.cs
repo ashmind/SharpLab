@@ -11,18 +11,15 @@ namespace SharpLab.Server {
         // Chrome would limit to 10 mins I believe
         public static readonly TimeSpan CorsPreflightMaxAge = TimeSpan.FromHours(1);
         
-        public static ContainerBuilder CreateContainerBuilder() {
-            var builder = new ContainerBuilder();
+        public static void ConfigureContainer(ContainerBuilder builder) {
             var assembly = Assembly.GetExecutingAssembly();
 
             builder
                 .RegisterAssemblyModulesInDirectoryOf(assembly)
                 .WhereFileMatches("SharpLab.*");
-
-            return builder;
         }
 
-        public static MirrorSharpOptions CreateMirrorSharpOptions(IContainer container) {
+        public static MirrorSharpOptions CreateMirrorSharpOptions(ILifetimeScope container) {
             var options = new MirrorSharpOptions {
                 SetOptionsFromClient = container.Resolve<ISetOptionsFromClientExtension>(),
                 SlowUpdate = container.Resolve<ISlowUpdateExtension>(),

@@ -1,23 +1,29 @@
 version: '{branch}-{build}'
-image: Visual Studio 2019 Preview
+image: Visual Studio 2019
+
 environment:
   NODE_ENV: production
+
 install:
 - ps: |-
     Install-Product node 8.11 x64
-    choco install dotnetcore-sdk --version 3.0.100-preview7-012821 --pre
+
 cache:
 - source/WebApp/node_modules
-- C:\Users\appveyor\AppData\Local\Temp\1\chocolatey\vcredist140 -> .appveyor.yml
-- C:\Users\appveyor\AppData\Local\Temp\1\chocolatey\dotnetcore-sdk -> .appveyor.yml
+
 build_script:
 - cmd: sl ci
+
 artifacts:
-- path: source/Server.AspNetCore/bin/Release/netcoreapp3.0/publish/Server.AspNetCore.zip
+- path: ./Server.AspNetCore.zip
   name: Server.AspNetCore.zip
-- path: source/WebApp/bin/publish/WebApp.zip
+- path: ./Server.Owin.zip
+  name: Server.Owin.zip
+- path: ./WebApp.zip
   name: WebApp.zip
+
 deploy:
+
 - provider: AzureAppServiceZipDeploy
   website: sharplab-edge
   username: ashmind
@@ -26,6 +32,7 @@ deploy:
   artifact: WebApp.zip
   on:
     branch: edge
+
 - provider: AzureAppServiceZipDeploy
   website: sl-a-edge-core-x64
   username: ashmind
@@ -34,6 +41,7 @@ deploy:
   artifact: Server.AspNetCore.zip
   on:
     branch: edge
+
 - provider: AzureAppServiceZipDeploy
   website: sl-a-edge-core-x64-profiled
   username: ashmind
@@ -42,6 +50,16 @@ deploy:
   artifact: Server.AspNetCore.zip
   on:
     branch: edge
+
+- provider: AzureAppServiceZipDeploy
+  website: sl-a-edge-netfx
+  username: ashmind
+  password:
+    secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
+  artifact: Server.Owin.zip
+  on:
+    branch: edge
+
 - provider: AzureAppServiceZipDeploy
   website: sharplab
   username: ashmind
@@ -50,14 +68,7 @@ deploy:
   artifact: WebApp.zip
   on:
     branch: master
-- provider: AzureAppServiceZipDeploy
-  website: sl-a-x64
-  username: ashmind
-  password:
-    secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
-  artifact: WebApp.zip
-  on:
-    branch: master
+
 - provider: AzureAppServiceZipDeploy
   website: sl-a-core-x64
   username: ashmind
@@ -66,11 +77,30 @@ deploy:
   artifact: Server.AspNetCore.zip
   on:
     branch: master
+
 - provider: AzureAppServiceZipDeploy
   website: sl-a-core-x64-profiled
   username: ashmind
   password:
     secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
   artifact: Server.AspNetCore.zip
+  on:
+    branch: master
+
+- provider: AzureAppServiceZipDeploy
+  website: sl-a-x64
+  username: ashmind
+  password:
+    secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
+  artifact: Server.Owin.zip
+  on:
+    branch: master
+
+- provider: AzureAppServiceZipDeploy
+  website: sl-a-netfx
+  username: ashmind
+  password:
+    secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
+  artifact: Server.Owin.zip
   on:
     branch: master

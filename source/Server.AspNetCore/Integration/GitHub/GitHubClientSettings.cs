@@ -1,4 +1,4 @@
-namespace SharpLab.WebApp.Middleware.GitHub {
+namespace SharpLab.WebApp.Integration.GitHub {
     public class GitHubClientSettings {
         public GitHubClientSettings(string clientId, string clientSecret) {
             ClientId = Argument.NotNullOrEmpty(nameof(clientId), clientId);

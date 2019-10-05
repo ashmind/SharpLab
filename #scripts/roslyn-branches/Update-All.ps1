@@ -92,31 +92,39 @@ function Get-RoslynBranchFeatureMap() {
 }
 
 function Get-PredefinedBranches() {
-    $x64Url = "http://sl-a-x64.sharplab.local"
-    $coreX64Url = "http://localhost:54100"
-    $coreX64ProfiledUrl = "http://localhost:54200"
+    $x64Url = "http://localhost:54100"
+    $x64ProfiledUrl = "http://localhost:54200"
+    $netfxUrl = "http://sl-a-netfx.sharplab.local"
+    $netfxX64Url = "http://sl-a-x64.sharplab.local"
     if ($azure) {
-        $x64Url = "https://sl-a-x64.azurewebsites.net"
-        $coreX64Url = "https://sl-a-core-x64.azurewebsites.net"
-        $coreX64ProfiledUrl = "https://sl-a-core-x64-profiled.azurewebsites.net"
+        $x64Url = "https://sl-a-core-x64.azurewebsites.net"
+        $x64ProfiledUrl = "https://sl-a-core-x64-profiled.azurewebsites.net"
+        $netfxUrl = "http://sl-a-netfx.sharplab.local"
+        $netfxX64Url = "https://sl-a-x64.azurewebsites.net"
     }
 
     return @([ordered]@{
-        id = 'x64'
+        id = 'core-x64'
         name = 'x64'
         url = $x64Url
         group = 'Platforms'
         kind = 'platform'
     }, [ordered]@{
-        id = 'core-x64'
-        name = '.NET Core (x64)'
-        url = $coreX64Url
+        id = 'core-x64-profiled'
+        name = 'x64 (Profiler)'
+        url = $x64ProfiledUrl
         group = 'Platforms'
         kind = 'platform'
     }, [ordered]@{
-        id = 'core-x64-profiled'
-        name = '.NET Core (x64, Profiler)'
-        url = $coreX64ProfiledUrl
+        id = 'netfx'
+        name = '.NET Framework'
+        url = $netfxUrl
+        group = 'Platforms'
+        kind = 'platform'
+    }, [ordered]@{
+        id = 'x64'
+        name = '.NET Framework (x64)'
+        url = $netfxX64Url
         group = 'Platforms'
         kind = 'platform'
     })

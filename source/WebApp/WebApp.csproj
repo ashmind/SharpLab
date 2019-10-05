@@ -1,72 +1,55 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
   <PropertyGroup>
-    <TargetFramework>net47</TargetFramework>
-    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SharpLab.WebApp</RootNamespace>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <AssemblyName>SharpLab.WebApp</AssemblyName>
-    <LangVersion>8.0</LangVersion>    
-    <Nullable>enable</Nullable>
-    <UseIISExpress>true</UseIISExpress>
-    <OutputPath>bin\</OutputPath>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <RootNamespace>SharpLab.WebApp</RootNamespace>
   </PropertyGroup>
+
   <ItemGroup>
-    <Compile Remove="node_modules\**" />
-    <EmbeddedResource Remove="node_modules\**" />
-    <None Remove="node_modules\**" />
+    <Folder Include="wwwroot/" />
+    <Content Remove="**/*.json" />
+    <None Include="**/*.json" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder);wwwroot/**" />
   </ItemGroup>
+  
   <ItemGroup>
-    <Content Include="Web.config" />
+    <None Update=".env">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
+
   <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="2.0.0" />
+    <ProjectReference Include="..\Server.AspNetCore\Server.AspNetCore.csproj" />
   </ItemGroup>
-  <PropertyGroup>
-    <NpmPath Condition="'$(TR_BUILD_NPM_PATH)' != ''">"$(TR_BUILD_NPM_PATH)"</NpmPath>
-    <NpmPath Condition="'$(TR_BUILD_NPM_PATH)' == ''">npm</NpmPath>
-  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="5.0.0" />
+  </ItemGroup>
+
   <ItemGroup>
     <_StaticOutputs Include="wwwroot\**\*.*" Exclude="wwwroot\!branches.json" />
-    <ProjectReference Include="..\Server.Owin\Server.Owin.csproj" />
     <_StaticInputs Include="@(None)" Exclude="**\!*.*; @(_StaticOutputs)" />
   </ItemGroup>
   <ItemGroup Condition="'@(_StaticOutputs)' == ''">
     <_StaticOutputs Include="$(wwwroot)\.any" />
   </ItemGroup>
   <Target Name="NpmInstall" BeforeTargets="NpmBuild" Inputs="package.json" Outputs="!package.json.installed">
-    <Exec Command="$(NpmPath) install" EnvironmentVariables="NODE_ENV=" />
+    <Exec Command="npm install" EnvironmentVariables="NODE_ENV=" />
     <Copy SourceFiles="package.json" DestinationFiles="!package.json.installed" />
   </Target>
   <Target Name="NpmBuild" AfterTargets="Build" Inputs="@(_StaticInputs)" Outputs="@(_StaticOutputs)">
     <Delete Files="@(_StaticOutputs)" />
-    <Exec Command="$(NpmPath) run build" />
+    <Exec Command="npm run build" />
     <ItemGroup>
       <Content Include="wwwroot\**\*.*" />
     </ItemGroup>
   </Target>
-  <!--  https://github.com/dotnet/sdk/issues/1458#issuecomment-401497095 -->
+
+  <!-- https://github.com/dotnet/sdk/issues/1458#issuecomment-401497095 -->
   <Target Name="ResolveCopyLocalNuGetPackageXmls" Condition="$(CopyLocalLockFileAssemblies) == true" AfterTargets="ResolveReferences">
     <ItemGroup>
       <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' != '' and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
     </ItemGroup>
-  </Target>
-  <Target Name="PreparePublishFilesForNonCoreAspNet" AfterTargets="ComputeFilesToPublish">
-    <ItemGroup>
-      <_ResolvedFileToIgnore Include="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').StartsWith('runtimes\'))" />
-      <ResolvedFileToPublish Remove="@(_ResolvedFileToIgnore)" />
-
-      <_ResolvedFileToPublishToBin Include="@(ResolvedFileToPublish)">
-        <RelativePath>bin\%(FileName)%(Extension)</RelativePath>
-      </_ResolvedFileToPublishToBin>
-      <ResolvedFileToPublish Remove="@(_ResolvedFileToPublishToBin)" />
-      <ResolvedFileToPublish Include="@(_ResolvedFileToPublishToBin)" />
-      <ResolvedFileToPublish Include="@(Content)">
-        <RelativePath>%(RelativeDir)%(FileName)%(Extension)</RelativePath>
-      </ResolvedFileToPublish>
-    </ItemGroup>
-  </Target>
-  <Target Name="TransformWebConfig" AfterTargets="Publish">
-    <Exec Command="dotnet transform-xdt --xml &quot;Web.config&quot; --transform &quot;Web.$(Configuration).config&quot; --output &quot;$(PublishDir)Web.config&quot;" />
   </Target>
 </Project>

@@ -1,9 +1,9 @@
+using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Autofac.Extensions.DependencyInjection;
 using SharpLab.Server.Common;
 
-namespace SharpLab.Server.AspNetCore {
+namespace SharpLab.WebApp {
     public class Program {
         public static void Main(string[] args) {
             DotEnv.Load();
