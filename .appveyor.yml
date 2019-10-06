@@ -9,7 +9,7 @@ install:
     Install-Product node 8.11 x64
 
 cache:
-- source/WebApp/node_modules
+- source/WebApp/node_modules -> source/WebApp/package.json
 
 build_script:
 - cmd: sl ci
