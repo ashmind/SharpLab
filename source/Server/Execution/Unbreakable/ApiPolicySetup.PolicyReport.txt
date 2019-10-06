@@ -4372,13 +4372,13 @@ System.Linq
      SkipWhile: Allowed
      Sum: Allowed
      Take: Allowed
-     TakeLast: Denied
+     TakeLast: Allowed
      TakeWhile: Allowed
      ThenBy: Allowed (CollectedEnumerableArgumentRewriter)
      ThenByDescending: Allowed (CollectedEnumerableArgumentRewriter)
      ToArray: Allowed (CollectedEnumerableArgumentRewriter)
      ToDictionary: Allowed (CollectedEnumerableArgumentRewriter)
-     ToHashSet: Denied
+     ToHashSet: Allowed (CollectedEnumerableArgumentRewriter)
      ToList: Allowed (CollectedEnumerableArgumentRewriter)
      ToLookup: Allowed (CollectedEnumerableArgumentRewriter)
      ToString: Denied
@@ -6067,7 +6067,7 @@ System.Runtime.CompilerServices
      get_OffsetToStringData: Denied
      GetHashCode: Denied
      GetObjectValue: Denied
-     GetSubArray: Denied
+     GetSubArray: Allowed (ArrayReturnRewriter)
      GetType: Denied
      GetUninitializedObject: Denied
      InitializeArray: Allowed
