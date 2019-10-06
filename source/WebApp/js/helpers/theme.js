@@ -50,7 +50,12 @@ trackDarkTheme(getEffectiveTheme());
 watchEffectiveTheme(trackDarkTheme);
 
 if (systemDarkThemeQuery) {
-    systemDarkThemeQuery.addEventListener('change', () => {
+    /*
+        TODO: upgrade to addEventListener once Edge/Safari support it.
+        Polyfill does not seem possible due to Safari not exposing
+        window.MediaQueryList.
+    */
+    systemDarkThemeQuery.addListener(() => {
         if (userTheme !== 'auto')
             return;
         updateEffectiveThemeWatches(getEffectiveTheme());
