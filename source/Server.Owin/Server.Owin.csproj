@@ -55,4 +55,23 @@
       <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' != '' and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
     </ItemGroup>
   </Target>
+
+  <Target Name="PreparePublishFilesForNonCoreAspNet" AfterTargets="ComputeFilesToPublish">
+    <ItemGroup>
+      <_ResolvedFileToIgnore Include="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').StartsWith('runtimes\'))" />
+      <ResolvedFileToPublish Remove="@(_ResolvedFileToIgnore)" />
+
+      <_ResolvedFileToPublishToBin Include="@(ResolvedFileToPublish)">
+        <RelativePath>bin\%(FileName)%(Extension)</RelativePath>
+      </_ResolvedFileToPublishToBin>
+      <ResolvedFileToPublish Remove="@(_ResolvedFileToPublishToBin)" />
+      <ResolvedFileToPublish Include="@(_ResolvedFileToPublishToBin)" />
+      <ResolvedFileToPublish Include="@(Content)">
+        <RelativePath>%(RelativeDir)%(FileName)%(Extension)</RelativePath>
+      </ResolvedFileToPublish>
+      <ResolvedFileToPublish Include="Web.config">
+        <RelativePath>Web.config</RelativePath>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
 </Project>
