@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
 
 namespace SharpLab.WebApp {
-    public class Startup : Server.AspNetCore.Startup {
+    public class Startup : Server.Startup {
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public override void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
             base.Configure(app, env);

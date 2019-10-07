@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net47</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <AssemblyName>SharpLab.Tests</AssemblyName>
     <RootNamespace>SharpLab.Tests</RootNamespace>
-    <LangVersion>8.0</LangVersion>
-    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <!-- https://github.com/microsoft/msbuild/issues/4740#issuecomment-533660031 -->
+    <EmbeddedResourceUseDependentUponConvention>false</EmbeddedResourceUseDependentUponConvention>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(APPVEYOR)'!=''">
@@ -20,19 +21,19 @@
   </ItemGroup>
   
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0-preview4.19216.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.0.0-preview4.19216.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.0.0-preview4.19216.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.0-preview-20181205-02" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <PackageReference Include="AshMind.Extensions" Version="3.0.0-pre-20190808-01" />
     <PackageReference Include="MirrorSharp.Testing" version="2.0.0" />
     <PackageReference Include="Pedantic.IO.EmbeddedResource" version="0.9.0-pre-02" />
-    <PackageReference Include="xunit" version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" version="2.4.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\Server\Server.csproj" />
-    <ProjectReference Include="..\Server.Owin\Server.Owin.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,10 +44,9 @@
     <Folder Include="TestData\" />
   </ItemGroup>
 
-  <!--  https://github.com/dotnet/sdk/issues/1458#issuecomment-401497095 -->
-  <Target Name="_ResolveCopyLocalNuGetPackageXmls" Condition="$(CopyLocalLockFileAssemblies) == true" AfterTargets="ResolveReferences">
+  <Target Name="AddNetCoreAppXmlToCopyLocal" Condition="$(CopyLocalLockFileAssemblies) == true" AfterTargets="ResolveReferences">
     <ItemGroup>
-      <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' != ''&#xD;&#xA;                    and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
+      <ReferenceCopyLocalPaths Include="@(Reference->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(Reference.NuGetPackageId)' == 'Microsoft.NETCore.App.Ref' And Exists('%(RootDir)%(Directory)%(Filename).xml')" />
     </ItemGroup>
   </Target>
 </Project>

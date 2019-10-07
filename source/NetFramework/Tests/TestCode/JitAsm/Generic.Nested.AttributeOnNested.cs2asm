@@ -1,0 +1,21 @@
+using SharpLab.Runtime;
+
+static class C {
+    [JitGeneric(typeof(int))]
+    [JitGeneric(typeof(string))]
+    static class N<T> {
+        static T M => default(T);
+    }
+}
+
+#=>
+
+; Desktop CLR v<IGNORE> (clr.dll) on x86.
+
+C+N`1[[System.Int32, mscorlib]].get_M()
+    L0000: xor eax, eax
+    L0002: ret
+
+C+N`1[[System.__Canon, mscorlib]].get_M()
+    L0000: xor eax, eax
+    L0002: ret

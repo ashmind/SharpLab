@@ -18,7 +18,7 @@ static class C {
 
 #=>
 
-; Desktop CLR v<IGNORE> (clr.dll) on x86.
+; Core CLR v<IGNORE> (coreclr.dll) on amd64.
 
 C`1.M()
     ; Open generics cannot be JIT-compiled.

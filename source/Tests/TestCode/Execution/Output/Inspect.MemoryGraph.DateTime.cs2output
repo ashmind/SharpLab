@@ -21,7 +21,7 @@ public static class Program {
       "nestedNodes": [
         {
           "id": 2,
-          "title": "dateData",
+          "title": "_dateData",
           "value": "630822816000000000"
         }
       ]

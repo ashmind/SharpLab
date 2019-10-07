@@ -1,0 +1,107 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net47</TargetFramework>
+    <AssemblyName>SharpLab.Server</AssemblyName>
+    <RootNamespace>SharpLab.Server</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <MSBuildWarningsAsMessages>MSB3836</MSBuildWarningsAsMessages>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AppDomainToolkit" Version="1.0.4.3" />
+    <PackageReference Include="Argument" Version="1.1.0" />
+    <PackageReference Include="AshMind.Extensions" Version="3.0.0-pre-20190808-01" />
+    <PackageReference Include="Autofac" Version="4.9.2" />
+    <PackageReference Include="Autofac.Extras.FileSystemRegistration" Version="1.0.0-pre-03" />
+    <PackageReference Include="Autofac.Owin" Version="4.2.0" />
+    <PackageReference Include="ICSharpCode.Decompiler" Version="4.0.0.4521" />
+    <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.4.0" />
+    <PackageReference Include="Microsoft.AspNet.Cors" Version="5.2.3" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.3.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="3.3.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Features" Version="3.3.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.3.1" />
+    <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="1.0.5" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.2" />
+    <PackageReference Include="Microsoft.Owin" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Owin.Cors" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Owin.Host.SystemWeb" Version="3.0.1" />
+    <PackageReference Include="MirrorSharp.Common" Version="2.0.0" />
+    <PackageReference Include="MirrorSharp.FSharp" Version="0.16.0" />
+    <PackageReference Include="MirrorSharp.Owin" Version="2.0.0" />
+    <PackageReference Include="MirrorSharp.VisualBasic" Version="2.0.0" />
+    <PackageReference Include="Mono.Cecil" Version="0.10.0" />
+    <PackageReference Include="SharpDisasm" Version="1.1.11" />
+    <PackageReference Include="SharpYaml" Version="1.6.2" />
+    <PackageReference Include="System.IO.Pipelines" Version="4.5.3" />
+    <PackageReference Include="System.Memory" Version="4.5.3" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0-preview2-26406-04" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.3" />
+    <PackageReference Include="Unbreakable" Version="0.17.1-unproven" />
+    <PackageReference Include="Unbreakable.Policy" Version="12.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\#external\SourcePath\Roslyn\Roslyn.csproj" />
+    <ProjectReference Include="..\Runtime\Runtime.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
+    <Reference Include="System.Web" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualBasic" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Update="Execution\Unbreakable\ApiPolicySetup.cs" />
+  </ItemGroup>
+
+  <Target Name="_UpdatePolicyReport" AfterTargets="Build" Inputs="Execution\Unbreakable\ApiPolicySetup.cs" Outputs="Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt" Condition="'$(TargetFramework)' == 'netcoreapp30' And '$(Configuration)' == 'Debug'">
+    <Exec WorkingDirectory="$(OutputPath)" Command="&#xD;&#xA;      dotnet unbreakable-policy-report ^&#xD;&#xA;          --assembly &quot;$(TargetPath)&quot; ^&#xD;&#xA;          --factory SharpLab.Server.Execution.Unbreakable.ApiPolicySetup ^&#xD;&#xA;          --method CreatePolicy ^&#xD;&#xA;          --output &quot;$(MSBuildThisFileDirectory)Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt&quot;" />
+  </Target>
+
+  <Target Name="EnsureGenerateBindingRedirectsUsesWebConfig" BeforeTargets="GenerateBindingRedirects">
+    <ItemGroup>
+      <AppConfigWithTargetPath Include="web.config" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="UpdateWebConfigWithGeneratedBindingRedirects" Inputs="@(AppConfigWithTargetPath)" Outputs="web.config" AfterTargets="GenerateBindingRedirectsUpdateAppConfig">
+    <Copy SourceFiles="@(AppConfigWithTargetPath)" DestinationFiles="web.config" SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- https://github.com/dotnet/sdk/issues/1458#issuecomment-401497095 -->
+  <Target Name="ResolveCopyLocalNuGetPackageXmls" Condition="$(CopyLocalLockFileAssemblies) == true" AfterTargets="ResolveReferences">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' != '' and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="PreparePublishFilesForNonCoreAspNet" AfterTargets="ComputeFilesToPublish">
+    <ItemGroup>
+      <_ResolvedFileToIgnore Include="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').StartsWith('runtimes\'))" />
+      <ResolvedFileToPublish Remove="@(_ResolvedFileToIgnore)" />
+
+      <_ResolvedFileToPublishToBin Include="@(ResolvedFileToPublish)">
+        <RelativePath>bin\%(FileName)%(Extension)</RelativePath>
+      </_ResolvedFileToPublishToBin>
+      <ResolvedFileToPublish Remove="@(_ResolvedFileToPublishToBin)" />
+      <ResolvedFileToPublish Include="@(_ResolvedFileToPublishToBin)" />
+      <ResolvedFileToPublish Include="@(Content)">
+        <RelativePath>%(RelativeDir)%(FileName)%(Extension)</RelativePath>
+      </ResolvedFileToPublish>
+      <ResolvedFileToPublish Include="Web.config">
+        <RelativePath>Web.config</RelativePath>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+</Project>

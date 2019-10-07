@@ -1,0 +1,17 @@
+﻿static class C {
+    static int M(int[] x) {
+        return x[0];
+    }
+}
+
+#=>
+
+; Desktop CLR v<IGNORE> (clr.dll) on x86.
+
+C.M(Int32[])
+    L0000: cmp dword [ecx+0x4], 0x0
+    L0004: jbe L000a
+    L0006: mov eax, [ecx+0x8]
+    L0009: ret
+    L000a: call 0x<IGNORE>
+    L000f: int3

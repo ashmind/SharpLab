@@ -20,15 +20,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Server.AspNetCore\Server.AspNetCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <_StaticOutputs Include="wwwroot\**\*.*" Exclude="wwwroot\!branches.json" />
+    <ProjectReference Include="..\Server\Server.csproj" />
     <_StaticInputs Include="@(None)" Exclude="**\!*.*; @(_StaticOutputs)" />
   </ItemGroup>
   <ItemGroup Condition="'@(_StaticOutputs)' == ''">

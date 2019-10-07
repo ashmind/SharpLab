@@ -2,7 +2,7 @@ delegate void D();
 
 #=>
 
-; Desktop CLR v<IGNORE> (clr.dll) on x86.
+; Core CLR v<IGNORE> (coreclr.dll) on amd64.
 
 D..ctor(System.Object, IntPtr)
     ; Cannot produce JIT assembly for runtime-implemented method.

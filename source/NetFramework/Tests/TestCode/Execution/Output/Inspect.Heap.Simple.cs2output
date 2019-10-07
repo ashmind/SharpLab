@@ -1,0 +1,60 @@
+using System;
+using System.Linq.Expressions;
+
+public class C {
+    int a = 1;
+    byte b = 2;
+}
+
+public static class Program {
+    public static void Main() {
+        Inspect.Heap(new C());
+    }
+}
+
+#=>
+
+{
+  "type": "inspection:memory",
+  "title": "C at 0x<IGNORE>",
+  "labels": [
+    {
+      "name": "header",
+      "offset": 0,
+      "length": 4
+    },
+    {
+      "name": "type handle",
+      "offset": 4,
+      "length": 4
+    },
+    {
+      "name": "a",
+      "offset": 8,
+      "length": 4
+    },
+    {
+      "name": "b",
+      "offset": 12,
+      "length": 1
+    }
+  ],
+  "data": [
+    0,
+    0,
+    0,
+    0,
+    <IGNORE>,
+    <IGNORE>,
+    <IGNORE>,
+    <IGNORE>,
+    1,
+    0,
+    0,
+    0,
+    2,
+    0,
+    0,
+    0
+  ]
+}

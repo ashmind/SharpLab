@@ -1,7 +1,7 @@
 using System;
 using Autofac;
 using JetBrains.Annotations;
-using SharpLab.Server.Common;
+using Microsoft.Extensions.Configuration;
 using SharpLab.Server.Explanation.Internal;
 using SourcePath;
 using SourcePath.Roslyn;
@@ -21,7 +21,7 @@ namespace SharpLab.Server.Explanation {
                    .SingleInstance();
 
             builder.Register(c => {
-                var configuration = c.Resolve<IConfigurationAdapter>();
+                var configuration = c.Resolve<IConfiguration>();
                 return new ExternalSyntaxExplanationSettings(
                     configuration.GetValue<Uri>("App:Explanations:Urls:CSharp"),
                     configuration.GetValue<TimeSpan>("App:Explanations:UpdatePeriod")

@@ -1,0 +1,26 @@
+<main>
+  <h1>@model.title</h1>
+  <section class="disclaimer">
+    <p>
+      This is an internal preview intended for editors of <a href="https://github.com/ashmind/language-syntax-explanations">github.com/ashmind/language-syntax-explanations</a>.<br>
+      It might not make much sense without context.
+    </p>
+    <p>
+      Actual user-friendly view is available at <a href="https://sharplab.io/#v2:C4LgpgHgDgNghgSwHYBoAmIDUAfAAgJgAIBhQgbwFgAoQ2w3AFkIFkAKASnOrp8IDc4AJ0IRCAXkJIwAd3KE44wgEZCAXwDc3OquqqgA">SharpLab Explain</a>.
+    </p>
+  </section>
+  @for (const item of model.items) {
+  <section id="@(item.name.replace(/[^A-Za-z]/g, '-'))">
+    <header><dfn>@item.name</dfn></header>
+    <div class="content">
+      <div class="text">
+        @html.markdown(item.text)
+      </div>
+      <div class="docs-link">
+        Docs: <a href="@item.link" target="_blank">@(model.linkText(item.link))</a>
+      </div>
+      <div>Path: <code>@item.path</code></div>
+    </div>
+  </section>
+  }
+</main>

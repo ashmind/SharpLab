@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using Microsoft.Extensions.Configuration;
 using Pedantic.IO;
 using SharpLab.Server.Execution.Unbreakable;
 using Unbreakable;
@@ -21,6 +23,15 @@ namespace SharpLab.Tests.Internal {
                 .Namespace("System.Globalization", ApiAccess.Neutral, n => n.Type(typeof(CultureInfo), ApiAccess.Neutral, t => t.Setter(nameof(CultureInfo.CurrentCulture), ApiAccess.Allowed)));
             builder.RegisterInstance(testApiPolicy)
                    .AsSelf()
+                   .SingleInstance();
+
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string> {
+                    { "App:Explanations:Urls:CSharp", "http://testdata/language-syntax-explanations/csharp.yml" },
+                    { "App:Explanations:UpdatePeriod", "01:00:00" }
+                })
+                .Build();
+            builder.RegisterInstance<IConfiguration>(configuration)
                    .SingleInstance();
         }
 

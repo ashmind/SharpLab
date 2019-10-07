@@ -10,12 +10,12 @@ static class C<T> {
 
 #=>
 
-; Desktop CLR v<IGNORE> (clr.dll) on x86.
+; Core CLR v<IGNORE> (coreclr.dll) on amd64.
 
-C`1+N[[System.Int32, mscorlib]].M()
+C`1+N[[System.Int32, System.Private.CoreLib]].M()
     L0000: xor eax, eax
     L0002: ret
 
-C`1+N[[System.__Canon, mscorlib]].M()
+C`1+N[[System.__Canon, System.Private.CoreLib]].M()
     L0000: xor eax, eax
     L0002: ret

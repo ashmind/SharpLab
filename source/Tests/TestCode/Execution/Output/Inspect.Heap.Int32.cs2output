@@ -16,16 +16,16 @@ public static class Program {
     {
       "name": "header",
       "offset": 0,
-      "length": 4
+      "length": 8
     },
     {
       "name": "type handle",
-      "offset": 4,
-      "length": 4
+      "offset": 8,
+      "length": 8
     },
     {
       "name": "m_value",
-      "offset": 8,
+      "offset": 16,
       "length": 4
     }
   ],
@@ -34,11 +34,23 @@ public static class Program {
     0,
     0,
     0,
+    0,
+    0,
+    0,
+    0,
+    <IGNORE>,
+    <IGNORE>,
+    <IGNORE>,
+    <IGNORE>,
     <IGNORE>,
     <IGNORE>,
     <IGNORE>,
     <IGNORE>,
     5,
+    0,
+    0,
+    0,
+    0,
     0,
     0,
     0

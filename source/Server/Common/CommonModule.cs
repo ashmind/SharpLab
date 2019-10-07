@@ -4,7 +4,6 @@ using Autofac;
 using JetBrains.Annotations;
 using Microsoft.IO;
 using Mono.Cecil.Cil;
-using Mono.Cecil.Pdb;
 using SharpLab.Server.Common.Internal;
 using SharpLab.Server.Common.Languages;
 
@@ -21,6 +20,10 @@ namespace SharpLab.Server.Common {
             builder.RegisterType<PreCachedAssemblyResolver>()
                    .As<ICSharpCode.Decompiler.Metadata.IAssemblyResolver>()
                    .As<Mono.Cecil.IAssemblyResolver>()
+                   .SingleInstance();
+
+            builder.RegisterType<LocalAssemblyDocumentationResolver>()
+                   .As<IAssemblyDocumentationResolver>()
                    .SingleInstance();
 
             builder.RegisterType<CSharpAdapter>()

@@ -1,0 +1,17 @@
+﻿static class C {
+    static int M(bool x) {
+        return x ? 1 : 2;
+    }
+}
+
+#=>
+
+; Desktop CLR v<IGNORE> (clr.dll) on x86.
+
+C.M(Boolean)
+    L0000: and ecx, 0xff
+    L0006: jnz L000e
+    L0008: mov eax, 0x2
+    L000d: ret
+    L000e: mov eax, 0x1
+    L0013: ret

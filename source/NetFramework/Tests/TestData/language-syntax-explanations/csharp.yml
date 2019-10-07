@@ -1,0 +1,418 @@
+# C# 1
+
+- name: verbatim identifier
+  text: |
+    Prefix `@` allows keywords to be used as a name (for a variable, parameter, field, class, etc).  
+    For example, `M(string string)` doesn't compile, while `M(string @string)` does.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/tokens/verbatim
+  path: IdentifierToken && _IsVerbatim
+
+- name: verbatim string
+  text: |
+    Prefix `@` allows strings to contain newlines, and ignores the special meaning of `\`.  
+    For example, `"c:\xyz"` does not compile (`\x` is not valid), but `@"c:\xyz"` does.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/tokens/verbatim
+  path: StringLiteralToken && _IsVerbatim
+
+- name: bitwise complement operator
+  text: "Bitwise complement operator inverts all bits of a given number."
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/bitwise-complement-operator
+  path: BitwiseNotExpression
+
+- name: remainder operator
+  text: |
+    Remainder operator calculates the remainder of division between two values.  
+    For example, `7 % 3` is `1` because `7` is `(2 * 3) + 1`.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/remainder-operator
+  path: ModuloExpression
+
+- name: checked expression
+  text: |
+    Checked expression forces a calculation to be checked for overflow when executed.  
+    _Overflow_ is a situation when a value that exceeds type limits "loops back" on the other side.
+
+    For example
+    ```
+    var a = 10;
+    var b = int.MaxValue + a;          // overflow, b = -2147483639
+    var c = checked(int.MaxValue + a); // OverflowException
+    ```
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/checked
+  path: CheckedExpression
+
+- name: unchecked expression
+  text: |
+    Unchecked expression allows disables overflow checks for a calculation.  
+    _Overflow_ is a situation when a value that exceeds type limits "loops back" on the other side.
+
+    For example, `int.MaxValue + 10` doesn't compile, but `unchecked(int.MaxValue + 10)` produces `-2147483639`.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/unchecked
+  path: UncheckedExpression
+
+- name: method with a 'new' modifier 
+  text: |
+    Keyword `new` on a method is used to hide an inherited method with the same name.  
+    This is a relatively uncommon pattern — most often the method is redefined using `override`.
+
+    However it is applicable in special cases, for example when the method return type must be redefined.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/new-modifier
+  path: MethodDeclaration[NewKeyword]
+
+- name: params parameter
+  text: |
+    Keyword `params` allows the parameter to collect all remaining values passed into the method.  
+    For example, `M(int a, int b, params int[] c)` called as `M(1, 2, 3, 4, 5)` will receive
+    ```
+    a: 1
+    b: 2
+    c: 3, 4, 5
+    ```
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/params
+  path: Parameter[ParamsKeyword]
+
+- name: finalizer
+  text: |
+    Finalizers (or destructors) are methods automatically called by Garbage Collector before collecting the object.  
+    They are used for last-chance cleanup of unmanaged resources (e.g. files) or memory.
+
+    Also see `IDisposable` \[[Docs](https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/dispose-pattern)\] for a predictable cleanup approach.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/destructors
+  path: DestructorDeclaration
+
+- name: fixed statement
+  text: "This statement ensures that garbage collections will not invalidate an unsafe pointer."
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/fixed-statement
+  path: FixedStatement
+
+- name: pointer type
+  text: |
+    Pointer type is an unsafe unmanaged reference.  
+    For example, `int*` is an unsafe reference to an `int` value.  
+    References can be nested, e.g. `int**` points to `int*`.
+
+    Special syntax `void*` is used for a reference to an unknown type.
+
+    Pointers are mostly used for talking to non-.NET code and special-case optimizations.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/unsafe-code-pointers/pointer-types
+  path: PointerType
+
+- name: pointer member access
+  text: |
+    Syntax `a->b` is used to access a member of type `A` through pointer type `A*`.
+
+    For example, let's say `dt` is `DateTime` and `pdt` is `DateTime*` pointing to it.  
+    In this case, `dt.Year` can also be accessed using `pdt->Year`.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/unsafe-code-pointers/how-to-access-a-member-with-a-pointer
+  path: PointerMemberAccessExpression
+
+- name: address-of operator
+  text: |
+    Syntax `&a` is used to obtain a unsafe pointer to a value `a`.  
+    For example, after `int* p = &a;` pointer `p` will be a reference to `a`.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/unsafe-code-pointers/how-to-obtain-the-address-of-a-variable
+  path: AddressOfExpression
+
+- name: stack allocation expression
+  text: |
+    Expression `stackalloc` is used to allocate memory on the stack.  
+    This is mostly unsafe and requires `unsafe` keyword to be added to the method.
+    
+    However since C# 7.2 you can use `stackalloc` safely with `Span<T>`, for example:
+    ```
+    Span<byte> stackSpan = stackalloc byte[100];
+    ```
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/stackalloc
+  path: StackAllocArrayCreationExpression
+
+# C# 2
+
+- name: generic
+  text: |
+    Generics allow types and methods that are not tied to a specific type until used.  
+    Different parts of code might use the same generic with different types.
+
+    For example, `List<T>` can be created as `List<int>` or `List<string>`.  
+    However, once created, `List<int>` will only accept `int` values.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/index
+  path: "*[TypeParameterList]"
+
+- name: generic constraint
+  text: |
+    Generic constraints require types used by the generic to match a certain condition.
+
+    For example, `C<T> where T: struct` means that only value types will be allowed as `T`.  
+    In this case, you can use `C<int>` and `C<byte>` — but not `C<string>`.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/constraints-on-type-parameters
+  path: TypeParameterConstraintClause
+
+- name: partial type
+  text: |
+    Keyword `partial` allows type definition to be split into multiple parts, most often in separate files.  
+    All parts must be within the same project — when the project is built all parts are combined.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/partial-classes-and-methods#partial-classes
+  path: ClassDeclaration[PartialKeyword] || InterfaceDeclaration[PartialKeyword] || StructDeclaration[PartialKeyword]
+
+- name: partial method
+  text: |
+    Partial method is an empty method that can be redefined somewhere else, most often in another file.
+
+    For example, a code generator might generate `partial void OnSave()` and call it in the generated `Save` method.  
+    This gives the developer a chance to add their own logic by defining `OnSave` outside of the generated code.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/partial-classes-and-methods#partial-methods
+  path: MethodDeclaration[PartialKeyword]
+
+- name: anonymous method
+  text: |
+    Anonymous methods are blocks of code that can be passed around.  
+    In modern C#, _lambda expressions_ provide a shorter syntax.
+
+    For example, `delegate(int a) { return a + 1; }` is equivalent to `a => a + 1`.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/statements-expressions-operators/anonymous-methods
+  path: AnonymousMethodExpression
+
+- name: nullable type
+  text: |
+    Nullable types extend their base types to allow `null` values.  
+    For example, `int? i = null` is allowed, even though `int i = null` is not.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/nullable-types/index
+  path: NullableType
+
+- name: null-coalescing operator
+  text: |
+    Syntax `a ?? b` returns `a` if its not `null`, otherwise `b` (whether it's `null` or not).  
+
+    Note that everything to the right of `??` is only calculated if left is `null`.  
+    So `a ?? M()` only calls `M()` if `a` is `null`, similar to `||` and `&&`.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/null-conditional-operator
+  path: CoalesceExpression
+
+- name: iterator syntax
+  text: |
+    Iterator methods return `IEnumerable`, which is a sequence of values.  
+    However, instead of all values at once, they return the values one by one.
+
+    Each `yield return` returns one value, and "pauses" the method until calling code asks for more.  
+    For example: <a href="https://sharplab.io/#v2:C4LgTgrgdgNAJiA1AHwAIAYAEqCMBuAWACgNscAWQo41AZjIDZsAmMgdkwG9jNft7cTVOTIAOABQBKLjz5zcATnEAiAEoBTAI4R1AZ2ABLKAHNMANwCGAGx3LJVOXIBmAezDqLAYwAWmcZbBzax1MI0wANWC9KWluIkcEsiVlAAUwF089XXU4TGVMRCCbdXtZRL5FKQdyipxkjW09QxMi21L4xIBfMsxujt4ewTJaAB4jYAA+CKjdKS5HYgBIRcrU9LgITyNTHDtqhNwcbA58Hrkz2uS0lw2tluY9i95D48xmfYX+x1Xr2+3MWiPL7yHBHVAcWgfc7Ay4qAByLkwAFs3OpWnogXI+p0gA===" target="_blank">yield return with foreach</a> (SharpLab).
+
+    The sequence stops at the end of the method, or at first `yield break`.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/iterators
+  path: YieldReturnStatement || YieldBreakStatement
+
+# C# 3
+
+- name: anonymous type
+  text: |
+    Syntax `new {}` creates an object that has specified properties, but doesn't have a named type.
+
+    Since there is no type, these objects are mostly used with `var`.  
+    As methods can't have `var` returns or parameters, anonymous types are often defined and used within the same method.
+
+    In modern C#, _tuples_ provide similar features — and can be used for returns and parameters.  
+    For example, `new { a = 1, b = 2 }` can often be rewritten as a tuple: `(a: 1, b: 2)`.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/anonymous-types
+  path: AnonymousObjectCreationExpression
+
+- name: query expression
+  text: |
+    Query expression is a special syntax available for certain well-known method names.  
+    For example:
+    ```
+    // Query expressions
+    from a in listOfA where a > 0 select a + 1
+
+    // Method calls (same thing)
+    listOfA.Where(a => a > 0).Select(a => a + 1)
+    ```
+
+    Query expressions are a part of LINQ — however not all LINQ methods support special syntax.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/linq/query-expression-basics
+  path: QueryExpression
+
+- name: lambda expression
+  text: "Lambda expressions are a kind of anonymous functions — blocks of code that can be passed around."
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/statements-expressions-operators/lambda-expressions
+  path: ParenthesizedLambdaExpression || SimpleLambdaExpression
+
+- name: extension method
+  text: |
+    Extension methods are static methods that can be called as if they were instance methods of a different type.  
+    For example, `static void M(this string s)` can be called from any `string`, such as `"abc".M()`.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/extension-methods
+  path: MethodDeclaration[ParameterList[Parameter[ThisKeyword]]]
+
+# C# 4
+
+- name: dynamic type
+  text: |
+    Dynamic type suppresses compiler type checks, which allows use of types that are not known in advance.
+
+    This might be useful in some cases, such as JSON processing. However, any mistakes (such as misspellings)
+    might pass the compilation unnoticed and cause an exception later.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/dynamic
+  path: IdentifierName && SymbolKind:DynamicType
+
+- name: named argument
+  text: |
+    When calling a method, argument names can be provided explictly as `name: value`.  
+    This is useful when only providing specific parameters (if others are optional).
+
+    Explicit names can also improve code clarity, e.g. `Process(all: true)` instead of `Process(true)`.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/named-and-optional-arguments#named-arguments
+  path: Argument[NameColon]
+
+- name: generic variance
+  text: |
+    Generics can declare types they use as _invariant_ (no modifier), _covariant_ (`out`) or _contravariant_ (`in`).  
+    These modifiers specify whether generic types are compatible if they use compatible types.
+
+    For example, let's say there are types `Fruit`, and `Apple` that inherits from `Fruit`.  
+
+    Type `IProducer<out T>` is covariant, so it allows cast from `IProducer<Apple>` to `IProducer<Fruit>`.  
+    Producing `Apple` produces `Fruit`, however producing `Fruit` does not guarantee to produce `Apple`.
+
+    Type `IConsumer<in A>` is contravariant,  so it allows cast from `IConsumer<Fruit>` to `IConsumer<Apple>`.  
+    Consumer of `Fruit` can consume `Apple`, however consumer of `Apple` can't consume other types of `Fruit`. 
+  link: https://docs.microsoft.com/en-us/dotnet/standard/generics/covariance-and-contravariance
+  path: TypeParameter[InKeyword] || TypeParameter[OutKeyword]
+
+# C# 5
+
+- name: asynchronous programming
+  text: |
+    Keyword `async` specifies that a method is asynchronous and can use `await`.  
+    Keyword `await` allows remaining part of the method to be postponed until a certain operation completes.
+
+    For example
+    ```
+    var x = await File.ReadAllTextAsync("file.txt");
+    Console.WriteLine(x);
+    ```
+    postpones `Console.WriteLine` until the file is read.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/async
+  path: MethodDeclaration[AsyncKeyword]
+
+# C# 6
+
+- name: static import
+  text: |
+    Static imports allow static methods/properties/etc to be used without a type name.  
+    For example, `using static System.Console` allows `WriteLine("abc")` without `Console.`.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-static
+  path: UsingDirective[StaticKeyword]
+
+- name: exception filter
+  text: "Exception filters allow `catch` to happen only if exception matches a certain condition."
+  link: https://www.thomaslevesque.com/2015/06/21/exception-filters-in-c-6/
+  path: CatchFilterClause
+
+- name: nameof expression
+  text: |
+    While `"x"` and `nameof(x)` give the exact same result, `nameof` guarantees that `x` exists in code.  
+    For example, `throw new ArgumentNullException(nameof(a))` causes a compilation error if `a` does not exist.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/nameof
+  path: InvocationExpression && OperationKind:NameOf
+
+- name: expression-bodied member
+  text: |
+    Expression bodies are a compact way to represent simple single-line methods and properties.  
+    For example, `int M() { return 3; }` can be simplified to `int M() => 3`.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-6#expression-bodied-function-members
+  path: "*[ArrowExpressionClause]"
+
+- name: null-conditional operator
+  text: |
+    There are two similar null-conditional operators, `?.` and `?[]`.
+
+    Syntax `a?.b.c` returns `a.b.c` if `a` is not `null`, and `null` otherwise.  
+    Any methods to the right of `a?.` are also only called if `a` is not `null`.  
+    For example, `logger?.Log();` only calls `Log()` if `logger` is not `null`.
+
+    Syntax `a?[0].b` returns `a[0].b` if `a` is not `null`, and `null` otherwise.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/null-conditional-operator
+  path: ConditionalAccessExpression
+
+- name: string interpolation
+  text: |
+    String interpolation allows values to be placed directly into a string using `{}`.  
+    For example, if `a` is `1`, `$"result: {a + 1}"` produces `"result: 2"`.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-6#string-interpolation
+  path: InterpolatedStringExpression
+
+# C# 7
+
+- name: tuple
+  text: "Tuples are types that group several values together. Values can be named, e.g. `(a: 1, b: 2)` or unnamed, e.g. `(1, 2)`."
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/tuples
+  path: TupleType || TupleExpression
+
+- name: discard
+  text: |
+    Discards are used to ignore a value without using a temporary variable.  
+    For example, call `M(1, out var _)` ignores the value of the `out` parameter.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/discards
+  path: IdentifierName && SymbolKind:Discard
+
+- name: deconstruction
+  text: "Deconstruction is a way to assign elements from a tuple or other type directly into variables."
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/deconstruct
+  path: SimpleAssignmentExpression[DeclarationExpression[ParenthesizedVariableDesignation] || TupleExpression[Argument[DeclarationExpression]]]
+
+- name: pattern matching
+  text: |
+    Pattern matching checks whether value matches a condition, and at the same time transforms it into new value(s).  
+    For example, `a is int i` checks that `a` is `int`, and if `true` produces a new value `i` equal to `a`, but typed as `int`.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-7#pattern-matching
+  path: IsPatternExpression || CasePatternSwitchLabel
+
+- name: local function
+  text: "Local functions are methods that can be defined inside other methods, and have access to their local variables."
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-7#local-functions
+  path: LocalFunctionStatement
+
+- name: throw expression
+  text: |
+    Throw expressions are an extension to standard `throw` that allow it to be used in more locations.  
+    For example, `this.x = x ?? throw new ArgumentNullException("x");` is a common use case.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-7#throw-expressions
+  path: ThrowExpression
+
+# C# 7.1
+
+- name: default literal
+  text: "Syntax `default` can be used instead of `default(SomeType)` when compiler can automatically identify the type."
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-7-1#default-literal-expressions
+  path: DefaultLiteralExpression
+
+# C# 7.2
+
+# TODO: ref structs and so on (needs better matching, maybe SourcePath)
+
+- name: in parameter
+  text: |
+    In parameters are in essence `ref readonly` — passed by reference, but cannot be changed by the method.  
+    The goal is often to improve performance, as passing large `struct` by reference is faster than copying a value.
+
+    Note that passing non-`readonly` `struct` using `in` might cause an overhead — see the docs for details.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/reference-semantics-with-value-types#passing-arguments-by-readonly-reference
+  path: Parameter[InKeyword]
+
+- name: readonly struct
+  text: |
+    Readonly structs are verified to be readonly by the compiler.  
+    This allows their usages to be optimized, for example when used with `in` parameters.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/reference-semantics-with-value-types#readonly-struct-type
+  path: StructDeclaration[ReadOnlyKeyword]
+
+- name: ref struct
+  text: |
+    Ref structs are guaranteed to be kept on stack and cannot be moved to the heap.  
+    Primary example of `ref` structs is `Span<T>` and similar types.
+
+    Custom structs with `Span<T>` fields are also required to be `ref struct`.
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/reference-semantics-with-value-types#ref-struct-type
+  path: StructDeclaration[RefKeyword]
+
+- name: declaration with a private protected access modifier
+  text: "Modifier `private protected` only allows access from child classes within the same assembly."
+  link: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/private-protected
+  path: "*[PrivateKeyword && ProtectedKeyword]"

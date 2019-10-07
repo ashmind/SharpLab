@@ -15,19 +15,19 @@ Write-Output 'dotnet build source'
 dotnet build source -c Release-CI /p:UnbreakablePolicyReportEnabled=false
 if ($LastExitCode -ne 0) { throw "dotnet build exited with code $LastExitCode" }
 
-Write-Output 'dotnet publish source/Server.AspNetCore/Server.AspNetCore.csproj ...'
-dotnet publish source/Server.AspNetCore/Server.AspNetCore.csproj -c Release --no-build --no-restore
+Write-Output 'dotnet publish source/Server/Server.csproj ...'
+dotnet publish source/Server/Server.csproj -c Release --no-build --no-restore
 if ($LastExitCode -ne 0) { throw "dotnet publish exited with code $LastExitCode" }
-$aspNetCorePublishRoot = 'source/Server.AspNetCore/bin/Release/netcoreapp3.0/publish'
-Write-Output "Compress-Archive -Path $aspNetCorePublishRoot/* -DestinationPath $SolutionRoot/Server.AspNetCore.zip"
-Compress-Archive -Path "$aspNetCorePublishRoot/*" -DestinationPath "$SolutionRoot/Server.AspNetCore.zip"
+$serverPublishRoot = 'source/Server/bin/Release/netcoreapp3.0/publish'
+Write-Output "Compress-Archive -Path $serverPublishRoot/* -DestinationPath $SolutionRoot/Server.zip"
+Compress-Archive -Path "$serverPublishRoot/*" -DestinationPath "$SolutionRoot/Server.zip"
 
-Write-Output 'dotnet msbuild source/Server.Owin/Server.Owin.csproj /t:Publish ...'
-dotnet msbuild source/Server.Owin/Server.Owin.csproj /t:Publish /p:Configuration=Release /p:UnbreakablePolicyReportEnabled=false /verbosity:minimal
+Write-Output 'dotnet msbuild source/NetFramework/Server/Server.csproj /t:Publish ...'
+dotnet msbuild source/NetFramework/Server/Server.csproj /t:Publish /p:Configuration=Release /p:UnbreakablePolicyReportEnabled=false /verbosity:minimal
 if ($LastExitCode -ne 0) { throw "dotnet msbuild exited with code $LastExitCode" }
-$owinPublishRoot = 'source/Server.Owin/bin/Release/publish'
-Write-Output "Compress-Archive -Path $owinPublishRoot/* -DestinationPath $SolutionRoot/Server.Owin.zip"
-Compress-Archive -Path "$owinPublishRoot/*" -DestinationPath "$SolutionRoot/Server.Owin.zip"
+$netfxPublishRoot = 'source/NetFramework/Server/bin/Release/net47/publish'
+Write-Output "Compress-Archive -Path $netfxPublishRoot/* -DestinationPath $SolutionRoot/Server.NetFramework.zip"
+Compress-Archive -Path "$netfxPublishRoot/*" -DestinationPath "$SolutionRoot/Server.NetFramework.zip"
 
 Write-Output 'dotnet publish source/WebApp/WebApp.csproj ...'
 dotnet publish source/WebApp/WebApp.csproj -c Release --no-build --no-restore

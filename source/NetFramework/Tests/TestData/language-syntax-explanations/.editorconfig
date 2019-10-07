@@ -1,0 +1,14 @@
+﻿root = true
+
+[*]
+charset = utf-8
+indent_style = space
+end_of_line = crlf
+trim_trailing_whitespace = false
+
+[*.js]
+trim_trailing_whitespace = true
+
+[*.{html,config}]
+indent_size = 2
+trim_trailing_whitespace = true

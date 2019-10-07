@@ -1,0 +1,60 @@
+using System;
+public class C {
+	public void M() {
+		Func<int, int> getInt = s => s;
+		var list = new [] { 1, 2, 3, getInt(1) };
+		Console.WriteLine(list[3]);
+	}
+}
+
+#=>
+
+using System;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Security;
+using System.Security.Permissions;
+
+[assembly: CompilationRelaxations(8)]
+[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+[assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)]
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
+[assembly: AssemblyVersion("0.0.0.0")]
+[module: UnverifiableCode]
+public class C
+{
+    [Serializable]
+    [CompilerGenerated]
+    private sealed class <>c
+    {
+        public static readonly <>c <>9 = new <>c();
+
+        public static Func<int, int> <>9__0_0;
+
+        internal int <M>b__0_0(int s)
+        {
+            return s;
+        }
+    }
+
+    public void M()
+    {
+        Func<int, int> func = <>c.<>9__0_0 ?? (<>c.<>9__0_0 = new Func<int, int>(<>c.<>9.<M>b__0_0));
+        int[] obj = new int[4];
+        RuntimeHelpers.InitializeArray(obj, (RuntimeFieldHandle)/*OpCode not supported: LdMemberToken*/);
+        obj[3] = func(1);
+        Console.WriteLine(obj[3]);
+    }
+}
+[CompilerGenerated]
+internal sealed class <PrivateImplementationDetails>
+{
+    [StructLayout(LayoutKind.Explicit, Pack = 1, Size = 16)]
+    private struct __StaticArrayInitTypeSize=16
+    {
+    }
+
+    internal static readonly __StaticArrayInitTypeSize=16 7C7D749A182D008FD83D960F228CB2B1A0177992/* Not supported: data(01 00 00 00 02 00 00 00 03 00 00 00 00 00 00 00) */;
+}

@@ -15,10 +15,10 @@ build_script:
 - cmd: sl ci
 
 artifacts:
-- path: ./Server.AspNetCore.zip
-  name: Server.AspNetCore.zip
-- path: ./Server.Owin.zip
-  name: Server.Owin.zip
+- path: ./Server.zip
+  name: Server.zip
+- path: ./Server.NetFramework.zip
+  name: Server.NetFramework.zip
 - path: ./WebApp.zip
   name: WebApp.zip
 
@@ -38,7 +38,7 @@ deploy:
   username: ashmind
   password:
     secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
-  artifact: Server.AspNetCore.zip
+  artifact: Server.zip
   on:
     branch: edge
 
@@ -47,7 +47,7 @@ deploy:
   username: ashmind
   password:
     secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
-  artifact: Server.AspNetCore.zip
+  artifact: Server.zip
   on:
     branch: edge
 
@@ -56,7 +56,7 @@ deploy:
   username: ashmind
   password:
     secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
-  artifact: Server.Owin.zip
+  artifact: Server.NetFramework.zip
   on:
     branch: edge
 
@@ -74,7 +74,7 @@ deploy:
   username: ashmind
   password:
     secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
-  artifact: Server.AspNetCore.zip
+  artifact: Server.zip
   on:
     branch: master
 
@@ -83,7 +83,7 @@ deploy:
   username: ashmind
   password:
     secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
-  artifact: Server.AspNetCore.zip
+  artifact: Server.zip
   on:
     branch: master
 
@@ -92,7 +92,7 @@ deploy:
   username: ashmind
   password:
     secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
-  artifact: Server.Owin.zip
+  artifact: Server.NetFramework.zip
   on:
     branch: master
 
@@ -101,6 +101,6 @@ deploy:
   username: ashmind
   password:
     secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
-  artifact: Server.Owin.zip
+  artifact: Server.NetFramework.zip
   on:
     branch: master
