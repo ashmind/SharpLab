@@ -5,6 +5,7 @@
   "scripts": {
     "build": "node build.js",
     "watch": "node build.js --watch",
+    "lint": "eslint . --ignore-path ../../.gitignore --max-warnings 0",
     "test": "jest"
   },
   "jest": {
@@ -22,12 +23,21 @@
     }
   },
   "devDependencies": {
+    "@types/applicationinsights-js": "1.0.9",
+    "@types/codemirror": "0.0.78",
+    "@types/d3": "5.7.2",
+    "@types/d3-force": "1.2.1",
+    "@types/dateformat": "3.0.1",
+    "@types/jest": "24.0.18",
+    "@types/jest-image-snapshot": "2.8.0",
+    "@types/marked": "0.6.5",
+    "@types/puppeteer": "1.20.2",
+    "@types/throttle-debounce": "2.1.0",
     "@vue/test-utils": "1.0.0-beta.29",
     "autoprefixer": "9.6.4",
     "babel-jest": "24.9.0",
     "babel-plugin-dynamic-import-node": "2.3.0",
     "babel-plugin-transform-es2015-modules-commonjs": "6.24.1",
-    "d3": "4.13.0",
     "eslint": "6.3.0",
     "eslint-plugin-import": "2.18.2",
     "fs-jetpack": "2.1.0",
@@ -46,6 +56,7 @@
     "rollup-plugin-node-resolve": "3.0.0",
     "rollup-plugin-terser": "1.0.1",
     "sharp": "0.20.5",
+    "typescript": "3.6.4",
     "vue-template-compiler": "2.5.16"
   },
   "dependencies": {
@@ -53,6 +64,7 @@
     "codemirror": "5.38.0",
     "codemirror-addon-infotip": "1.0.0",
     "codemirror-addon-lint-fix": "1.0.1",
+    "d3": "4.13.0",
     "d3-force": "2.0.0",
     "dateformat": "1.0.12",
     "lz-string": "1.4.4",

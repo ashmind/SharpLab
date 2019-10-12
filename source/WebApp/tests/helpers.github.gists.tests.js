@@ -1,6 +1,7 @@
 import { createGistAsync, getGistAsync } from '../js/helpers/github/gists.js';
 import * as auth from '../js/helpers/github/auth.js';
 
+// @ts-ignore
 auth.token = '_';
 
 describe('getGistAsync', () => {
@@ -12,12 +13,16 @@ describe('getGistAsync', () => {
             release:    true
         };
         let files;
-        global.fetch = async (_, { body } = {}) => {
+        // @ts-ignore
+        window.fetch = async (_, { body } = {}) => {
+            // @ts-ignore
             files = JSON.parse(body).files;
             return { ok: true, json: async () => ({}) };
         };
+        // @ts-ignore
         await createGistAsync({ name: '_', result: {}, options });
-        global.fetch = async () => ({ ok: true, json: async () => ({ files }) });
+        // @ts-ignore
+        window.fetch = async () => ({ ok: true, json: async () => ({ files }) });
 
         const result = await getGistAsync();
 
@@ -26,5 +31,5 @@ describe('getGistAsync', () => {
 });
 
 afterAll(() => {
-    global.fetch = null;
+    window.fetch = null;
 });

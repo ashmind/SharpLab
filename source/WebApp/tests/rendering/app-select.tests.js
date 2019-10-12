@@ -21,7 +21,7 @@ test.each(cases)('with value%s', async (_, bodyClass) => {
     expect(rendered).toMatchImageSnapshot();
 });
 
-function createSelect({ value, options }) {
+function createSelect({ value = null, options }) {
     const select = new Select({
         propsData: { value }
     });

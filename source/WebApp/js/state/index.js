@@ -11,7 +11,7 @@ export default {
     },
 
     loadAsync: async state => {
-        const fromUrl = (await url.loadAsync()) || {};
+        const fromUrl = /** @type {UnwrapPromise<ReturnType<typeof url.loadAsync>>} */((await url.loadAsync()) || {});
         const lastUsedOptions = lastUsed.loadOptions();
 
         const options = fromUrl.options || lastUsedOptions || {};

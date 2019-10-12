@@ -17,6 +17,7 @@ async function validateResponseAndParseJsonAsync(response) {
     if (!response.ok) {
         const text = await response.text();
         const error = new Error(`${response.status} ${response.statusText}\r\n${text}`);
+        // @ts-ignore
         error.json = JSON.parse(text);
         throw error;
     }

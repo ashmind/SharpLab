@@ -19,7 +19,7 @@ async function createUIAsync(app) {
     return main;
 }
 
-function createTopLevelUIComponentAsync(app, selector, specificHooks) {
+function createTopLevelUIComponentAsync(app, selector, specificHooks = {}) {
     return new Promise((resolve, reject) => {
         try {
             // ReSharper disable once ConstructorCallNotUsed
@@ -30,7 +30,7 @@ function createTopLevelUIComponentAsync(app, selector, specificHooks) {
                 methods:  app.methods,
                 mounted: function() {
                     Vue.nextTick(() => {
-                        for (const hook of (specificHooks || {}).ready || []) {
+                        for (const hook of specificHooks.ready || []) {
                             hook(this);
                         }
                         resolve(wrap(this));
@@ -50,13 +50,6 @@ function wrap(vue) {
             vue.$watch(name, callback, options);
         }
     };
-}
-
-function attachToFooter() {
-    // since footer is outside of <main>, I have to handle the events manually
-    const body = document.querySelector('body');
-    const themeToggle = document.querySelector('body > footer [data-manual-role=toggle-theme]');
-    themeToggle.addEventListener('click', () => body.classList.toggle('theme-dark'));
 }
 
 export default async function(app) {

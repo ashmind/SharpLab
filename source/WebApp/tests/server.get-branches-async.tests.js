@@ -13,8 +13,9 @@ describe('get-branches-async', () => {
         ['sharplab.local', 'main', 'https://slbs.azureedge.net/public/branches.json'],
         ['sharplab.local', 'edge', 'https://slbs.azureedge.net/public/branches-edge.json']
     ])("fetches expected url for domain '%s' and query string '%s'", async (host, query, expected) => {
-        global.fetch = jest.fn();
+        window.fetch = jest.fn();
         delete window.location;
+        // @ts-ignore
         window.location = {
             host,
             search: query ? `?branches=${query}` : ''
@@ -37,7 +38,7 @@ describe('get-branches-async', () => {
     });
 
     afterEach(() => {
-        delete global.fetch;
+        delete window.fetch;
         window.location = location;
     });
 })();

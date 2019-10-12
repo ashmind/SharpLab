@@ -31,6 +31,7 @@ test.each(cases)('with gist%s', async (_, bodyClass) => {
 });
 
 test.each(cases)('modal open%s', async (_, bodyClass) => {
+    // @ts-ignore
     const PortalTarget = Vue.options.components.PortalTarget;
     const parent = new Vue({
         el: document.createElement('div'),
@@ -43,6 +44,7 @@ test.each(cases)('modal open%s', async (_, bodyClass) => {
     });
 
     const manager = parent.$children[0];
+    // @ts-ignore
     await manager.openModalAsync();
 
     const rendered = await renderComponent(parent, { bodyClass });

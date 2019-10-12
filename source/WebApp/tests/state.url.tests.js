@@ -12,13 +12,13 @@ describe('legacy load', () => {
 });
 
 describe('v2', () => {
-    for (const [name, value] of [
+    for (const [name, value] of /** @type {ReadonlyArray<[ string, string|boolean ]>} */([
         ['branchId', 'master'],
         ...Object.values(languages).map(l => ['language', l]),
         ...Object.values(targets).map(t => ['target', t]),
         ['release', true],
         ['release', false]
-    ]) {
+    ])) {
         test(`save/load preserves option '${name}' ('${value}')`, async () => {
             url.save('', { [name]: value });
             const { options } = await url.loadAsync();
@@ -41,6 +41,7 @@ describe('v2', () => {
 
 describe('gist', () => {
     test(`load returns code from gist`, async () => {
+        // @ts-ignore
         gists.getGistAsync = id => Promise.resolve({ code: 'code of ' + id, options: {} });
 
         window.location.hash = '#gist:test';
@@ -49,6 +50,7 @@ describe('gist', () => {
     });
 
     test(`load returns language from gist`, async () => {
+        // @ts-ignore
         gists.getGistAsync = id => Promise.resolve({ options: { language: 'language of ' + id } });
 
         window.location.hash = '#gist:test';
@@ -59,6 +61,7 @@ describe('gist', () => {
     for (let [key, target] of Object.entries(targets)) { // eslint-disable-line prefer-const
         key = key !== 'csharp' ? key : 'cs';
         test(`load returns target '${target}' for key '${key}'`, async () => {
+            // @ts-ignore
             gists.getGistAsync = () => Promise.resolve({ options: {} });
 
             window.location.hash = '#gist:_/'+ key;
@@ -69,6 +72,7 @@ describe('gist', () => {
 
     for (const language of Object.values(languages)) {
         test(`load returns default target '${targets.csharp}' for language '${language}'`, async () => {
+            // @ts-ignore
             gists.getGistAsync = () => Promise.resolve({ options: { language } });
 
             window.location.hash = '#gist:_';
@@ -78,6 +82,7 @@ describe('gist', () => {
     }
 
     test(`load returns branchId if specified`, async () => {
+        // @ts-ignore
         gists.getGistAsync = () => Promise.resolve({ options: {} });
 
         window.location.hash = '#gist:_//branch';
@@ -86,6 +91,7 @@ describe('gist', () => {
     });
 
     test(`load returns null branchId if not specified`, async () => {
+        // @ts-ignore
         gists.getGistAsync = () => Promise.resolve({ options: {} });
 
         window.location.hash = '#gist:_/_';
@@ -95,6 +101,7 @@ describe('gist', () => {
 
     for (const [suffix,release] of [['///debug',false],['',true]]) {
         test(`load returns release ${release} for url options ${suffix}`, async () => {
+            // @ts-ignore
             gists.getGistAsync = () => Promise.resolve({ options: {} });
 
             window.location.hash = '#gist:_' + suffix;
@@ -103,15 +110,16 @@ describe('gist', () => {
         });
     }
 
-    for (const [key, gistValue, newValue] of [
-        ['language', targets.cs, targets.vb],
-        ['target',   targets.cs, targets.vb],
+    for (const [key, gistValue, newValue] of /** @type {ReadonlyArray<[ string, string|boolean|null, string|boolean|null ]>} */([
+        ['language', targets.csharp, targets.vb],
+        ['target',   targets.csharp, targets.vb],
         ['branchId', null, 'branch'],
         ['branchId', 'branch', null],
         ['release',  false, true],
         ['release',  true, false]
-    ]) {
+    ])) {
         test(`save (option '${key}') changes format to v2 if option changed`, async () => {
+            // @ts-ignore
             gists.getGistAsync = id => Promise.resolve({ id, code: 'test', options: { [key]: gistValue } });
 
             window.location.hash = '#gist:xyz';
@@ -122,6 +130,7 @@ describe('gist', () => {
     }
 
     test(`save changes format to v2 if gist code changed`, async () => {
+        // @ts-ignore
         gists.getGistAsync = id => Promise.resolve({ id, code: 'original', options: {} });
 
         window.location.hash = '#gist:xyz';

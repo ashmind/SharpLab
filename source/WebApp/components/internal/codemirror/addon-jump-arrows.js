@@ -1,8 +1,10 @@
 //! Copyright (c) Andrey Shchekin (MIT, see LICENSE.txt)
 (function(mod) {
   "use strict";
-  if (typeof exports === "object" && typeof module === "object") // CommonJS
+  if (typeof exports === "object" && typeof module === "object") { // CommonJS
+    // @ts-ignore
     mod(require("codemirror"), require("codemirror/addon/lint/lint"));
+  }
   else if (typeof define === "function" && define.amd) // AMD
     define(["codemirror", "codemirror/addon/lint/lint"], mod);
   else // Plain browser env
@@ -81,7 +83,7 @@
       }
     }
 
-    renderJump(fromLine, toLine, {options, svgToReuse, bookmarksToReuse}) {
+    renderJump(fromLine, toLine, { options, svgToReuse, bookmarksToReuse = null }) {
       const key = fromLine + "->" + toLine;
       if (this.jumps[key])
         return false;

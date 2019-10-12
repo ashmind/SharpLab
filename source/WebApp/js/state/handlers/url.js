@@ -13,7 +13,7 @@ import loadGistAsync from './url/load-gist-async.js';
 const last = {
     hash: null
 };
-function save(code, options, { gist } = {}) {
+function save(code, options, { gist = null } = {}) {
     if (code == null) // too early?
         return {};
 
@@ -73,11 +73,14 @@ function loadAsync() {
     try {
         const decompressed = LZString.decompressFromBase64(hash);
         const [, optionsPart, codePart] = /^([^|]*)\|([\s\S]*)$/.exec(decompressed);
-        const optionsPacked = optionsPart.split(',').reduce((result, p) => {
-            const [key, value] = p.split(':', 2);
-            result[key] = value;
-            return result;
-        }, {});
+
+        const optionsPacked = /** @type {{ b: string?, l: string, t: string, d: '+'|'' }} */(
+            optionsPart.split(',').reduce((result, p) => {
+                const [key, value] = p.split(':', 2);
+                result[key] = value;
+                return result;
+            }, {})
+        );
         const language = languageAndTargetMapReverse[optionsPacked.l || 'cs'];
         const code = precompressor.decompress(codePart, language);
         return {

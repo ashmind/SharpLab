@@ -42,9 +42,9 @@ describe('extractRangesFromIL', () => {
         ]);
     });
 
-    for (const [name, il, expected] of [
+    for (const [name, il, expected] of /** @type {ReadonlyArray<[string, string, number[]]>} */([
         ['sequence point on first line', '// sequence point: (line 1, col 2) to (line 3, col 4) in _\r\nIL_0000: nop', [0]]
-    ])
+    ]))
     test(`returns expected range targets for ${name}`, () => {
         const { ranges } = extractRangesFromIL(il);
         expect(ranges).toMatchObject(

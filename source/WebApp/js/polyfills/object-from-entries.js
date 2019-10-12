@@ -1,4 +1,3 @@
-// @ts-ignore
 Object.fromEntries = Object.fromEntries || function(entries) {
     const object = {};
     for (const entry of entries) {

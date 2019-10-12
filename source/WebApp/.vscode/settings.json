@@ -68,4 +68,5 @@
         "/obj/": true,
         "/wwwroot/": true
     },
+    "typescript.tsdk": "./node_modules/typescript/lib"
 }

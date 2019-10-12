@@ -126,11 +126,13 @@ export default {
             });
 
             d3.forceSimulation(d3Nodes)
+              // @ts-ignore
               .force('link', d3.forceLink().links(d3Links).strength(l => l.source.data.isStack ? 5 : 2))
               .force('heap-boundary', forceRepealBoundary(this.getNodeRect, heapBoundary))
               .force('intersections', forceRepealNodeIntersections(n => this.getNodeRect(n, { margin: nodeLayoutMargin })))
               .force('nested', forceBindNested())
               .tick(400)
+              // @ts-ignore
               .stop();
 
             for (const node of d3Nodes) {
@@ -237,7 +239,7 @@ export default {
             };
         },
 
-        renderSvgPath({ from, to, arc }) {
+        renderSvgPath({ from, to, arc = null }) {
             const start = `M${from.x} ${from.y}`;
             if (arc) {
                 const r = Math.max(Math.abs(to.y - from.y), Math.abs(to.x - from.x));
@@ -258,6 +260,7 @@ export default {
         this.mustResetSvgLinks = true;
         this.layout();
 
+        // @ts-ignore
         const debouncedLayout = debounce(100, () => this.layout());
         this.resizeObserver = new ResizeObserver(() => {
             const containerRect = this.$el.getBoundingClientRect();

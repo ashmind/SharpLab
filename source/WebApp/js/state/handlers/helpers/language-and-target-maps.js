@@ -13,5 +13,7 @@ export const languageAndTargetMap = {
     [targets.verify]:   'verify',
     [targets.explain]:  'explain'
 };
+
+/** @type {} */
 export const languageAndTargetMapReverse = mapObject(languageAndTargetMap, (key, value) => [value, key]);
 export const targetMapReverseV1 = mapObject(languageAndTargetMapReverse, (key, value) => ['>' + key, value]); // eslint-disable-line prefer-template
