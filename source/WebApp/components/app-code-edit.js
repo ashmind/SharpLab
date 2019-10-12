@@ -4,7 +4,7 @@ import 'codemirror/mode/mllike/mllike';
 import './internal/codemirror/addon-jump-arrows.js';
 import groupToMap from '../js/helpers/group-to-map.js';
 
-Vue.component('app-code-edit', {
+const AppCodeEdit = Vue.component('app-code-edit', {
     props: {
         initialText:       String,
         serviceUrl:        String,
@@ -124,6 +124,14 @@ function renderExecutionFlow(steps, cm, bookmarks) {
 function createFlowLineEndWidget(contents, kind) {
     const widget = document.createElement('span');
     widget.className = 'flow-line-end flow-line-end-' + kind;
-    widget.textContent = contents.join('; ');
+    widget.textContent = contents.map(escapeNewLines).join('; ');
     return widget;
 }
+
+function escapeNewLines(text) {
+    return text
+        .replace(/\r/g, '\\r')
+        .replace(/\n/g, '\\n');
+}
+
+export default AppCodeEdit;

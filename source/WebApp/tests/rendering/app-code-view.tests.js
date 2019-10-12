@@ -9,6 +9,7 @@ beforeEach(() => {
         getClientRects() { return []; }
     }
 
+    // @ts-ignore
     document.body.createTextRange = () => new MockTextRange();
     Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
         get() {

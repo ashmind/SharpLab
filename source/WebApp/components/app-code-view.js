@@ -90,8 +90,11 @@ export default Vue.component('app-code-view', {
         wrapper.classList.add('mirrorsharp-theme');
 
         const codeElement = wrapper.getElementsByClassName('CodeMirror-code')[0];
-        if (codeElement && codeElement.contentEditable) // HACK, mobile only
+        // @ts-ignore
+        if (codeElement && codeElement.contentEditable) { // HACK, mobile only
+            // @ts-ignore
             codeElement.contentEditable = false;
+        }
 
         cm.on('cursorActivity', () => this.highlightAt(cm.getCursor(), 'cursor'));
         CodeMirror.on(wrapper, 'mousemove', e => this.delayedHover(e.pageX, e.pageY));
