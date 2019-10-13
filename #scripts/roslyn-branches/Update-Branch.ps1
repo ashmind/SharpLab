@@ -136,9 +136,10 @@ function Build-Branch() {
 
         "Copying $sourceRoot => $branchSourceRoot" | Out-Default
         robocopy $sourceRoot $branchSourceRoot `
+            /mir `
             /xo `
             /xd "bin" /xd "obj" /xd "node_modules" /xd ".vs" `
-            /mir /np /ndl /njh | Out-Default
+            /np /ndl /nfl /njh | Out-Default
 
         $restoredPackagesRoot = (Join-Path $branchSharpLabRoot 'packages')
 
@@ -194,7 +195,7 @@ function Build-Branch() {
         if ($LastExitCode -ne 0) { throw "dotnet restore exited with error code $LastExitCode" }
 
         "Building SharpLab" | Out-Default
-        dotnet msbuild "$branchSourceRoot/Server.AspNetCore/Server.AspNetCore.csproj" `
+        dotnet msbuild "$branchSourceRoot/Server/Server.csproj" `
             /m /nodeReuse:false `
             /t:Publish `
             /p:SelfContained=True `
@@ -206,7 +207,7 @@ function Build-Branch() {
         if ($LastExitCode -ne 0) { throw "dotnet msbuild exited with error code $LastExitCode" }
 
         return @{
-            publishRoot = "$branchSourceRoot/Server.AspNetCore/bin/Release/netcoreapp3.0/$runtime/publish"
+            publishRoot = "$branchSourceRoot/Server/bin/Release/netcoreapp3.0/$runtime/publish"
         }
     }
 
