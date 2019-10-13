@@ -18,8 +18,8 @@ using SharpLab.Server.Compilation.Internal;
 namespace SharpLab.Server.Common.Languages {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class VisualBasicAdapter : ILanguageAdapter {
-        private static readonly ImmutableArray<KeyValuePair<string, object>> DebugPreprocessorSymbols = ImmutableArray.Create(new KeyValuePair<string,object>("DEBUG", true));
-        private static readonly ImmutableArray<KeyValuePair<string, object>> ReleasePreprocessorSymbols = ImmutableArray<KeyValuePair<string, object>>.Empty;
+        private static readonly ImmutableArray<KeyValuePair<string, object>> DebugPreprocessorSymbols = PreprocessorSymbols.Debug.Select(s => KeyValuePair.Create(s, (object)true)).ToImmutableArray();
+        private static readonly ImmutableArray<KeyValuePair<string, object>> ReleasePreprocessorSymbols = PreprocessorSymbols.Release.Select(s => KeyValuePair.Create(s, (object)true)).ToImmutableArray();
 
         private readonly IAssemblyReferenceCollector _referenceCollector;
         private AssemblyReferenceDiscoveryTaskSource _assemblyReferenceDiscoveryTaskSource = new AssemblyReferenceDiscoveryTaskSource();
