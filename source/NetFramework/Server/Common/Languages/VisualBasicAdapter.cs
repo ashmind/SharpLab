@@ -18,9 +18,11 @@ using SharpLab.Server.Compilation.Internal;
 namespace SharpLab.Server.Common.Languages {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class VisualBasicAdapter : ILanguageAdapter {
-        private static readonly ImmutableArray<KeyValuePair<string, object>> DebugPreprocessorSymbols = ReleasePreprocessorSymbols.Add(new KeyValuePair<string,object>("DEBUG", true));
         private static readonly ImmutableArray<KeyValuePair<string, object>> ReleasePreprocessorSymbols = ImmutableArray.Create(
             new KeyValuePair<string, object>("NETFRAMEWORK", true)
+        );
+        private static readonly ImmutableArray<KeyValuePair<string, object>> DebugPreprocessorSymbols = ReleasePreprocessorSymbols.Add(
+            new KeyValuePair<string, object>("DEBUG", true)
         );
 
         private readonly IAssemblyReferenceCollector _referenceCollector;
