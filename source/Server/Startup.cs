@@ -7,16 +7,42 @@ using Microsoft.Extensions.Hosting;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using MirrorSharp.AspNetCore;
+using System.Reflection;
+using Autofac.Extras.FileSystemRegistration;
+using MirrorSharp;
+using MirrorSharp.Advanced;
+using SharpLab.Server.Common;
 
 namespace SharpLab.Server {    
     public class Startup {
+        // Chrome would limit to 10 mins I believe
+        private static readonly TimeSpan CorsPreflightMaxAge = TimeSpan.FromHours(1);
+
         public void ConfigureServices(IServiceCollection services) {
             services.AddCors();
             services.AddControllers();
         }
 
         public void ConfigureContainer(ContainerBuilder builder) {
-            StartupHelper.ConfigureContainer(builder);
+            var assembly = Assembly.GetExecutingAssembly();
+
+            builder
+                .RegisterAssemblyModulesInDirectoryOf(assembly)
+                .WhereFileMatches("SharpLab.*");
+        }
+
+        public static MirrorSharpOptions CreateMirrorSharpOptions(ILifetimeScope container) {
+            var options = new MirrorSharpOptions {
+                SetOptionsFromClient = container.Resolve<ISetOptionsFromClientExtension>(),
+                SlowUpdate = container.Resolve<ISlowUpdateExtension>(),
+                IncludeExceptionDetails = true,
+                ExceptionLogger = container.Resolve<IExceptionLogger>()
+            };
+            var languages = container.Resolve<ILanguageAdapter[]>();
+            foreach (var language in languages) {
+                language.SlowSetup(options);
+            }
+            return options;
         }
 
         public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
@@ -28,11 +54,11 @@ namespace SharpLab.Server {
                 .AllowAnyHeader()
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
-                .SetPreflightMaxAge(StartupHelper.CorsPreflightMaxAge)
+                .SetPreflightMaxAge(CorsPreflightMaxAge)
             );
             
             app.UseWebSockets();
-            app.UseMirrorSharp(StartupHelper.CreateMirrorSharpOptions(app.ApplicationServices.GetAutofacRoot()));
+            app.UseMirrorSharp(CreateMirrorSharpOptions(app.ApplicationServices.GetAutofacRoot()));
 
             app.UseEndpoints(e => {
                 var okBytes = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes("OK"));
@@ -43,6 +69,12 @@ namespace SharpLab.Server {
 
                 e.MapControllers();
             });
+
+            ConfigureStaticFiles(app);
+        }
+
+        protected virtual void ConfigureStaticFiles(IApplicationBuilder app) {
+            app.UseStaticFiles();
         }
     }
 }

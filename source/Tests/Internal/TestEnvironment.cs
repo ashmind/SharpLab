@@ -7,10 +7,10 @@ namespace SharpLab.Tests.Internal {
     public static class TestEnvironment {
         public static IContainer Container { get; } = ((Func<IContainer>)(() => {
             var builder = new ContainerBuilder();
-            StartupHelper.ConfigureContainer(builder);
+            new Startup().ConfigureContainer(builder);
             return builder.Build();
         }))();
 
-        public static MirrorSharpOptions MirrorSharpOptions { get; } = StartupHelper.CreateMirrorSharpOptions(Container);
+        public static MirrorSharpOptions MirrorSharpOptions { get; } = Startup.CreateMirrorSharpOptions(Container);
     }
 }
