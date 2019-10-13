@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
@@ -16,10 +16,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.dll" Link="SharpLab.Native.Profiler.dll">
+    <None Include="..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.dll"
+          Link="SharpLab.Native.Profiler.dll"
+          Condition="Exists('..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.dll')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.pdb" Link="SharpLab.Native.Profiler.pdb">
+    <None Include="..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.pdb"
+          Link="SharpLab.Native.Profiler.pdb"
+          Condition="Exists('..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.pdb')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
