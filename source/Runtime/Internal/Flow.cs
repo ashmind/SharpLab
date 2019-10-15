@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
 namespace SharpLab.Runtime.Internal {
     public static class Flow {
         public const int UnknownLineNumber = -1;
@@ -17,24 +16,25 @@ namespace SharpLab.Runtime.Internal {
             );
         }
 
-        private static readonly IDictionary<int, int> _stepNotesCountPerLine = new Dictionary<int, int>();
-        private static readonly IList<Step> _steps = new List<Step>();
+        private static LazyAsyncLocal<IList<Step>> _steps = new LazyAsyncLocal<IList<Step>>(() => new List<Step>());
+        private static LazyAsyncLocal<IDictionary<int, int>> _stepNotesCountPerLine = new LazyAsyncLocal<IDictionary<int, int>>(() => new Dictionary<int, int>());
 
-        public static IReadOnlyList<Step> Steps => (IReadOnlyList<Step>)_steps;
+        public static IReadOnlyList<Step> Steps => (IReadOnlyList<Step>?)_steps.ValueIfCreated ?? Array.Empty<Step>();
 
         public static void ReportLineStart(int lineNumber) {
-            if (_steps.Count > 0) {
-                var lastStep = _steps[_steps.Count - 1];
+            var steps = _steps.Value;
+            if (steps.Count > 0) {
+                var lastStep = steps[steps.Count - 1];
                 if (lastStep.LineNumber == lineNumber & lastStep.LineSkipped) {
                     lastStep.LineSkipped = false;
-                    _steps[_steps.Count - 1] = lastStep;
+                    steps[steps.Count - 1] = lastStep;
                     return;
                 }
             }
-            if (_steps.Count >= ReportLimits.MaxStepCount)
+            if (steps.Count >= ReportLimits.MaxStepCount)
                 return;
 
-            _steps.Add(new Step(lineNumber));
+            steps.Add(new Step(lineNumber));
         }
 
         public static void ReportRefValue<T>(ref T value, string? name, int lineNumber) {
@@ -71,24 +71,26 @@ namespace SharpLab.Runtime.Internal {
         }
 
         private static StringBuilder? PrepareToReportValue(string? name, int lineNumber) {
+            var steps = _steps.Value;
+            var stepNotesCountPerLine = _stepNotesCountPerLine.Value;
             if (!TryFindLastStepAtLineNumber(lineNumber, out var step, out var stepIndex)) {
-                if (_steps.Count >= ReportLimits.MaxStepCount)
+                if (steps.Count >= ReportLimits.MaxStepCount)
                     return null;
                 step = new Step(lineNumber) { LineSkipped = true };
-                _steps.Add(step);
-                stepIndex = _steps.Count - 1;
+                steps.Add(step);
+                stepIndex = steps.Count - 1;
             }
 
-            if (!_stepNotesCountPerLine.TryGetValue(step.LineNumber, out var countPerLine))
+            if (!stepNotesCountPerLine.TryGetValue(step.LineNumber, out var countPerLine))
                 countPerLine = 0;
 
             if (step.Notes == null) {
                 countPerLine += 1;
-                _stepNotesCountPerLine[step.LineNumber] = countPerLine;
+                stepNotesCountPerLine[step.LineNumber] = countPerLine;
 
                 if (countPerLine == ReportLimits.MaxStepNotesPerLine + 1) {
                     step.Notes = new StringBuilder("…");
-                    _steps[stepIndex] = step;
+                    steps[stepIndex] = step;
                     return null;
                 }
             }
@@ -97,7 +99,7 @@ namespace SharpLab.Runtime.Internal {
                 return null;
 
             step.ValueCount += 1;
-            _steps[stepIndex] = step;
+            steps[stepIndex] = step;
             if (step.ValueCount > ReportLimits.MaxValuesPerStep + 1)
                 return null;
 
@@ -105,7 +107,7 @@ namespace SharpLab.Runtime.Internal {
             if (notes == null) {
                 notes = new StringBuilder();
                 step.Notes = notes;
-                _steps[stepIndex] = step;
+                steps[stepIndex] = step;
             }
 
             if (notes.Length > 0)
@@ -125,34 +127,41 @@ namespace SharpLab.Runtime.Internal {
         }
 
         private static bool TryFindLastStepAtLineNumber(int lineNumber, out Step step, out int stepIndex) {
-            for (var i = _steps.Count - 1; i >= 0; i--) {
-                step = _steps[i];
+            var steps = _steps.Value;
+            for (var i = steps.Count - 1; i >= 0; i--) {
+                step = steps[i];
                 if (step.LineNumber == lineNumber || lineNumber == UnknownLineNumber) {
                     stepIndex = i;
                     return true;
                 }
             }
-            step = default(Step);
+            step = default;
             stepIndex = -1;
             return false;
         }
 
         public static void ReportException(object exception) {
-            if (_steps.Count == 0)
+            var steps = _steps.Value;
+            if (steps.Count == 0)
                 return;
-            var step = _steps[_steps.Count - 1];
+            var step = steps[steps.Count - 1];
             step.Exception = exception;
-            _steps[_steps.Count - 1] = step;
+            steps[steps.Count - 1] = step;
         }
 
         internal static int? GetLastReportedLineNumber() {
-            if (_steps.Count == 0)
+            var steps = _steps.Value;
+            if (steps.Count == 0)
                 return null;
 
-            return _steps[_steps.Count - 1].LineNumber;
+            return steps[steps.Count - 1].LineNumber;
         }
 
-        [Serializable]
+        public static void Reset() {
+            _steps.ValueIfCreated?.Clear();
+            _stepNotesCountPerLine.ValueIfCreated?.Clear();
+        }
+
         public struct Step {
             public Step(int lineNumber) {
                 LineNumber = lineNumber;
@@ -168,6 +177,16 @@ namespace SharpLab.Runtime.Internal {
             public bool LineSkipped { get; internal set; }
 
             internal int ValueCount { get; set; }
+        }
+
+        private struct State {
+            public IList<Step> Steps { get; set; }
+            public IDictionary<int, int> StepNotesCountPerLine { get; set; }
+
+            public void Deconstruct(out IList<Step> steps, out IDictionary<int, int> stepNotesCountPerLine) {
+                steps = Steps;
+                stepNotesCountPerLine = StepNotesCountPerLine;
+            }
         }
     }
 }

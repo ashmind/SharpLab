@@ -8,43 +8,40 @@ namespace SharpLab.Runtime.Internal {
     public class MemoryGraphNode {
         private List<MemoryGraphNode>? _nestedNodes = null;
 
-        private static int NextId = 1;
-
         private MemoryGraphNode(
+            int id,
             string title,
             object value,
             object? heapKey = null,
             ulong? stackAddress = null,
             int? stackSize = null
         ) {
-            Id = NextId;
+            Id = id;
             Title = title;
             Value = value;
             HeapKey = heapKey;
             StackAddress = stackAddress;
             StackSize = stackSize;
-
-            NextId += 1;
         }
 
-        public static MemoryGraphNode OnStack(string title, StringBuilder value, ulong stackAddress, int stackSize) {
-            return new MemoryGraphNode(title, value, stackAddress: stackAddress, stackSize: stackSize);
+        public static MemoryGraphNode OnStack(int id, string title, StringBuilder value, ulong stackAddress, int stackSize) {
+            return new MemoryGraphNode(id, title, value, stackAddress: stackAddress, stackSize: stackSize);
         }
 
-        public static MemoryGraphNode OnStack(string title, string value, ulong stackAddress, int stackSize) {
-            return new MemoryGraphNode(title, value, stackAddress: stackAddress, stackSize: stackSize);
+        public static MemoryGraphNode OnStack(int id, string title, string value, ulong stackAddress, int stackSize) {
+            return new MemoryGraphNode(id, title, value, stackAddress: stackAddress, stackSize: stackSize);
         }
 
-        public static MemoryGraphNode OnHeap(string title, StringBuilder value, object heapKey) {
-            return new MemoryGraphNode(title, value, heapKey: heapKey);
+        public static MemoryGraphNode OnHeap(int id, string title, StringBuilder value, object heapKey) {
+            return new MemoryGraphNode(id, title, value, heapKey: heapKey);
         }
 
-        public static MemoryGraphNode Nested(string title, StringBuilder value) {
-            return new MemoryGraphNode(title, value);
+        public static MemoryGraphNode Nested(int id, string title, StringBuilder value) {
+            return new MemoryGraphNode(id, title, value);
         }
 
-        public static MemoryGraphNode Nested(string title, string value) {
-            return new MemoryGraphNode(title, value);
+        public static MemoryGraphNode Nested(int id, string title, string value) {
+            return new MemoryGraphNode(id, title, value);
         }
 
         public bool ValidateNestedLimit() {
