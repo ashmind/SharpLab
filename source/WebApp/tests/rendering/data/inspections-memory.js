@@ -53,7 +53,6 @@ export const string = {
     ]
 };
 
-
 export const nested = {
     type: 'inspection:memory',
     title: 'Nested',

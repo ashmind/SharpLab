@@ -74,8 +74,8 @@ function addLabelsToLevelRecursive(levels, labels, index) {
         level = [];
         levels[index] = level;
     }
-    for (const { name, length, nested } of labels) {
-        level.push({ name, length, nested });
+    for (const { name, offset, length, nested } of labels) {
+        level.push({ name, offset, length, nested });
         if (nested && nested.length > 0)
             addLabelsToLevelRecursive(levels, nested, index + 1);
     }
