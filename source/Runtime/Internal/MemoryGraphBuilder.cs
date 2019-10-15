@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace SharpLab.Runtime.Internal {
     internal class MemoryGraphBuilder {
@@ -13,8 +14,6 @@ namespace SharpLab.Runtime.Internal {
 
         private readonly IReadOnlyList<string> _argumentNames;
         private int _nextArgumentIndex;
-
-        private int _nextNodeId = 1;
 
         public MemoryGraphBuilder(IReadOnlyList<string> argumentNames) {
             _argumentNames = argumentNames;
@@ -31,8 +30,8 @@ namespace SharpLab.Runtime.Internal {
             var isStack = typeof(T).IsValueType || value == null;
 
             var stackNode = isStack
-                ? MemoryGraphNode.OnStack(_nextNodeId++, name, ValuePresenter.ToStringBuilder(value), stackAddress, stackSize)
-                : MemoryGraphNode.OnStack(_nextNodeId++, name, GetTitleForReference(typeof(T)), stackAddress, stackSize);
+                ? MemoryGraphNode.OnStack(name, ValuePresenter.ToStringBuilder(value), stackAddress, stackSize)
+                : MemoryGraphNode.OnStack(name, GetTitleForReference(typeof(T)), stackAddress, stackSize);
             _stack.Add(stackNode);
 
             if (isStack) {
@@ -49,7 +48,7 @@ namespace SharpLab.Runtime.Internal {
 
             var heapNode = FindExistingNode(@object);
             if (heapNode == null) {
-                heapNode = MemoryGraphNode.OnHeap(_nextNodeId++, objectType.Name, ValuePresenter.ToStringBuilder(@object), @object);
+                heapNode = MemoryGraphNode.OnHeap(objectType.Name, ValuePresenter.ToStringBuilder(@object), @object);
                 _heap.Add(heapNode);
 
                 AddNestedNodes(heapNode, @object);
@@ -92,8 +91,8 @@ namespace SharpLab.Runtime.Internal {
         {
             var isReference = !staticType.IsValueType && value != null;
             var nestedNode = isReference
-                ? MemoryGraphNode.Nested(_nextNodeId++, title, GetTitleForReference(staticType))
-                : MemoryGraphNode.Nested(_nextNodeId++, title, ValuePresenter.ToStringBuilder(value));
+                ? MemoryGraphNode.Nested(title, GetTitleForReference(staticType))
+                : MemoryGraphNode.Nested(title, ValuePresenter.ToStringBuilder(value));
             parentNode.AddNestedNode(nestedNode);
             if (isReference)
                 AddHeapObject(nestedNode, value!);

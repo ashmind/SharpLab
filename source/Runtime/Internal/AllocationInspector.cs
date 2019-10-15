@@ -1,3 +1,5 @@
+#if NETCORE
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -96,3 +98,5 @@ namespace SharpLab.Runtime.Internal {
         private static string FormatBoxedName(string name) => name + " (boxed)";
     }
 }
+
+#endif

@@ -56,7 +56,7 @@ public static class Program {
   "type": "inspection:memory-graph",
   "stack": [
     {
-      "id": 1,
+      "id": 6,
       "offset": 0,
       "size": 8,
       "title": null,
@@ -65,59 +65,59 @@ public static class Program {
   ],
   "heap": [
     {
-      "id": 2,
+      "id": 7,
       "title": "String[]",
       "value": "{ a, b, c }",
       "nestedNodes": [
         {
-          "id": 3,
+          "id": 8,
           "title": "0",
           "value": "String ref"
         },
         {
-          "id": 5,
+          "id": 10,
           "title": "1",
           "value": "String ref"
         },
         {
-          "id": 7,
+          "id": 12,
           "title": "2",
           "value": "String ref"
         }
       ]
     },
     {
-      "id": 4,
+      "id": 9,
       "title": "String",
       "value": "a"
     },
     {
-      "id": 6,
+      "id": 11,
       "title": "String",
       "value": "b"
     },
     {
-      "id": 8,
+      "id": 13,
       "title": "String",
       "value": "c"
     }
   ],
   "references": [
     {
-      "from": 3,
-      "to": 4
+      "from": 8,
+      "to": 9
     },
     {
-      "from": 5,
-      "to": 6
+      "from": 10,
+      "to": 11
     },
     {
-      "from": 7,
-      "to": 8
+      "from": 12,
+      "to": 13
     },
     {
-      "from": 1,
-      "to": 2
+      "from": 6,
+      "to": 7
     }
   ]
 }

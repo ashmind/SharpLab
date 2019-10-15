@@ -132,7 +132,7 @@ namespace SharpLab.Runtime.Internal {
                     return true;
                 }
             }
-            step = default;
+            step = default(Step);
             stepIndex = -1;
             return false;
         }

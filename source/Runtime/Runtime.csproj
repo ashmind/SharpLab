@@ -1,10 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard21</TargetFramework>
+    <TargetFrameworks>net47; netstandard21</TargetFrameworks>
     <AssemblyName>SharpLab.Runtime</AssemblyName>
     <RootNamespace>SharpLab.Runtime</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'!='net47'">
+    <DefineConstants>NETCORE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

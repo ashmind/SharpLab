@@ -67,7 +67,6 @@ public static partial class Inspect {
         var title = type.IsValueType
             ? $"{type.FullName}"
             : $"Pointer to {type.FullName}";
-
         Output.Write(new MemoryInspection(title, labels, data));
     }
 
@@ -129,7 +128,7 @@ public static partial class Inspect {
     private static ClrRuntime? _runtime;
     private static ClrRuntime GetRuntime() {
         if (_runtime == null) {
-            var dataTarget = DataTarget.AttachToProcess(InspectionSettings.Current.CurrentProcessId, uint.MaxValue, AttachFlag.Passive);
+            var dataTarget = DataTarget.AttachToProcess(InspectionSettings.CurrentProcessId, uint.MaxValue, AttachFlag.Passive);
             var clrFlavor = RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.OrdinalIgnoreCase)
                 ? ClrFlavor.Core
                 : ClrFlavor.Desktop;

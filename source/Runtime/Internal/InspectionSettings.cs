@@ -1,22 +1,13 @@
+using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SharpLab.Runtime.Internal {
-    public class InspectionSettings {
-        private static AsyncLocal<InspectionSettings> _current = new AsyncLocal<InspectionSettings>();
-
-        public static InspectionSettings Current {
-            get => _current.Value;
-            set => _current.Value = value;
-        }
-
-        public InspectionSettings(int currentProcessId, bool profilerActive) {
-            CurrentProcessId = currentProcessId;
-            ProfilerActive = profilerActive;
-        }
-
-        public int CurrentProcessId { get; }
-        public bool ProfilerActive { get; }
-        public ulong StackStart { get; set; }
+    public static class InspectionSettings {
+        public static bool ProfilerActive { get; set; }
+        public static int CurrentProcessId { get; set; }
+        public static ulong StackStart { get; set; }
     }
 }
