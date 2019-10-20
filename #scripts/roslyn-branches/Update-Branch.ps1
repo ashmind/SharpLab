@@ -294,7 +294,9 @@ function Build-Branch() {
     $branchVersionPath = Update-BranchVersionArtifact `
         -RoslynBuild $roslynBuild `
         -SourceCommitHash $sourceCommitHash
-    Copy-Item $branchVersionPath $branchSiteRoot -Force
+    $branchSiteContentRoot = Join-Path $branchSiteRoot 'wwwroot'
+    if (!(Test-Path $branchSiteContentRoot)) { New-Item $branchSiteContentRoot -Type Directory | Out-Null }
+    Copy-Item $branchVersionPath $branchSiteContentRoot -Force
 
     Write-Host "Preparing branch info"
     $info = Get-BranchInfo -CommitHash ($roslynBuild.commitHash)
