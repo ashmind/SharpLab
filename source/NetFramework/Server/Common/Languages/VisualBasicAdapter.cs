@@ -26,7 +26,7 @@ namespace SharpLab.Server.Common.Languages {
         );
 
         private readonly IAssemblyReferenceCollector _referenceCollector;
-        private AssemblyReferenceDiscoveryTaskSource _assemblyReferenceDiscoveryTaskSource = new AssemblyReferenceDiscoveryTaskSource();
+        private readonly AssemblyReferenceDiscoveryTaskSource _assemblyReferenceDiscoveryTaskSource = new AssemblyReferenceDiscoveryTaskSource();
         private readonly IAssemblyDocumentationResolver _documentationResolver;
 
         public VisualBasicAdapter(IAssemblyReferenceCollector referenceCollector, IAssemblyDocumentationResolver documentationResolver) {

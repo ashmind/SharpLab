@@ -12,10 +12,10 @@ public static partial class Inspect {
         if (@object == null)
             throw new Exception($"Inspect.Heap can't inspect null, as it does not point to a valid location on the heap.");
 
-        var runtme = GetRuntime();
+        var runtime = CreateRuntime();
 
         var address = (ulong)GetHeapPointer(@object);
-        var objectType = runtme.Heap.GetObjectType(address);
+        var objectType = runtime.Heap.GetObjectType(address);
         if (objectType == null)
             throw new Exception($"Failed to find object type for address 0x{address:X}.");
 
@@ -27,7 +27,7 @@ public static partial class Inspect {
         // Not sure if there is a better way to get this through ClrMD yet.
         // https://github.com/Microsoft/clrmd/issues/99
         var objectStart = address - (uint)IntPtr.Size;
-        var data = ReadMemory(objectStart, objectSize);
+        var data = ReadMemory(runtime, objectStart, objectSize);
 
         var labels = CreateLabelsFromType(objectType, address, objectStart, first: (index: 2, offset: 2 * IntPtr.Size));
         labels[0] = new MemoryInspectionLabel("header", 0, IntPtr.Size);
@@ -36,9 +36,9 @@ public static partial class Inspect {
         Output.Write(new MemoryInspection($"{objectType.Name} at 0x{address:X}", labels, data));
     }
 
-    private static byte[] ReadMemory(ulong address, ulong size) {
+    private static byte[] ReadMemory(ClrRuntime runtime, ulong address, ulong size) {
         var data = new byte[size];
-        GetRuntime().ReadMemory(address, data, (int)size, out var _);
+        runtime.ReadMemory(address, data, (int)size, out var _);
         return data;
     }
 
@@ -48,16 +48,16 @@ public static partial class Inspect {
     }
 
     public static unsafe void Stack<T>(in T value) {
+        var runtime = CreateRuntime();
         var type = typeof(T);
 
         var address = (ulong)Unsafe.AsPointer(ref Unsafe.AsRef(in value));
         var size = type.IsValueType ? (ulong)Unsafe.SizeOf<T>() : (uint)IntPtr.Size;
-        var data = ReadMemory(address, size);
+        var data = ReadMemory(runtime, address, size);
 
         MemoryInspectionLabel[] labels;
         if (type.IsValueType && !type.IsPrimitive) {
-            var runtme = GetRuntime();
-            var runtimeType = runtme.Heap.GetTypeByMethodTable((ulong)type.TypeHandle.Value);
+            var runtimeType = runtime.Heap.GetTypeByMethodTable((ulong)type.TypeHandle.Value);
             labels = CreateLabelsFromType(runtimeType, address, address + (uint)IntPtr.Size);
         }
         else {
@@ -67,6 +67,7 @@ public static partial class Inspect {
         var title = type.IsValueType
             ? $"{type.FullName}"
             : $"Pointer to {type.FullName}";
+
         Output.Write(new MemoryInspection(title, labels, data));
     }
 
@@ -125,16 +126,11 @@ public static partial class Inspect {
         return CreateLabelsFromType(type, valueAddress, offsetBase + (uint)IntPtr.Size);
     }
 
-    private static ClrRuntime? _runtime;
-    private static ClrRuntime GetRuntime() {
-        if (_runtime == null) {
-            var dataTarget = DataTarget.AttachToProcess(InspectionSettings.CurrentProcessId, uint.MaxValue, AttachFlag.Passive);
-            var clrFlavor = RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.OrdinalIgnoreCase)
-                ? ClrFlavor.Core
-                : ClrFlavor.Desktop;
-            _runtime = dataTarget.ClrVersions.Single(c => c.Flavor == clrFlavor).CreateRuntime();
-        }
-        return _runtime;
+    private static ClrRuntime CreateRuntime() {
+        var dataTarget = DataTarget.AttachToProcess(InspectionSettings.Current.CurrentProcessId, uint.MaxValue, AttachFlag.Passive);
+        return dataTarget.ClrVersions
+            .Single(c => c.Flavor == ClrFlavor.Core)
+            .CreateRuntime();
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]

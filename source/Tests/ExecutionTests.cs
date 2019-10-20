@@ -230,6 +230,31 @@ namespace SharpLab.Tests {
             code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _testOutputHelper);
         }
 
+        [Fact]
+        public async Task SlowUpdate_ProducesExpectedStackInspection_IfTypeHasChangedBetweenUpdates() {
+            var code = @"
+                public static class Program {
+                    public static void Main() { Inspect.Stack(new S { A = 1 }); }
+                }
+
+                public struct S {
+                    public int A;
+                }
+            ";
+            var driver = await NewTestDriverAsync(code);
+            var resultBefore = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            driver.SetText(code.Replace("A", "B"));
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+
+            AssertIsSuccess(resultBefore);
+            AssertIsSuccess(result);
+            AssertJsonAtPathEqual(
+                "B",
+                result.ExtensionResult?.GetOutputAsJson(),
+                "$[0].labels[0].name"
+            );
+        }
+
         [Theory]
         [InlineData("Output.Inspect.MemoryGraph.Int32.cs2output")]
         [InlineData("Output.Inspect.MemoryGraph.String.cs2output")]
@@ -451,6 +476,13 @@ namespace SharpLab.Tests {
             Assert.DoesNotMatch("Exception:", output);
         }
 
+        private static void AssertJsonAtPathEqual(object? expected, JToken? token, string jsonPath) {
+            Assert.NotNull(token);
+            var found = token!.SelectToken(jsonPath);
+            Assert.True(found != null, $"Could not find ${jsonPath} in ${token}");
+            Assert.Equal(expected, found?.ToObject(expected?.GetType() ?? typeof(object)));
+        }
+
         private static string LoadCodeFromResource(string resourceName) {
             return EmbeddedResource.ReadAllText(typeof(ExecutionTests), "TestCode.Execution." + resourceName);
         }
@@ -479,6 +511,10 @@ namespace SharpLab.Tests {
                         return ConvertOutputObjectToString(@object);
                     return token.Value<string>();
                 }));
+            }
+
+            public JToken GetOutputAsJson() {
+                return JToken.FromObject(Output);
             }
 
             private string ConvertOutputObjectToString(JObject @object) {

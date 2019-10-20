@@ -1,8 +1,6 @@
 using System;
-#if NETCORE
 using System.Collections.Generic;
 using SharpLab.Runtime.Internal;
-#endif
 
 partial class Inspect {
     public static void Allocations<T>(Func<T> action) {
@@ -10,12 +8,9 @@ partial class Inspect {
     }
 
     public static unsafe void Allocations(Action action) {
-        #if NETCORE
-        if (Environment.GetEnvironmentVariable("CORECLR_ENABLE_PROFILING") == null)
-        #endif
+        if (!InspectionSettings.Current.ProfilerActive)
             throw new NotSupportedException("Inspect.Allocations is only supported in .NET Core Profiler mode.");
 
-        #if NETCORE
         try {
             ProfilerNativeMethods.StartMonitoringCurrentThreadAllocations();
         }
@@ -49,7 +44,7 @@ partial class Inspect {
             return;
         }
 
-        var runtime = GetRuntime();
+        var runtime = CreateRuntime();
         var inspections = new List<IInspection>(allocationCount);
         foreach (var allocationPointer in new Span<IntPtr>(allocations, allocationCount)) {
             // Note that profiler returns allocations pointers pointing to the start of the object
@@ -62,6 +57,5 @@ partial class Inspect {
 
         var title = "Allocations: " + totalAllocationCount + " (" + totalAllocationBytes + " bytes)";
         Output.Write(new InspectionGroup(title, inspections, limitReached: totalAllocationCount > allocationCount));
-        #endif
     }
 }

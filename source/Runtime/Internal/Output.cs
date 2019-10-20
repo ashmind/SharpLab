@@ -8,8 +8,8 @@ namespace SharpLab.Runtime.Internal {
     public static class Output {
         private const int MaxStreamDataCount = 50;
 
-        private static readonly List<object> _stream = new List<object>();
-        public static IReadOnlyList<object> Stream => _stream;
+        private static readonly LazyAsyncLocal<IList<object>> _stream = new LazyAsyncLocal<IList<object>>(() => new List<object>());
+        public static IReadOnlyList<object> Stream => (IReadOnlyList<object>?)_stream.ValueIfCreated ?? Array.Empty<object>();
 
         public static TextWriter Writer { get; } = new OutputWriter();
 
@@ -30,14 +30,19 @@ namespace SharpLab.Runtime.Internal {
         }
 
         private static void WriteObject(object value) {
-            if (_stream.Count == MaxStreamDataCount - 1) {
-                _stream.Add(new SimpleInspection("System", "Output limit reached"));
+            var stream = _stream.Value;
+            if (stream.Count == MaxStreamDataCount - 1) {
+                stream.Add(new SimpleInspection("System", "Output limit reached"));
                 return;
             }
 
-            if (_stream.Count > MaxStreamDataCount - 1)
+            if (stream.Count > MaxStreamDataCount - 1)
                 return;
-            _stream.Add(value);
+            stream.Add(value);
+        }
+
+        public static void Reset() {
+            _stream.ValueIfCreated?.Clear();
         }
 
         private class OutputWriter : TextWriter {

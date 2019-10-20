@@ -18,7 +18,7 @@ using SharpLab.Server.Compilation.Internal;
 namespace SharpLab.Server.Common.Languages {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class FSharpAdapter : ILanguageAdapter {
-        private AssemblyReferenceDiscoveryTaskSource _referencedAssembliesTaskSource = new AssemblyReferenceDiscoveryTaskSource();
+        private readonly AssemblyReferenceDiscoveryTaskSource _referencedAssembliesTaskSource = new AssemblyReferenceDiscoveryTaskSource();
         private readonly IAssemblyReferenceCollector _referenceCollector;
 
         public string LanguageName => LanguageNames.FSharp;

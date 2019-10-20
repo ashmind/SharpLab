@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using Microsoft.IO;
 using MirrorSharp.Advanced;
@@ -13,6 +12,9 @@ using SharpLab.Server.Common;
 using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.Monitoring;
 using IAssemblyResolver = Mono.Cecil.IAssemblyResolver;
+using System.Reflection;
+using SharpLab.Runtime.Internal;
+using System.Diagnostics;
 
 namespace SharpLab.Server.Execution {
     public class Executor : IExecutor {
@@ -67,33 +69,63 @@ namespace SharpLab.Server.Execution {
                     AssemblyLog.Log("3.Unbreakable", definition);
 
                     rewrittenStream.Seek(0, SeekOrigin.Begin);
-                    var (result, exception) = ExecuteWithIsolation(rewrittenStream, guardToken, session);
-                    if (ShouldMonitorException(exception))
-                        _monitor.Exception(exception!, session);
-
-                    return result;
+                    using (var context = new CustomAssemblyLoadContext(shouldShareAssembly: ShouldShareAssembly)) {
+                        var assembly = context.LoadFromStream(rewrittenStream);
+                        return Execute(assembly, guardToken, session);
+                    }
                 }
             }
         }
 
-        private ExecutionResultWithException ExecuteWithIsolation(MemoryStream assemblyStream, RuntimeGuardToken guardToken, IWorkSession session) {
-            using (var context = new CustomAssemblyLoadContext(shouldShareAssembly: _ => false)) {
-                var assembly = context.LoadFromStream(assemblyStream);
-                var serverAssembly = context.LoadFromAssemblyPath(Current.AssemblyPath);
+        private bool ShouldShareAssembly(AssemblyName assemblyName) {
+            return assemblyName.FullName != typeof(Console).Assembly.FullName;
+        }
 
-                var coreType = serverAssembly.GetType(typeof(IsolatedExecutorCore).FullName!)!;
-                var execute = coreType.GetMethod(nameof(IsolatedExecutorCore.Execute))!;
+        public unsafe ExecutionResult Execute(Assembly assembly, RuntimeGuardToken guardToken, IWorkSession session) {
+            try {
+                var inspectionSettings = new InspectionSettings(Current.ProcessId, ProfilerState.Active);
+                InspectionSettings.Current = inspectionSettings;
+                Output.Reset();
+                Flow.Reset();
+                Console.SetOut(Output.Writer);
 
-                var wrapperInContext = execute.Invoke(null, new object[] { assembly, guardToken.Guid, Current.ProcessId, ProfilerState.Active });
-                // Since wrapperInContext belongs to a different AssemblyLoadContext, it is not possible to convert
-                // it to same type in the default context without some trick (e.g. serialization).
-                using (var wrapperStream = _memoryStreamManager.GetStream()) {
-                    var formatter = new BinaryFormatter();
-                    formatter.Serialize(wrapperStream, wrapperInContext);
-                    wrapperStream.Seek(0, SeekOrigin.Begin);
-                    return (ExecutionResultWithException)formatter.Deserialize(wrapperStream);
+                var main = assembly.EntryPoint;
+                if (main == null)
+                    throw new ArgumentException("Entry point not found in " + assembly, nameof(assembly));
+                using (guardToken.Scope(NewRuntimeGuardSettings())) {
+                    var args = main.GetParameters().Length > 0 ? new object[] { new string[0] } : null;
+                    var stackStart = stackalloc byte[1];
+                    inspectionSettings.StackStart = (ulong)stackStart;
+                    var result = main.Invoke(null, args);
+                    if (main.ReturnType != typeof(void))
+                        result.Inspect("Return");
+                    return new ExecutionResult(Output.Stream, Flow.Steps);
                 }
             }
+            catch (Exception ex) {
+                if (ex is TargetInvocationException invocationEx)
+                    ex = invocationEx.InnerException ?? ex;
+
+                if (ex is RegexMatchTimeoutException)
+                    ex = new TimeGuardException("Time limit reached while evaluating a Regex.\r\nNote that timeout was added by SharpLab — in real code this would not throw, but might run for a very long time.", ex);
+
+                if (ex is StackGuardException sgex)
+                    throw new Exception($"{sgex.Message} {sgex.StackBaseline} {sgex.StackOffset} {sgex.StackLimit} {sgex.StackSize}");
+
+                Flow.ReportException(ex);
+                Output.Write(new SimpleInspection("Exception", ex.ToString()));
+                if (ShouldMonitorException(ex))
+                    _monitor.Exception(ex!, session);
+                return new ExecutionResult(Output.Stream, Flow.Steps);
+            }
+        }
+
+        private static RuntimeGuardSettings NewRuntimeGuardSettings() {
+            #if DEBUG
+            if (Debugger.IsAttached)
+                return new RuntimeGuardSettings { TimeLimit = TimeSpan.MaxValue };
+            #endif
+            return new RuntimeGuardSettings { TimeLimit = TimeSpan.FromSeconds(1) };
         }
 
         private static bool ShouldMonitorException(Exception? exception) {

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
@@ -16,14 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.dll"
-          Link="SharpLab.Native.Profiler.dll"
-          Condition="Exists('..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.dll')">
+    <None Include="..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.dll" Link="SharpLab.Native.Profiler.dll" Condition="Exists('..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.dll')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.pdb"
-          Link="SharpLab.Native.Profiler.pdb"
-          Condition="Exists('..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.pdb')">
+    <None Include="..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.pdb" Link="SharpLab.Native.Profiler.pdb" Condition="Exists('..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.pdb')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -67,18 +63,28 @@
   <ItemGroup>
     <Reference Include="System.Net.Http" />
   </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
-    <Reference Include="System.Web" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.VisualBasic" />
-  </ItemGroup>
   
   <ItemGroup>
     <Compile Update="Execution\Unbreakable\ApiPolicySetup.cs" />
   </ItemGroup>
 
   <Target Name="_UpdatePolicyReport" AfterTargets="Build" Inputs="Execution\Unbreakable\ApiPolicySetup.cs" Outputs="Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt" Condition="'$(TargetFramework)' == 'netcoreapp30' And '$(Configuration)' == 'Debug'">
-    <Exec WorkingDirectory="$(OutputPath)" Command="&#xD;&#xA;      dotnet unbreakable-policy-report ^&#xD;&#xA;          --assembly &quot;$(TargetPath)&quot; ^&#xD;&#xA;          --factory SharpLab.Server.Execution.Unbreakable.ApiPolicySetup ^&#xD;&#xA;          --method CreatePolicy ^&#xD;&#xA;          --output &quot;$(MSBuildThisFileDirectory)Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt&quot;" />
+    <Exec WorkingDirectory="$(OutputPath)" Command="
+        dotnet unbreakable-policy-report ^
+          --assembly &quot;$(TargetPath)&quot; ^
+          --factory SharpLab.Server.Execution.Unbreakable.ApiPolicySetup ^
+          --method CreatePolicy ^
+          --output &quot;$(MSBuildThisFileDirectory)Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt&quot;
+    " />
+  </Target>
+
+  <Target Name="CopyFrameworkXmlDocumentation" AfterTargets="ResolveReferences">
+    <ItemGroup>
+      <Content Include="@(Reference->'%(RootDir)%(Directory)%(Filename).xml')"
+               Link="@(Reference->'xmldocs\%(Filename).xml')"
+               Condition="$([System.String]::new('%(Filename)').StartsWith('System.')) and Exists('%(RootDir)%(Directory)%(Filename).xml')">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
   </Target>
 </Project>
