@@ -10,6 +10,7 @@ using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Control;
 using MirrorSharp.Advanced;
 using MirrorSharp.FSharp.Advanced;
+using SharpLab.Server.Common.Diagnostics;
 
 namespace SharpLab.Server.Compilation {
     public class Compiler : ICompiler {
@@ -19,6 +20,7 @@ namespace SharpLab.Server.Compilation {
         );
 
         public async Task<(bool assembly, bool symbols)> TryCompileToStreamAsync(MemoryStream assemblyStream, MemoryStream? symbolStream, IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
+            PerformanceLog.Checkpoint("Compiler.TryCompileToStreamAsync.Start");
             if (session.IsFSharp()) {
                 var compiled = await TryCompileFSharpToStreamAsync(assemblyStream, session, diagnostics, cancellationToken).ConfigureAwait(false);
                 return (compiled, false);
@@ -27,6 +29,7 @@ namespace SharpLab.Server.Compilation {
             #warning TODO: Revisit after https://github.com/dotnet/docs/issues/14784
             var compilation = (await session.Roslyn.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false))!;
             var emitResult = compilation.Emit(assemblyStream, pdbStream: symbolStream, options: RoslynEmitOptions);
+            PerformanceLog.Checkpoint("Compiler.TryCompileToStreamAsync.Emit.End");
             if (!emitResult.Success) {
                 foreach (var diagnostic in emitResult.Diagnostics) {
                     diagnostics.Add(diagnostic);

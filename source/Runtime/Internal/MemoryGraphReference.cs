@@ -1,7 +1,4 @@
-using System;
-
 namespace SharpLab.Runtime.Internal {
-    [Serializable]
     public class MemoryGraphReference {
         public MemoryGraphReference(MemoryGraphNode from, MemoryGraphNode to) {
             From = from;

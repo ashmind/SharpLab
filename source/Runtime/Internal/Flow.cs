@@ -45,7 +45,7 @@ namespace SharpLab.Runtime.Internal {
             var notes = PrepareToReportValue(name, lineNumber);
             if (notes == null)
                 return;
-            ValuePresenter.AppendTo(notes, value, ReportLimits.ValueValue);
+            RuntimeServices.ValuePresenter.AppendTo(notes, value, ReportLimits.ValueValue);
         }
 
         public static void ReportRefSpanValue<T>(ref Span<T> value, string? name, int lineNumber) {
@@ -56,7 +56,7 @@ namespace SharpLab.Runtime.Internal {
             var notes = PrepareToReportValue(name, lineNumber);
             if (notes == null)
                 return;
-            ValuePresenter.AppendTo(notes, (ReadOnlySpan<T>)value, ReportLimits.ValueValue);
+            RuntimeServices.ValuePresenter.AppendTo(notes, (ReadOnlySpan<T>)value, ReportLimits.ValueValue);
         }
 
         public static void ReportRefReadOnlySpanValue<T>(ref ReadOnlySpan<T> value, string? name, int lineNumber) {
@@ -67,7 +67,7 @@ namespace SharpLab.Runtime.Internal {
             var notes = PrepareToReportValue(name, lineNumber);
             if (notes == null)
                 return;
-            ValuePresenter.AppendTo(notes, value, ReportLimits.ValueValue);
+            RuntimeServices.ValuePresenter.AppendTo(notes, value, ReportLimits.ValueValue);
         }
 
         private static StringBuilder? PrepareToReportValue(string? name, int lineNumber) {
@@ -119,7 +119,7 @@ namespace SharpLab.Runtime.Internal {
             }
 
             if (name != null) {
-                ValuePresenter.AppendStringTo(notes, name, ReportLimits.ValueName);
+                RuntimeServices.ValuePresenter.AppendStringTo(notes, name, ReportLimits.ValueName);
                 notes.Append(": ");
             }
 

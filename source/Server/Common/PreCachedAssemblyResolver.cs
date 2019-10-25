@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using ICSharpCode.Decompiler.Metadata;
 using Mono.Cecil;
+using SharpLab.Server.Common.Diagnostics;
 
 namespace SharpLab.Server.Common {
     public class PreCachedAssemblyResolver : ICSharpCode.Decompiler.Metadata.IAssemblyResolver, Mono.Cecil.IAssemblyResolver {
@@ -16,6 +17,7 @@ namespace SharpLab.Server.Common {
         }
 
         private void AddToCaches(IReadOnlyCollection<string> assemblyPaths) {
+            PerformanceLog.Checkpoint("PreCachedAssemblyResolver.AddToCaches.Start");
             foreach (var path in assemblyPaths) {
                 var file = new PEFile(path);
                 _peFileCache.TryAdd(file.Name, file);
@@ -23,6 +25,7 @@ namespace SharpLab.Server.Common {
                 var definition = AssemblyDefinition.ReadAssembly(path);
                 _cecilCache.TryAdd(definition.Name.Name, definition);
             }
+            PerformanceLog.Checkpoint("PreCachedAssemblyResolver.AddToCaches.End");
         }
 
         public PEFile? Resolve(IAssemblyReference reference) {

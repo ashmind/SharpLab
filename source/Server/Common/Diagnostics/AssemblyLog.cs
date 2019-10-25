@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading;
 using Mono.Cecil;
 
-namespace SharpLab.Server.Common {
+namespace SharpLab.Server.Common.Diagnostics {
     public static class AssemblyLog {
         #if DEBUG 
         private static readonly AsyncLocal<string> _pathFormat = new AsyncLocal<string>();

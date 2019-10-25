@@ -1,5 +1,7 @@
 using System;
+#if DEBUG
 using System.Diagnostics;
+#endif
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Unbreakable;

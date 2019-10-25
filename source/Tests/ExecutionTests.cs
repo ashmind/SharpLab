@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+#if DEBUG
 using System.IO;
+#endif
 using System.Linq;
+#if DEBUG
 using System.Reflection;
+#endif
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -11,11 +15,13 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
-using AshMind.Extensions;
 using Pedantic.IO;
 using MirrorSharp.Testing;
 using MirrorSharp.Testing.Results;
 using SharpLab.Server.Common;
+#if DEBUG
+using SharpLab.Server.Common.Diagnostics;
+#endif
 using SharpLab.Tests.Internal;
 
 namespace SharpLab.Tests {
@@ -41,7 +47,8 @@ namespace SharpLab.Tests {
                 GetType().Name, safeTestName,
                 "{0}.dll"
             );
-            AssemblyLog.Enable(testPath);
+            //AssemblyLog.Enable(testPath);
+            //PerformanceLog.Enable((name, ticks) => testOutputHelper.WriteLine("[Perf] {0}: {1:F2}ms", name, (double)ticks / TimeSpan.TicksPerMillisecond));
             #endif
         }
 
@@ -393,12 +400,13 @@ namespace SharpLab.Tests {
 
         [Theory]
         [InlineData("Regression.CertainLoop.cs")]
-        [InlineData("Regression.FSharpNestedLambda.fs", LanguageNames.FSharp)]
+        //[InlineData("Regression.FSharpNestedLambda.fs", LanguageNames.FSharp)]
         [InlineData("Regression.NestedAnonymousObject.cs")]
         [InlineData("Regression.ReturnRef.cs")]
         public async Task SlowUpdate_DoesNotFail(string resourceName, string languageName = LanguageNames.CSharp) {
-            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), languageName);
+            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), languageName);            
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            PerformanceLog.Checkpoint("Test.Driver.SlowUpdate.End");
             AssertIsSuccess(result);
         }
 
@@ -492,8 +500,11 @@ namespace SharpLab.Tests {
             string languageName = LanguageNames.CSharp,
             string optimize = Optimize.Debug
         ) {
+            PerformanceLog.Checkpoint("Test.Driver.New.Start");
             var driver = MirrorSharpTestDriver.New(TestEnvironment.MirrorSharpOptions).SetText(code);
+            PerformanceLog.Checkpoint("Test.Driver.New.End");
             await driver.SendSetOptionsAsync(languageName, TargetNames.Run, optimize);
+            PerformanceLog.Checkpoint("Test.Driver.Options.Set");
             return driver;
         }
 

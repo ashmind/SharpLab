@@ -14,18 +14,26 @@ using SharpLab.Server.Common;
 namespace SharpLab.Server.Decompilation {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class JitAsmDecompiler : IDecompiler {
+        private readonly Pool<ClrRuntime> _runtimePool;
+
         public string LanguageName => TargetNames.JitAsm;
+
+        public JitAsmDecompiler(Pool<ClrRuntime> runtimePool) {
+            _runtimePool = runtimePool;
+        }
 
         public void Decompile(CompilationStreamPair streams, TextWriter codeWriter) {
             Argument.NotNull(nameof(streams), streams);
             Argument.NotNull(nameof(codeWriter), codeWriter);
 
-            using (var loadContext = new CustomAssemblyLoadContext(shouldShareAssembly: _ => true))
-            using (var dataTarget = DataTarget.AttachToProcess(Current.ProcessId, uint.MaxValue, AttachFlag.Passive)) {
+            using (var loadContext = new CustomAssemblyLoadContext(shouldShareAssembly: _ => true)) {
                 var assembly = loadContext.LoadFromStream(streams.AssemblyStream);
                 ValidateStaticConstructors(assembly);
 
-                var runtime = dataTarget.ClrVersions.Single(v => v.Flavor == ClrFlavor.Core).CreateRuntime();
+                using var runtimeLease = _runtimePool.GetOrCreate();
+                var runtime = runtimeLease.Object;
+
+                runtime.Flush();
                 var context = new JitWriteContext(codeWriter, runtime);
                 context.Translator = new IntelTranslator {
                     SymbolResolver = (Instruction instruction, long addr, ref long offset) =>

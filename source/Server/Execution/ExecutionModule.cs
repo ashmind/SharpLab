@@ -1,6 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Autofac;
 using JetBrains.Annotations;
+using Microsoft.Diagnostics.Runtime;
+using SharpLab.Runtime.Internal;
+using SharpLab.Server.Common;
 using SharpLab.Server.Execution.Internal;
+using SharpLab.Server.Execution.Runtime;
 using SharpLab.Server.Execution.Unbreakable;
 
 namespace SharpLab.Server.Execution {
@@ -8,6 +15,15 @@ namespace SharpLab.Server.Execution {
     public class ExecutionModule : Module {
         protected override void Load(ContainerBuilder builder) {
             builder.RegisterInstance(ApiPolicySetup.CreatePolicy())
+                   .AsSelf()
+                   .SingleInstance();
+
+            builder.Register(_ => {
+                var dataTarget = DataTarget.AttachToProcess(Current.ProcessId, uint.MaxValue, AttachFlag.Passive);
+                return dataTarget.ClrVersions.Single(c => c.Flavor == ClrFlavor.Core).CreateRuntime();
+            }).SingleInstance();
+
+            builder.RegisterType<Pool<ClrRuntime>>()
                    .AsSelf()
                    .SingleInstance();
 
@@ -30,6 +46,33 @@ namespace SharpLab.Server.Execution {
             builder.RegisterType<Executor>()
                    .As<IExecutor>()
                    .SingleInstance();
+
+            RegisterRuntime(builder);
+        }
+
+        private void RegisterRuntime(ContainerBuilder builder) {
+            builder.RegisterType<ValuePresenter>()
+                   .As<IValuePresenter>()
+                   .SingleInstance();
+
+            builder.RegisterType<MemoryBytesInspector>()
+                   .As<IMemoryBytesInspector>()
+                   .SingleInstance();
+
+            builder.RegisterType<MemoryGraphBuilder>()
+                   .As<IMemoryGraphBuilder>()
+                   .InstancePerDependency();
+
+            builder.RegisterType<AllocationInspector>()
+                   .As<IAllocationInspector>()
+                   .SingleInstance();
+
+            builder.RegisterBuildCallback(c => {
+                RuntimeServices.ValuePresenter = c.Resolve<IValuePresenter>();
+                RuntimeServices.MemoryBytesInspector = c.Resolve<IMemoryBytesInspector>();
+                RuntimeServices.MemoryGraphBuilderFactory = c.Resolve<Func<IReadOnlyList<string>, IMemoryGraphBuilder>>();
+                RuntimeServices.AllocationInspector = c.Resolve<IAllocationInspector>();
+            });
         }
     }
 }

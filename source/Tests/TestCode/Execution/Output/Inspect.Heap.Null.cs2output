@@ -9,5 +9,6 @@ public static class Program {
 #=>
 
 Exception: System.Exception: Inspect.Heap can't inspect null, as it does not point to a valid location on the heap.
+   at SharpLab.Server.Execution.Runtime.MemoryBytesInspector.InspectHeap(Object object)
    at Inspect.Heap(Object object)
    at Program.Main()

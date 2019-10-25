@@ -4,24 +4,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SharpLab.Runtime.Internal;
 
-namespace SharpLab.Runtime.Internal {
-    internal class MemoryGraphBuilder {
+namespace SharpLab.Server.Execution.Runtime {
+    public class MemoryGraphBuilder : IMemoryGraphBuilder {
         private readonly IList<MemoryGraphNode> _stack = new List<MemoryGraphNode>();
         private readonly IList<MemoryGraphNode> _heap = new List<MemoryGraphNode>();
         private readonly IList<MemoryGraphReference> _references = new List<MemoryGraphReference>();
 
         private readonly IReadOnlyList<string> _argumentNames;
+        private readonly IValuePresenter _valuePresenter;
         private int _nextArgumentIndex;
 
         private int _nextNodeId = 1;
 
-        public MemoryGraphBuilder(IReadOnlyList<string> argumentNames) {
+        public MemoryGraphBuilder(IReadOnlyList<string> argumentNames, IValuePresenter valuePresenter) {
             _argumentNames = argumentNames;
             _nextArgumentIndex = 0;
+            _valuePresenter = valuePresenter;
         }
 
-        public unsafe MemoryGraphBuilder Add<T>(in T value) {
+        public unsafe IMemoryGraphBuilder Add<T>(in T value) {
             var stackAddress = (ulong)Unsafe.AsPointer(ref Unsafe.AsRef(in value));
             var stackSize = Unsafe.SizeOf<T>();
 
@@ -31,7 +34,7 @@ namespace SharpLab.Runtime.Internal {
             var isStack = typeof(T).IsValueType || value == null;
 
             var stackNode = isStack
-                ? MemoryGraphNode.OnStack(_nextNodeId++, name, ValuePresenter.ToStringBuilder(value), stackAddress, stackSize)
+                ? MemoryGraphNode.OnStack(_nextNodeId++, name, _valuePresenter.ToStringBuilder(value), stackAddress, stackSize)
                 : MemoryGraphNode.OnStack(_nextNodeId++, name, GetTitleForReference(typeof(T)), stackAddress, stackSize);
             _stack.Add(stackNode);
 
@@ -49,7 +52,7 @@ namespace SharpLab.Runtime.Internal {
 
             var heapNode = FindExistingNode(@object);
             if (heapNode == null) {
-                heapNode = MemoryGraphNode.OnHeap(_nextNodeId++, objectType.Name, ValuePresenter.ToStringBuilder(@object), @object);
+                heapNode = MemoryGraphNode.OnHeap(_nextNodeId++, objectType.Name, _valuePresenter.ToStringBuilder(@object), @object);
                 _heap.Add(heapNode);
 
                 AddNestedNodes(heapNode, @object);
@@ -68,7 +71,7 @@ namespace SharpLab.Runtime.Internal {
 
             if (objectType.IsArray) {
                 var index = 0;
-                var itemType = objectType.GetElementType();
+                var itemType = objectType.GetElementType()!;
                 foreach (var item in (IEnumerable)@object) {
                     if (!parentNode.ValidateNestedLimit())
                         break;
@@ -88,12 +91,11 @@ namespace SharpLab.Runtime.Internal {
             }
         }
 
-        private void AddNestedNode(MemoryGraphNode parentNode, string title, Type staticType, object value)
-        {
+        private void AddNestedNode(MemoryGraphNode parentNode, string title, Type staticType, object? value) {
             var isReference = !staticType.IsValueType && value != null;
             var nestedNode = isReference
                 ? MemoryGraphNode.Nested(_nextNodeId++, title, GetTitleForReference(staticType))
-                : MemoryGraphNode.Nested(_nextNodeId++, title, ValuePresenter.ToStringBuilder(value));
+                : MemoryGraphNode.Nested(_nextNodeId++, title, _valuePresenter.ToStringBuilder(value));
             parentNode.AddNestedNode(nestedNode);
             if (isReference)
                 AddHeapObject(nestedNode, value!);

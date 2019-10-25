@@ -12,6 +12,7 @@ using Autofac.Extras.FileSystemRegistration;
 using MirrorSharp;
 using MirrorSharp.Advanced;
 using SharpLab.Server.Common;
+using SharpLab.Server.Common.Diagnostics;
 
 namespace SharpLab.Server {    
     public class Startup {
@@ -31,7 +32,7 @@ namespace SharpLab.Server {
                 .WhereFileMatches("SharpLab.*");
         }
 
-        public static MirrorSharpOptions CreateMirrorSharpOptions(ILifetimeScope container) {
+        public static MirrorSharpOptions CreateMirrorSharpOptions(ILifetimeScope container) {            
             var options = new MirrorSharpOptions {
                 SetOptionsFromClient = container.Resolve<ISetOptionsFromClientExtension>(),
                 SlowUpdate = container.Resolve<ISlowUpdateExtension>(),
@@ -42,6 +43,7 @@ namespace SharpLab.Server {
             foreach (var language in languages) {
                 language.SlowSetup(options);
             }
+            PerformanceLog.Checkpoint("Startup.CreateMirrorSharpOptions.End");
             return options;
         }
 

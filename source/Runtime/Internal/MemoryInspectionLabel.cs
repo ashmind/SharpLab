@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 
 namespace SharpLab.Runtime.Internal {
-    [Serializable]
     public readonly struct MemoryInspectionLabel {
         public MemoryInspectionLabel(string name, int offset, int length, IReadOnlyList<MemoryInspectionLabel>? nested = null) {
             Name = name;

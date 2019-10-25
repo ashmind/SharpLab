@@ -1,8 +1,6 @@
-using System;
 using System.Text;
 
 namespace SharpLab.Runtime.Internal {
-    [Serializable]
     public class SimpleInspection : IInspection {
         public SimpleInspection(string title) {
             Title = title;

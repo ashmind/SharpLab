@@ -4,30 +4,31 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using SharpLab.Runtime.Internal;
 
-namespace SharpLab.Runtime.Internal {
-    internal static class ValuePresenter {
-        public static StringBuilder ToStringBuilder<T>(T value, ValuePresenterLimits limits = default) {
+namespace SharpLab.Server.Execution.Runtime {
+    public class ValuePresenter : IValuePresenter {
+        public StringBuilder ToStringBuilder<T>(T value, ValuePresenterLimits limits = default) {
             var builder = new StringBuilder();
             AppendTo(builder, value, limits);
             return builder;
         }
 
-        public static StringBuilder ToStringBuilder<T>(ReadOnlySpan<T> value, ValuePresenterLimits limits = default) {
+        public StringBuilder ToStringBuilder<T>(ReadOnlySpan<T> value, ValuePresenterLimits limits = default) {
             var builder = new StringBuilder();
             AppendTo(builder, value, limits);
             return builder;
         }
 
-        public static void AppendTo<T>(StringBuilder builder, T value, ValuePresenterLimits limits = default) {
+        public void AppendTo<T>(StringBuilder builder, T value, ValuePresenterLimits limits = default) {
             AppendTo(builder, value, depth: 1, limits);
         }
 
-        public static void AppendTo<T>(StringBuilder builder, ReadOnlySpan<T> value, ValuePresenterLimits limits = default) {
+        public void AppendTo<T>(StringBuilder builder, ReadOnlySpan<T> value, ValuePresenterLimits limits = default) {
             AppendSpanTo(builder, value, depth: 1, limits);
         }
 
-        private static void AppendTo<T>(StringBuilder builder, T value, int depth, ValuePresenterLimits limits = default) {
+        private void AppendTo<T>(StringBuilder builder, T value, int depth, ValuePresenterLimits limits = default) {
             if (value == null) {
                 builder.Append("null");
                 return;
@@ -60,7 +61,7 @@ namespace SharpLab.Runtime.Internal {
             }
         }
 
-        internal static void AppendEnumerableTo<T>(StringBuilder builder, IEnumerable<T> enumerable, int depth, ValuePresenterLimits limits) {
+        public void AppendEnumerableTo<T>(StringBuilder builder, IEnumerable<T> enumerable, int depth, ValuePresenterLimits limits) {
             builder.Append("{ ");
             var index = 0;
             foreach (var item in enumerable) {
@@ -78,7 +79,7 @@ namespace SharpLab.Runtime.Internal {
             builder.Append(" }");
         }
 
-        private static void AppendSpanTo<T>(StringBuilder builder, ReadOnlySpan<T> value, int depth, ValuePresenterLimits limits) {
+        private void AppendSpanTo<T>(StringBuilder builder, ReadOnlySpan<T> value, int depth, ValuePresenterLimits limits) {
             builder.Append("{ ");
             var index = 0;
             foreach (var item in value) {
@@ -96,7 +97,7 @@ namespace SharpLab.Runtime.Internal {
             builder.Append(" }");
         }
 
-        public static void AppendStringTo(StringBuilder builder, string value, ValuePresenterLimits limits) {
+        public void AppendStringTo(StringBuilder builder, string value, ValuePresenterLimits limits) {
             if (limits.MaxValueLength == null || value.Length <= limits.MaxValueLength) {
                 builder.Append(value);
             }

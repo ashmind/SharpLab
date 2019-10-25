@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
+#if DEBUG
+using System.Diagnostics;
+#endif
 using System.IO;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.IO;
 using MirrorSharp.Advanced;
@@ -8,13 +12,12 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unbreakable;
 using Unbreakable.Runtime;
+using SharpLab.Runtime.Internal;
 using SharpLab.Server.Common;
+using SharpLab.Server.Common.Diagnostics;
 using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.Monitoring;
 using IAssemblyResolver = Mono.Cecil.IAssemblyResolver;
-using System.Reflection;
-using SharpLab.Runtime.Internal;
-using System.Diagnostics;
 
 namespace SharpLab.Server.Execution {
     public class Executor : IExecutor {
@@ -59,6 +62,8 @@ namespace SharpLab.Server.Execution {
                 foreach (var rewriter in _rewriters) {
                     rewriter.Rewrite(definition, session);
                 }
+                PerformanceLog.Checkpoint("Executor.Rewrite.Flow.End");
+
                 AssemblyLog.Log("2.WithFlow", definition);
                 if (definition.EntryPoint == null)
                     throw new ArgumentException("Failed to find an entry point (Main?) in assembly.", nameof(streams));
@@ -66,11 +71,15 @@ namespace SharpLab.Server.Execution {
                 var guardToken = AssemblyGuard.Rewrite(definition, _guardSettings);
                 using (var rewrittenStream = _memoryStreamManager.GetStream()) {
                     definition.Write(rewrittenStream);
+
                     AssemblyLog.Log("3.Unbreakable", definition);
 
                     rewrittenStream.Seek(0, SeekOrigin.Begin);
+                    PerformanceLog.Checkpoint("Executor.Rewrite.Unbreakable.End");
                     using (var context = new CustomAssemblyLoadContext(shouldShareAssembly: ShouldShareAssembly)) {
                         var assembly = context.LoadFromStream(rewrittenStream);
+                        PerformanceLog.Checkpoint("Executor.AssemblyLoad.End");
+
                         return Execute(assembly, guardToken, session);
                     }
                 }
@@ -83,8 +92,6 @@ namespace SharpLab.Server.Execution {
 
         public unsafe ExecutionResult Execute(Assembly assembly, RuntimeGuardToken guardToken, IWorkSession session) {
             try {
-                var inspectionSettings = new InspectionSettings(Current.ProcessId, ProfilerState.Active);
-                InspectionSettings.Current = inspectionSettings;
                 Output.Reset();
                 Flow.Reset();
                 Console.SetOut(Output.Writer);
@@ -94,15 +101,18 @@ namespace SharpLab.Server.Execution {
                     throw new ArgumentException("Entry point not found in " + assembly, nameof(assembly));
                 using (guardToken.Scope(NewRuntimeGuardSettings())) {
                     var args = main.GetParameters().Length > 0 ? new object[] { new string[0] } : null;
-                    var stackStart = stackalloc byte[1];
-                    inspectionSettings.StackStart = (ulong)stackStart;
+
+                    PerformanceLog.Checkpoint("Executor.Invoke.Start");
                     var result = main.Invoke(null, args);
+                    PerformanceLog.Checkpoint("Executor.Invoke.End");
+
                     if (main.ReturnType != typeof(void))
                         result.Inspect("Return");
                     return new ExecutionResult(Output.Stream, Flow.Steps);
                 }
             }
             catch (Exception ex) {
+                PerformanceLog.Checkpoint("Executor.Invoke.Exception");
                 if (ex is TargetInvocationException invocationEx)
                     ex = invocationEx.InnerException ?? ex;
 

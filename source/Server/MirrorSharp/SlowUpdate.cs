@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.IO;
 using MirrorSharp.Advanced;
 using SharpLab.Server.Common;
+using SharpLab.Server.Common.Diagnostics;
 using SharpLab.Server.Compilation;
 using SharpLab.Server.Decompilation;
 using SharpLab.Server.Decompilation.AstOnly;
@@ -45,6 +46,7 @@ namespace SharpLab.Server.MirrorSharp {
         }
 
         public async Task<object?> ProcessAsync(IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
+            PerformanceLog.Checkpoint("SlowUpdate.ProcessAsync.Start");
             var targetName = GetAndEnsureTargetName(session);
 
             if (targetName == TargetNames.Ast || targetName == TargetNames.Explain) {

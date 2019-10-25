@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel;
-using System.Text;
 using SharpLab.Runtime.Internal;
 
 public static class SharpLabObjectExtensions {
