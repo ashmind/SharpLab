@@ -406,7 +406,6 @@ namespace SharpLab.Tests {
         public async Task SlowUpdate_DoesNotFail(string resourceName, string languageName = LanguageNames.CSharp) {
             var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), languageName);            
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
-            PerformanceLog.Checkpoint("Test.Driver.SlowUpdate.End");
             AssertIsSuccess(result);
         }
 
@@ -500,11 +499,8 @@ namespace SharpLab.Tests {
             string languageName = LanguageNames.CSharp,
             string optimize = Optimize.Debug
         ) {
-            PerformanceLog.Checkpoint("Test.Driver.New.Start");
             var driver = MirrorSharpTestDriver.New(TestEnvironment.MirrorSharpOptions).SetText(code);
-            PerformanceLog.Checkpoint("Test.Driver.New.End");
             await driver.SendSetOptionsAsync(languageName, TargetNames.Run, optimize);
-            PerformanceLog.Checkpoint("Test.Driver.Options.Set");
             return driver;
         }
 
