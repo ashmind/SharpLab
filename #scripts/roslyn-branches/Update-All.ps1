@@ -117,7 +117,7 @@ function Get-PredefinedBranches() {
         kind = 'platform'
     }, [ordered]@{
         id = 'netfx'
-        name = '.NET Framework'
+        name = '.NET Framework (x86)'
         url = $netfxUrl
         group = 'Platforms'
         kind = 'platform'
