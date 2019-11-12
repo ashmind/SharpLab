@@ -16,7 +16,7 @@ jobs:
         dotnet-version: '3.0.100'
     - name: Install Modules
       run: |
-        powershell Install-Module -Name Az -RequiredVersion 2.6.0 -Force -AllowClobber
+        powershell Import-Module PowerShellGet; Install-Module -Name Az -RequiredVersion 2.6.0 -Force -AllowClobber
         powershell Uninstall-AzureRM
     - name: Update-All
       env:
