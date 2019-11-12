@@ -43,7 +43,7 @@
             <div class="offline-only">[connection lost, reconnecting…]</div>
 
             <app-select v-model="branch" class="option-branch option">
-              <option v-bind:value="null">Default ({build:roslyn-version})</option>
+              <option v-bind:value="null">Default</option>
               <option v-for="branch in branches.ungrouped"
                       v-bind:value="branch">{{branch.displayName}}</option>
               <optgroup v-bind:label="group.name" v-for="group in branches.groups" v-show="group.kind !== 'roslyn' || options.language !== languages.fsharp">

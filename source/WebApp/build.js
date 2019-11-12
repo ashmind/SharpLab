@@ -122,7 +122,6 @@ task('favicons', async () => {
 }, { inputs: paths.from.favicon });
 
 task('html', async () => {
-    const roslynVersion = await getRoslynVersion();
     const faviconDataUrl = await getFaviconDataUrl();
     const templates = await getCombinedTemplates();
     const [jsHash, cssHash] = await parallel(
@@ -134,8 +133,7 @@ task('html', async () => {
         .replace('{build:js}', 'app.min.js?' + jsHash)
         .replace('{build:css}', 'app.min.css?' + cssHash)
         .replace('{build:templates}', templates)
-        .replace('{build:favicon-svg}', faviconDataUrl)
-        .replace(/\{build:roslyn-version\}/g, roslynVersion);
+        .replace('{build:favicon-svg}', faviconDataUrl);
     html = htmlMinifier.minify(html, { collapseWhitespace: true });
     await jetpack.writeAsync(paths.to.html, html);
 }, {
@@ -159,16 +157,6 @@ task('default', () => {
         htmlAll()
     );
 });
-
-async function getRoslynVersion() {
-    const assetsJson = JSON.parse(await jetpack.readAsync('../Server/obj/project.assets.json'));
-    for (const key in assetsJson.libraries) {
-        const match = key.match(/^Microsoft\.CodeAnalysis\.Common\/(.+)$/);
-        if (match)
-            return match[1];
-    }
-    return null;
-}
 
 async function getFaviconDataUrl() {
     const faviconSvg = await jetpack.readAsync(paths.from.favicon);
