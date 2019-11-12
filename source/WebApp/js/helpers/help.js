@@ -1,10 +1,13 @@
 export default Object.freeze({
     run: {
         csharp: [
-            '// Run mode:',
-            '//   value.Inspect()      — often better than Console.WriteLine',
-            '//   Inspect.Heap(object) — structure of an object in memory (heap)',
-            '//   Inspect.Stack(value) — structure of a stack value'
+            '/*',
+            '  SharpLab tools in Run mode:',
+            '    • value.Inspect()',
+            '    • Inspect.Heap(object)',
+            '    • Inspect.Stack(value)',
+            '    • Inspect.MemoryGraph(value1, value2, …)',
+            '*/'
         ].join('\r\n')
     }
 });
