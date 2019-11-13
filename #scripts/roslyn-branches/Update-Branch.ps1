@@ -288,7 +288,7 @@ function Build-Branch() {
 
     Write-Host "Copying to site"
     robocopy $siteSource.publishRoot $branchSiteRoot `
-        /xo /mir /np /ndl /njh | Out-Default
+        /xo /mir /np /ndl /nfl /njh | Out-Default
 
     Write-Host "Updating branch version for Web App"
     $branchVersionPath = Update-BranchVersionArtifact `
