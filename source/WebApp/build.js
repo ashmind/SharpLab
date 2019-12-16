@@ -30,7 +30,8 @@ const paths = {
         less: `${__dirname}/less/app.less`,
         js: `${__dirname}/js/app.js`,
         favicon: `${__dirname}/favicon.svg`,
-        html: `${__dirname}/index.html`
+        html: `${__dirname}/index.html`,
+        manifest: `${__dirname}/manifest.json`,
     },
     to: {
         css: `${outputRoot}/app.min.css`,
@@ -39,7 +40,8 @@ const paths = {
             svg: `${outputRoot}/favicon.svg`,
             png: `${outputRoot}/favicon-{size}.png`
         },
-        html: `${outputRoot}/index.html`
+        html: `${outputRoot}/index.html`,
+        manifest: `${outputRoot}/manifest.json`,
     }
 };
 
@@ -121,6 +123,10 @@ task('favicons', async () => {
     );
 }, { inputs: paths.from.favicon });
 
+task('manifest', async () => {
+    jetpack.copyAsync(paths.from.manifest, paths.to.manifest, { overwrite: true });
+}, { inputs: paths.from.manifest });
+
 task('html', async () => {
     const faviconDataUrl = await getFaviconDataUrl();
     const templates = await getCombinedTemplates();
@@ -154,6 +160,7 @@ task('default', () => {
 
     return parallel(
         tasks.favicons(),
+        tasks.manifest(),
         htmlAll()
     );
 });
