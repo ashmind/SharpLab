@@ -113,6 +113,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
                 .Getter(nameof(Type.IsGenericTypeDefinition), Allowed)
                 .Getter(nameof(Type.ContainsGenericParameters), Allowed)
                 .Member(nameof(Type.GetGenericTypeDefinition), Allowed)
+                .Member(nameof(Type.GetElementType), Allowed)
                 .Member(nameof(Type.GetConstructor), Allowed)
                 .Member(nameof(Type.GetEvent), Allowed)
                 .Member(nameof(Type.GetField), Allowed)
