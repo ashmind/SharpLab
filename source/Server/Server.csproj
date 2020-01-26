@@ -51,8 +51,8 @@
     <PackageReference Include="System.Memory" Version="4.5.3" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0-preview2-26406-04" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.3" />
-    <PackageReference Include="Unbreakable" Version="0.17.1-unproven" />
-    <PackageReference Include="Unbreakable.Policy" Version="12.0.0" />
+    <PackageReference Include="Unbreakable" Version="0.18.1-unproven" />
+    <PackageReference Include="Unbreakable.Policy" Version="13.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -69,20 +69,12 @@
   </ItemGroup>
 
   <Target Name="_UpdatePolicyReport" AfterTargets="Build" Inputs="Execution\Unbreakable\ApiPolicySetup.cs" Outputs="Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt" Condition="'$(TargetFramework)' == 'netcoreapp30' And '$(Configuration)' == 'Debug'">
-    <Exec WorkingDirectory="$(OutputPath)" Command="
-        dotnet unbreakable-policy-report ^
-          --assembly &quot;$(TargetPath)&quot; ^
-          --factory SharpLab.Server.Execution.Unbreakable.ApiPolicySetup ^
-          --method CreatePolicy ^
-          --output &quot;$(MSBuildThisFileDirectory)Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt&quot;
-    " />
+    <Exec WorkingDirectory="$(OutputPath)" Command="&#xD;&#xA;        dotnet unbreakable-policy-report ^&#xD;&#xA;          --assembly &quot;$(TargetPath)&quot; ^&#xD;&#xA;          --factory SharpLab.Server.Execution.Unbreakable.ApiPolicySetup ^&#xD;&#xA;          --method CreatePolicy ^&#xD;&#xA;          --output &quot;$(MSBuildThisFileDirectory)Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt&quot;&#xD;&#xA;    " />
   </Target>
 
   <Target Name="CopyFrameworkXmlDocumentation" AfterTargets="ResolveReferences">
     <ItemGroup>
-      <Content Include="@(Reference->'%(RootDir)%(Directory)%(Filename).xml')"
-               Link="@(Reference->'xmldocs\%(Filename).xml')"
-               Condition="$([System.String]::new('%(Filename)').StartsWith('System.')) and Exists('%(RootDir)%(Directory)%(Filename).xml')">
+      <Content Include="@(Reference->'%(RootDir)%(Directory)%(Filename).xml')" Link="@(Reference->'xmldocs\%(Filename).xml')" Condition="$([System.String]::new('%(Filename)').StartsWith('System.')) and Exists('%(RootDir)%(Directory)%(Filename).xml')">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
