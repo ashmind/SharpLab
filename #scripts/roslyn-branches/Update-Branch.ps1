@@ -190,6 +190,8 @@ function Build-Branch() {
             --runtime $Runtime `
             --packages $restoredPackagesRoot `
             --source "https://api.nuget.org/v3/index.json" `
+            --source "https://dotnet.myget.org/F/roslyn-analyzers/api/v3/index.json" `
+            --source "https://dotnet.myget.org/F/symreader-converter/api/v3/index.json" `
             --source $roslynPackagesRoot `
             --verbosity minimal | Out-Default
         if ($LastExitCode -ne 0) { throw "dotnet restore exited with error code $LastExitCode" }
