@@ -22,10 +22,10 @@
         "daa", "das", "dec", "div",
         "enter", "esc",
         "hlt",
-        "idiv", "imul", "in", "inc", "ins", "insd", "int", "into", "invd", "invlpg", "iret", "iret[df]",
+        "idiv", "imul", "in", "inc", "ins", "insd", "int", "int[13o]", "invd", "invlpg", "iret", "iret[df]",
         conditional("j"), "jecxz", "jcxz", "jmp",
         "lahf", "lar", "lds", "lea", "leave", "les", "l[gil]dt", "lfs", "lgs", "lmsw", "loadall", "lock", "lods[bdw]", "loop", "loop[dw]?", "loopn?[ez][dw]?", "lsl", "lss", "ltr",
-        "mov", "movs[bdw]", "mov[sz]x", "mul",
+        "mov", "movs[bdw]", "mov[sz]x", "movsxd", "mul",
         "neg", "nop", "not",
         "or", "out", "outsd?",
         "pop", "pop[af]d?", "push", "push[af]d?",
@@ -34,8 +34,9 @@
         "test",
         "ud2",
         "verr", "verw",
+        "vmovdqu", "vmovdqu8", "vmovdqu16", "vmovdqu32", "vxorps",
         "wait", "wbinvd", "wrmsr",
-        "xadd", "xchg", "xlat", "xor"
+        "xadd", "xchg", "xlat", "xor", "xorps"
       ].join("|") + ")(?:$|\\s)")
     };
 
