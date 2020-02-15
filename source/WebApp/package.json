@@ -50,7 +50,7 @@
     "oldowan": "1.0.0-preview-2",
     "postcss": "7.0.2",
     "postcss-csso": "3.0.0",
-    "puppeteer": "1.19.0",
+    "puppeteer": "2.1.1",
     "rollup": "1.23.1",
     "rollup-plugin-commonjs": "10.1.0",
     "rollup-plugin-node-resolve": "3.0.0",
