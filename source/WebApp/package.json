@@ -42,7 +42,7 @@
     "eslint-plugin-import": "2.18.2",
     "fs-jetpack": "2.1.0",
     "html-minifier": "3.5.19",
-    "jest": "24.9.0",
+    "jest": "25.1.0",
     "jest-image-snapshot": "2.9.0",
     "jest-mock-proxy": "3.0.0",
     "less": "3.8.1",
