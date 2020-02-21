@@ -45,24 +45,10 @@ if ($LastExitCode -ne 0) {
 } 
 
 Write-Host "Building and publishing"
-Push-Location 'source'
-try {
-    Write-Output 'msbuild source\Native.Profiler\Native.Profiler.vcxproj'
-    $msbuild = (@(Get-Item "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\*\MSBuild\Current\Bin\msbuild.exe")[0]).FullName
-    &$msbuild Native.Profiler\Native.Profiler.vcxproj /p:SolutionName=SharpLab
-
-    dotnet build -c Debug
-    if ($LastExitCode -ne 0) {
-        throw "dotnet build failed with exit code $LastExitCode"
-    }
-
-    dotnet publish Server -c Debug --no-restore --no-build
-    if ($LastExitCode -ne 0) {
-        throw "dotnet publish failed with exit code $LastExitCode"
-    }
-}
-finally {
-    Pop-Location
+&"$PSScriptRoot\build.ps1" -Configuration Debug
+dotnet publish source/Server -c Debug --no-restore --no-build
+if ($LastExitCode -ne 0) {
+    throw "dotnet publish failed with exit code $LastExitCode"
 }
 
 Write-Host "Creating web sites (IIS)"
