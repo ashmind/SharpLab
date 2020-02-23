@@ -1,0 +1,13 @@
+<section class="top-section warnings collapsed" v-show="warnings.length > 0">
+  <header>
+    <button class="expander" v-app-class-toggle="{ target: '.warnings', class: 'collapsed' }"></button>
+    <h1>Warnings</h1>
+  </header>
+  <div class="content">
+    <ul>
+      <li v-for="warning in warnings">
+        <app-diagnostic v-bind:model="warning" severity="warning"></app-diagnostic>
+      </li>
+    </ul>
+  </div>
+</section>

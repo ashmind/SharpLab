@@ -7,3 +7,4 @@ import './app-explain-view.js';
 import './app-output-view.js';
 import './app-gist-manager.js';
 import './app-theme-manager.js';
+import './app-warnings-section.js';
