@@ -403,6 +403,7 @@ namespace SharpLab.Tests {
         //[InlineData("Regression.FSharpNestedLambda.fs", LanguageNames.FSharp)]
         [InlineData("Regression.NestedAnonymousObject.cs")]
         [InlineData("Regression.ReturnRef.cs")]
+        [InlineData("Regression.CatchWithNameSameLineAsClosingTryBracket.cs")]
         public async Task SlowUpdate_DoesNotFail(string resourceName, string languageName = LanguageNames.CSharp) {
             var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), languageName);            
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();

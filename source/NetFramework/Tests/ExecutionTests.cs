@@ -45,7 +45,7 @@ namespace SharpLab.Tests {
                 GetType().Name, safeTestName,
                 "{0}.dll"
             );
-            AssemblyLog.Enable(testPath);
+            //AssemblyLog.Enable(testPath);
             #endif
         }
 
