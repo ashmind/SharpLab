@@ -30,6 +30,8 @@ namespace SharpLab.Server.Common.Languages {
 
         public void SlowSetup(MirrorSharpOptions options) {
             options.EnableFSharp(o => {
+                o.LangVersion = "preview";
+
                 var assemblyOfObject = typeof(object).Assembly;
                 var referencedAssemblies = _referenceCollector.SlowGetAllReferencedAssembliesRecursive(
                     // Essential

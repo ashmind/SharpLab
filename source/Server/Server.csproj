@@ -41,7 +41,7 @@
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.2" />
     <PackageReference Include="MirrorSharp.AspNetCore" Version="2.0.0" />
     <PackageReference Include="MirrorSharp.Common" Version="2.0.1" />
-    <PackageReference Include="MirrorSharp.FSharp" Version="0.16.0" />
+    <PackageReference Include="MirrorSharp.FSharp" Version="0.18.0" />
     <PackageReference Include="MirrorSharp.VisualBasic" Version="2.0.1" />
     <PackageReference Include="Mono.Cecil" Version="0.10.0" />
     <PackageReference Include="Octokit" Version="0.32.0" />
