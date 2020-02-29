@@ -60,7 +60,7 @@ namespace SharpLab.Tests {
         }
 
         private static async Task<MirrorSharpTestDriver> NewTestDriverAsync() {
-            var driver = MirrorSharpTestDriver.New(TestEnvironment.MirrorSharpOptions);
+            var driver = TestEnvironment.NewDriver();
             await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.Explain);
             return driver;
         }

@@ -4,6 +4,7 @@ using Autofac;
 using Autofac.Extras.FileSystemRegistration;
 using MirrorSharp;
 using MirrorSharp.Advanced;
+using MirrorSharp.Owin;
 using SharpLab.Server.Common;
 
 namespace SharpLab.Server {
@@ -21,16 +22,21 @@ namespace SharpLab.Server {
 
         public static MirrorSharpOptions CreateMirrorSharpOptions(ILifetimeScope container) {
             var options = new MirrorSharpOptions {
-                SetOptionsFromClient = container.Resolve<ISetOptionsFromClientExtension>(),
-                SlowUpdate = container.Resolve<ISlowUpdateExtension>(),
-                IncludeExceptionDetails = true,
-                ExceptionLogger = container.Resolve<IExceptionLogger>()
+                IncludeExceptionDetails = true
             };
             var languages = container.Resolve<ILanguageAdapter[]>();
             foreach (var language in languages) {
                 language.SlowSetup(options);
             }
             return options;
+        }
+
+        public static MirrorSharpServices CreateMirrorSharpServices(ILifetimeScope container) {
+            return new MirrorSharpServices {
+                SetOptionsFromClient = container.Resolve<ISetOptionsFromClientExtension>(),
+                SlowUpdate = container.Resolve<ISlowUpdateExtension>(),
+                ExceptionLogger = container.Resolve<IExceptionLogger>()
+            };
         }
     }
 }

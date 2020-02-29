@@ -29,7 +29,7 @@
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <PackageReference Include="AshMind.Extensions" Version="3.0.0-pre-20190808-01" />
-    <PackageReference Include="MirrorSharp.Testing" version="2.0.0" />
+    <PackageReference Include="MirrorSharp.Testing" version="2.1.0" />
     <PackageReference Include="Pedantic.IO.EmbeddedResource" version="0.9.0-pre-02" />
   </ItemGroup>
   
@@ -47,9 +47,7 @@
 
   <Target Name="CopyFrameworkXmlDocumentation" AfterTargets="ResolveReferences">
     <ItemGroup>
-      <Content Include="@(Reference->'%(RootDir)%(Directory)%(Filename).xml')"
-               Link="@(Reference->'xmldocs\%(Filename).xml')"
-               Condition="$([System.String]::new('%(Filename)').StartsWith('System.')) and Exists('%(RootDir)%(Directory)%(Filename).xml')">
+      <Content Include="@(Reference->'%(RootDir)%(Directory)%(Filename).xml')" Link="@(Reference->'xmldocs\%(Filename).xml')" Condition="$([System.String]::new('%(Filename)').StartsWith('System.')) and Exists('%(RootDir)%(Directory)%(Filename).xml')">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>

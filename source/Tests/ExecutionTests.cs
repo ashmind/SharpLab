@@ -500,7 +500,7 @@ namespace SharpLab.Tests {
             string languageName = LanguageNames.CSharp,
             string optimize = Optimize.Debug
         ) {
-            var driver = MirrorSharpTestDriver.New(TestEnvironment.MirrorSharpOptions).SetText(code);
+            var driver = TestEnvironment.NewDriver().SetText(code);
             await driver.SendSetOptionsAsync(languageName, TargetNames.Run, optimize);
             return driver;
         }

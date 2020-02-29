@@ -1,6 +1,8 @@
 using System;
 using Autofac;
 using MirrorSharp;
+using MirrorSharp.Advanced;
+using MirrorSharp.Testing;
 using SharpLab.Server;
 
 namespace SharpLab.Tests.Internal {
@@ -12,5 +14,13 @@ namespace SharpLab.Tests.Internal {
         }))();
 
         public static MirrorSharpOptions MirrorSharpOptions { get; } = Startup.CreateMirrorSharpOptions(Container);
+
+        public static MirrorSharpServices MirrorSharpServices { get; } = new MirrorSharpServices {
+            SetOptionsFromClient = Container.ResolveOptional<ISetOptionsFromClientExtension>(),
+            SlowUpdate = Container.ResolveOptional<ISlowUpdateExtension>(),
+            ExceptionLogger = Container.ResolveOptional<IExceptionLogger>()
+        };
+
+        public static MirrorSharpTestDriver NewDriver() => MirrorSharpTestDriver.New(MirrorSharpOptions, MirrorSharpServices);
     }
 }

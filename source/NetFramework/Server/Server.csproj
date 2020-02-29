@@ -30,9 +30,9 @@
     <PackageReference Include="Microsoft.Owin" Version="3.0.1" />
     <PackageReference Include="Microsoft.Owin.Cors" Version="3.0.1" />
     <PackageReference Include="Microsoft.Owin.Host.SystemWeb" Version="3.0.1" />
-    <PackageReference Include="MirrorSharp.Common" Version="2.0.1" />
+    <PackageReference Include="MirrorSharp.Common" Version="2.1.0" />
     <PackageReference Include="MirrorSharp.FSharp" Version="0.18.0" />
-    <PackageReference Include="MirrorSharp.Owin" Version="2.0.0" />
+    <PackageReference Include="MirrorSharp.Owin" Version="2.3.0" />
     <PackageReference Include="MirrorSharp.VisualBasic" Version="2.0.1" />
     <PackageReference Include="Mono.Cecil" Version="0.10.0" />
     <PackageReference Include="SharpDisasm" Version="1.1.11" />

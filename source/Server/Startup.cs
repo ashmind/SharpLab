@@ -33,12 +33,7 @@ namespace SharpLab.Server {
         }
 
         public static MirrorSharpOptions CreateMirrorSharpOptions(ILifetimeScope container) {            
-            var options = new MirrorSharpOptions {
-                SetOptionsFromClient = container.Resolve<ISetOptionsFromClientExtension>(),
-                SlowUpdate = container.Resolve<ISlowUpdateExtension>(),
-                IncludeExceptionDetails = true,
-                ExceptionLogger = container.Resolve<IExceptionLogger>()
-            };
+            var options = new MirrorSharpOptions { IncludeExceptionDetails = true };
             var languages = container.Resolve<ILanguageAdapter[]>();
             foreach (var language in languages) {
                 language.SlowSetup(options);
@@ -60,7 +55,7 @@ namespace SharpLab.Server {
             );
             
             app.UseWebSockets();
-            app.UseMirrorSharp(CreateMirrorSharpOptions(app.ApplicationServices.GetAutofacRoot()));
+            app.MapMirrorSharp("/mirrorsharp", CreateMirrorSharpOptions(app.ApplicationServices.GetAutofacRoot()));
 
             app.UseEndpoints(e => {
                 var okBytes = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes("OK"));
