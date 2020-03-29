@@ -3,6 +3,7 @@ console.time('requires');
 const { task, tasks, run } = require('oldowan');
 const path = require('path');
 const jetpack = require('fs-jetpack');
+const execa = require('execa');
 const md5File = require('md5-file/promise');
 // CSS:
 const less = require('less');
@@ -14,6 +15,7 @@ const rollup = require('rollup');
 const rollupPluginNodeResolve = require('rollup-plugin-node-resolve');
 const rollupPluginCommonJS = require('rollup-plugin-commonjs');
 const rollupPluginTerser = require('rollup-plugin-terser').terser;
+const rollupPluginTypeScript = require('@rollup/plugin-typescript');
 // Favicons:
 const sharp = require('sharp');
 // HTML:
@@ -69,24 +71,36 @@ task('less', async () => {
     );
 }, { inputs: `${__dirname}/less/**/*.less` });
 
-task('js', async () => {
+task('ts', async () => {
+    // WORK IN PROGRESS
+
+    /*await execa.command('eslint . --max-warnings 0 --ext .js,.jsx,.ts,.tsx', {
+        preferLocal: true,
+        stdout: process.stdout,
+        stderr: process.stderr
+    });*/
+
+    await execa.command('tsc --project ./tsconfig.json --module AMD --noEmit false --outFile ./obj/wwwroot/app.js', {
+        preferLocal: true,
+        stdout: process.stdout,
+        stderr: process.stderr
+    });
+/*
     const bundle = await rollup.rollup({
         // https://github.com/rollup/rollup/issues/2473
         treeshake: false,
         input: paths.from.js,
         plugins: [
-            rollupPluginCommonJS({
+            / *rollupPluginCommonJS({
                 include: [
-                    'node_modules/**',
-                    'components/internal/codemirror/**',
-                    'js/ui/helpers/**'
+                    'node_modules/**'
                 ]
             }),
             {
                 name: 'rollup-plugin-adhoc-resolve-vue',
                 resolveId: id => (id === 'vue') ? path.resolve(`./node_modules/vue/dist/vue${production?'.min':''}.js`) : null
-            },
-            rollupPluginNodeResolve({ browser: true }),
+            },* /
+            rollupPluginTypeScript(),
             ...(production ? [rollupPluginTerser()] : [])
         ]
     });
@@ -95,7 +109,7 @@ task('js', async () => {
         format: 'iife',
         file: paths.to.js,
         sourcemap: true
-    });
+    });*/
 }, {
     inputs: [
         `${__dirname}/js/**/*.js`,
