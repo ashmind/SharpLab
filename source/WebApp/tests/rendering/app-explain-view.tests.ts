@@ -1,5 +1,5 @@
-import { cases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
 import ExplainView from '../../components/app-explain-view';
+import { cases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
 
 beforeEach(() => loadComponentTemplate('app-explain-view'));
 

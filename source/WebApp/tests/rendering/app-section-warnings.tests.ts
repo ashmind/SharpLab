@@ -1,6 +1,6 @@
-import { cases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
 import WarningsSection from '../../components/app-warnings-section';
 import { fromPartial } from '../helpers';
+import { cases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
 
 beforeEach(() => loadComponentTemplate('app-warnings-section'));
 

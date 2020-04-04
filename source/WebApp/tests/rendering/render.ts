@@ -1,5 +1,5 @@
-import puppeteer, { Page } from 'puppeteer';
 import fs from 'fs';
+import puppeteer, { Page } from 'puppeteer';
 
 function getCachePath(url: string) {
     return __dirname + '/__request_cache__/' + url.replace(/[^a-z._=+-]/ig, '_') + '.json';

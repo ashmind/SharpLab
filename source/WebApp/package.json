@@ -2,10 +2,11 @@
   "name": "sharplab",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build": "node build.js",
-    "watch": "node build.js --watch",
-    "lint": "eslint . --ignore-path ../../.gitignore --max-warnings 0",
+    "build": "check-node-version --node \">=12.6.1\" && node --experimental-modules build.js",
+    "watch": "check-node-version --node \">=12.6.1\" && node --experimental-modules build.js --watch",
+    "lint": "check-node-version --node \">=12.6.1\" && node --experimental-modules build.js tsLint",
     "test": "jest"
   },
   "jest": {
@@ -54,6 +55,7 @@
     "@vue/test-utils": "1.0.0-beta.29",
     "autoprefixer": "9.6.4",
     "babel-jest": "24.9.0",
+    "check-node-version": "4.0.2",
     "eslint": "6.8.0",
     "eslint-plugin-import": "2.18.2",
     "execa": "4.0.0",

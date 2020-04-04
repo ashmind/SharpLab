@@ -1,5 +1,5 @@
-import { cases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
 import AstView from '../../components/app-ast-view';
+import { cases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
 import rootsSimple from './data/ast-roots-simple';
 
 beforeEach(() => {

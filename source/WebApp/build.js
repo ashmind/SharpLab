@@ -1,21 +1,23 @@
-console.time('requires');
 // Common:
-const { task, tasks, run } = require('oldowan');
-const path = require('path');
-const jetpack = require('fs-jetpack');
-const execa = require('execa');
-const md5File = require('md5-file/promise');
+import path from 'path';
+import url from 'url';
+import oldowan from 'oldowan';
+import jetpack from 'fs-jetpack';
+import execa from 'execa';
+import md5File from 'md5-file/promise.js';
 // CSS:
-const less = require('less');
-const autoprefixer = require('autoprefixer');
-const postcss = require('postcss');
-const csso = require('postcss-csso');
+import less from 'less';
+import autoprefixer from 'autoprefixer';
+import postcss from 'postcss';
+import csso from 'postcss-csso';
 // Favicons:
-const sharp = require('sharp');
+import sharp from 'sharp';
 // HTML:
-const htmlMinifier = require('html-minifier');
-console.timeEnd('requires');
+import htmlMinifier from 'html-minifier';
 
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+
+const { task, tasks, run } = oldowan;
 const outputRoot = `${__dirname}/wwwroot`;
 
 const parallel = (...promises) => Promise.all(promises);
@@ -23,13 +25,11 @@ const parallel = (...promises) => Promise.all(promises);
 const paths = {
     from: {
         less: `${__dirname}/less/app.less`,
-        js: `${__dirname}/js/app.js`,
         favicon: `${__dirname}/favicon.svg`,
         html: `${__dirname}/index.html`
     },
     to: {
         css: `${outputRoot}/app.min.css`,
-        js: `${outputRoot}/app.min.js`,
         favicon: {
             svg: `${outputRoot}/favicon.svg`,
             png: `${outputRoot}/favicon-{size}.png`
@@ -64,13 +64,15 @@ task('less', async () => {
     );
 }, { inputs: `${__dirname}/less/**/*.less` });
 
-task('ts', async () => {
-    await execa.command('eslint . --max-warnings 0 --ext .js,.jsx,.ts,.tsx', {
-        preferLocal: true,
-        stdout: process.stdout,
-        stderr: process.stderr
-    });
+task('tsLint', () => execa.command('eslint . --max-warnings 0 --ext .js,.ts', {
+    preferLocal: true,
+    stdout: process.stdout,
+    stderr: process.stderr
+}));
 
+task('ts', async () => {
+    if (process.env.NODE_ENV === 'production')
+        await tasks.tsLint();
     await execa.command('rollup -c', {
         preferLocal: true,
         stdout: process.stdout,

@@ -1,5 +1,5 @@
-import { cases, renderComponent, PickPropTypes } from './helpers';
 import VerifyView from '../../components/app-verify-view';
+import { cases, renderComponent, PickPropTypes } from './helpers';
 
 test.each(cases)('success%s', async (_, bodyClass) => {
     const view = createView({ value: '✔️ Compilation completed.' });

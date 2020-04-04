@@ -1,5 +1,4 @@
-import type { AppOptions } from '../types/app';
-import type { App } from '../types/app';
+import type { App, AppOptions } from '../types/app';
 import type { Gist } from '../types/gist';
 import defaults from './handlers/defaults';
 import lastUsed from './handlers/last-used';

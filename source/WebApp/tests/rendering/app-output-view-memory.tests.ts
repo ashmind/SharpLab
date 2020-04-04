@@ -1,7 +1,7 @@
 import Vue from 'vue';
+import outputViewMemorySettings from '../../components/internal/app-output-view-memory';
 import { cases, renderComponent, PickPropTypes } from './helpers';
 import * as inspections from './data/inspections-memory';
-import outputViewMemorySettings from '../../components/internal/app-output-view-memory';
 
 const OutputViewMemory = Vue.component('x', outputViewMemorySettings);
 

@@ -1,6 +1,6 @@
-import { cases, renderComponent, PickPropTypes } from './helpers';
-import Select from '../../components/app-select';
 import Vue from 'vue';
+import Select from '../../components/app-select';
+import { cases, renderComponent, PickPropTypes } from './helpers';
 
 test.each(cases)('empty%s', async (_, bodyClass) => {
     const select = createSelect({ value: null, options: [] });

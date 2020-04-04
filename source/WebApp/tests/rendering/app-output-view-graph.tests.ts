@@ -1,6 +1,6 @@
 import Vue from 'vue';
-import { cases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
 import outputViewGraphSettings from '../../components/internal/app-output-view-graph';
+import { cases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
 
 const OutputViewGraph = Vue.component('x', outputViewGraphSettings);
 

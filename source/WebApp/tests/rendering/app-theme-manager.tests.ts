@@ -1,5 +1,5 @@
-import { loadComponentTemplate, cases, renderComponent } from './helpers';
 import ThemeManager from '../../components/app-theme-manager';
+import { loadComponentTemplate, cases, renderComponent } from './helpers';
 
 beforeEach(() => loadComponentTemplate('app-theme-manager'));
 

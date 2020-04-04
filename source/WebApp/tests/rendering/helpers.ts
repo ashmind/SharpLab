@@ -1,8 +1,8 @@
 /* eslint-disable import/no-duplicates */
+import fs from 'fs';
 import type Vue from 'vue';
 import type { VueConstructor } from 'vue';
 /* eslint-enable import/no-duplicates */
-import fs from 'fs';
 import render from './render';
 
 export type PickPropTypes<TVueConstructor extends VueConstructor, TKey extends keyof InstanceType<TVueConstructor>> =

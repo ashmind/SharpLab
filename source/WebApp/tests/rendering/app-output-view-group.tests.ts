@@ -1,7 +1,7 @@
 import Vue from 'vue';
+import outputViewGroupSettings from '../../components/internal/app-output-view-group';
 import { loadComponentTemplate, cases, renderComponent, PickPropTypes } from './helpers';
 import * as groups from './data/inspections-groups';
-import outputViewGroupSettings from '../../components/internal/app-output-view-group';
 
 beforeEach(() => {
     loadComponentTemplate('app-output-view-group', 'internal');

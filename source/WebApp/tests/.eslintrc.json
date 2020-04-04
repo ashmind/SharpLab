@@ -1,35 +1,15 @@
 {
-    "root": true,
-    "parser": "@typescript-eslint/parser",
-    "plugins": [
-        "@typescript-eslint",
-        "import"
-    ],
-    "extends": [
-        "eslint:recommended",
-        "plugin:import/errors",
-        "plugin:import/warnings",
-        "plugin:@typescript-eslint/eslint-recommended",
-        "plugin:@typescript-eslint/recommended"
-    ],
     "env": {
         "jest": true,
         "browser": true,
         "es6": true
     },
-    "parserOptions": {
-        "sourceType": "module",
-        "ecmaVersion": 2020
-    },
     "rules": {
         "require-await": "off",
 
-        "import/namespace": "off",
-        "import/no-unresolved": "off",
         "import/extensions": ["error", "never"],
+        "import/no-unresolved": "off",
 
-        "@typescript-eslint/no-use-before-define": "off",
-        "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/no-empty-function": "off"
     }

@@ -1,5 +1,5 @@
-import { cases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
 import OutputView from '../../components/app-output-view';
+import { cases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
 
 beforeEach(() => loadComponentTemplate('app-output-view'));
 

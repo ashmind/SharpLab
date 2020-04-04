@@ -1,6 +1,6 @@
 import Vue from 'vue';
-import { loadComponentTemplate, cases, renderComponent, PickPropTypes } from './helpers';
 import outputViewSimpleSettings from '../../components/internal/app-output-view-simple';
+import { loadComponentTemplate, cases, renderComponent, PickPropTypes } from './helpers';
 
 beforeEach(() => loadComponentTemplate('app-output-view-simple', 'internal'));
 const OutputViewSimple = Vue.component('x', outputViewSimpleSettings);

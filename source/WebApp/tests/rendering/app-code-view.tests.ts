@@ -1,6 +1,6 @@
 import Vue from 'vue';
-import { cases, renderComponent, PickPropTypes } from './helpers';
 import CodeView from '../../components/app-code-view';
+import { cases, renderComponent, PickPropTypes } from './helpers';
 import { basicCSharp } from './data/code';
 
 beforeEach(() => {

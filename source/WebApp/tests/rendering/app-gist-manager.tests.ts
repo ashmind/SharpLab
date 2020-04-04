@@ -1,7 +1,7 @@
 import Vue, { VueConstructor } from 'vue';
-import { cases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
 import GistManager from '../../components/app-gist-manager';
 import { fromPartial } from '../helpers';
+import { cases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
 
 jest.mock('../../ts/helpers/github/auth');
 
