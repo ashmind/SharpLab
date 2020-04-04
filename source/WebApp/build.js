@@ -10,12 +10,6 @@ const less = require('less');
 const autoprefixer = require('autoprefixer');
 const postcss = require('postcss');
 const csso = require('postcss-csso');
-// JS:
-const rollup = require('rollup');
-const rollupPluginNodeResolve = require('rollup-plugin-node-resolve');
-const rollupPluginCommonJS = require('rollup-plugin-commonjs');
-const rollupPluginTerser = require('rollup-plugin-terser').terser;
-const rollupPluginTypeScript = require('@rollup/plugin-typescript');
 // Favicons:
 const sharp = require('sharp');
 // HTML:
@@ -23,7 +17,6 @@ const htmlMinifier = require('html-minifier');
 console.timeEnd('requires');
 
 const outputRoot = `${__dirname}/wwwroot`;
-const production = process.env.NODE_ENV === 'production';
 
 const parallel = (...promises) => Promise.all(promises);
 
@@ -72,44 +65,17 @@ task('less', async () => {
 }, { inputs: `${__dirname}/less/**/*.less` });
 
 task('ts', async () => {
-    // WORK IN PROGRESS
-
-    /*await execa.command('eslint . --max-warnings 0 --ext .js,.jsx,.ts,.tsx', {
-        preferLocal: true,
-        stdout: process.stdout,
-        stderr: process.stderr
-    });*/
-
-    await execa.command('tsc --project ./tsconfig.json --module AMD --noEmit false --outFile ./obj/wwwroot/app.js', {
+    await execa.command('eslint . --max-warnings 0 --ext .js,.jsx,.ts,.tsx', {
         preferLocal: true,
         stdout: process.stdout,
         stderr: process.stderr
     });
-/*
-    const bundle = await rollup.rollup({
-        // https://github.com/rollup/rollup/issues/2473
-        treeshake: false,
-        input: paths.from.js,
-        plugins: [
-            / *rollupPluginCommonJS({
-                include: [
-                    'node_modules/**'
-                ]
-            }),
-            {
-                name: 'rollup-plugin-adhoc-resolve-vue',
-                resolveId: id => (id === 'vue') ? path.resolve(`./node_modules/vue/dist/vue${production?'.min':''}.js`) : null
-            },* /
-            rollupPluginTypeScript(),
-            ...(production ? [rollupPluginTerser()] : [])
-        ]
-    });
 
-    await bundle.write({
-        format: 'iife',
-        file: paths.to.js,
-        sourcemap: true
-    });*/
+    await execa.command('rollup -c', {
+        preferLocal: true,
+        stdout: process.stdout,
+        stderr: process.stderr
+    });
 }, {
     inputs: [
         `${__dirname}/js/**/*.js`,
@@ -162,7 +128,7 @@ task('html', async () => {
 
 task('default', () => {
     const htmlAll = async () => {
-        await parallel(tasks.less(), tasks.js());
+        await parallel(tasks.less(), tasks.ts());
         await tasks.html();
     };
 

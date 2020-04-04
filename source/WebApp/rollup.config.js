@@ -1,3 +1,5 @@
+import path from 'path';
+import pluginNodeResolve from '@rollup/plugin-node-resolve';
 import rollupPluginCommonJS from 'rollup-plugin-commonjs';
 import pluginTypeScript from '@rollup/plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
@@ -7,15 +9,18 @@ export default {
     treeshake: false,
     input: './ts/app.ts',
     plugins: [
+        {
+            name: 'rollup-plugin-adhoc-resolve-vue',
+            resolveId: id => (id === 'vue')
+                ? path.resolve(`./node_modules/vue/dist/vue${process.env.NODE_ENV === 'production' ? '.min' : ''}.js`)
+                : null
+        },
+        pluginNodeResolve(),
         rollupPluginCommonJS({
             include: [
                 'node_modules/**'
             ]
-        }),/*
-        {
-            name: 'rollup-plugin-adhoc-resolve-vue',
-            resolveId: id => (id === 'vue') ? path.resolve(`./node_modules/vue/dist/vue${production?'.min':''}.js`) : null
-        },*/
+        }),/**/
         pluginTypeScript(),
         ...(process.env.NODE_ENV === 'production' ? [terser()] : [])
     ],
