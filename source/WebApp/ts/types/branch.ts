@@ -6,7 +6,7 @@ export interface Branch {
     readonly url: string;
 
     // not received from server, set in code
-    displayName?: string;
+    readonly displayName?: string;
 
     readonly feature?: {
         readonly language: string;
@@ -21,11 +21,11 @@ export interface BranchCommit {
     readonly message: string;
     readonly author: string;
     readonly hash: string;
-    date: Date;
+    readonly date: Date;
 }
 
 export interface BranchGroup {
     readonly name: string;
     readonly kind: Branch['kind'];
-    readonly branches: Array<Branch>;
+    readonly branches: ReadonlyArray<Branch>;
 }

@@ -1,6 +1,5 @@
 import type { CodeResult, AstResult, RunResult, VerifyResult, ExplainResult, ErrorResult, Result } from '../../types/results';
 import type { Gist } from '../../types/gist';
-import type { DeepReadonly } from '../deep-readonly';
 import extendType from '../extend-type';
 import { languages, LanguageName } from '../languages';
 import { targets } from '../targets';
@@ -30,7 +29,7 @@ const extensionMap = {
     [languages.fsharp]: '.fs'
 } as const;
 
-async function validateResponseAndParseJsonAsync(response: DeepReadonly<Response>) {
+async function validateResponseAndParseJsonAsync(response: Response) {
     if (!response.ok) {
         const text = await response.text();
         const error = new Error(`${response.status} ${response.statusText}\r\n${text}`);
@@ -52,15 +51,15 @@ async function validateResponseAndParseJsonAsync(response: DeepReadonly<Response
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const readableJson = (o: any) => JSON.stringify(o, null, 4);
 
-function prepareResultForGist<TTarget extends keyof TargetResultMap>(target: TTarget, result: DeepReadonly<TargetResultMap[TTarget]|ErrorResult>): {
+function prepareResultForGist<TTarget extends keyof TargetResultMap>(target: TTarget, result: TargetResultMap[TTarget]|ErrorResult): {
     readonly suffix: string;
     readonly content: string;
 };
-function prepareResultForGist(target: string, result: DeepReadonly<Result>): {
+function prepareResultForGist(target: string, result: Result): {
     readonly suffix: string;
     readonly content: string;
 };
-function prepareResultForGist(target: string, result: DeepReadonly<Result>) {
+function prepareResultForGist(target: string, result: Result) {
     switch (target) {
         case targets.csharp:
             return { suffix: '.decompiled.cs', content: result.value };
@@ -113,11 +112,11 @@ export async function getGistAsync(id: string) {
         code: codeFile.content,
         options
     };
-    return result as { [key in keyof Gist]: (typeof result)[key] }
+    return result as { readonly [key in keyof Gist]: (typeof result)[key] }
 }
 
 export async function createGistAsync(
-    { name, code, options, result }: DeepReadonly<Pick<Gist, 'name'|'code'|'options'> & { result: Result }>
+    { name, code, options, result }: Pick<Gist, 'name'|'code'|'options'> & { result: Result }
 ) {
     if (!token)
         throw new Error("Can't save Gists without GitHub auth.");

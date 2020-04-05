@@ -1,5 +1,6 @@
 import type { App, AppOptions } from '../types/app';
 import type { Gist } from '../types/gist';
+import type { PartiallyMutable } from '../helpers/partially-mutable';
 import defaults from './handlers/defaults';
 import lastUsed from './handlers/last-used';
 import url from './handlers/url';
@@ -25,7 +26,7 @@ export default {
         for (const key of Object.keys(defaultOptions) as ReadonlyArray<keyof typeof defaultOptions>) {
             if (options[key] == null) {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                options[key] = defaultOptions[key] as any;
+                (options as PartiallyMutable<typeof options, typeof key>)[key] = defaultOptions[key] as any;
             }
         }
         const code = fromUrl.code ?? defaults.getCode(options.language, options.target);

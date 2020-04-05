@@ -1,3 +1,4 @@
+import type { PartiallyMutable } from '../helpers/partially-mutable';
 import type { Branch, BranchCommit } from '../types/branch';
 import asLookup from '../helpers/as-lookup';
 
@@ -29,7 +30,7 @@ export default async function getBranchesAsync(): Promise<ReadonlyArray<Branch>>
             if (!branch.commits)
                 continue;
             for (const commit of branch.commits) {
-                (commit as unknown as BranchCommit).date = new Date(commit.date);
+                (commit as unknown as PartiallyMutable<BranchCommit, 'date'>).date = new Date(commit.date);
             }
         }
 

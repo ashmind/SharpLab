@@ -10,9 +10,9 @@ export interface ServerError {
 }
 
 export interface AstItem {
-    range?: string;
-    properties?: { [key: string]: string };
-    children?: ReadonlyArray<AstItem>;
+    readonly range?: string;
+    readonly properties?: { [key: string]: string };
+    readonly children?: ReadonlyArray<AstItem>;
 }
 
 export interface SimpleInspection {
@@ -38,17 +38,17 @@ export interface Explanation {
 }
 
 interface ResultBase {
-    success: boolean;
+    readonly success: boolean;
     readonly errors: Array<DiagnosticError>|[ServerError];
     readonly warnings: Array<DiagnosticWarning>;
 }
 
 export interface CodeResult extends ResultBase {
     readonly type: 'code';
-    value: string|null;
-    ranges?: ReadonlyArray<{
-        source: CodeRange;
-        result: CodeRange;
+    readonly value: string|null;
+    readonly ranges?: ReadonlyArray<{
+        readonly source: CodeRange;
+        readonly result: CodeRange;
     }>;
 }
 

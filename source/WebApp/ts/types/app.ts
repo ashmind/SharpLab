@@ -1,5 +1,4 @@
 import type { VueConstructor } from 'vue';
-import type { DeepReadonly } from '../helpers/deep-readonly';
 import type { TargetName } from '../helpers/targets';
 import type { LanguageName } from '../helpers/languages';
 import type { BranchGroup, Branch } from './branch';
@@ -14,16 +13,16 @@ import type { CodeRange } from './code-range';
 export type AppTheme = 'light'|'dark'|'auto';
 
 export interface AppOptions {
-    language: LanguageName;
-    target: TargetName|string;
-    release: boolean;
+    readonly language: LanguageName;
+    readonly target: TargetName|string;
+    readonly release: boolean;
     branchId?: string|null;
 }
 
 export interface AppData {
     branches: {
-        readonly groups: ReadonlyArray<DeepReadonly<BranchGroup>>;
-        readonly ungrouped: ReadonlyArray<DeepReadonly<Branch>>;
+        readonly groups: ReadonlyArray<BranchGroup>;
+        readonly ungrouped: ReadonlyArray<Readonly<Branch>>;
     };
     branch: Branch|null|undefined;
 
@@ -38,7 +37,7 @@ export interface AppData {
 
     serviceUrl: string;
 
-    result?: DeepReadonly<Result>;
+    result?: Result;
     lastResultOfType: {
         code: CodeResult|null;
         ast: AstResult|null;
@@ -77,11 +76,11 @@ export interface AppDefinition {
 }
 
 interface AppRefs {
-    astView: AstViewRef;
+    readonly astView: AstViewRef;
 }
 
 export type App = AppData
     & { readonly [TKey in keyof AppComputed]: ReturnType<AppComputed[TKey]> }
     & AppMethods
-    & { $refs: AppRefs };
+    & { readonly $refs: AppRefs };
 export type AppVue = Omit<App, '$refs'> & InstanceType<VueConstructor>;

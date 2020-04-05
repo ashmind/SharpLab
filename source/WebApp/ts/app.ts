@@ -1,10 +1,10 @@
-import type { DeepReadonly } from './helpers/deep-readonly';
 import type { Branch } from './types/branch';
 import type { CodeRange } from './types/code-range';
 import type { MirrorSharpSlowUpdateResult, MirrorSharpConnectionState, MirrorSharpDiagnostic } from './types/mirrorsharp';
 import type { AstItem, CodeResult, NonErrorResult, Result, DiagnosticError, DiagnosticWarning } from './types/results';
 import type { Gist } from './types/gist';
 import type { App, AppData, AppDefinition } from './types/app';
+import type { PartiallyMutable } from './helpers/partially-mutable';
 import './polyfills/index';
 import trackFeature from './helpers/track-feature';
 import { languages } from './helpers/languages';
@@ -52,7 +52,7 @@ function applyUpdateResult(this: App, updateResult: MirrorSharpSlowUpdateResult<
         value: updateResult.x,
         errors: [],
         warnings: []
-    } as NonErrorResult;
+    } as PartiallyMutable<NonErrorResult, 'success'>;
     for (const diagnostic of updateResult.diagnostics as ReadonlyArray<MirrorSharpDiagnostic>) {
         if (diagnostic.severity === 'error') {
             if (result.type !== 'ast' && result.type !== 'explain')
@@ -64,12 +64,12 @@ function applyUpdateResult(this: App, updateResult: MirrorSharpSlowUpdateResult<
         }
     }
     if (this.options.target === targets.il && result.value) {
-        const ilResult = result as CodeResult & { value: NonNullable<typeof result.value> };
+        const ilResult = result as PartiallyMutable<CodeResult & { value: NonNullable<string> }, 'ranges'|'value'>;
         const { code, ranges } = extractRangesFromIL(ilResult.value);
         ilResult.value = code;
         ilResult.ranges = ranges;
     }
-    this.result = result;
+    this.result = result as NonErrorResult;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.lastResultOfType[result.type] = result as any;
     resetLoading.apply(this);
@@ -88,7 +88,7 @@ function applyConnectionChange(this: App, connectionState: MirrorSharpConnection
     this.online = (connectionState === 'open');
 }
 
-function getServiceUrl(branch: DeepReadonly<Branch>|null|undefined) {
+function getServiceUrl(branch: Branch|null|undefined) {
     const httpRoot = branch ? branch.url : window.location.origin;
     return `${httpRoot.replace(/^http/, 'ws')}/mirrorsharp`;
 }
@@ -151,7 +151,7 @@ async function createAppAsync() {
     data.lastLoadedCode = data.code;
 
     const branchesPromise = (async () => {
-        const branches = await getBranchesAsync();
+        const branches = await getBranchesAsync() as ReadonlyArray<PartiallyMutable<Branch, 'displayName'>>;
         for (const branch of branches) {
             branch.displayName = getBranchDisplayName(branch);
         }

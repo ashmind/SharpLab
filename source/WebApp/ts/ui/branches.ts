@@ -1,5 +1,5 @@
 import dateFormat from 'dateformat';
-import type { DeepReadonly } from '../helpers/deep-readonly';
+import type { PartiallyMutable } from '../helpers/partially-mutable';
 import type { Branch, BranchGroup } from '../types/branch';
 
 function getBranchDisplayName(branch: Branch) {
@@ -15,11 +15,11 @@ function getBranchDisplayName(branch: Branch) {
 
 function groupAndSortBranches(branches: ReadonlyArray<Branch>) {
     const result = {
-        groups: [] as Array<BranchGroup>,
+        groups: [] as Array<PartiallyMutable<BranchGroup, 'branches'>>,
         ungrouped: [] as Array<Branch>
     };
 
-    const groups = {} as { [key: string]: BranchGroup|undefined };
+    const groups = {} as { [key: string]: PartiallyMutable<BranchGroup, 'branches'>|undefined };
     for (const branch of branches) {
         if (!branch.group) {
             result.ungrouped.push(branch);
@@ -44,10 +44,13 @@ function groupAndSortBranches(branches: ReadonlyArray<Branch>) {
         group.branches.sort(branchSortOrder);
     }
 
-    return result as DeepReadonly<typeof result>;
+    return result as {
+        groups: ReadonlyArray<BranchGroup>;
+        ungrouped: ReadonlyArray<Branch>;
+    };
 }
 
-function groupSortOrder(a: DeepReadonly<BranchGroup>, b: DeepReadonly<BranchGroup>) {
+function groupSortOrder(a: BranchGroup, b: BranchGroup) {
     // 'Platform' always goes first
     if (a.name === 'Platforms') return -1;
     if (b.name === 'Platforms') return +1;
@@ -58,7 +61,7 @@ function groupSortOrder(a: DeepReadonly<BranchGroup>, b: DeepReadonly<BranchGrou
     return 0;
 }
 
-function branchSortOrder(a: DeepReadonly<Branch>, b: DeepReadonly<Branch>) {
+function branchSortOrder(a: Branch, b: Branch) {
     // master always goes first
     if (a.name === 'master') return -1;
     if (b.name === 'master') return +1;
