@@ -21,11 +21,50 @@ export interface SimpleInspection {
     readonly value?: string;
 }
 
-export type OutputItem = string|SimpleInspection;
+export interface MemoryInspectionLabel {
+    readonly name: string;
+    readonly offset: number;
+    readonly length: number;
+    readonly nested?: ReadonlyArray<MemoryInspectionLabel>;
+}
+
+export interface MemoryInspection {
+    readonly type: 'inspection:memory';
+    readonly title: string;
+    readonly labels: ReadonlyArray<MemoryInspectionLabel>;
+    readonly data: ReadonlyArray<number>;
+}
+
+export interface MemoryGraphNode {
+    readonly id: number;
+    readonly title: string;
+    readonly value: string;
+    readonly nestedNodes?: ReadonlyArray<MemoryGraphNode>;
+    readonly nestedNodesLimit?: true;
+}
+
+export interface MemoryGraphStackNode extends MemoryGraphNode {
+    readonly offset: number;
+    readonly size: number;
+}
+
+export interface MemoryGraphReference {
+    readonly from: number;
+    readonly to: number;
+}
+
+export interface MemoryGraphInspection {
+    readonly type: 'inspection:memory-graph';
+    readonly stack: ReadonlyArray<MemoryGraphStackNode>;
+    readonly heap: ReadonlyArray<MemoryGraphNode>;
+    readonly references: ReadonlyArray<MemoryGraphReference>;
+}
+
+export type OutputItem = string|SimpleInspection|MemoryInspection|MemoryGraphInspection;
 
 export interface FlowStep {
     readonly line: number;
-    readonly skipped?: boolean;
+    readonly skipped?: true;
     readonly notes?: string;
     readonly exception?: string;
 }

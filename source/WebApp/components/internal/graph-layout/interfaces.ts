@@ -1,23 +1,9 @@
 import type { SimulationNodeDatum } from 'd3-force';
+import type { MemoryGraphNode } from '../../../ts/types/results';
 
-export interface DataNode {
-    readonly id: number;
-    readonly nestedNodes?: ReadonlyArray<DataNode>;
-}
-
-export interface StackNode extends DataNode {
-    readonly offset: number;
-    readonly size: number;
-}
-
-export interface ExtendedNode extends DataNode {
+export interface ExtendedNode extends MemoryGraphNode {
     isStack?: boolean;
     parentId?: number;
-}
-
-export interface DataNodeReference {
-    readonly from: number;
-    readonly to: number;
 }
 
 interface BaseNodeDatumData {
@@ -52,10 +38,10 @@ export interface ExtendedNodeDatum<TNodeDatumData = NodeDatumData> extends Simul
 }
 
 export interface NodeRect {
-    top: number;
-    left: number;
-    bottom: number;
-    right: number;
-    width: number;
-    height: number;
+    readonly top: number;
+    readonly left: number;
+    readonly bottom: number;
+    readonly right: number;
+    readonly width: number;
+    readonly height: number;
 }

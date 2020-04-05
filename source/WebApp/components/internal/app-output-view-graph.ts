@@ -4,11 +4,13 @@ import type { SimulationLinkDatum } from 'd3-force';
 import * as d3 from 'd3-force';
 import { debounce } from 'throttle-debounce';
 import ResizeObserver from 'resize-observer-polyfill';
+import type { MemoryGraphInspection, MemoryGraphNode } from '../../ts/types/results';
 import extendType from '../../ts/helpers/extend-type';
-import type { StackNode, DataNode, DataNodeReference, ExtendedNode, ExtendedNodeDatum, NodeDatumData, NestedNodeDatumData, TopLevelNodeDatumData, NodeRect } from './graph-layout/interfaces';
+import type { ExtendedNode, ExtendedNodeDatum, NodeDatumData, NestedNodeDatumData, TopLevelNodeDatumData, NodeRect } from './graph-layout/interfaces';
 import forceRepealNodeIntersections from './graph-layout/force-repeal-node-intersections';
 import forceRepealBoundary from './graph-layout/force-repeal-boundary';
 import forceBindNested from './graph-layout/force-bind-nested';
+
 
 const nodeLayoutMargin = 2.4;
 
@@ -19,11 +21,7 @@ interface SvgLink {
 
 export default Vue.extend({
     props: {
-        inspection: Object as () => ({
-            readonly stack: ReadonlyArray<StackNode>;
-            readonly heap: ReadonlyArray<DataNode>;
-            readonly references: ReadonlyArray<DataNodeReference>;
-        })
+        inspection: Object as () => MemoryGraphInspection
     },
     data: () => extendType({
         svgLinks: [] as ReadonlyArray<SvgLink>
@@ -186,7 +184,7 @@ export default Vue.extend({
             this.lastKnownContainerRect = this.$el.getBoundingClientRect();
         },
 
-        collectNodes(result: Array<ExtendedNode>, source: ReadonlyArray<DataNode>, extras: { isStack?: boolean; parentId?: number }|null = null) {
+        collectNodes(result: Array<ExtendedNode>, source: ReadonlyArray<MemoryGraphNode>, extras: { isStack?: boolean; parentId?: number }|null = null) {
             for (const node of source) {
                 let extended = node as ExtendedNode;
                 if (extras)

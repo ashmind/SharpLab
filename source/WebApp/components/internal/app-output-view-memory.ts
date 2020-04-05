@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import type { MemoryInspection, MemoryInspectionLabel } from '../../ts/types/results';
 import asLookup from '../../ts/helpers/as-lookup';
 import '../app-select';
 
@@ -9,12 +10,7 @@ const specialChars = asLookup({
     '\0': '\\0'
 } as const);
 
-interface Label {
-    readonly name: string;
-    readonly offset: number;
-    readonly length: number;
-    readonly nested?: ReadonlyArray<Label>;
-
+type InterimLabel = MemoryInspectionLabel & {
     levelSpan?: number;
     levelSpanPlaceholder?: never;
 }
@@ -28,18 +24,15 @@ interface SpanPlaceholder {
     levelSpanPlaceholder: true;
 }
 
-interface MinimalLabel {
+interface FinalLabel {
     readonly name?: string;
     readonly offset: number;
-    length: number;
+    readonly length: number;
 }
 
 export default Vue.extend({
     props: {
-        inspection: Object as () => ({
-            readonly labels: ReadonlyArray<Label>;
-            readonly data: ReadonlyArray<number>;
-        })
+        inspection: Object as () => MemoryInspection
     },
     data() {
         return ({
@@ -61,14 +54,12 @@ export default Vue.extend({
     },
     computed: {
         labelLevels() {
-            const levels = [] as Array<Array<Label|SpanPlaceholder|MinimalLabel>>;
-            addLabelsToLevelRecursive(levels as Array<Array<Label>>, this.inspection.labels, 0);
+            const levels = [] as Array<Array<InterimLabel|SpanPlaceholder>>;
+            addLabelsToLevelRecursive(levels as Array<Array<InterimLabel>>, this.inspection.labels, 0);
 
-            applyCrossLevelSpansToLabels(levels as Array<Array<Label|SpanPlaceholder>>);
-            for (let i = 0; i < levels.length; i++) {
-                levels[i] = sortAndAddPaddingBetweenLabels(levels[i] as Array<Label|SpanPlaceholder>, this.inspection.data.length);
-            }
-            return levels as Array<Array<MinimalLabel>>;
+            applyCrossLevelSpansToLabels(levels);
+
+            return levels.map(level => sortAndAddPaddingBetweenLabels(level, this.inspection.data.length));
         }
     },
     template: `
@@ -99,8 +90,8 @@ export default Vue.extend({
     `.replace(/[\r\n]+\s*/g, '').replace(/\s{2,}/g, ' ')
 });
 
-function addLabelsToLevelRecursive(levels: Array<Array<Label>>, labels: ReadonlyArray<Label>, index: number) {
-    let level = levels[index] as Array<Label>|undefined;
+function addLabelsToLevelRecursive(levels: Array<Array<InterimLabel>>, labels: ReadonlyArray<MemoryInspectionLabel>, index: number) {
+    let level = levels[index] as Array<InterimLabel>|undefined;
     if (!level) {
         level = [];
         levels[index] = level;
@@ -112,7 +103,7 @@ function addLabelsToLevelRecursive(levels: Array<Array<Label>>, labels: Readonly
     }
 }
 
-function applyCrossLevelSpansToLabels(levels: ReadonlyArray<Array<Label|SpanPlaceholder>>) {
+function applyCrossLevelSpansToLabels(levels: ReadonlyArray<Array<InterimLabel|SpanPlaceholder>>) {
     for (let i = 0; i < levels.length; i++) {
         for (const label of levels[i]) {
             if (label.nested && label.nested.length > 0)
@@ -126,9 +117,9 @@ function applyCrossLevelSpansToLabels(levels: ReadonlyArray<Array<Label|SpanPlac
     }
 }
 
-function sortAndAddPaddingBetweenLabels(labels: Array<Label|SpanPlaceholder>, dataLength: number): Array<MinimalLabel> {
-    const results = [];
-    labels.sort((a, b) => {
+function sortAndAddPaddingBetweenLabels(labels: ReadonlyArray<InterimLabel|SpanPlaceholder>, dataLength: number) {
+    const results = [] as Array<FinalLabel>;
+    labels = labels.slice(0).sort((a, b) => {
         if (a.offset > b.offset) return +1;
         if (a.offset < b.offset) return -1;
         return 0;
@@ -142,9 +133,9 @@ function sortAndAddPaddingBetweenLabels(labels: Array<Label|SpanPlaceholder>, da
         if (!label.levelSpanPlaceholder)
             results.push(label);
 
-        const next = (labels[i + 1] as Label|undefined) ?? { offset: dataLength };
-        const padding = { offset: label.offset + label.length } as MinimalLabel;
-        padding.length = next.offset - padding.offset;
+        const next = (labels[i + 1] as InterimLabel|undefined) ?? { offset: dataLength };
+        const offset = label.offset + label.length;
+        const padding = { offset, length: next.offset - offset };
         if (padding.length > 0)
             results.push(padding);
     }
