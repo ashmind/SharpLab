@@ -7,14 +7,14 @@ asMutable(auth).token = '_';
 describe('getGistAsync', () => {
     test('roundtrips options from createGistAsync', async () => {
         const options = {
-            branchId:   'test-branch',
-            language:   'C#',
-            target:     'test-target',
-            release:    true
+            branchId: 'test-branch',
+            language: 'C#',
+            target:   'test-target',
+            release:  true
         } as const;
         let files: [{ [key: string]: { content: string }|undefined }];
         window.fetch = async (_, { body }: { body?: unknown } = {}) => {
-            files = JSON.parse(body as string).files;
+            ({ files } = JSON.parse(body as string));
             return fromPartial({ ok: true, json: async () => ({}) });
         };
         await createGistAsync(fromPartial({ name: '_', result: {}, options }));

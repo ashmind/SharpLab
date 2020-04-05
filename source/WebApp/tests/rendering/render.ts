@@ -1,16 +1,17 @@
+import path from 'path';
 import fs from 'fs';
 import puppeteer, { Page } from 'puppeteer';
 
 function getCachePath(url: string) {
-    return __dirname + '/__request_cache__/' + url.replace(/[^a-z._=+-]/ig, '_') + '.json';
+    return path.join(__dirname, '__request_cache__', url.replace(/[^a-z._=+-]/ig, '_') + '.json');
 }
 
 function isDataRequest(url: string) {
-    return /^data:/.test(url);
+    return url.startsWith('data:');
 }
 
-function setupRequestInterception(page: Page) {
-    page.setRequestInterception(true);
+async function setupRequestInterception(page: Page) {
+    await page.setRequestInterception(true);
 
     const cachedRequests = new Set();
     const unfinishedRequests = new Set();
@@ -18,32 +19,42 @@ function setupRequestInterception(page: Page) {
         const method = request.method();
         const url = request.url();
         if (method !== 'GET') {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             request.abort();
             return;
         }
 
         unfinishedRequests.add(request);
         if (isDataRequest(url)) {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             request.continue();
             return;
         }
 
         const cachePath = getCachePath(url);
+        // eslint-disable-next-line no-sync
         if (!fs.existsSync(cachePath)) {
+            // eslint-disable-next-line no-console
             console.log(`${method} ${url} - not cached yet`);
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             request.continue();
             return;
         }
 
         cachedRequests.add(request);
-        const json = JSON.parse(fs.readFileSync(cachePath, { encoding: 'utf-8' }));
+        // eslint-disable-next-line no-sync
+        const json = JSON.parse(fs.readFileSync(cachePath, { encoding: 'utf-8' })) as {
+            readonly headers: puppeteer.Headers;
+            readonly body: string;
+        };
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         request.respond({
             headers: json.headers,
             body: Buffer.from(json.body, 'base64')
         });
     });
 
-    page.on('requestfinished', async request => {
+    page.on('requestfinished', request => {
         const method = request.method();
         const url = request.url();
 
@@ -56,13 +67,18 @@ function setupRequestInterception(page: Page) {
         if (!response || response.status() !== 200)
             return;
 
-        const data = {
-            headers: response.headers(),
-            body: (await response.buffer()).toString('base64')
-        };
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        (async () => {
+            const data = {
+                headers: response.headers(),
+                body: (await response.buffer()).toString('base64')
+            };
 
-        fs.writeFileSync(getCachePath(request.url()), JSON.stringify(data, null, 4));
-        console.log(`${method} ${url} - added to cache`);
+            // eslint-disable-next-line no-sync
+            fs.writeFileSync(getCachePath(request.url()), JSON.stringify(data, null, 4));
+            // eslint-disable-next-line no-console
+            console.log(`${method} ${url} - added to cache`);
+        })();
     });
 
     return {
@@ -91,7 +107,7 @@ export default async function render({
     const browser = await puppeteer.launch({ headless: !debug });
     const page = await browser.newPage();
 
-    const { waitForUnfinishedRequests } = setupRequestInterception(page);
+    const { waitForUnfinishedRequests } = await setupRequestInterception(page);
 
     await page.setContent(content);
     for (const style of styles) {

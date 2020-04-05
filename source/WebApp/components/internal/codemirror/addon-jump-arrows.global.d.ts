@@ -11,7 +11,7 @@ interface JumpOptions {
 declare namespace CodeMirror {
     interface Editor {
         addJumpArrow(fromLine: number, toLine: number, options?: JumpOptions): void;
-        setJumpArrows(arrows: JumpData[]): void;
-        clearJumpArrows(arrows: JumpData[]): void;
+        setJumpArrows(arrows: ReadonlyArray<JumpData>): void;
+        clearJumpArrows(arrows: ReadonlyArray<JumpData>): void;
     }
 }

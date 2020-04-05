@@ -53,10 +53,10 @@ export default Vue.extend({
                 case 'hex': return value.toString(16).toUpperCase().padStart(2, '0');
                 case 'char': {
                     const char = String.fromCharCode(value);
-                    return specialChars[char] || char;
+                    return specialChars[char] ?? char;
                 }
+                default: return '??';
             }
-            return '??';
         }
     },
     computed: {
@@ -100,7 +100,7 @@ export default Vue.extend({
 });
 
 function addLabelsToLevelRecursive(levels: Array<Array<Label>>, labels: ReadonlyArray<Label>, index: number) {
-    let level = levels[index];
+    let level = levels[index] as Array<Label>|undefined;
     if (!level) {
         level = [];
         levels[index] = level;
@@ -142,7 +142,7 @@ function sortAndAddPaddingBetweenLabels(labels: Array<Label|SpanPlaceholder>, da
         if (!label.levelSpanPlaceholder)
             results.push(label);
 
-        const next = labels[i + 1] || { offset: dataLength };
+        const next = (labels[i + 1] as Label|undefined) ?? { offset: dataLength };
         const padding = { offset: label.offset + label.length } as MinimalLabel;
         padding.length = next.offset - padding.offset;
         if (padding.length > 0)

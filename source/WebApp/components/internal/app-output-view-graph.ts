@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import type { SimulationLinkDatum } from 'd3-force';
+// eslint-disable-next-line no-duplicate-imports
 import * as d3 from 'd3-force';
 import { debounce } from 'throttle-debounce';
 import ResizeObserver from 'resize-observer-polyfill';
@@ -71,7 +72,8 @@ export default Vue.extend({
             this.collectNodes(nodes, heap);
 
             const nodeElements = Array.from(this.$el.querySelectorAll('[data-app-node]')) as ReadonlyArray<HTMLElement>;
-            const nodeElementsById = Object.fromEntries(nodeElements.map(e => [e.dataset.appNode, e])) as { [id: string]: HTMLElement };
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const nodeElementsById = Object.fromEntries(nodeElements.map(e => [e.dataset.appNode!, e])) as { [id: string]: HTMLElement };
             const svgLinksByKey = Object.fromEntries(this.svgLinks.map(l => [l.key, l]));
 
             const containerRect = this.$el.getBoundingClientRect();
@@ -86,8 +88,8 @@ export default Vue.extend({
                 const { id, isStack, parentId } = node;
                 const element = nodeElementsById[id];
                 const { left, top, width, height } = this.getOffsetClientRect(element, containerRect);
-                const x = left + width / 2;
-                const y = top + height / 2;
+                const x = left + (width / 2);
+                const y = top + (height / 2);
 
                 const data = {
                     node,
@@ -124,8 +126,8 @@ export default Vue.extend({
                 const { isDomLayout, width, height } = d3Node.data;
                 if (isDomLayout)
                     continue;
-                d3Node.x = heapBoundary.left + width / 2;
-                d3Node.y = heapBoundary.top + height / 2;
+                d3Node.x = heapBoundary.left + (width / 2);
+                d3Node.y = heapBoundary.top + (height / 2);
             }
 
             const d3Links = references.map(r => {
@@ -150,7 +152,7 @@ export default Vue.extend({
                     .links(d3Links)
                     .strength(l => (l.source as ExtendedNodeDatum).data.node.isStack ? 5 : 2)
               )
-              .force('heap-boundary', forceRepealBoundary(this.getNodeRect, heapBoundary))
+              .force('heap-boundary', forceRepealBoundary(n => this.getNodeRect(n), heapBoundary))
               .force('intersections', forceRepealNodeIntersections(n => this.getNodeRect(n, { margin: nodeLayoutMargin })))
               .force('nested', forceBindNested())
               .tick(400) as unknown as d3.Simulation<ExtendedNodeDatum, undefined>)
@@ -161,7 +163,7 @@ export default Vue.extend({
                 if (isDomLayout)
                     continue;
 
-                element.style.transform = `translate(${node.x-width/2}px, ${node.y-height/2}px)`;
+                element.style.transform = `translate(${node.x - (width / 2)}px, ${node.y - (height / 2)}px)`;
             }
 
             for (const link of d3Links) {
@@ -188,11 +190,11 @@ export default Vue.extend({
             for (const node of source) {
                 let extended = node as ExtendedNode;
                 if (extras)
-                    extended = Object.assign({}, node, extras);
+                    extended = { ...node, ...extras };
                 result.push(extended);
 
                 if (node.nestedNodes) {
-                    const nestedExtras = Object.assign({ parentId: node.id }, extras);
+                    const nestedExtras = { parentId: node.id, ...extras };
                     this.collectNodes(result, node.nestedNodes, nestedExtras);
                 }
             }
@@ -200,12 +202,12 @@ export default Vue.extend({
 
         getNodeRect({ x, y, data: { width, height } }: ExtendedNodeDatum, { margin = 0 } = {}): NodeRect {
             return {
-                top: y - height / 2 - margin,
-                left: x - width / 2 - margin,
-                bottom: y + height / 2 + margin,
-                right: x + width / 2 + margin,
-                width: width + 2*margin,
-                height: height + 2*margin
+                top: y - (height / 2) - margin,
+                left: x - (width / 2) - margin,
+                bottom: y + (height / 2) + margin,
+                right: x + (width / 2) + margin,
+                width: width + (2 * margin),
+                height: height + (2 * margin)
             };
         },
 
@@ -224,8 +226,8 @@ export default Vue.extend({
             // from inside to
             if (from.top >= to.top && from.bottom <= to.bottom && from.left >= to.left && from.right <= to.right) {
                 return {
-                    from: { x: from.right, y: from.top + from.height / 2 },
-                    to: { x: to.left + to.width / 2, y: to.top },
+                    from: { x: from.right, y: from.top + (from.height / 2) },
+                    to: { x: to.left + (to.width / 2), y: to.top },
                     arc: true
                 };
             }
@@ -234,29 +236,29 @@ export default Vue.extend({
             // to below from
             if (allowVertical && to.top > from.bottom && to.top - from.bottom > horizontalOffset) {
                 return {
-                    from: { x: from.left + from.width / 2, y: from.bottom },
-                    to:   { x: to.left + to.width / 2,     y: to.top }
+                    from: { x: from.left + (from.width / 2), y: from.bottom },
+                    to:   { x: to.left + (to.width / 2),     y: to.top }
                 };
             }
 
             // to above from
             if (to.bottom < from.top && from.top - to.bottom > horizontalOffset) {
                 return {
-                    from: { x: from.right, y: from.top + from.height / 2 },
-                    to:   { x: to.left + to.width / 2, y: to.bottom }
+                    from: { x: from.right, y: from.top + (from.height / 2) },
+                    to:   { x: to.left + (to.width / 2), y: to.bottom }
                 };
             }
 
             if (to.right < from.left) {
                 return {
-                    from: { x: from.left, y: from.top + from.height / 2 },
-                    to:   { x: to.right,  y: to.top + to.height / 2 }
+                    from: { x: from.left, y: from.top + (from.height / 2) },
+                    to:   { x: to.right,  y: to.top + (to.height / 2) }
                 };
             }
 
             return {
-                from: { x: from.right, y: from.top + from.height / 2 },
-                to:   { x: to.left,    y: to.top + to.height / 2 }
+                from: { x: from.right, y: from.top + (from.height / 2) },
+                to:   { x: to.left,    y: to.top + (to.height / 2) }
             };
         },
 

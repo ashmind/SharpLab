@@ -1,6 +1,7 @@
 /* eslint-disable import/no-duplicates */
 import fs from 'fs';
 import type Vue from 'vue';
+// eslint-disable-next-line no-duplicate-imports
 import type { VueConstructor } from 'vue';
 /* eslint-enable import/no-duplicates */
 import render from './render';
@@ -21,6 +22,7 @@ export function loadComponentTemplate(id: string, subDirectory = '') {
     const template = document.createElement('script');
     template.id = id;
     template.type = 'text/x-template';
+    // eslint-disable-next-line no-sync
     template.textContent = fs.readFileSync(`${__dirname}/../../components/${subDirectory}/${id}.html`, { encoding: 'utf-8' });
     document.body.appendChild(template);
 }

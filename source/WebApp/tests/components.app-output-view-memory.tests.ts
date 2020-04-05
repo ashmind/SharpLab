@@ -10,7 +10,7 @@ test('app-output-view-memory renders padding correctly', async () => {
         propsData: {
             inspection: {
                 title: '',
-                labels: [{name: 'A', offset: 0, length: 1}, {name: 'B', offset: 4, length: 4}],
+                labels: [{ name: 'A', offset: 0, length: 1 }, { name: 'B', offset: 4, length: 4 }],
                 data: [0, 0, 0, 0, 0, 0, 0, 0]
             }
         }
@@ -21,10 +21,10 @@ test('app-output-view-memory renders padding correctly', async () => {
 
     expect(labelTds.map(l => ({
         label: l.textContent,
-        colspan: parseInt(l.getAttribute('colspan')!)
+        colspan: parseInt(l.getAttribute('colspan')!, 10)
     }))).toEqual([
         { label: 'A', colspan: 1 },
         { label: '',  colspan: 3 },
-        { label: 'B', colspan: 4 },
+        { label: 'B', colspan: 4 }
     ]);
 });

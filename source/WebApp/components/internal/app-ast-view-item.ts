@@ -22,7 +22,7 @@ function escapeCommon(value: string) {
 
 function escapeTrivia(value: string) {
     return escapeCommon(value)
-        .replace(/(^ +| +$)/g, (_,$1) => $1.length > 1 ? `<space:${$1.length}>` : '<space>');
+        .replace(/(^ +| +$)/g, (_, $1: string) => $1.length > 1 ? `<space:${$1.length}>` : '<space>');
 }
 
 export default Vue.extend({

@@ -14,12 +14,14 @@ export interface Branch {
         readonly url: string;
     };
 
-    readonly commits: ReadonlyArray<{
-        readonly date: Date;
-        readonly message: string;
-        readonly author: string;
-        readonly hash: string;
-    }>;
+    readonly commits?: ReadonlyArray<Readonly<BranchCommit>>;
+}
+
+export interface BranchCommit {
+    readonly message: string;
+    readonly author: string;
+    readonly hash: string;
+    date: Date;
 }
 
 export interface BranchGroup {

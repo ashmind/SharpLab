@@ -3,8 +3,6 @@
 import CodeMirror from 'codemirror';
 
 CodeMirror.defineMode('cil', () => {
-    'use strict';
-
     const grammar = {
         keyword: new RegExp('^(?:' + [
             /* spellchecker: disable */
@@ -92,11 +90,11 @@ CodeMirror.defineMode('cil', () => {
     };
 
     return {
-        startState: function () {
+        startState() {
             return {};
         },
 
-        token: function (stream) {
+        token(stream) {
             if (stream.eatSpace()) {
                 return null;
             }
@@ -106,19 +104,23 @@ CodeMirror.defineMode('cil', () => {
                 return 'comment';
             }
 
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (stream.match(/\d+/)) {
                 return 'number';
             }
 
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (stream.match(/"[^"]+"/)) {
                 return 'string';
             }
 
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (stream.match(/\w+:/)) {
                 return 'tag';
             }
 
             for (const key in grammar) {
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 if (stream.match(grammar[key as keyof typeof grammar], false)) {
                     stream.match(/\S+/);
                     return key;

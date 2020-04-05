@@ -11,7 +11,7 @@ import {
     languageMapReverse,
     targetMap,
     targetMapReverse,
-    targetMapReverseV1,
+    targetMapReverseV1
 } from './helpers/language-and-target-maps';
 import precompressor from './url/precompressor';
 import loadGistAsync from './url/load-gist-async';
@@ -34,7 +34,7 @@ function save(code: string|null|undefined, options: AppOptions, { gist = null }:
     };
     const optionsPackedString = Object
         .entries(optionsPacked)
-        .filter(([,value]) => !!value)
+        .filter(([, value]) => !!value)
         .map(([key, value]) => key + ':' + value) // eslint-disable-line prefer-template
         .join(',');
     const precompressedCode = precompressor.compress(code, options.language);
@@ -86,12 +86,14 @@ function loadAsync() {
                 const [key, value] = p.split(':', 2);
                 result[key] = value;
                 return result;
-            }, {} as { [key: string]: string })
+            }, {} as { [key: string]: string|undefined })
         );
-        const language = languageMapReverse[optionsPacked.l || 'cs']
-                      || throwError(`Failed to resolve language: ${optionsPacked.l}`);
-        const target  = targetMapReverse[optionsPacked.t || 'cs']
-                      || throwError(`Failed to resolve target: ${optionsPacked.t}`);
+        const language = languageMapReverse[optionsPacked.l ?? 'cs']
+                      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                      ?? throwError(`Failed to resolve language: ${optionsPacked.l}`);
+        const target = targetMapReverse[optionsPacked.t ?? 'cs']
+                    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                    ?? throwError(`Failed to resolve target: ${optionsPacked.t}`);
         const code = precompressor.decompress(codePart, language);
         return {
             options: {
@@ -129,11 +131,14 @@ function legacyLoadFrom(hash: string) {
     if (match === null)
         return null;
 
-    const flags = (match[2] || '').match(/^([^>]*?)(>.+?)?(r)?$/) || [];
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    const flags = (match[2] ?? '').match(/^([^>]*?)(>.+?)?(r)?$/) ?? [];
     const result = extendType({
         options: {
             branchId: match[1],
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             language: languageMapReverse[flags[1] || 'cs'],
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             target: targetMapReverseV1[flags[2] || '>cs'],
             release: flags[3] === 'r'
         }

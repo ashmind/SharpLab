@@ -3,12 +3,5 @@
         "node": false,
         "browser": true,
         "es6": true
-    },
-    "rules": {
-        "no-console": "warn",
-
-        "import/extensions": ["error", "never"],
-        "import/named": "off",
-        "import/no-unresolved": "off"
     }
 }

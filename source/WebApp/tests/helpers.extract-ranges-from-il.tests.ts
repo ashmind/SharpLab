@@ -44,11 +44,12 @@ describe('extractRangesFromIL', () => {
 
     for (const [name, il, expected] of ([
         ['sequence point on first line', '// sequence point: (line 1, col 2) to (line 3, col 4) in _\r\nIL_0000: nop', [0]]
-    ] as const))
-    test(`returns expected range targets for ${name}`, () => {
-        const { ranges } = extractRangesFromIL(il);
-        expect(ranges).toMatchObject(
-            expected.map(e => ({ result: { start: { line: e }}}))
-        );
-    });
+    ] as const)) {
+        test(`returns expected range targets for ${name}`, () => {
+            const { ranges } = extractRangesFromIL(il);
+            expect(ranges).toMatchObject(
+                expected.map(e => ({ result: { start: { line: e } } }))
+            );
+        });
+    }
 });

@@ -1,5 +1,5 @@
-/* globals appInsights:false */
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 export default window.appInsights
-    ? ((feature: string) => appInsights.trackEvent(feature))
+    ? ((feature: string) => { window.appInsights.trackEvent(feature); })
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     : (() => {});

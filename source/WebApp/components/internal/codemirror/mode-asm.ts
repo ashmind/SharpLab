@@ -3,8 +3,6 @@
 import CodeMirror from 'codemirror';
 
 CodeMirror.defineMode('asm', () => {
-    'use strict';
-
     const grammar = {
         builtin: new RegExp('^(?:' + [
             /* spellchecker: disable */
@@ -40,11 +38,11 @@ CodeMirror.defineMode('asm', () => {
     }
 
     return {
-        startState: function () {
+        startState() {
             return {};
         },
 
-        token: function (stream) {
+        token(stream) {
             if (stream.eatSpace()) {
                 return null;
             }
@@ -54,11 +52,13 @@ CodeMirror.defineMode('asm', () => {
                 return 'comment';
             }
 
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (stream.match(/\w+:/)) {
                 return 'tag';
             }
 
             for (const key in grammar) {
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 if (stream.match(grammar[key as keyof typeof grammar])) {
                     return key;
                 }

@@ -23,7 +23,7 @@ const AstView = Vue.component('app-ast-view', {
             if (!item.children || this.isExpanded(item))
                 return;
             this.expanded.add(item);
-            li = li || getItemLI(item, this);
+            li = li ?? getItemLI(item, this);
             li.classList.remove('collapsed');
         },
 
@@ -31,7 +31,7 @@ const AstView = Vue.component('app-ast-view', {
             if (!item.children || !this.isExpanded(item))
                 return;
             this.expanded.delete(item);
-            li = li || getItemLI(item, this);
+            li = li ?? getItemLI(item, this);
             li.classList.add('collapsed');
         },
 
@@ -46,7 +46,7 @@ const AstView = Vue.component('app-ast-view', {
                 this.selected.li.classList.remove('selected');
             this.$emit('item-select', item);
             if (item) {
-                li = li || getItemLI(item, this);
+                li = li ?? getItemLI(item, this);
                 li.classList.add('selected');
             }
             this.selected = { li, item };
@@ -130,17 +130,17 @@ function preprocessItems(items: ReadonlyArray<AstItem>) {
         if (typeof item !== 'object') // simple value
             return item;
 
-        const processed = Object.assign({}, item);
+        const processed = { ...item };
         delete processed.properties;
 
         const childrenFromProperties = Object
-            .entries(item.properties || {})
+            .entries(item.properties ?? {})
             .map(([name, value]) => ({ type: 'property-only', property: name, value } as AstItem));
 
         if (childrenFromProperties.length === 0 && !item.children)
             return processed;
 
-        processed.children = childrenFromProperties.concat(preprocessItems(item.children || []));
+        processed.children = childrenFromProperties.concat(preprocessItems(item.children ?? []));
         return processed;
     });
 }
@@ -187,6 +187,7 @@ function findLI(e: Event) {
 
 function getItemLI(item: AstItem, that: InstanceType<typeof AstView>): HTMLLIElement {
     const id = that.ids.get(item);
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     return that.$el.querySelector(`li[data-id='${id}']`) as HTMLLIElement;
 }
 
@@ -194,8 +195,8 @@ function matchesOffset(item: AstItem, offset: number) {
     if (!item.range)
         return false;
     const [start, end] = item.range.split('-');
-    return offset >= parseInt(start)
-        && offset <= parseInt(end);
+    return offset >= parseInt(start, 10)
+        && offset <= parseInt(end, 10);
 }
 
 export default AstView;

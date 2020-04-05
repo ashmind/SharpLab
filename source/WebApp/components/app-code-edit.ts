@@ -12,8 +12,8 @@ const AppCodeEdit = Vue.component('app-code-edit', {
     props: {
         initialText:       String,
         serviceUrl:        String,
-        serverOptions:     Object as () => ServerOptions,
-        highlightedRange:  Object as () => HighlightedRange,
+        serverOptions:     Object as () => ServerOptions|undefined,
+        highlightedRange:  Object as () => HighlightedRange|undefined,
         executionFlow:     Array as () => Array<FlowStep>
     },
     async mounted() {
@@ -32,9 +32,11 @@ const AppCodeEdit = Vue.component('app-code-edit', {
                 serverError: message => this.$emit('server-error', message)
             }
         } as MirrorSharpOptions<Result['value']>;
+        // incorrect, based on type _name_ match?
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
         let instance = mirrorsharp<ServerOptions>(textarea, options);
         if (this.serverOptions)
-            instance.sendServerOptions(this.serverOptions);
+            await instance.sendServerOptions(this.serverOptions);
 
         const cm = instance.getCodeMirror();
 
@@ -45,13 +47,18 @@ const AppCodeEdit = Vue.component('app-code-edit', {
             contentEditable.setAttribute('autocomplete', 'off');
 
         this.$watch('initialText', (v: string) => instance.setText(v));
-        this.$watch('serverOptions', (o: ServerOptions) => instance.sendServerOptions(o), { deep: true });
+        this.$watch('serverOptions', (o: ServerOptions) => {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            instance.sendServerOptions(o);
+        }, { deep: true });
 
         const recreate = () => {
             instance.destroy({ keepCodeMirror: true });
             instance = mirrorsharp(textarea, options);
-            if (this.serverOptions)
+            if (this.serverOptions) {
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 instance.sendServerOptions(this.serverOptions);
+            }
         };
         this.$watch('serviceUrl', (u: string) => {
             options.serviceUrl = u;
@@ -59,7 +66,7 @@ const AppCodeEdit = Vue.component('app-code-edit', {
         });
 
         let currentMarker: CodeMirror.TextMarker|null = null;
-        this.$watch('highlightedRange', (range: HighlightedRange) => {
+        this.$watch('highlightedRange', (range: HighlightedRange|undefined) => {
             if (currentMarker) {
                 currentMarker.clear();
                 currentMarker = null;
@@ -73,7 +80,7 @@ const AppCodeEdit = Vue.component('app-code-edit', {
         });
 
         const bookmarks = [] as Array<CodeMirror.TextMarker>;
-        this.$watch('executionFlow', (steps: ReadonlyArray<FlowStep|number>) => renderExecutionFlow(steps || [], instance.getCodeMirror(), bookmarks));
+        this.$watch('executionFlow', (steps: ReadonlyArray<FlowStep|number>|undefined) => renderExecutionFlow(steps ?? [], instance.getCodeMirror(), bookmarks));
 
         const getCursorOffset = () => cm.indexFromPos(cm.getCursor());
         cm.on('cursorActivity', () => this.$emit('cursor-move', getCursorOffset));

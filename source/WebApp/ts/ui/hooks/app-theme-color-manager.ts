@@ -23,7 +23,9 @@ allHooks.main.ready.push(vue => {
         svg?: string;
         [size: string]: string|undefined;
     };
-    const cache = { [defaultColor]: cacheDefault };
+    const cache = { [defaultColor]: cacheDefault } as {
+        [color: string]: (typeof cacheDefault)|undefined;
+    };
 
     for (const favicon of favicons) {
         if (favicon.getAttribute('type') === 'image/svg+xml') {
@@ -42,7 +44,9 @@ allHooks.main.ready.push(vue => {
 
     const loadImage = (src: string) => {
         const img = new Image();
-        const promise = new Promise<HTMLImageElement>(resolve => { img.onload = () => resolve(img); });
+        const promise = new Promise<HTMLImageElement>(resolve => {
+            img.onload = () => resolve(img);
+        });
         img.src = src;
         return promise;
     };
@@ -55,8 +59,8 @@ allHooks.main.ready.push(vue => {
         };
         await Promise.all(Object.keys(faviconsBySizes).map(async size => {
             const canvas = document.createElement('canvas');
-            canvas.width = parseInt(size);
-            canvas.height = parseInt(size);
+            canvas.width = parseInt(size, 10);
+            canvas.height = parseInt(size, 10);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const context = canvas.getContext('2d')!;
             // Firefox bug #700533, SVG needs specific dimensions
@@ -98,10 +102,11 @@ allHooks.main.ready.push(vue => {
         applyThemeColor();
 
     let lastNonDarkColor = defaultColor;
-    vue.$watch(colorPropertyName, (color: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    vue.$watch(colorPropertyName, async (color: string) => {
         lastNonDarkColor = color;
         applyThemeColor(color);
-        applyFaviconColor(color);
+        await applyFaviconColor(color);
     });
     watchEffectiveTheme(t => {
         effectiveTheme = t;

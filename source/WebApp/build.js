@@ -1,32 +1,48 @@
+/* eslint-disable no-process-env */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
+/* eslint-disable import/extensions */
+
 // Common:
 import path from 'path';
 import url from 'url';
+// @ts-ignore
 import oldowan from 'oldowan';
 import jetpack from 'fs-jetpack';
 import execa from 'execa';
 import md5File from 'md5-file/promise.js';
 // CSS:
+// @ts-ignore
 import less from 'less';
+// @ts-ignore
 import autoprefixer from 'autoprefixer';
 import postcss from 'postcss';
+// @ts-ignore
 import csso from 'postcss-csso';
 // Favicons:
+// @ts-ignore
 import sharp from 'sharp';
 // HTML:
+// @ts-ignore
 import htmlMinifier from 'html-minifier';
 
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 const { task, tasks, run } = oldowan;
-const outputRoot = `${__dirname}/wwwroot`;
+const outputRoot = `${dirname}/wwwroot`;
 
+// @ts-ignore
 const parallel = (...promises) => Promise.all(promises);
 
 const paths = {
     from: {
-        less: `${__dirname}/less/app.less`,
-        favicon: `${__dirname}/favicon.svg`,
-        html: `${__dirname}/index.html`
+        less: `${dirname}/less/app.less`,
+        favicon: `${dirname}/favicon.svg`,
+        html: `${dirname}/index.html`
     },
     to: {
         css: `${outputRoot}/app.min.css`,
@@ -43,7 +59,7 @@ task('less', async () => {
     let result = await less.render(content, {
         filename: paths.from.less,
         sourceMap: {
-            sourceMapBasepath: `${__dirname}`,
+            sourceMapBasepath: `${dirname}`,
             outputSourceFiles: true
         }
     });
@@ -62,7 +78,7 @@ task('less', async () => {
         jetpack.writeAsync(paths.to.css, result.css),
         jetpack.writeAsync(paths.to.css + '.map', result.map)
     );
-}, { inputs: `${__dirname}/less/**/*.less` });
+}, { inputs: `${dirname}/less/**/*.less` });
 
 task('tsLint', () => execa.command('eslint . --max-warnings 0 --ext .js,.ts', {
     preferLocal: true,
@@ -80,9 +96,9 @@ task('ts', async () => {
     });
 }, {
     inputs: [
-        `${__dirname}/js/**/*.js`,
-        `${__dirname}/components/**/*.js`,
-        `${__dirname}/package.json`
+        `${dirname}/js/**/*.js`,
+        `${dirname}/components/**/*.js`,
+        `${dirname}/package.json`
     ]
 });
 
@@ -94,6 +110,7 @@ task('favicons', async () => {
         return sharp(paths.from.favicon, { density })
             .resize(size, size)
             .png()
+            // @ts-ignore
             .toFile(paths.to.favicon.png.replace('{size}', size));
     });
 
@@ -111,18 +128,20 @@ task('html', async () => {
         md5File('wwwroot/app.min.css')
     );
     let html = await jetpack.readAsync(paths.from.html);
+    // @ts-ignore
     html = html
         .replace('{build:js}', 'app.min.js?' + jsHash)
         .replace('{build:css}', 'app.min.css?' + cssHash)
         .replace('{build:templates}', templates)
         .replace('{build:favicon-svg}', faviconDataUrl);
     html = htmlMinifier.minify(html, { collapseWhitespace: true });
+    // @ts-ignore
     await jetpack.writeAsync(paths.to.html, html);
 }, {
     inputs: [
-        `${__dirname}/components/**/*.html`,
+        `${dirname}/components/**/*.html`,
         paths.to.css,
-        paths.to.js,
+        `${outputRoot}/app.min.js`,
         paths.from.html,
         paths.from.favicon
     ]
@@ -143,6 +162,7 @@ task('default', () => {
 async function getFaviconDataUrl() {
     const faviconSvg = await jetpack.readAsync(paths.from.favicon);
     // http://codepen.io/jakob-e/pen/doMoML
+    // @ts-ignore
     return faviconSvg
         .replace(/"/g, '\'')
         .replace(/%/g, '%25')
@@ -151,11 +171,11 @@ async function getFaviconDataUrl() {
         .replace(/}/g, '%7D')
         .replace(/</g, '%3C')
         .replace(/>/g, '%3E')
-        .replace(/\s+/g,' ');
+        .replace(/\s+/g, ' ');
 }
 
 async function getCombinedTemplates() {
-    const basePath = `${__dirname}/components`;
+    const basePath = `${dirname}/components`;
     const htmlPaths = await jetpack.findAsync(basePath, { matching: '*.html' });
     const htmlPromises = htmlPaths.map(async htmlPath => {
         const template = await jetpack.readAsync(htmlPath);

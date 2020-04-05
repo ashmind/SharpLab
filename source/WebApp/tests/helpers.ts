@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { createMockProxy } from 'jest-mock-proxy';
 
+// eslint-disable-next-line max-statements-per-line
 class MockProxyTypeProvider<T> { infer() { return createMockProxy<T>(); } }
 export type MockProxy<T> = ReturnType<MockProxyTypeProvider<T>['infer']>;
 
@@ -20,18 +21,25 @@ export function asMutable<T>(value: T): { -readonly[TKey in keyof T]: T[TKey] } 
 }
 
 let error: (Error & { vm?: Vue; info?: string })|undefined|null;
-Vue.config.errorHandler = function (err, vm, info) {
+// eslint-disable-next-line @typescript-eslint/unbound-method
+Vue.config.errorHandler = (err, vm, info) => {
     error = (typeof err === 'string') ? new Error(err) : err;
     error.vm = vm;
     error.info = info;
 };
 
 export async function vueNextTickWithErrorHandling() {
-    if (error)
+    if (error) {
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw error;
+    }
 
     await Vue.nextTick();
-    if (error)
+    // https://github.com/microsoft/TypeScript/issues/9998
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (error) {
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw error;
+    }
     error = null;
 }

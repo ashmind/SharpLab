@@ -9,7 +9,7 @@ function endOfLastLine(lines: ReadonlyArray<string>) {
 export default function extractRangesFromIL(code: string) {
     const ranges = [];
 
-    const [newline] = code.match(/\r\n|\r|\n/) || ['\n'];
+    const [newline] = code.match(/\r\n|\r|\n/) ?? ['\n'];
     const lines = code.split(newline);
     const clean = [];
 
@@ -28,8 +28,8 @@ export default function extractRangesFromIL(code: string) {
                 lastRange.result.end = endOfLastLine(clean);
             const range = {
                 source: {
-                    start: { line: parseInt(startLine) - 1, ch: parseInt(startCol) - 1 },
-                    end:   { line: parseInt(endLine) - 1,   ch: parseInt(endCol) - 1   }
+                    start: { line: parseInt(startLine, 10) - 1, ch: parseInt(startCol, 10) - 1 },
+                    end:   { line: parseInt(endLine, 10) - 1,   ch: parseInt(endCol, 10) - 1   }
                 } as CodeRange,
                 result: {
                     start: { line: lineNumber, ch: indent.length }

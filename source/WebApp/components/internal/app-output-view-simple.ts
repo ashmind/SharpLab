@@ -23,6 +23,7 @@ export default Vue.extend({
         },
 
         isTitleOnly(): boolean {
+            // eslint-disable-next-line no-undefined
             return this.inspection.value === undefined;
         }
     },

@@ -1,6 +1,6 @@
 // This value is set by page generated at /github/auth/complete
 // (by server-side middleware)
-const token = localStorage['sharplab.github.token'];
+const token = localStorage['sharplab.github.token'] as string|undefined;
 
 const redirectingKey = 'sharplab.github.auth.redirecting';
 // Includes token check: if auth didn't work, we should not repeat

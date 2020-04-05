@@ -24,6 +24,7 @@ describe('get-branches-async', () => {
         });
 
         jest.resetModules();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         const getBranchesAsync = (await import('../ts/server/get-branches-async')).default;
 
         await getBranchesAsync();

@@ -36,7 +36,10 @@ function debounce(func: () => void, interval: number) {
     return () => {
         if (timer)
             return;
-        timer = setTimeout(() => { func(); timer = null; }, interval);
+        timer = setTimeout(() => {
+            func();
+            timer = null;
+        }, interval);
     };
 }
 
@@ -61,9 +64,9 @@ function setAttributes<TElement extends Element>(
 }
 
 class ArrowLayer {
-    private root: SVGSVGElement;
-    private sizer: HTMLElement;
-    private cm: CodeMirror.Editor;
+    private readonly root: SVGSVGElement;
+    private readonly sizer: HTMLElement;
+    private readonly cm: CodeMirror.Editor;
     private jumps: {
         [key: string]: JumpArrow|undefined;
     };
@@ -92,13 +95,16 @@ class ArrowLayer {
             width: this.sizer.offsetWidth,
             height: this.sizer.offsetHeight
         });
-        this.sizerLeftMargin = parseInt(this.sizer.style.marginLeft);
+        this.sizerLeftMargin = parseInt(this.sizer.style.marginLeft, 10);
     }
 
     repositionJumps() {
         for (const [key, jump] of Object.entries(this.jumps) as ReadonlyArray<[string, JumpArrow]>) {
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             const newFrom = jump.bookmarks.from.find()?.from;
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             const newTo = jump.bookmarks.to.find()?.from;
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (!newFrom || !newTo) {
                 this.clearJump(jump);
                 delete this.jumps[jump.key];
@@ -163,7 +169,7 @@ class ArrowLayer {
             + (up ? ' CodeMirror-jump-arrow-up' : '')
             + (options.throw ? ' CodeMirror-jump-arrow-throw' : '');
 
-        const { g, path, start, end } = svgToReuse || {
+        const { g, path, start, end } = svgToReuse ?? {
             g: createSVGElement('g'),
             path: createSVGElement('path'),
             start: createSVGElement('circle'),
@@ -249,7 +255,7 @@ class ArrowLayer {
             if (jumpToReuse)
                 this.clearBookmarks(jumpToReuse);
             const rendered = this.renderJump(jumpData.fromLine, jumpData.toLine, {
-                options: jumpData.options || {},
+                options: jumpData.options ?? {},
                 svgToReuse: jumpToReuse ? jumpToReuse.svg : null
             });
             if (rendered)
@@ -263,25 +269,30 @@ class ArrowLayer {
 }
 
 const STATE_KEY = 'jumpArrowLayer';
-CodeMirror.defineExtension('addJumpArrow', function (this: CodeMirror.Editor, fromLine: number, toLine: number, options?: JumpOptions) {
+CodeMirror.defineExtension('addJumpArrow', function(this: CodeMirror.Editor, fromLine: number, toLine: number, options?: JumpOptions) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     let layer = this.state[STATE_KEY] as ArrowLayer|undefined;
     if (!layer) {
         layer = new ArrowLayer(this);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         this.state[STATE_KEY] = layer;
     }
-    layer.renderJump(fromLine, toLine, { options: options || {} });
+    layer.renderJump(fromLine, toLine, { options: options ?? {} });
 });
 
-CodeMirror.defineExtension('setJumpArrows', function(this: CodeMirror.Editor, arrows: JumpData[]) {
+CodeMirror.defineExtension('setJumpArrows', function(this: CodeMirror.Editor, arrows: Array<JumpData>) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     let layer = this.state[STATE_KEY] as ArrowLayer|undefined;
     if (!layer) {
         layer = new ArrowLayer(this);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         this.state[STATE_KEY] = layer;
     }
     layer.replaceJumps(arrows);
 });
 
 CodeMirror.defineExtension('clearJumpArrows', function(this: CodeMirror.Editor) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const layer = this.state[STATE_KEY] as ArrowLayer|undefined;
     if (!layer)
         return;

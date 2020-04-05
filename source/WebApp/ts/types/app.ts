@@ -36,7 +36,7 @@ export interface AppData {
 
     serviceUrl: string;
 
-    result: DeepReadonly<Result>;
+    result?: DeepReadonly<Result>;
     lastResultOfType: {
         code: CodeResult|null;
         ast: AstResult|null;
@@ -82,4 +82,4 @@ export type App = AppData
     & { readonly [TKey in keyof AppComputed]: ReturnType<AppComputed[TKey]> }
     & AppMethods
     & { $refs: AppRefs };
-export type AppVue = Omit<App,'$refs'> & InstanceType<VueConstructor>;
+export type AppVue = Omit<App, '$refs'> & InstanceType<VueConstructor>;

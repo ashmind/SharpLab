@@ -15,10 +15,12 @@ export default {
     },
 
     async loadAsync(state: { [Key in AppStateKey]?: App[Key] }) {
-        const fromUrl = (await url.loadAsync()) || {} as (ReturnType<typeof url.loadAsync> extends Promise<infer T> ? T : never);
+        const fromUrl = (await url.loadAsync()) ?? {} as {
+            [Key in AppStateKey]?: App[Key]
+        };
         const lastUsedOptions = lastUsed.loadOptions();
 
-        const options = fromUrl.options || lastUsedOptions || {};
+        const options = fromUrl.options ?? lastUsedOptions ?? {};
         const defaultOptions = defaults.getOptions();
         for (const key of Object.keys(defaultOptions) as ReadonlyArray<keyof typeof defaultOptions>) {
             if (options[key] == null) {
@@ -26,7 +28,7 @@ export default {
                 options[key] = defaultOptions[key] as any;
             }
         }
-        const code = fromUrl.code || defaults.getCode(options.language, options.target) || '';
+        const code = fromUrl.code ?? defaults.getCode(options.language, options.target);
 
         state.options = options as AppOptions;
         state.code = code;

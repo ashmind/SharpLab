@@ -238,14 +238,14 @@ function render(parent: Element, token: CodeMirror.Token) {
 
     const description = document.createElement('div');
     description.className = 'CodeMirror-infotip-description';
-    description.textContent = instructions[token.string] || '';
+    description.textContent = instructions[token.string] ?? '';
 
     parent.appendChild(name);
     parent.appendChild(description);
 }
 
 CodeMirror.registerHelper('infotip', 'cil', (cm: CodeMirror.Editor, coords: CodeMirror.Position & { xRel: number }) => {
-    const token = cm.getTokenAt(coords);
+    const token = cm.getTokenAt(coords) as CodeMirror.Token|undefined;
     if (!token || token.type !== 'builtin')
         return null;
 

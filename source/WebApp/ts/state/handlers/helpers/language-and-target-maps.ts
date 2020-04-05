@@ -13,7 +13,7 @@ function reverseMap<TMap extends { [key: string]: string }>(map: TMap) {
 const languageMap = {
     [languages.csharp]: 'cs',
     [languages.vb]:     'vb',
-    [languages.fsharp]: 'fs',
+    [languages.fsharp]: 'fs'
 } as const;
 const languageMapReverse = reverseMap(languageMap);
 

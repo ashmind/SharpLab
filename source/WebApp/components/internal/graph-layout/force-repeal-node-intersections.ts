@@ -17,31 +17,31 @@ function applyForceIfIntersecting(
     if (!isIntersecting)
         return;
 
-    const linked = firstNode.data.topLevelLinked.indexOf(secondNode) >= 0;
+    const linked = firstNode.data.topLevelLinked.includes(secondNode);
     if (!linked) {
         // first above second
         if (first.top <= second.top) {
-            //firstNode.vy -= aFirst;
+            // firstNode.vy -= aFirst;
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            secondNode.vy! += a; //aSecond;
+            secondNode.vy! += a; // aSecond;
         }
         else if (first.top < second.top) { // second above first
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            firstNode.vy! += a; //aFirst;
-            //secondNode.vy -= aSecond;
+            firstNode.vy! += a; // aFirst;
+            // secondNode.vy -= aSecond;
         }
     }
     else {
         // first before second
         if (first.left <= second.left) {
-            //firstNode.vx -= aFirst;
+            // firstNode.vx -= aFirst;
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            secondNode.vx! += a; //aSecond;
+            secondNode.vx! += a; // aSecond;
         }
         else if (first.left > second.left) { // second before first
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            firstNode.vx! += a; //aFirst;
-            //secondNode.vx -= aSecond;
+            firstNode.vx! += a; // aFirst;
+            // secondNode.vx -= aSecond;
         }
     }
 }

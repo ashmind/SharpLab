@@ -93,19 +93,19 @@ function getServiceUrl(branch: DeepReadonly<Branch>|null|undefined) {
     return `${httpRoot.replace(/^http/, 'ws')}/mirrorsharp`;
 }
 
-function applyCodeViewRange(this: App, range: { source: CodeRange }) {
+function applyCodeViewRange(this: App, range: { source: CodeRange }|undefined) {
     this.highlightedCodeRange = range ? range.source : null;
 }
 
-function applyAstSelect(this: App, item: AstItem) {
+function applyAstSelect(this: App, item: AstItem|undefined) {
     if (!item || !item.range) {
         this.highlightedCodeRange = null;
         return;
     }
     const [start, end] = item.range.split('-');
     this.highlightedCodeRange = {
-        start: parseInt(start),
-        end: parseInt(end)
+        start: parseInt(start, 10),
+        end: parseInt(end, 10)
     };
 }
 
@@ -178,7 +178,7 @@ async function createAppAsync() {
                 };
             },
             status(this: App) {
-                const error = !this.result.success;
+                const error = this.result && !this.result.success;
                 return {
                     online: this.online,
                     error,
@@ -199,6 +199,7 @@ async function createAppAsync() {
     } as AppDefinition;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 (async function runAsync() {
     const app = await createAppAsync();
     const ui = await uiAsync(app);
@@ -237,6 +238,7 @@ async function createAppAsync() {
         data.lastLoadedCode = data.code;
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     url.changed(async () => {
         await state.loadAsync(data);
         data.lastLoadedCode = data.code;

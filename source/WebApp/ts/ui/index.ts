@@ -14,9 +14,9 @@ type WatchMap = AppData & {
     'options.language': AppData['options']['language'];
     'options.target': AppData['options']['target'];
 };
-type UI = {
+interface UI {
     watch<TKey extends keyof WatchMap>(name: TKey, callback: (newValue: WatchMap[TKey], oldValue: WatchMap[TKey]) => void, options?: WatchParameters[2]): void;
-};
+}
 
 const documentReadyPromise = new Promise(resolve => {
     document.addEventListener('DOMContentLoaded', () => resolve());
@@ -32,14 +32,15 @@ async function createUIAsync(app: AppDefinition) {
 function createTopLevelUIComponentAsync(app: AppDefinition, selector: string, hooks: Partial<Hooks> = {}) {
     return new Promise<UI>((resolve, reject) => {
         try {
+            // eslint-disable-next-line no-new
             new Vue({
                 el:       selector,
                 data:     app.data,
                 computed: app.computed,
                 methods:  app.methods,
-                mounted: function() {
+                mounted() {
                     Vue.nextTick(() => {
-                        for (const hook of hooks.ready || []) {
+                        for (const hook of hooks.ready ?? []) {
                             hook(this);
                         }
                         resolve(wrap(this));

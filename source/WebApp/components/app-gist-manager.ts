@@ -25,9 +25,9 @@ export default Vue.component('app-gist-manager', {
     computed: {
         canSave(): boolean { return !!this.name && !this.saving; }
     },
-    mounted() {
+    async mounted() {
         if (auth.isBackFromRedirect)
-            this.openModalAsync();
+            await this.openModalAsync();
     },
     methods: {
         async openModalAsync() {
@@ -61,7 +61,7 @@ export default Vue.component('app-gist-manager', {
                 });
             }
             catch (e) {
-                this.error = e.message || e;
+                this.error = (e as { message?: string }).message ?? e;
                 this.saving = false;
                 return;
             }
@@ -79,9 +79,9 @@ export default Vue.component('app-gist-manager', {
 
         handleFormSubmit(e: Event) {
             e.preventDefault();
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.saveAsync();
         }
     },
     template: '#app-gist-manager'
 });
-

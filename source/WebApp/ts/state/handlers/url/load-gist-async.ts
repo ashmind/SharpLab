@@ -1,6 +1,5 @@
-import type { TargetName } from '../../../helpers/targets';
+import { TargetName, targets } from '../../../helpers/targets';
 import { getGistAsync } from '../../../helpers/github/gists';
-import { languages } from '../../../helpers/languages';
 import { targetMapReverse } from '../helpers/language-and-target-maps';
 
 interface Overrides {
@@ -24,7 +23,7 @@ export default async function loadGistAsync(hash: string) {
         gist = await getGistAsync(id);
     }
     catch (e) {
-        const message = `Failed to load gist '${id}': ${e.json.message}.`;
+        const message = `Failed to load gist '${id}': ${(e as { json?: { message?: string } })?.json?.message ?? '<unknown>'}.`;
         return {
             code: message.replace(/^/mg, '#error '),
             options: {}
@@ -36,7 +35,7 @@ export default async function loadGistAsync(hash: string) {
     const overrides = {
         target: targetMapReverse[parts[1]],
         branchId: parts[2],
-        mode: parts.length > 1 ? (parts[3] || 'release') : null
+        mode: parts.length > 1 ? (parts[3] ?? 'release') : null
     } as Overrides;
 
     return {
@@ -44,8 +43,8 @@ export default async function loadGistAsync(hash: string) {
         code: gist.code,
         options: {
             language: gist.options.language,
-            target:   overrides.target   || gist.options.target || languages.csharp,
-            branchId: overrides.branchId || gist.options.branchId,
+            target:   overrides.target   ?? gist.options.target ?? targets.csharp,
+            branchId: overrides.branchId ?? gist.options.branchId,
             release:  getIsRelease(gist.options, overrides)
         }
     };

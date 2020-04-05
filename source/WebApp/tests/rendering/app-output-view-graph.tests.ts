@@ -19,13 +19,13 @@ test.each(cases)('empty%s', async (_, bodyClass) => {
 });
 
 // TODO: this is currently a mess as we can't auto-layout without the sizes
-/*test.each(cases)('detailed%s', async (_, bodyClass) => {
+/* test.each(cases)('detailed%s', async (_, bodyClass) => {
     const view = createView({ inspection: detailedInspection });
 
     const rendered = await renderView(view, { bodyClass });
 
     expect(rendered).toMatchImageSnapshot();
-});*/
+}); */
 
 function createView({ inspection }: PickPropTypes<typeof OutputViewGraph, 'inspection'>) {
     return new OutputViewGraph({

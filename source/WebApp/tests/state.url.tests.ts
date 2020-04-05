@@ -30,7 +30,7 @@ describe('v2', () => {
     for (const code of [
         'public void M() {\r\n}',
         'a || b || c',
-        'void Func13() {}',
+        'void Func13() {}'
     ] as const) {
         test(`save/load preserves code '${code}'`, async () => {
             url.save(code, fromPartial({ language: languages.csharp }));
@@ -62,21 +62,27 @@ describe('gist', () => {
         test(`load returns target '${target}' for key '${key}'`, async () => {
             asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
 
-            window.location.hash = '#gist:_/'+ key;
+            window.location.hash = '#gist:_/' + key;
             const { options } = await url.loadAsync()!;
             expect(options.target).toBe(target);
         });
     }
 
-    for (const language of Object.values(languages)) {
-        test(`load returns default target '${targets.csharp}' for language '${language}'`, async () => {
-            asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: { language } }));
+    test.each(Object.values(languages))(`load returns default target '${targets.csharp}' for language '%s'`, async language => {
+        asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: { language } }));
 
-            window.location.hash = '#gist:_';
-            const { options } = await url.loadAsync()!;
-            expect(options.target).toBe(targets.csharp);
-        });
-    }
+        window.location.hash = '#gist:_';
+        const { options } = await url.loadAsync()!;
+        expect(options.target).toBe(targets.csharp);
+    });
+
+    test('load returns default target DEBUG', async () => {
+        asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: { language: languages.vb } }));
+
+        window.location.hash = '#gist:_';
+        const { options } = await url.loadAsync()!;
+        expect(options.target).toBe(targets.csharp);
+    })
 
     test(`load returns branchId if specified`, async () => {
         asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
@@ -94,7 +100,7 @@ describe('gist', () => {
         expect(options.branchId).toBeUndefined();
     });
 
-    for (const [suffix,release] of [['///debug',false],['',true]] as const) {
+    for (const [suffix, release] of [['///debug', false], ['', true]] as const) {
         test(`load returns release ${release} for url options ${suffix}`, async () => {
             asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
 

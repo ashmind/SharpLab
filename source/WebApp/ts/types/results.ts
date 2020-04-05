@@ -5,7 +5,9 @@ export type DiagnosticWarning = Pick<MirrorSharpDiagnostic, 'id'|'message'> & { 
 export type DiagnosticError = Pick<MirrorSharpDiagnostic, 'id'|'message'> & { severity: 'error' };
 export type Diagnostic = DiagnosticWarning | DiagnosticError;
 
-export type ServerError = { message: string };
+export interface ServerError {
+    readonly message: string;
+}
 
 export interface AstItem {
     range?: string;

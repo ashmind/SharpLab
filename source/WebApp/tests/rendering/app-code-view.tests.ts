@@ -11,7 +11,7 @@ beforeEach(() => {
 
     (document.body as { createTextRange?: () => MockTextRange }).createTextRange = () => new MockTextRange();
     Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
-        get() {
+        get(this: HTMLElement) {
             switch (this.className) {
                 case 'CodeMirror-gutters': return 20;
                 case 'CodeMirror cm-s-default': return 100;

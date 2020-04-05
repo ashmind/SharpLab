@@ -4,6 +4,6 @@ export function save(theme: Theme) {
     localStorage['sharplab.theme'] = theme;
 }
 
-export function load(): Theme|null {
-    return localStorage['sharplab.theme'];
+export function load() {
+    return localStorage['sharplab.theme'] as Theme|undefined;
 }

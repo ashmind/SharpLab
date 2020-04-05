@@ -11,15 +11,16 @@ import { targets } from '../ts/helpers/targets';
 import extendType from '../ts/helpers/extend-type';
 
 type TargetLanguageName = typeof targets.csharp|typeof targets.vb|typeof targets.il|typeof targets.asm;
+type Ranges = ReadonlyArray<{
+    readonly source: CodeRange;
+    readonly result: CodeRange;
+}>;
 
 export default Vue.component('app-code-view', {
     props: {
         value:    String,
         language: String as () => TargetLanguageName,
-        ranges:   Array as () => ReadonlyArray<{
-            readonly source: CodeRange;
-            readonly result: CodeRange;
-        }>
+        ranges:   Array as () => Ranges|undefined
     },
     data: () => extendType({})<{
         cm: CodeMirror.Editor;
@@ -38,8 +39,11 @@ export default Vue.component('app-code-view', {
         delayedHover: (x: number, y: number) => void;
     }>(),
     methods: {
-        hasRanges() {
-            return (this.ranges && this.ranges.length > 0);
+        // https://github.com/microsoft/TypeScript/issues/37796
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        hasRanges(): this is { ranges: Ranges } {
+            return (!!this.ranges && this.ranges.length > 0);
         },
 
         hover(x: number, y: number) {
@@ -113,7 +117,7 @@ export default Vue.component('app-code-view', {
         wrapper.classList.add('mirrorsharp-theme');
 
         const codeElement = wrapper.getElementsByClassName('CodeMirror-code')[0] as unknown as ElementContentEditable;
-        if (codeElement && codeElement.contentEditable) { // HACK, mobile only
+        if (codeElement.contentEditable) { // HACK, mobile only
             codeElement.contentEditable = false as unknown as string;
         }
 

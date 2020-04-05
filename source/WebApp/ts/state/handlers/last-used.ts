@@ -4,7 +4,7 @@ import warn from '../../helpers/warn';
 
 const version = 3;
 export default {
-    loadOptions: function() {
+    loadOptions() {
         const loaded = localStorage['sharplab.options'] || localStorage['tryroslyn.options'];
         if (!loaded)
             return null;
@@ -21,7 +21,7 @@ export default {
         }
     },
 
-    saveOptions: function(options: AppOptions) {
+    saveOptions(options: AppOptions) {
         try {
             localStorage['sharplab.options'] = JSON.stringify({ version, options });
         }

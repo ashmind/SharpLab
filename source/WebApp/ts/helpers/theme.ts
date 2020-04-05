@@ -5,14 +5,16 @@ export { Theme };
 type EffectiveTheme = 'light'|'dark';
 
 const watches = [] as Array<(value: EffectiveTheme) => void>;
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 const systemDarkThemeQuery = window.matchMedia
-                          && window.matchMedia('(prefers-color-scheme: dark)');
+                          && window.matchMedia('(prefers-color-scheme: dark)') as MediaQueryList|undefined;
+/* eslint-enable @typescript-eslint/no-unnecessary-condition */
 
-let userTheme = load() || 'auto';
+let userTheme = load() ?? 'auto';
 
 function getEffectiveTheme(): EffectiveTheme {
     if (userTheme === 'auto')
-        return (systemDarkThemeQuery && systemDarkThemeQuery.matches) ? 'dark' : 'light';
+        return systemDarkThemeQuery?.matches ? 'dark' : 'light';
 
     return userTheme;
 }
@@ -20,7 +22,9 @@ function getEffectiveTheme(): EffectiveTheme {
 function watchEffectiveTheme(callback: (value: EffectiveTheme) => void) {
     watches.push(callback);
     const index = watches.length;
-    return () => { watches.splice(index, 1); };
+    return () => {
+        watches.splice(index, 1);
+    };
 }
 
 function updateEffectiveThemeWatches(effective: EffectiveTheme) {

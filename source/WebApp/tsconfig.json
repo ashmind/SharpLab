@@ -1,16 +1,23 @@
 {
     "compilerOptions": {
-        "target": "es2019",
+        "target": "es2017",
+        "module": "ESNext",
         "moduleResolution": "node",
+        "allowJs": true,
+        "checkJs": true,
         "noEmit": true,
         "strict": true,
         "importsNotUsedAsValues": "error",
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true
     },
+    "include": [
+        "**/*.ts",
+        "**/*.js",
+        "**/*.cjs",
+    ],
     "exclude": [
         "node_modules/**/*",
-        "build.js",
         "wwwroot/**/*"
     ]
 }
