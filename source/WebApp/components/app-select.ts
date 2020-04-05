@@ -2,7 +2,7 @@ import Vue from 'vue';
 
 export default Vue.component('app-select', {
     props: {
-        value: String as () => string|null
+        value: null as unknown as () => unknown
     },
 
     data() {

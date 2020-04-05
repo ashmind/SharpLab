@@ -96,8 +96,8 @@ task('ts', async () => {
     });
 }, {
     inputs: [
-        `${dirname}/js/**/*.js`,
-        `${dirname}/components/**/*.js`,
+        `${dirname}/ts/**/*.ts`,
+        `${dirname}/components/**/*.ts`,
         `${dirname}/package.json`
     ]
 });

@@ -244,23 +244,25 @@ function render(parent: Element, token: CodeMirror.Token) {
     parent.appendChild(description);
 }
 
-CodeMirror.registerHelper('infotip', 'cil', (cm: CodeMirror.Editor, coords: CodeMirror.Position & { xRel: number }) => {
-    const token = cm.getTokenAt(coords) as CodeMirror.Token|undefined;
-    if (!token || token.type !== 'builtin')
-        return null;
+CodeMirror.registerHelper('infotip', 'cil', {
+    getInfo(cm: CodeMirror.Editor, coords: CodeMirror.Position & { xRel: number }) {
+        const token = cm.getTokenAt(coords) as CodeMirror.Token|undefined;
+        if (!token || token.type !== 'builtin')
+            return null;
 
-    // this means that we are actually beyond the token, e.g.
-    // coordsChar() to the right of eol still returns last char
-    // on the line, but xRel will be 1 (to the right)
-    if (token.end === coords.ch && coords.xRel > 0)
-        return null;
+        // this means that we are actually beyond the token, e.g.
+        // coordsChar() to the right of eol still returns last char
+        // on the line, but xRel will be 1 (to the right)
+        if (token.end === coords.ch && coords.xRel > 0)
+            return null;
 
-    return {
-        data: token,
-        range: {
-            from: CodeMirror.Pos(coords.line, token.start),
-            to: CodeMirror.Pos(coords.line, token.end)
-        },
-        render
-    };
+        return {
+            data: token,
+            range: {
+                from: CodeMirror.Pos(coords.line, token.start),
+                to: CodeMirror.Pos(coords.line, token.end)
+            },
+            render
+        };
+    }
 });
