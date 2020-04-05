@@ -6,7 +6,7 @@ environment:
 
 install:
 - ps: |-
-    Install-Product node 8.11 x64
+    Install-Product node 12.16.1 x64
 
 cache:
 - source/WebApp/node_modules -> source/WebApp/package.json

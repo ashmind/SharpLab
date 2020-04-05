@@ -1,1 +1,0 @@
-export default (console && (console.warn || console.log)) || (function() {});  // eslint-disable-line no-console

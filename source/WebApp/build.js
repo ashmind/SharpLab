@@ -1,40 +1,51 @@
-console.time('requires');
+/* eslint-disable no-process-env */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
+/* eslint-disable import/extensions */
+
 // Common:
-const { task, tasks, run } = require('oldowan');
-const path = require('path');
-const jetpack = require('fs-jetpack');
-const md5File = require('md5-file/promise');
+import path from 'path';
+import url from 'url';
+// @ts-ignore
+import oldowan from 'oldowan';
+import jetpack from 'fs-jetpack';
+import execa from 'execa';
+import md5File from 'md5-file/promise.js';
 // CSS:
-const less = require('less');
-const autoprefixer = require('autoprefixer');
-const postcss = require('postcss');
-const csso = require('postcss-csso');
-// JS:
-const rollup = require('rollup');
-const rollupPluginNodeResolve = require('rollup-plugin-node-resolve');
-const rollupPluginCommonJS = require('rollup-plugin-commonjs');
-const rollupPluginTerser = require('rollup-plugin-terser').terser;
+// @ts-ignore
+import less from 'less';
+// @ts-ignore
+import autoprefixer from 'autoprefixer';
+import postcss from 'postcss';
+// @ts-ignore
+import csso from 'postcss-csso';
 // Favicons:
-const sharp = require('sharp');
+// @ts-ignore
+import sharp from 'sharp';
 // HTML:
-const htmlMinifier = require('html-minifier');
-console.timeEnd('requires');
+// @ts-ignore
+import htmlMinifier from 'html-minifier';
 
-const outputRoot = `${__dirname}/wwwroot`;
-const production = process.env.NODE_ENV === 'production';
+const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
+const { task, tasks, run } = oldowan;
+const outputRoot = `${dirname}/wwwroot`;
+
+// @ts-ignore
 const parallel = (...promises) => Promise.all(promises);
 
 const paths = {
     from: {
-        less: `${__dirname}/less/app.less`,
-        js: `${__dirname}/js/app.js`,
-        favicon: `${__dirname}/favicon.svg`,
-        html: `${__dirname}/index.html`
+        less: `${dirname}/less/app.less`,
+        favicon: `${dirname}/favicon.svg`,
+        html: `${dirname}/index.html`
     },
     to: {
         css: `${outputRoot}/app.min.css`,
-        js: `${outputRoot}/app.min.js`,
         favicon: {
             svg: `${outputRoot}/favicon.svg`,
             png: `${outputRoot}/favicon-{size}.png`
@@ -48,7 +59,7 @@ task('less', async () => {
     let result = await less.render(content, {
         filename: paths.from.less,
         sourceMap: {
-            sourceMapBasepath: `${__dirname}`,
+            sourceMapBasepath: `${dirname}`,
             outputSourceFiles: true
         }
     });
@@ -67,40 +78,27 @@ task('less', async () => {
         jetpack.writeAsync(paths.to.css, result.css),
         jetpack.writeAsync(paths.to.css + '.map', result.map)
     );
-}, { inputs: `${__dirname}/less/**/*.less` });
+}, { inputs: `${dirname}/less/**/*.less` });
 
-task('js', async () => {
-    const bundle = await rollup.rollup({
-        // https://github.com/rollup/rollup/issues/2473
-        treeshake: false,
-        input: paths.from.js,
-        plugins: [
-            rollupPluginCommonJS({
-                include: [
-                    'node_modules/**',
-                    'components/internal/codemirror/**',
-                    'js/ui/helpers/**'
-                ]
-            }),
-            {
-                name: 'rollup-plugin-adhoc-resolve-vue',
-                resolveId: id => (id === 'vue') ? path.resolve(`./node_modules/vue/dist/vue${production?'.min':''}.js`) : null
-            },
-            rollupPluginNodeResolve({ browser: true }),
-            ...(production ? [rollupPluginTerser()] : [])
-        ]
-    });
+task('tsLint', () => execa.command('eslint . --max-warnings 0 --ext .js,.ts', {
+    preferLocal: true,
+    stdout: process.stdout,
+    stderr: process.stderr
+}));
 
-    await bundle.write({
-        format: 'iife',
-        file: paths.to.js,
-        sourcemap: true
+task('ts', async () => {
+    if (process.env.NODE_ENV === 'production')
+        await tasks.tsLint();
+    await execa.command('rollup -c', {
+        preferLocal: true,
+        stdout: process.stdout,
+        stderr: process.stderr
     });
 }, {
     inputs: [
-        `${__dirname}/js/**/*.js`,
-        `${__dirname}/components/**/*.js`,
-        `${__dirname}/package.json`
+        `${dirname}/ts/**/*.ts`,
+        `${dirname}/components/**/*.ts`,
+        `${dirname}/package.json`
     ]
 });
 
@@ -112,6 +110,7 @@ task('favicons', async () => {
         return sharp(paths.from.favicon, { density })
             .resize(size, size)
             .png()
+            // @ts-ignore
             .toFile(paths.to.favicon.png.replace('{size}', size));
     });
 
@@ -129,18 +128,20 @@ task('html', async () => {
         md5File('wwwroot/app.min.css')
     );
     let html = await jetpack.readAsync(paths.from.html);
+    // @ts-ignore
     html = html
         .replace('{build:js}', 'app.min.js?' + jsHash)
         .replace('{build:css}', 'app.min.css?' + cssHash)
         .replace('{build:templates}', templates)
         .replace('{build:favicon-svg}', faviconDataUrl);
     html = htmlMinifier.minify(html, { collapseWhitespace: true });
+    // @ts-ignore
     await jetpack.writeAsync(paths.to.html, html);
 }, {
     inputs: [
-        `${__dirname}/components/**/*.html`,
+        `${dirname}/components/**/*.html`,
         paths.to.css,
-        paths.to.js,
+        `${outputRoot}/app.min.js`,
         paths.from.html,
         paths.from.favicon
     ]
@@ -148,7 +149,7 @@ task('html', async () => {
 
 task('default', () => {
     const htmlAll = async () => {
-        await parallel(tasks.less(), tasks.js());
+        await parallel(tasks.less(), tasks.ts());
         await tasks.html();
     };
 
@@ -161,6 +162,7 @@ task('default', () => {
 async function getFaviconDataUrl() {
     const faviconSvg = await jetpack.readAsync(paths.from.favicon);
     // http://codepen.io/jakob-e/pen/doMoML
+    // @ts-ignore
     return faviconSvg
         .replace(/"/g, '\'')
         .replace(/%/g, '%25')
@@ -169,11 +171,11 @@ async function getFaviconDataUrl() {
         .replace(/}/g, '%7D')
         .replace(/</g, '%3C')
         .replace(/>/g, '%3E')
-        .replace(/\s+/g,' ');
+        .replace(/\s+/g, ' ');
 }
 
 async function getCombinedTemplates() {
-    const basePath = `${__dirname}/components`;
+    const basePath = `${dirname}/components`;
     const htmlPaths = await jetpack.findAsync(basePath, { matching: '*.html' });
     const htmlPromises = htmlPaths.map(async htmlPath => {
         const template = await jetpack.readAsync(htmlPath);

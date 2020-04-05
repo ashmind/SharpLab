@@ -2,44 +2,66 @@
   "name": "sharplab",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=12.6.1"
+  },
   "scripts": {
-    "build": "node build.js",
-    "watch": "node build.js --watch",
-    "lint": "eslint . --ignore-path ../../.gitignore --max-warnings 0",
+    "build": "node --experimental-modules build.js",
+    "watch": "node --experimental-modules build.js --watch",
+    "lint": "node --experimental-modules build.js tsLint",
     "test": "jest"
   },
   "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "<rootDir>/tests/tsconfig.json"
+      }
+    },
+    "transform": {
+      "\\.ts$": "ts-jest",
+      "node_modules[/\\\\]mirrorsharp": "./tests/transform-esm-in-node-modules.cjs"
+    },
+    "transformIgnorePatterns": [
+      "/node_modules/(?!mirrorsharp/)"
+    ],
     "setupFiles": [
-      "<rootDir>/js/polyfills/index.js"
+      "<rootDir>/ts/polyfills/index.ts"
     ],
     "setupFilesAfterEnv": [
-      "<rootDir>/tests/rendering/setup.js"
+      "<rootDir>/tests/rendering/setup.ts"
     ],
     "testMatch": [
-      "<rootDir>/tests/**/*.tests.js"
+      "<rootDir>/tests/**/*.tests.ts"
     ],
     "moduleNameMapper": {
       "^vue$": "<rootDir>/node_modules/vue/dist/vue.js"
     }
   },
   "devDependencies": {
+    "@babel/preset-env": "7.9.0",
+    "@rollup/plugin-node-resolve": "7.1.1",
+    "@rollup/plugin-typescript": "4.0.0",
     "@types/applicationinsights-js": "1.0.9",
     "@types/codemirror": "0.0.78",
     "@types/d3": "5.7.2",
     "@types/d3-force": "1.2.1",
     "@types/dateformat": "3.0.1",
-    "@types/jest": "24.0.18",
+    "@types/jest": "25.2.1",
     "@types/jest-image-snapshot": "2.8.0",
+    "@types/lz-string": "1.3.33",
     "@types/marked": "0.6.5",
+    "@types/md5-file": "4.0.1",
     "@types/puppeteer": "1.20.2",
     "@types/throttle-debounce": "2.1.0",
+    "@typescript-eslint/eslint-plugin": "^2.21.0",
+    "@typescript-eslint/parser": "^2.21.0",
     "@vue/test-utils": "1.0.0-beta.29",
     "autoprefixer": "9.6.4",
     "babel-jest": "24.9.0",
-    "babel-plugin-dynamic-import-node": "2.3.0",
-    "babel-plugin-transform-es2015-modules-commonjs": "6.24.1",
-    "eslint": "6.3.0",
+    "eslint": "6.8.0",
     "eslint-plugin-import": "2.18.2",
+    "execa": "4.0.0",
     "fs-jetpack": "2.1.0",
     "html-minifier": "3.5.19",
     "jest": "25.1.0",
@@ -51,12 +73,13 @@
     "postcss": "7.0.2",
     "postcss-csso": "3.0.0",
     "puppeteer": "2.1.1",
-    "rollup": "1.23.1",
+    "rollup": "2.3.2",
     "rollup-plugin-commonjs": "10.1.0",
     "rollup-plugin-node-resolve": "3.0.0",
     "rollup-plugin-terser": "1.0.1",
     "sharp": "0.25.2",
-    "typescript": "3.6.4",
+    "ts-jest": "25.3.1",
+    "typescript": "3.8.3",
     "vue-template-compiler": "2.5.16"
   },
   "dependencies": {
@@ -71,7 +94,7 @@
     "marked": "0.7.0",
     "mirrorsharp": "2.0.0-preview-02",
     "normalize.css": "8.0.1",
-    "portal-vue": "1.5.1",
+    "portal-vue": "2.1.7",
     "resize-observer-polyfill": "1.5.1",
     "throttle-debounce": "1.0.1",
     "vue": "2.6.10"
