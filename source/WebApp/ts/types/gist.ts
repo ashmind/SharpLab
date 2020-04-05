@@ -1,9 +1,9 @@
 import type { AppOptions } from './app';
 
 export interface Gist {
-    id: string;
-    name: string;
-    url: string;
-    options: AppOptions;
-    code: string;
+    readonly id: string;
+    readonly name: string;
+    readonly url: string;
+    readonly options: AppOptions;
+    readonly code: string;
 }

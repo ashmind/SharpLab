@@ -1,10 +1,11 @@
 import Vue from 'vue';
-import { Theme, getUserTheme, setUserTheme } from '../ts/helpers/theme';
+import type { AppTheme } from '../ts/types/app';
+import { getUserTheme, setUserTheme } from '../ts/helpers/theme';
 import asLookup from '../ts/helpers/as-lookup';
 
 const component = Vue.component('app-theme-manager', {
     data: () => ({
-        theme: 'auto' as Theme
+        theme: 'auto' as AppTheme
     }),
     computed: {
         themeLabel() {
@@ -35,7 +36,7 @@ const component = Vue.component('app-theme-manager', {
     template: '#app-theme-manager'
 });
 
-function updateBodyClass(theme: Theme) {
+function updateBodyClass(theme: AppTheme) {
     const allClasses = ['theme-dark', 'theme-auto'] as const;
     const newClassName = asLookup({
         dark: 'theme-dark',

@@ -1,4 +1,4 @@
 export interface CodeRange {
-    start: CodeMirror.Position;
-    end: CodeMirror.Position;
+    readonly start: CodeMirror.Position;
+    readonly end: CodeMirror.Position;
 }

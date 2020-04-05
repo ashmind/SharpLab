@@ -1,13 +1,13 @@
 import Vue from 'vue';
+import asLookup from '../../ts/helpers/as-lookup';
 import '../app-select';
 
-const specialChars = {
+const specialChars = asLookup({
     '\r': '\\r',
     '\n': '\\n',
     '\t': '\\t',
     '\0': '\\0'
-} as { [char: string]: string|undefined };
-
+} as const);
 
 interface Label {
     readonly name: string;

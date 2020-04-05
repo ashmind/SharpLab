@@ -4,7 +4,7 @@ export default () => {
     let nodes: ReadonlyArray<ExtendedNodeDatum<NestedNodeDatumData>>;
     const force = () => {
         for (const node of nodes) {
-            const { nested: { parent, dx, dy } } = node.data;
+            const { parent, dx, dy } = node.data.nested;
             node.fx = parent.x + dx;
             node.fy = parent.y + dy;
         }

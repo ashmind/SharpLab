@@ -1,7 +1,7 @@
-import { Theme, save, load } from '../../ts/state/theme';
+import type { AppTheme } from '../types/app';
+import { save, load } from '../../ts/state/theme';
 import trackFeature from './track-feature';
 
-export { Theme };
 type EffectiveTheme = 'light'|'dark';
 
 const watches = [] as Array<(value: EffectiveTheme) => void>;
@@ -58,7 +58,7 @@ if (systemDarkThemeQuery) {
     });
 }
 
-export function setUserTheme(theme: Theme) {
+export function setUserTheme(theme: AppTheme) {
     if (userTheme === theme)
         return;
 

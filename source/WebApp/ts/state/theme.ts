@@ -1,9 +1,9 @@
-export type Theme = 'light'|'dark'|'auto';
+import type { AppTheme } from '../types/app';
 
-export function save(theme: Theme) {
+export function save(theme: AppTheme) {
     localStorage['sharplab.theme'] = theme;
 }
 
 export function load() {
-    return localStorage['sharplab.theme'] as Theme|undefined;
+    return localStorage['sharplab.theme'] as AppTheme|undefined;
 }

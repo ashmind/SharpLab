@@ -11,6 +11,8 @@ import type { Gist } from './gist';
 import type { MirrorSharpSlowUpdateResult, MirrorSharpConnectionState } from './mirrorsharp';
 import type { CodeRange } from './code-range';
 
+export type AppTheme = 'light'|'dark'|'auto';
+
 export interface AppOptions {
     language: LanguageName;
     target: TargetName|string;

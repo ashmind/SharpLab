@@ -1,7 +1,6 @@
-export type HighlightedRange = {
-    start: CodeMirror.Position;
-    end: CodeMirror.Position;
-}|{
-    start: number;
-    end: number;
+import type { CodeRange } from './code-range';
+
+export type HighlightedRange = CodeRange|{
+    readonly start: number;
+    readonly end: number;
 };
