@@ -1,10 +1,10 @@
 import Vue from 'vue';
-import mirrorsharp, { MirrorSharpOptions } from 'mirrorsharp';
+import mirrorsharp, { MirrorSharpOptions, MirrorSharpConnectionState } from 'mirrorsharp';
 import 'codemirror/mode/mllike/mllike';
 import type { FlowStep, Result } from '../ts/types/results';
 import type { HighlightedRange } from '../ts/types/highlighted-range';
-import type { MirrorSharpConnectionState } from '../ts/types/mirrorsharp';
 import type { ServerOptions } from '../ts/types/server-options';
+import type { PartiallyMutable } from '../ts/helpers/partially-mutable';
 import './internal/codemirror/addon-jump-arrows';
 import groupToMap from '../ts/helpers/group-to-map';
 
@@ -24,6 +24,7 @@ const AppCodeEdit = Vue.component('app-code-edit', {
 
         const options = {
             serviceUrl: this.serviceUrl,
+            initialServerOptions: this.serverOptions,
             on: {
                 slowUpdateWait: () => this.$emit('slow-update-wait'),
                 slowUpdateResult: result => this.$emit('slow-update-result', result),
@@ -31,12 +32,10 @@ const AppCodeEdit = Vue.component('app-code-edit', {
                 textChange: getText => this.$emit('text-change', getText),
                 serverError: message => this.$emit('server-error', message)
             }
-        } as MirrorSharpOptions<Result['value']>;
+        } as PartiallyMutable<MirrorSharpOptions<ServerOptions, Result['value']>, 'initialServerOptions'|'serviceUrl'>;
         // incorrect, based on type _name_ match?
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
-        let instance = mirrorsharp<ServerOptions>(textarea, options);
-        if (this.serverOptions)
-            await instance.sendServerOptions(this.serverOptions);
+        let instance = mirrorsharp(textarea, options);
 
         const cm = instance.getCodeMirror();
 
@@ -48,17 +47,14 @@ const AppCodeEdit = Vue.component('app-code-edit', {
 
         this.$watch('initialText', (v: string) => instance.setText(v));
         this.$watch('serverOptions', (o: ServerOptions) => {
+            options.initialServerOptions = o;
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            instance.sendServerOptions(o);
+            instance.setServerOptions(o);
         }, { deep: true });
 
         const recreate = () => {
             instance.destroy({ keepCodeMirror: true });
             instance = mirrorsharp(textarea, options);
-            if (this.serverOptions) {
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                instance.sendServerOptions(this.serverOptions);
-            }
         };
         this.$watch('serviceUrl', (u: string) => {
             options.serviceUrl = u;

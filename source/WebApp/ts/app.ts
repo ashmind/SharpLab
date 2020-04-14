@@ -1,6 +1,6 @@
+import type { MirrorSharpSlowUpdateResult, MirrorSharpConnectionState } from 'mirrorsharp';
 import type { Branch } from './types/branch';
 import type { CodeRange } from './types/code-range';
-import type { MirrorSharpSlowUpdateResult, MirrorSharpConnectionState, MirrorSharpDiagnostic } from './types/mirrorsharp';
 import type { AstItem, CodeResult, NonErrorResult, Result, DiagnosticError, DiagnosticWarning } from './types/results';
 import type { Gist } from './types/gist';
 import type { App, AppData, AppDefinition } from './types/app';
@@ -53,7 +53,7 @@ function applyUpdateResult(this: App, updateResult: MirrorSharpSlowUpdateResult<
         errors: [],
         warnings: []
     } as PartiallyMutable<NonErrorResult, 'success'>;
-    for (const diagnostic of updateResult.diagnostics as ReadonlyArray<MirrorSharpDiagnostic>) {
+    for (const diagnostic of updateResult.diagnostics) {
         if (diagnostic.severity === 'error') {
             if (result.type !== 'ast' && result.type !== 'explain')
                 result.success = false;

@@ -1,4 +1,4 @@
-import type { MirrorSharpDiagnostic } from './mirrorsharp';
+import type { MirrorSharpDiagnostic } from 'mirrorsharp';
 import type { CodeRange } from './code-range';
 
 export type DiagnosticWarning = Pick<MirrorSharpDiagnostic, 'id'|'message'> & { severity: 'warning' };

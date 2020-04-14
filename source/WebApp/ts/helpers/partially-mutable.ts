@@ -1,6 +1,4 @@
-export type PartiallyMutable<T, TMutableKeys extends keyof T> = {
-    [TKey in Exclude<keyof T, TMutableKeys>]: T[TKey]
-} & {
+export type PartiallyMutable<T, TMutableKeys extends keyof T> = Omit<T, TMutableKeys> & {
     -readonly[TKey in TMutableKeys]: NonReadonly<T[TKey]>
 }
 

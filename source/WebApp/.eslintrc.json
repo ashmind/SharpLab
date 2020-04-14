@@ -82,6 +82,8 @@
 
         // conflicts with TypeScript
         "import/no-unresolved": "off",
+        // conflicts with ESLint
+        "import/no-duplicates": "off",
         "import/named": "off",
         "import/extensions": ["error", "never"],
         "import/order": ["warn", { "newlines-between": "never" }],

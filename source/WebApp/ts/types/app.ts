@@ -1,4 +1,5 @@
 import type { VueConstructor } from 'vue';
+import type { MirrorSharpSlowUpdateResult, MirrorSharpConnectionState } from 'mirrorsharp';
 import type { TargetName } from '../helpers/targets';
 import type { LanguageName } from '../helpers/languages';
 import type { BranchGroup, Branch } from './branch';
@@ -7,7 +8,6 @@ import type { HighlightedRange } from './highlighted-range';
 import type { Result, CodeResult, AstResult, ExplainResult, AstItem } from './results';
 import type { AstViewRef } from './component-ref-interfaces/ast-view-ref';
 import type { Gist } from './gist';
-import type { MirrorSharpSlowUpdateResult, MirrorSharpConnectionState } from './mirrorsharp';
 import type { CodeRange } from './code-range';
 
 export type AppTheme = 'light'|'dark'|'auto';
