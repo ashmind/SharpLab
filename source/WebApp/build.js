@@ -18,9 +18,9 @@ import md5File from 'md5-file/promise.js';
 // CSS:
 // @ts-ignore
 import less from 'less';
+import postcss from 'postcss';
 // @ts-ignore
 import autoprefixer from 'autoprefixer';
-import postcss from 'postcss';
 // @ts-ignore
 import csso from 'postcss-csso';
 // Favicons:
@@ -87,8 +87,7 @@ task('tsLint', () => execa.command('eslint . --max-warnings 0 --ext .js,.ts', {
 }));
 
 task('ts', async () => {
-    if (process.env.NODE_ENV === 'production')
-        await tasks.tsLint();
+    await tasks.tsLint();
     await execa.command('rollup -c', {
         preferLocal: true,
         stdout: process.stdout,

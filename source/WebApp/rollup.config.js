@@ -34,7 +34,7 @@ export default {
             extensions: ['.js', '.ts'],
             presets: [['@babel/preset-env', { loose: true }]]
         }),
-        ...(process.env.NODE_ENV === 'production' ? [terser()] : [])
+        terser()
     ],
     output: {
         format: 'iife',
