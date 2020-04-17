@@ -231,7 +231,7 @@ namespace SharpLab.Tests {
             var code = TestCode.FromResource("Execution." + resourceName);
             var driver = await NewTestDriverAsync(code.Original);
 
-            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            var result = await SendSlowUpdateWithRetryOnMovedObjectsAsync(driver);
 
             AssertIsSuccess(result, allowRuntimeException: allowExceptions);
             code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _testOutputHelper);
@@ -273,7 +273,7 @@ namespace SharpLab.Tests {
             var code = TestCode.FromResource("Execution." + resourceName);
             var driver = await NewTestDriverAsync(code.Original);
 
-            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            var result = await SendSlowUpdateWithRetryOnMovedObjectsAsync(driver);
 
             AssertIsSuccess(result);
             code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _testOutputHelper);
@@ -400,12 +400,12 @@ namespace SharpLab.Tests {
 
         [Theory]
         [InlineData("Regression.CertainLoop.cs")]
-        //[InlineData("Regression.FSharpNestedLambda.fs", LanguageNames.FSharp)]
+        [InlineData("Regression.FSharpNestedLambda.fs", LanguageNames.FSharp)]
         [InlineData("Regression.NestedAnonymousObject.cs")]
         [InlineData("Regression.ReturnRef.cs")]
         [InlineData("Regression.CatchWithNameSameLineAsClosingTryBracket.cs")]
         public async Task SlowUpdate_DoesNotFail(string resourceName, string languageName = LanguageNames.CSharp) {
-            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), languageName);            
+            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), languageName);
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
             AssertIsSuccess(result);
         }
@@ -471,6 +471,18 @@ namespace SharpLab.Tests {
 
             AssertIsSuccess(result, allowRuntimeException: true);
             Assert.DoesNotMatch("GuardException", result.ExtensionResult?.GetOutputAsString());
+        }
+
+        // Currently Inspect.Heap/MemoryGraph does not promise to always work as expected if GCs happen
+        // during its operation. So for now we retry in the tests.
+        private static async Task<SlowUpdateResult<ExecutionResultData>> SendSlowUpdateWithRetryOnMovedObjectsAsync(MirrorSharpTestDriver driver) {
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            var tryCount = 1;
+            while (result.JoinErrors().Contains("Failed to find object type for address") && tryCount < 10) {
+                result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+                tryCount += 1;
+            }
+            return result!;
         }
 
         private static void AssertIsSuccess(SlowUpdateResult<ExecutionResultData> result, bool allowRuntimeException = false) {
