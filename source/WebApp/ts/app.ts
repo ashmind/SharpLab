@@ -3,8 +3,9 @@ import type { Branch } from './types/branch';
 import type { CodeRange } from './types/code-range';
 import type { AstItem, CodeResult, NonErrorResult, Result, DiagnosticError, DiagnosticWarning } from './types/results';
 import type { Gist } from './types/gist';
-import type { App, AppData, AppDefinition } from './types/app';
+import type { App, AppData, AppDefinition, AppStatus } from './types/app';
 import type { PartiallyMutable } from './helpers/partially-mutable';
+import type { ServerOptions } from './types/server-options';
 import './polyfills/index';
 import trackFeature from './helpers/track-feature';
 import { languages } from './helpers/languages';
@@ -170,15 +171,14 @@ async function createAppAsync() {
     return {
         data,
         computed: {
-            serverOptions(this: App) {
+            serverOptions(this: App): ServerOptions {
                 return {
-                    language: this.options.language,
                     'x-optimize': this.options.release ? 'release' : 'debug',
                     'x-target': this.options.target
                 };
             },
-            status(this: App) {
-                const error = this.result && !this.result.success;
+            status(this: App): AppStatus {
+                const error = !!(this.result && !this.result.success);
                 return {
                     online: this.online,
                     error,

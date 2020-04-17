@@ -5,6 +5,7 @@ import type { FlowStep, Result } from '../ts/types/results';
 import type { HighlightedRange } from '../ts/types/highlighted-range';
 import type { ServerOptions } from '../ts/types/server-options';
 import type { PartiallyMutable } from '../ts/helpers/partially-mutable';
+import type { LanguageName } from '../ts/helpers/languages';
 import './internal/codemirror/addon-jump-arrows';
 import groupToMap from '../ts/helpers/group-to-map';
 
@@ -12,6 +13,7 @@ const AppCodeEdit = Vue.component('app-code-edit', {
     props: {
         initialText:       String,
         serviceUrl:        String,
+        language:          String as () => LanguageName|undefined,
         serverOptions:     Object as () => ServerOptions|undefined,
         highlightedRange:  Object as () => HighlightedRange|undefined,
         executionFlow:     Array as () => Array<FlowStep>
@@ -24,6 +26,7 @@ const AppCodeEdit = Vue.component('app-code-edit', {
 
         const options = {
             serviceUrl: this.serviceUrl,
+            language: this.language,
             initialServerOptions: this.serverOptions,
             on: {
                 slowUpdateWait: () => this.$emit('slow-update-wait'),
@@ -32,7 +35,7 @@ const AppCodeEdit = Vue.component('app-code-edit', {
                 textChange: getText => this.$emit('text-change', getText),
                 serverError: message => this.$emit('server-error', message)
             }
-        } as PartiallyMutable<MirrorSharpOptions<ServerOptions, Result['value']>, 'initialServerOptions'|'serviceUrl'>;
+        } as PartiallyMutable<MirrorSharpOptions<ServerOptions, Result['value']>, 'language'|'initialServerOptions'|'serviceUrl'>;
         // incorrect, based on type _name_ match?
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
         let instance = mirrorsharp(textarea, options);
@@ -46,6 +49,11 @@ const AppCodeEdit = Vue.component('app-code-edit', {
             contentEditable.setAttribute('autocomplete', 'off');
 
         this.$watch('initialText', (v: string) => instance.setText(v));
+        this.$watch('language', (l: LanguageName) => {
+            options.language = l;
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            instance.setLanguage(l);
+        }, { deep: true });
         this.$watch('serverOptions', (o: ServerOptions) => {
             options.initialServerOptions = o;
             // eslint-disable-next-line @typescript-eslint/no-floating-promises

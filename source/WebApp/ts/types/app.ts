@@ -49,13 +49,15 @@ export interface AppData {
     gist: Gist|null|undefined;
 }
 
+export interface AppStatus {
+    online: boolean;
+    error: boolean;
+    color: '#4684ee'|'#dc3912'|'#aaa';
+}
+
 interface AppComputed {
     serverOptions(this: App): ServerOptions;
-    status(this: App): {
-        online: boolean;
-        error: boolean;
-        color: '#4684ee'|'#dc3912'|'#aaa';
-    };
+    status(this: App): AppStatus;
 }
 
 interface AppMethods {
