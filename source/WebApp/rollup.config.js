@@ -3,8 +3,10 @@
 /* eslint-disable no-process-env */
 
 import path from 'path';
+// @ts-ignore
+import pluginBabel from 'rollup-plugin-babel';
 import pluginNodeResolve from '@rollup/plugin-node-resolve';
-import rollupPluginCommonJS from 'rollup-plugin-commonjs';
+import pluginCommonJS from 'rollup-plugin-commonjs';
 import pluginTypeScript from '@rollup/plugin-typescript';
 // @ts-ignore
 import { terser } from 'rollup-plugin-terser';
@@ -22,12 +24,16 @@ export default {
                 : null
         },
         pluginNodeResolve(),
-        rollupPluginCommonJS({
+        pluginCommonJS({
             include: [
                 'node_modules/**'
             ]
         }),
         pluginTypeScript(),
+        pluginBabel({
+            extensions: ['.js', '.ts'],
+            presets: [['@babel/preset-env', { loose: true }]]
+        }),
         ...(process.env.NODE_ENV === 'production' ? [terser()] : [])
     ],
     output: {
