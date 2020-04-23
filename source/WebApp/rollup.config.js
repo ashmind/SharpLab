@@ -24,15 +24,15 @@ export default {
                 : null
         },
         pluginNodeResolve(),
-        pluginCommonJS({
-            include: [
-                'node_modules/**'
-            ]
-        }),
         pluginTypeScript(),
         pluginBabel({
             extensions: ['.js', '.ts'],
             presets: [['@babel/preset-env', { loose: true }]]
+        }),
+        pluginCommonJS({
+            include: [
+                'node_modules/**'
+            ]
         }),
         terser()
     ],
