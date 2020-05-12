@@ -85,7 +85,7 @@ export default Vue.extend({
     beforeDestroy() {
         this.instance.destroy({});
     },
-    template: '<div></div>'
+    template: '<div class="cm6-preview"></div>'
 });
 
 /*
