@@ -12,8 +12,6 @@ import pluginTypeScript from '@rollup/plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
 
 export default {
-    // https://github.com/rollup/rollup/issues/2473
-    treeshake: false,
     input: './ts/app.ts',
     plugins: [
         {
