@@ -22,6 +22,21 @@ $netfxPublishRoot = 'source/NetFramework/Server/bin/Release/net47/publish'
 Write-Output "Compress-Archive -Path $netfxPublishRoot/* -DestinationPath $SolutionRoot/Server.NetFramework.zip"
 Compress-Archive -Path "$netfxPublishRoot/*" -DestinationPath "$SolutionRoot/Server.NetFramework.zip"
 
+Write-Output 'source/WebApp'
+Push-Location source/WebApp
+try {
+    Write-Output '  npm install'
+    npm install
+    if ($LastExitCode -ne 0) { throw "npm install exited with code $LastExitCode" }
+    
+    Write-Output '  npm run build'
+    npm run build
+    if ($LastExitCode -ne 0) { throw "npm run build exited with code $LastExitCode" }
+}
+finally {
+    Pop-Location
+}
+
 Write-Output 'dotnet publish source/WebApp/WebApp.csproj ...'
 dotnet publish source/WebApp/WebApp.csproj -c Release --no-build --no-restore
 if ($LastExitCode -ne 0) { throw "dotnet publish exited with code $LastExitCode" }
