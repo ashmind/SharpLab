@@ -5,6 +5,7 @@ param (
 Set-StrictMode -Version 2
 $ErrorActionPreference = 'Stop'
 
+Write-Output 'source'
 Push-Location "$PSScriptRoot\..\source"
 try {
     Write-Output 'msbuild Native.Profiler\Native.Profiler.vcxproj'
@@ -30,6 +31,25 @@ try {
     finally {
         Remove-Item 'SharpLab.Build.sln' -ErrorAction Continue
     }
+}
+finally {
+    Pop-Location
+}
+
+Write-Output 'source\WebApp'
+Push-Location $PSScriptRoot\..\source\WebApp
+try {
+    if ($env:NODE_ENV -eq 'production') {
+        throw "Build prerequisites cannot be installed with NODE_ENV=production."
+    }
+
+    Write-Output '  npm install'
+    npm install
+    if ($LastExitCode -ne 0) { throw "npm install exited with code $LastExitCode" }
+    
+    Write-Output '  npm run build'
+    npm run build
+    if ($LastExitCode -ne 0) { throw "npm run build exited with code $LastExitCode" }
 }
 finally {
     Pop-Location

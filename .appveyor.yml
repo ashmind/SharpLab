@@ -9,6 +9,7 @@ cache:
 - source/WebApp/node_modules -> source/WebApp/package.json
 
 build_script:
+- SET NODE_ENV=ci
 - cmd: sl ci
 
 artifacts:
