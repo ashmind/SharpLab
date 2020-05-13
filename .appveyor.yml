@@ -1,9 +1,6 @@
 version: '{branch}-{build}'
 image: Visual Studio 2019
 
-environment:
-  NODE_ENV: production
-
 install:
 - ps: |-
     Install-Product node 12.16.1 x64
