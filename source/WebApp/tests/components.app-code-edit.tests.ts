@@ -1,6 +1,6 @@
 import { createMockProxy } from 'jest-mock-proxy';
 import mirrorsharp from 'mirrorsharp';
-import AppCodeEdit from '../components/app-code-edit';
+import AppCodeEdit from '../components/app-code-edit-stable';
 import { vueNextTickWithErrorHandling, MockProxy, MockFunction, fromPartial } from './helpers';
 
 jest.mock('mirrorsharp');

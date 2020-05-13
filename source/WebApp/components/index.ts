@@ -7,4 +7,5 @@ import './app-explain-view';
 import './app-output-view';
 import './app-gist-manager';
 import './app-theme-manager';
+import './app-cm6-preview-manager';
 import './app-warnings-section';

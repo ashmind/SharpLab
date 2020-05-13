@@ -79,3 +79,28 @@ textarea, .CodeMirror {
         color: #fff !important;
     }
 }
+
+/* CodeMirror 6 Preview */
+
+// TODO: remove one level of nesting
+.cm6-preview, .cm6-preview > div, .cm-wrap {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+// TODO: understand CM priorities
+.cm-wrap.cm-wrap.cm-wrap {
+    position: absolute !important;
+
+    .cm-scroller {
+        .code-text();
+    }
+}
+
+// TODO: move to mirrorsharp
+.cm-lintRange-hidden {
+    opacity: 0.5;
+}
