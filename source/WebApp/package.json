@@ -94,7 +94,7 @@
     "lz-string": "1.4.4",
     "marked": "0.7.0",
     "mirrorsharp": "2.0.0-preview-04",
-    "mirrorsharp-codemirror-6-preview": "0.0.1",
+    "mirrorsharp-codemirror-6-preview": "0.0.2",
     "normalize.css": "8.0.1",
     "portal-vue": "2.1.7",
     "resize-observer-polyfill": "1.5.1",
