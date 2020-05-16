@@ -211,12 +211,6 @@ namespace SharpLab.Server.Decompilation {
             }
         }
 
-        private int MapArchitectureToBitness(Architecture architecture) => architecture switch {
-            Architecture.Amd64 => 64,
-            Architecture.X86 => 32,
-            _ => throw new Exception($"Unsupported architecture {architecture}.")
-        };
-
         private void WriteIgnoredOpenGeneric(JitWriteContext context, MethodBase method) {
             WriteSignatureFromReflection(context, method);
             var writer = context.Writer;
@@ -255,6 +249,13 @@ namespace SharpLab.Server.Decompilation {
 
             return null;
         }
+
+        private int MapArchitectureToBitness(Architecture architecture) => architecture switch
+        {
+            Architecture.Amd64 => 64,
+            Architecture.X86 => 32,
+            _ => throw new Exception($"Unsupported architecture {architecture}.")
+        };
 
         private class JitWriteContext {
             public JitWriteContext(TextWriter writer, ClrRuntime runtime, JitAsmSymbolResolver symbolResolver) {
