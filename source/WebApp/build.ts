@@ -68,10 +68,10 @@ const less = task('less', async () => {
     );
 }, { inputs: [`${dirname}/less/**/*.less`] });
 
-//const tsLint = task('tsLint', () => exec('eslint . --max-warnings 0 --ext .js,.ts'));
+const tsLint = task('tsLint', () => exec('eslint . --max-warnings 0 --ext .js,.ts'));
 
 const ts = task('ts', async () => {
-    //await tsLint();
+    await tsLint();
     await exec('rollup -c');
 }, {
     inputs: [
