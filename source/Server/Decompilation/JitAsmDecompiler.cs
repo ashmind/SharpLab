@@ -34,11 +34,7 @@ namespace SharpLab.Server.Decompilation {
                 var runtime = runtimeLease.Object;
 
                 runtime.Flush();
-                var context = new JitWriteContext(codeWriter, runtime);
-                /*context.Translator = new IntelTranslator {
-                    SymbolResolver = (Instruction instruction, long addr, ref long offset) =>
-                        ResolveSymbol(runtime, instruction, addr, context.CurrentMethodAddress)
-                };*/
+                var context = new JitWriteContext(codeWriter, runtime, new JitAsmSymbolResolver(runtime));
 
                 WriteJitInfo(runtime.ClrInfo, codeWriter);
                 WriteProfilerState(codeWriter);
@@ -203,7 +199,7 @@ namespace SharpLab.Server.Decompilation {
                 HexPrefix = "0x",
                 HexSuffix = null,
                 SpaceAfterOperandSeparator = true
-            });
+            }, context.SymbolResolver);
             var output = new StringOutput();
             foreach (ref var instruction in instructions) {
                 formatter.Format(instruction, output);
@@ -278,15 +274,16 @@ namespace SharpLab.Server.Decompilation {
         }
 
         private class JitWriteContext {
-            public JitWriteContext(TextWriter writer, ClrRuntime runtime) {
+            public JitWriteContext(TextWriter writer, ClrRuntime runtime, JitAsmSymbolResolver symbolResolver) {
                 Writer = writer;
                 Runtime = runtime;
+                SymbolResolver = symbolResolver;
             }
             
             public TextWriter Writer { get; }
             public ClrRuntime Runtime { get; }
+            public JitAsmSymbolResolver SymbolResolver { get; }
             public ulong CurrentMethodAddress { get; set; }
-            // public Translator? Translator { get; set; }
         }
     }
 }

@@ -12,5 +12,5 @@ public static class C {
 
 C.M(Double, Double, Double)
     L0000: vzeroupper
-    L0003: mov rax, 0x<IGNORE>
+    L0003: mov rax, System.Math.FusedMultiplyAdd(Double, Double, Double)
     L000d: jmp rax
