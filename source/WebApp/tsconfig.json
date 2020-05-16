@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
         "target": "ES2019",
-        "module": "ESNext",
         "moduleResolution": "node",
         "allowJs": true,
         "checkJs": true,
@@ -12,12 +11,8 @@
         "esModuleInterop": true
     },
     "include": [
-        "**/*.ts",
-        "**/*.js",
-        "**/*.cjs",
-    ],
-    "exclude": [
-        "node_modules/**/*",
-        "wwwroot/**/*"
+        "*",
+        "ts",
+        "components"
     ]
 }

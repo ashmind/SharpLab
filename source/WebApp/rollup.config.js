@@ -22,7 +22,7 @@ export default {
                 : null
         },
         pluginNodeResolve(),
-        pluginTypeScript(),
+        pluginTypeScript({ include: ['ts/**/*.ts', 'components/**/*.ts'] }),
         pluginBabel({
             extensions: ['.js', '.ts'],
             presets: [['@babel/preset-env', { loose: true }]]
