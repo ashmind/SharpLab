@@ -6168,7 +6168,33 @@ System.Runtime.CompilerServices
   TupleElementNamesAttribute: Denied
   TypeForwardedFromAttribute: Denied
   TypeForwardedToAttribute: Denied
-  Unsafe: Denied
+  Unsafe: Allowed
+     Add: Denied
+     AddByteOffset: Denied
+     AreSame: Allowed
+     As: Denied
+     AsPointer: Denied
+     AsRef: Denied
+     ByteOffset: Allowed
+     Copy: Denied
+     CopyBlock: Denied
+     CopyBlockUnaligned: Denied
+     Equals: Denied
+     GetHashCode: Denied
+     GetType: Denied
+     InitBlock: Denied
+     InitBlockUnaligned: Denied
+     IsAddressGreaterThan: Allowed
+     IsAddressLessThan: Allowed
+     Read: Denied
+     ReadUnaligned: Denied
+     SizeOf: Allowed
+     Subtract: Denied
+     SubtractByteOffset: Denied
+     ToString: Denied
+     Unbox: Denied
+     Write: Denied
+     WriteUnaligned: Denied
   UnsafeValueTypeAttribute: Denied
   ValueTaskAwaiter: Denied
   ValueTaskAwaiter`1: Denied

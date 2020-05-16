@@ -19,6 +19,7 @@ using Unbreakable;
 using Unbreakable.Policy;
 using Unbreakable.Policy.Rewriters;
 using SharpLab.Runtime.Internal;
+using System.Runtime.CompilerServices;
 
 namespace SharpLab.Server.Execution.Unbreakable {
     using static ApiAccess;
@@ -35,6 +36,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
             .Namespace("System.Net", Neutral, SetupSystemNet)
             .Namespace("System.Numerics", Neutral, SetupSystemNumerics)
             .Namespace("System.Reflection", Neutral, SetupSystemReflection)
+            .Namespace("System.Runtime.CompilerServices", Neutral, SetupSystemRuntimeCompilerServices)
             .Namespace("System.Runtime.InteropServices", Neutral, SetupSystemRuntimeInteropServices)
             .Namespace("System.Security.Cryptography", Neutral, SetupSystemSecurityCryptography)
             .Namespace("System.Web", Neutral, SetupSystemWeb)
@@ -242,6 +244,17 @@ namespace SharpLab.Server.Execution.Unbreakable {
                     }
                 });
             });
+        }
+
+        private static void SetupSystemRuntimeCompilerServices(NamespacePolicy namespacePolicy) {
+            namespacePolicy
+                .Type(typeof(Unsafe), Neutral,
+                    t => t.Member(nameof(Unsafe.AreSame), Allowed)
+                          .Member(nameof(Unsafe.ByteOffset), Allowed)
+                          .Member(nameof(Unsafe.SizeOf), Allowed)
+                          .Member(nameof(Unsafe.IsAddressGreaterThan), Allowed)
+                          .Member(nameof(Unsafe.IsAddressLessThan), Allowed)
+                );
         }
 
         private static void SetupSystemRuntimeInteropServices(NamespacePolicy namespacePolicy) {
