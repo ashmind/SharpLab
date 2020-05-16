@@ -14,6 +14,11 @@ using SharpLab.Server.Decompilation.Internal;
 namespace SharpLab.Server.Decompilation {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class JitAsmDecompiler : IDecompiler {
+        private static readonly FormatterOptions FormatterOptions = new FormatterOptions {
+            HexPrefix = "0x",
+            HexSuffix = null,
+            SpaceAfterOperandSeparator = true
+        };
         private readonly Pool<ClrRuntime> _runtimePool;
 
         public string LanguageName => TargetNames.JitAsm;
@@ -183,11 +188,10 @@ namespace SharpLab.Server.Decompilation {
             }
 
             var methodAddress = regions.HotStart;
-            context.CurrentMethodAddress = methodAddress;
-
             var methodLength = regions.HotSize;
+
             var reader = new MemoryCodeReader(new IntPtr(unchecked((long)methodAddress)), methodLength);
-            var decoder = Decoder.Create(IntPtr.Size * 8, reader);
+            var decoder = Decoder.Create(MapArchitectureToBitness(context.Runtime.DataTarget.Architecture), reader);
 
             var instructions = new InstructionList();
             decoder.IP = methodAddress;
@@ -195,11 +199,7 @@ namespace SharpLab.Server.Decompilation {
                 decoder.Decode(out instructions.AllocUninitializedElement());
             }
 
-            var formatter = new IntelFormatter(new FormatterOptions {
-                HexPrefix = "0x",
-                HexSuffix = null,
-                SpaceAfterOperandSeparator = true
-            }, context.SymbolResolver);
+            var formatter = new IntelFormatter(FormatterOptions, context.SymbolResolver);
             var output = new StringOutput();
             foreach (ref var instruction in instructions) {
                 formatter.Format(instruction, output);
@@ -210,6 +210,12 @@ namespace SharpLab.Server.Decompilation {
                 writer.WriteLine(output.ToStringAndReset());
             }
         }
+
+        private int MapArchitectureToBitness(Architecture architecture) => architecture switch {
+            Architecture.Amd64 => 64,
+            Architecture.X86 => 32,
+            _ => throw new Exception($"Unsupported architecture {architecture}.")
+        };
 
         private void WriteIgnoredOpenGeneric(JitWriteContext context, MethodBase method) {
             WriteSignatureFromReflection(context, method);
@@ -283,7 +289,6 @@ namespace SharpLab.Server.Decompilation {
             public TextWriter Writer { get; }
             public ClrRuntime Runtime { get; }
             public JitAsmSymbolResolver SymbolResolver { get; }
-            public ulong CurrentMethodAddress { get; set; }
         }
     }
 }
