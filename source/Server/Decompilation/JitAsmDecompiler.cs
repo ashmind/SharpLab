@@ -17,6 +17,7 @@ namespace SharpLab.Server.Decompilation {
         private static readonly FormatterOptions FormatterOptions = new FormatterOptions {
             HexPrefix = "0x",
             HexSuffix = null,
+            UppercaseHex = false,
             SpaceAfterOperandSeparator = true
         };
         private readonly Pool<ClrRuntime> _runtimePool;

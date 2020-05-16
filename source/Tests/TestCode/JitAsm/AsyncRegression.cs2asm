@@ -32,7 +32,7 @@ C.Foo(Int32)
     L0004: xor eax, eax
     L0006: mov [rsp+0x28], rax
     L000b: mov [rsp+0x30], rax
-    L0010: mov [rsp+0x2C], ecx
+    L0010: mov [rsp+0x2c], ecx
     L0014: xor ecx, ecx
     L0016: mov [rsp+0x30], rcx
     L001b: mov dword ptr [rsp+0x28], 0x<IGNORE>
@@ -138,6 +138,6 @@ C+<Foo>d__1.SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)
     L0028: jmp rax
     L002b: add rsp, 0x28
     L002f: ret
-    L0030: mov ecx, 0x3C
+    L0030: mov ecx, 0x3c
     L0035: call System.ThrowHelper.ThrowArgumentNullException(System.ExceptionArgument)
     L003a: int3
