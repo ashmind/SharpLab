@@ -4,12 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Iced.Intel;
 using JetBrains.Annotations;
 using Microsoft.Diagnostics.Runtime;
-using SharpDisasm;
-using SharpDisasm.Translators;
 using SharpLab.Runtime;
 using SharpLab.Server.Common;
+using SharpLab.Server.Decompilation.Internal;
 
 namespace SharpLab.Server.Decompilation {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
@@ -35,15 +35,14 @@ namespace SharpLab.Server.Decompilation {
 
                 runtime.Flush();
                 var context = new JitWriteContext(codeWriter, runtime);
-                context.Translator = new IntelTranslator {
+                /*context.Translator = new IntelTranslator {
                     SymbolResolver = (Instruction instruction, long addr, ref long offset) =>
                         ResolveSymbol(runtime, instruction, addr, context.CurrentMethodAddress)
-                };
+                };*/
 
                 WriteJitInfo(runtime.ClrInfo, codeWriter);
                 WriteProfilerState(codeWriter);
 
-                var architecture = MapArchitecture(runtime.ClrInfo.DacInfo.TargetArchitecture);
                 foreach (var type in assembly.DefinedTypes) {
                     if (type.IsNested)
                         continue; // it's easier to handle nested generic types recursively, so we suppress all nested for consistency
@@ -190,15 +189,29 @@ namespace SharpLab.Server.Decompilation {
             var methodAddress = regions.HotStart;
             context.CurrentMethodAddress = methodAddress;
 
-            var architecture = MapArchitecture(context.Runtime.DataTarget.Architecture);
-            using (var disasm = new Disassembler(new IntPtr(unchecked((long)methodAddress)), (int)regions.HotSize, architecture, methodAddress)) {
-                var translator = context.Translator!;
-                foreach (var instruction in disasm.Disassemble()) {
-                    writer.Write("    L");
-                    writer.Write((instruction.Offset - methodAddress).ToString("x4"));
-                    writer.Write(": ");
-                    writer.WriteLine(translator.Translate(instruction));
-                }
+            var methodLength = regions.HotSize;
+            var reader = new MemoryCodeReader(new IntPtr(unchecked((long)methodAddress)), methodLength);
+            var decoder = Decoder.Create(IntPtr.Size * 8, reader);
+
+            var instructions = new InstructionList();
+            decoder.IP = methodAddress;
+            while (decoder.IP < (methodAddress + methodLength)) {
+                decoder.Decode(out instructions.AllocUninitializedElement());
+            }
+
+            var formatter = new IntelFormatter(new FormatterOptions {
+                HexPrefix = "0x",
+                HexSuffix = null,
+                SpaceAfterOperandSeparator = true
+            });
+            var output = new StringOutput();
+            foreach (ref var instruction in instructions) {
+                formatter.Format(instruction, output);
+
+                writer.Write("    L");
+                writer.Write((instruction.IP - methodAddress).ToString("x4"));
+                writer.Write(": ");
+                writer.WriteLine(output.ToStringAndReset());
             }
         }
 
@@ -219,6 +232,7 @@ namespace SharpLab.Server.Decompilation {
             context.Writer.WriteLine(signature ?? "Unknown Method");
         }
 
+        /*
         private static string? ResolveSymbol(ClrRuntime runtime, Instruction instruction, long addr, ulong currentMethodAddress) {
             var operand = instruction.Operands.Length > 0 ? instruction.Operands[0] : null;
             if (operand?.PtrOffset == 0) {
@@ -239,7 +253,7 @@ namespace SharpLab.Server.Decompilation {
                 case 32: return (ulong)operand.LvalSDWord;
                 default: return null;
             }
-        }
+        }*/
 
         private HotColdRegions? FindNonEmptyHotColdInfo(ClrMethod? method) {
             if (method == null)
@@ -263,15 +277,6 @@ namespace SharpLab.Server.Decompilation {
             return null;
         }
 
-        private ArchitectureMode MapArchitecture(Architecture architecture) => architecture switch
-        {
-            Architecture.Amd64 => ArchitectureMode.x86_64,
-            Architecture.X86 => ArchitectureMode.x86_32,
-            // ReSharper disable once HeapView.BoxingAllocation
-            // ReSharper disable once HeapView.ObjectAllocation.Evident
-            _ => throw new Exception($"Unsupported architecture mode {architecture}."),
-        };
-
         private class JitWriteContext {
             public JitWriteContext(TextWriter writer, ClrRuntime runtime) {
                 Writer = writer;
@@ -281,7 +286,7 @@ namespace SharpLab.Server.Decompilation {
             public TextWriter Writer { get; }
             public ClrRuntime Runtime { get; }
             public ulong CurrentMethodAddress { get; set; }
-            public Translator? Translator { get; set; }
+            // public Translator? Translator { get; set; }
         }
     }
 }
