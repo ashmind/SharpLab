@@ -4,12 +4,9 @@ import { cases, renderComponent, PickPropTypes } from './helpers';
 import { basicCSharp } from './data/code';
 
 beforeEach(() => {
-    class MockTextRange {
-        getBoundingClientRect() {}
-        getClientRects() { return []; }
-    }
-
-    (document.body as { createTextRange?: () => MockTextRange }).createTextRange = () => new MockTextRange();
+    // eslint-disable-next-line no-undefined
+    Range.prototype.getBoundingClientRect = () => undefined as unknown as DOMRect;
+    Range.prototype.getClientRects = () => [] as unknown as DOMRectList;
     Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
         get(this: HTMLElement) {
             switch (this.className) {
