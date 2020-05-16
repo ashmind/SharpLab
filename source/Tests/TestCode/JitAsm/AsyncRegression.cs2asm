@@ -40,7 +40,7 @@ C.Foo(Int32)
     L0028: call System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[[C+<Foo>d__1, _]](<Foo>d__1 ByRef)
     L002d: mov rax, [rsp+0x30]
     L0032: test rax, rax
-    L0035: jne short C.Foo(Int32)
+    L0035: jne short L0041
     L0037: lea rcx, [rsp+0x30]
     L003c: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, System.Private.CoreLib]].InitializeTaskAsPromise()
     L0041: nop
@@ -62,20 +62,20 @@ C+<Foo>d__1.MoveNext()
     L0025: mov rdi, [rbp+0x10]
     L0029: add rdi, 8
     L002d: cmp qword ptr [rdi], 0
-    L0031: jne short C+<Foo>d__1.MoveNext()
+    L0031: jne short L0083
     L0033: mov ecx, esi
     L0035: cmp ecx, 9
-    L0038: jge short C+<Foo>d__1.MoveNext()
+    L0038: jge short L005d
     L003a: cmp esi, 0x<IGNORE>
-    L003d: jl short C+<Foo>d__1.MoveNext()
+    L003d: jl short L005d
     L003f: mov rax, 0x<IGNORE>
     L0049: mov rax, [rax]
     L004c: inc ecx
     L004e: cmp ecx, [rax+8]
-    L0051: jae short C+<Foo>d__1.MoveNext()
+    L0051: jae short L00bc
     L0053: movsxd rcx, ecx
     L0056: mov rdx, [rax+rcx*8+0x10]
-    L005b: jmp short C+<Foo>d__1.MoveNext()
+    L005b: jmp short L0079
     L005d: mov rcx, 0x<IGNORE>
     L0067: call 0x<IGNORE>
     L006c: mov rdx, rax
@@ -83,9 +83,9 @@ C+<Foo>d__1.MoveNext()
     L0076: mov [rdx+0x38], esi
     L0079: mov rcx, rdi
     L007c: call 0x<IGNORE>
-    L0081: jmp short C+<Foo>d__1.MoveNext()
+    L0081: jmp short L00a9
     L0083: cmp byte ptr [0x<IGNORE>], 0
-    L008a: je short C+<Foo>d__1.MoveNext()
+    L008a: je short L0099
     L008c: mov rcx, [rdi]
     L008f: mov edx, 1
     L0094: call System.Threading.Tasks.AsyncCausalityTracer.TraceOperationCompletion(System.Threading.Tasks.Task, System.Threading.Tasks.AsyncCausalityStatus)
@@ -94,7 +94,7 @@ C+<Foo>d__1.MoveNext()
     L009e: cmp [rcx], ecx
     L00a0: call System.Threading.Tasks.Task`1[[System.Int32, System.Private.CoreLib]].TrySetResult(Int32)
     L00a5: test eax, eax
-    L00a7: je short C+<Foo>d__1.MoveNext()
+    L00a7: je short L00b1
     L00a9: lea rsp, [rbp-0x10]
     L00ad: pop rsi
     L00ae: pop rdi
@@ -117,7 +117,7 @@ C+<Foo>d__1.MoveNext()
     L00e0: mov rcx, [rbp+0x10]
     L00e4: add rcx, 8
     L00e8: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, System.Private.CoreLib]].SetException(System.Exception)
-    L00ed: lea rax, [C+<Foo>d__1.MoveNext()]
+    L00ed: lea rax, [L00a9]
     L00f4: add rsp, 0x30
     L00f8: pop rsi
     L00f9: pop rdi
@@ -129,9 +129,9 @@ C+<Foo>d__1.SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)
     L0004: add rcx, 8
     L0008: mov rcx, [rcx]
     L000b: test rdx, rdx
-    L000e: je short C+<Foo>d__1.SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)
+    L000e: je short L0030
     L0010: test rcx, rcx
-    L0013: je short C+<Foo>d__1.SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)
+    L0013: je short L002b
     L0015: mov ecx, 0x23
     L001a: mov rax, System.ThrowHelper.ThrowInvalidOperationException(System.ExceptionResource)
     L0024: add rsp, 0x28

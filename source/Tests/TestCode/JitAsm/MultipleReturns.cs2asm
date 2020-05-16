@@ -10,7 +10,7 @@ static class C {
 
 C.M(Boolean)
     L0000: test cl, cl
-    L0002: jne short C.M(Boolean)
+    L0002: jne short L000a
     L0004: mov eax, 2
     L0009: ret
     L000a: mov eax, 1

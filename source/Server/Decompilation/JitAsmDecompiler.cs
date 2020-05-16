@@ -39,7 +39,7 @@ namespace SharpLab.Server.Decompilation {
                 var runtime = runtimeLease.Object;
 
                 runtime.Flush();
-                var context = new JitWriteContext(codeWriter, runtime, new JitAsmSymbolResolver(runtime));
+                var context = new JitWriteContext(codeWriter, runtime);
 
                 WriteJitInfo(runtime.ClrInfo, codeWriter);
                 WriteProfilerState(codeWriter);
@@ -199,7 +199,8 @@ namespace SharpLab.Server.Decompilation {
                 decoder.Decode(out instructions.AllocUninitializedElement());
             }
 
-            var formatter = new IntelFormatter(FormatterOptions, context.SymbolResolver);
+            var resolver = new JitAsmSymbolResolver(context.Runtime, methodAddress, methodLength);
+            var formatter = new IntelFormatter(FormatterOptions, resolver);
             var output = new StringOutput();
             foreach (ref var instruction in instructions) {
                 formatter.Format(instruction, output);
@@ -258,15 +259,13 @@ namespace SharpLab.Server.Decompilation {
         };
 
         private class JitWriteContext {
-            public JitWriteContext(TextWriter writer, ClrRuntime runtime, JitAsmSymbolResolver symbolResolver) {
+            public JitWriteContext(TextWriter writer, ClrRuntime runtime) {
                 Writer = writer;
                 Runtime = runtime;
-                SymbolResolver = symbolResolver;
             }
             
             public TextWriter Writer { get; }
             public ClrRuntime Runtime { get; }
-            public JitAsmSymbolResolver SymbolResolver { get; }
         }
     }
 }
