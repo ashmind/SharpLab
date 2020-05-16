@@ -476,10 +476,11 @@ namespace SharpLab.Tests {
 
         // Currently Inspect.Heap/MemoryGraph does not promise to always work as expected if GCs happen
         // during its operation. So for now we retry in the tests.
-        private static async Task<SlowUpdateResult<ExecutionResultData>> SendSlowUpdateWithRetryOnMovedObjectsAsync(MirrorSharpTestDriver driver) {
+        private async Task<SlowUpdateResult<ExecutionResultData>> SendSlowUpdateWithRetryOnMovedObjectsAsync(MirrorSharpTestDriver driver) {
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
             var tryCount = 1;
             while (result.JoinErrors().Contains("Failed to find object type for address") && tryCount < 10) {
+                _testOutputHelper.WriteLine($"SlowUpdate failed on GC, retrying ({tryCount}) ...");
                 result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
                 tryCount += 1;
             }
