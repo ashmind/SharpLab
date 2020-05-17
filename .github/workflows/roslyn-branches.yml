@@ -1,6 +1,8 @@
 name: roslyn-branches
 
-on: push
+on:
+  schedule:
+    - cron: '0 12 * * *'
 
 defaults:
   run:
