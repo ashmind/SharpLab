@@ -2,7 +2,7 @@ using System;
 
 namespace SharpLab.Server.Decompilation.Internal {
     [Serializable]
-    public struct MethodJitResult {
+    public readonly struct MethodJitResult {
         public MethodJitResult(RuntimeMethodHandle handle, MethodJitStatus status) {
             Handle = handle.Value;
             Pointer = GetIsSuccess(status)

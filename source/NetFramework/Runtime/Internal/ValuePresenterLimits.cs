@@ -1,6 +1,6 @@
 ﻿namespace SharpLab.Runtime.Internal
 {
-    public struct ValuePresenterLimits
+    public readonly struct ValuePresenterLimits
     {
         private readonly bool _maxDepthSet;
         private readonly int? _maxDepth;
