@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "es2019",
+            "es2020.string"
+        ],
+        "target": "ES2019",
+        "moduleResolution": "node",
+        "noEmit": true,
+        "strict": true,
+        "importsNotUsedAsValues": "error",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true
+    }
+}

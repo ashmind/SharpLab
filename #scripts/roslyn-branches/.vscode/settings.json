@@ -1,0 +1,17 @@
+{
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    },
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "cSpell.words": [
+        "etag",
+        "execa",
+        "globby",
+        "jetpack",
+        "msbuild",
+        "promisify",
+        "revparse",
+        "sharplab",
+        "wwwroot"
+    ]
+}

@@ -10,18 +10,18 @@ Import-Module IISAdministration
 
 function Register-HostsRecord([string] $hostName, [string] $ip) {
     $hostsPath = Join-Path ([System.Environment]::GetFolderPath('System')) "drivers\etc\hosts"
-    
+
     $record = "$ip $hostName"
     $content = [IO.File]::ReadAllText($hostsPath)
     if ($content.Contains($record)) {
         Write-Output "  Site already in etc/hosts."
         return
     }
-    
+
     if (!$content.EndsWith("`r`n")) {
         $content += "`r`n"
     }
-    
+
     $content += $record
     [IO.File]::WriteAllText($hostsPath, $content)
     Write-Output "  Added site to etc/hosts."
@@ -38,7 +38,7 @@ $appPoolName = $siteName
 if ($appPoolName.Length -gt 64) {
     $parts = $appPoolName -split '\.',2
     $first = $parts[0].Substring(0, $parts[0].Length - ($appPoolName.Length - 64) - 3)
-    $appPoolName = "$first(…).$($parts[1])"
+    $appPoolName = "$first(â€¦).$($parts[1])"
 }
 
 if (!$server.ApplicationPools[$appPoolName]) {
