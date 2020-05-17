@@ -20,6 +20,6 @@ C..ctor()
 C.M(Int32)
     L0000: inc edx
     L0002: test edx, edx
-    L0004: jz L0000
+    L0004: je short L0000
     L0006: mov eax, edx
     L0008: ret

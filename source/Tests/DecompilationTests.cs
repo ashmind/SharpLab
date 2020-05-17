@@ -141,6 +141,8 @@ namespace SharpLab.Tests {
         [InlineData("JitAsm.Generic.Nested.AttributeOnTop.cs2asm")]
         [InlineData("JitAsm.Generic.Nested.AttributeOnNested.cs2asm")]
         [InlineData("JitAsm.Generic.Nested.AttributeOnBoth.cs2asm")]
+        [InlineData("JitAsm.Vectors.cs2asm")]
+        [InlineData("JitAsm.Math.FusedMultiplyAdd.cs2asm")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForJitAsm(string resourceName) {
             var data = TestCode.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);
