@@ -8,6 +8,7 @@ using Xunit;
 using Xunit.Abstractions;
 using SharpLab.Server.Common;
 using SharpLab.Tests.Internal;
+using System.Runtime.Intrinsics.X86;
 
 namespace SharpLab.Tests {
     public class DecompilationTests {
@@ -141,9 +142,15 @@ namespace SharpLab.Tests {
         [InlineData("JitAsm.Generic.Nested.AttributeOnTop.cs2asm")]
         [InlineData("JitAsm.Generic.Nested.AttributeOnNested.cs2asm")]
         [InlineData("JitAsm.Generic.Nested.AttributeOnBoth.cs2asm")]
-        [InlineData("JitAsm.Vectors.cs2asm")]
-        [InlineData("JitAsm.Math.FusedMultiplyAdd.cs2asm")]
+        [InlineData("JitAsm.Vectors.Avx2.cs2asm")]
+        [InlineData("JitAsm.Math.FusedMultiplyAdd.Fma.cs2asm")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForJitAsm(string resourceName) {
+            // https://github.com/ashmind/SharpLab/issues/514
+            if (resourceName.Contains(".Fma.") && !Fma.IsSupported)
+                resourceName = resourceName.Replace(".Fma.", ".NoFma.");
+            if (resourceName.Contains(".Avx2.") && !Avx2.IsSupported)
+                resourceName = resourceName.Replace(".Avx2.", ".NoAvx2.");
+
             var data = TestCode.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);
 
