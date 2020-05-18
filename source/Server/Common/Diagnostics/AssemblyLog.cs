@@ -1,8 +1,5 @@
 using System.Diagnostics;
 using System.IO;
-#if DEBUG
-using System.Threading;
-#endif
 using Mono.Cecil;
 
 namespace SharpLab.Server.Common.Diagnostics {
@@ -34,6 +31,7 @@ namespace SharpLab.Server.Common.Diagnostics {
             #endif
         }
 
+        #if DEBUG
         private static string? GetLogPath(string stepName) {
             var format = _pathFormat.Value;
             if (format == null)
@@ -45,5 +43,6 @@ namespace SharpLab.Server.Common.Diagnostics {
                 Directory.CreateDirectory(directoryPath);
             return path;
         }
+        #endif
     }
 }
