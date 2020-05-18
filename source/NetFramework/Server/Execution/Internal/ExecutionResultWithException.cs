@@ -2,7 +2,7 @@ using System;
 
 namespace SharpLab.Server.Execution {
     [Serializable]
-    public struct ExecutionResultWithException {
+    public readonly struct ExecutionResultWithException {
         public ExecutionResultWithException(ExecutionResult result, Exception? exception = null) {
             Result = result;
             Exception = exception;

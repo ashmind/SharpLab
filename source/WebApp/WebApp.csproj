@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <AssemblyName>SharpLab.WebApp</AssemblyName>
     <RootNamespace>SharpLab.WebApp</RootNamespace>
@@ -12,7 +12,7 @@
     <Content Remove="**/*.json" />
     <None Include="**/*.json" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder);wwwroot/**" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Update=".env">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -40,7 +40,7 @@
       <Content Include="@(Reference->'%(RootDir)%(Directory)%(Filename).xml')"
                Link="@(Reference->'xmldocs\%(Filename).xml')"
                Condition="$([System.String]::new('%(Filename)').StartsWith('System.')) and Exists('%(RootDir)%(Directory)%(Filename).xml')">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>        
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
   </Target>
