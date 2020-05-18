@@ -6,6 +6,7 @@ using ICSharpCode.Decompiler.Disassembler;
 using ICSharpCode.Decompiler.Metadata;
 using Mono.Cecil.Cil;
 using SharpLab.Server.Common;
+using SharpLab.Server.Common.Diagnostics;
 using SharpLab.Server.Decompilation.Internal;
 
 namespace SharpLab.Server.Decompilation {
@@ -24,10 +25,6 @@ namespace SharpLab.Server.Decompilation {
 
             using (var assemblyFile = new PEFile("", streams.AssemblyStream))
             using (var debugInfo = streams.SymbolStream != null ? _debugInfoFactory(streams.SymbolStream) : null) {
-                //#if DEBUG
-                //assembly.Write(@"d:\Temp\assembly\" + System.DateTime.Now.Ticks + "-il.dll");
-                //#endif
-
                 var output = new PlainTextOutput(codeWriter) { IndentationString = "    " };
                 var disassembler = new ReflectionDisassembler(output, CancellationToken.None) {
                     DebugInfo = debugInfo,

@@ -22,9 +22,9 @@ using System.Security.Permissions;
 [module: UnverifiableCode]
 public class C
 {
-    public bool M(DateTime? d)
+    public bool M(Nullable<DateTime> d)
     {
-        DateTime? dateTime = d;
+        Nullable<DateTime> dateTime = d;
         DateTime now = DateTime.Now;
         if (!dateTime.HasValue)
         {

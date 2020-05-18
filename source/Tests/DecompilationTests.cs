@@ -16,6 +16,7 @@ namespace SharpLab.Tests {
 
         public DecompilationTests(ITestOutputHelper output) {
             _output = output;
+            //TestAssemblyLog.Enable(output);
         }
 
         [Theory]

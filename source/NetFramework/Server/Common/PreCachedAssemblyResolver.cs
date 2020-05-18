@@ -27,7 +27,7 @@ namespace SharpLab.Server.Common {
 
         public PEFile? Resolve(IAssemblyReference reference) {
             if (!_peFileCache.TryGetValue(reference.Name, out var assembly)) {
-                if (reference is AssemblyReference assemblyReference && assemblyReference.Module.Name == "mscorlib")
+                if (reference is AssemblyReference assemblyReference && assemblyReference.Name == "mscorlib")
                     return null;
 
                 throw new Exception($"Assembly {reference.Name} was not found in cache.");

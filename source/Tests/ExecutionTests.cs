@@ -1,12 +1,6 @@
 using System;
 using System.Collections.Generic;
-#if DEBUG
-using System.IO;
-#endif
 using System.Linq;
-#if DEBUG
-using System.Reflection;
-#endif
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -19,9 +13,6 @@ using Pedantic.IO;
 using MirrorSharp.Testing;
 using MirrorSharp.Testing.Results;
 using SharpLab.Server.Common;
-#if DEBUG
-using SharpLab.Server.Common.Diagnostics;
-#endif
 using SharpLab.Tests.Internal;
 
 namespace SharpLab.Tests {
@@ -30,24 +21,8 @@ namespace SharpLab.Tests {
 
         public ExecutionTests(ITestOutputHelper testOutputHelper) {
             _testOutputHelper = testOutputHelper;
-
+            //TestAssemblyLog.Enable(output);
             #if DEBUG
-            var testName = ((ITest)
-                _testOutputHelper
-                    .GetType()
-                    .GetField("test", BindingFlags.Instance | BindingFlags.NonPublic)!
-                    .GetValue(_testOutputHelper)!
-            ).DisplayName.Replace(GetType().FullName + ".", "");
-            var safeTestName = Regex.Replace(testName, "[^a-zA-Z._-]+", "_");
-            if (safeTestName.Length > 100)
-                safeTestName = safeTestName.Substring(0, 100) + "-" + safeTestName.GetHashCode();
-
-            var testPath = Path.Combine(
-                AppContext.BaseDirectory, "assembly-log",
-                GetType().Name, safeTestName,
-                "{0}.dll"
-            );
-            //AssemblyLog.Enable(testPath);
             //PerformanceLog.Enable((name, ticks) => testOutputHelper.WriteLine("[Perf] {0}: {1:F2}ms", name, (double)ticks / TimeSpan.TicksPerMillisecond));
             #endif
         }

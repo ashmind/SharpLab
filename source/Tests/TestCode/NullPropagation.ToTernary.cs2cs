@@ -7,6 +7,7 @@ public class Point {
 
 #=>
 
+using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -40,7 +41,7 @@ public class Point
 
     public int M(Point p)
     {
-        int? num = (p != null) ? new int?(p.X) : null;
+        Nullable<int> num = (p != null) ? new Nullable<int>(p.X) : null;
         return num.GetValueOrDefault();
     }
 }

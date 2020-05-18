@@ -30,7 +30,7 @@
     <PackageReference Include="Autofac" Version="4.9.2" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="5.0.0" />
     <PackageReference Include="Autofac.Extras.FileSystemRegistration" Version="1.0.0-pre-03" />
-    <PackageReference Include="ICSharpCode.Decompiler" Version="5.0.2.5153" />
+    <PackageReference Include="ICSharpCode.Decompiler" Version="6.0.0.5671-preview3" />
     <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.4.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.3.1" />

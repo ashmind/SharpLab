@@ -10,6 +10,7 @@ public class Bar {
 
 #=>
 
+using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -24,7 +25,7 @@ using System.Security.Permissions;
 [module: UnverifiableCode]
 public class Foo
 {
-    public static explicit operator uint?(Foo foo)
+    public static explicit operator Nullable<uint>(Foo foo)
     {
         return 1u;
     }
@@ -33,6 +34,6 @@ public class Bar
 {
     public void Baz()
     {
-        uint? num = (uint?)(Foo)null;
+        Nullable<uint> num = (Nullable<uint>)(Foo)null;
     }
 }
