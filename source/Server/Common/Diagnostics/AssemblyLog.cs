@@ -1,10 +1,8 @@
-using System;
 using System.Diagnostics;
-#if DEBUG
 using System.IO;
+#if DEBUG
 using System.Threading;
 #endif
-using ICSharpCode.Decompiler.Metadata;
 using Mono.Cecil;
 
 namespace SharpLab.Server.Common.Diagnostics {
