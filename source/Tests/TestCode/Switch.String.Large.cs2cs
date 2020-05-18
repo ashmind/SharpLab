@@ -1,0 +1,105 @@
+// https://github.com/ashmind/SharpLab/issues/489
+public class C
+{
+    public string M(string key)
+    {
+        switch (key)
+        {
+            case "Key1": return "1";
+            case "Key2": return "2";
+            case "Key3": return "3";
+            case "Key4": return "4";
+            case "Key5": return "5";
+            case "Key6": return "6";
+            case "Key7": return "7";
+            default: return "?";
+        }
+    }
+}
+
+#=>
+
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Security;
+using System.Security.Permissions;
+
+[assembly: CompilationRelaxations(8)]
+[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+[assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)]
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
+[assembly: AssemblyVersion("0.0.0.0")]
+[module: UnverifiableCode]
+public class C
+{
+    public string M(string key)
+    {
+        if (key != null)
+        {
+            switch (<PrivateImplementationDetails>.ComputeStringHash(key))
+            {
+                case 506120967u:
+                    if (!(key == "Key1"))
+                    {
+                        break;
+                    }
+                    return "1";
+                case 522898586u:
+                    if (!(key == "Key2"))
+                    {
+                        break;
+                    }
+                    return "2";
+                case 539676205u:
+                    if (!(key == "Key3"))
+                    {
+                        break;
+                    }
+                    return "3";
+                case 422232872u:
+                    if (!(key == "Key4"))
+                    {
+                        break;
+                    }
+                    return "4";
+                case 439010491u:
+                    if (!(key == "Key5"))
+                    {
+                        break;
+                    }
+                    return "5";
+                case 455788110u:
+                    if (!(key == "Key6"))
+                    {
+                        break;
+                    }
+                    return "6";
+                case 472565729u:
+                    if (!(key == "Key7"))
+                    {
+                        break;
+                    }
+                    return "7";
+            }
+        }
+        return "?";
+    }
+}
+[CompilerGenerated]
+internal sealed class <PrivateImplementationDetails>
+{
+    internal static uint ComputeStringHash(string s)
+    {
+        uint num = default(uint);
+        if (s != null)
+        {
+            num = 2166136261u;
+            for (int i = 0; i < s.Length; i++)
+            {
+                num = (s[i] ^ num) * 16777619;
+            }
+        }
+        return num;
+    }
+}
