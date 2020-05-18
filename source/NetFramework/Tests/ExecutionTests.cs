@@ -45,7 +45,7 @@ namespace SharpLab.Tests {
                 GetType().Name, safeTestName,
                 "{0}.dll"
             );
-            AssemblyLog.Enable(testPath);
+            //AssemblyLog.Enable(testPath);
             #endif
         }
 
@@ -228,7 +228,7 @@ namespace SharpLab.Tests {
             var code = TestCode.FromResource("Execution." + resourceName);
             var driver = await NewTestDriverAsync(code.Original);
 
-            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            var result = await SendSlowUpdateWithRetryOnMovedObjectsAsync(driver);
 
             AssertIsSuccess(result, allowRuntimeException: allowExceptions);
             code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _testOutputHelper);
@@ -245,7 +245,7 @@ namespace SharpLab.Tests {
             var code = TestCode.FromResource("Execution." + resourceName);
             var driver = await NewTestDriverAsync(code.Original);
 
-            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            var result = await SendSlowUpdateWithRetryOnMovedObjectsAsync(driver);
 
             AssertIsSuccess(result);
             code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _testOutputHelper);
@@ -444,6 +444,18 @@ namespace SharpLab.Tests {
             Assert.DoesNotMatch("GuardException", result.ExtensionResult?.GetOutputAsString());
         }
 
+        // Currently Inspect.Heap/MemoryGraph does not promise to always work as expected if GCs happen
+        // during its operation. So for now we retry in the tests.
+        private static async Task<SlowUpdateResult<ExecutionResultData>> SendSlowUpdateWithRetryOnMovedObjectsAsync(MirrorSharpTestDriver driver) {
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            var tryCount = 1;
+            while (result.JoinErrors().Contains("Failed to find object type for address") && tryCount < 10) {
+                result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+                tryCount += 1;
+            }
+            return result!;
+        }
+
         private static void AssertIsSuccess(SlowUpdateResult<ExecutionResultData> result, bool allowRuntimeException = false) {
             var errors = result.JoinErrors();
             Assert.True(string.IsNullOrEmpty(errors), errors);
@@ -464,7 +476,7 @@ namespace SharpLab.Tests {
             string languageName = LanguageNames.CSharp,
             string optimize = Optimize.Debug
         ) {
-            var driver = MirrorSharpTestDriver.New(TestEnvironment.MirrorSharpOptions).SetText(code);
+            var driver = TestEnvironment.NewDriver().SetText(code);
             await driver.SendSetOptionsAsync(languageName, TargetNames.Run, optimize);
             return driver;
         }

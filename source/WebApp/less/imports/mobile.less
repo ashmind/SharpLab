@@ -135,6 +135,10 @@
     }
 });
 
+.footer-author-mobile {
+    display: none;
+}
+
 @media screen and (orientation: portrait),
        screen and (max-width: 499px) and (max-height: 499px) {
     main {
@@ -148,6 +152,14 @@
 
     .top-section-group-results section header {
         border-left: none;
+    }
+
+    .footer-author-mobile {
+        display: block;
+    }
+
+    .footer-author-full {
+        display: none;
     }
 }
 

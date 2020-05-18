@@ -58,6 +58,7 @@
           <div class="content">
             <app-code-edit v-bind:initial-text="lastLoadedCode"
                            v-bind:service-url="serviceUrl"
+                           v-bind:language="options.language"
                            v-bind:server-options="serverOptions"
                            v-bind:highlighted-range="highlightedCodeRange"
                            v-bind:execution-flow="result.type === 'run' && result.value ? result.value.flow : null"
@@ -158,27 +159,19 @@
           </div>
         </section>
 
-        <section class="top-section warnings collapsed" v-show="result.warnings.length > 0">
-          <header>
-            <button class="expander" v-app-class-toggle="{ target: '.warnings', class: 'collapsed' }"></button>
-            <h1>Warnings</h1>
-          </header>
-          <div class="content">
-            <ul>
-              <li v-for="warning in result.warnings">
-                <app-diagnostic v-bind:model="warning" severity="warning"></app-diagnostic>
-              </li>
-            </ul>
-          </div>
-        </section>
+        <app-warnings-section v-bind:warnings="result.warnings"></app-warnings-section>
       </div>
 
       <portal-target name="modals" multiple slim></portal-target>
     </main>
     <footer>
+      <app-cm6-preview-manager></app-cm6-preview-manager>
       <app-theme-manager></app-theme-manager>
-      <span>
+      <span class="footer-author-full">
         Built by Andrey Shchekin (<a href="http://twitter.com/ashmind">@ashmind</a>) — see <a href="http://github.com/ashmind/SharpLab">SharpLab on GitHub</a>.
+      </span>
+      <span class="footer-author-mobile">
+        <a href="http://github.com/ashmind/SharpLab">SharpLab</a> by <a href="http://twitter.com/ashmind">Andrey Shchekin (@ashmind)</a>
       </span>
     </footer>
 

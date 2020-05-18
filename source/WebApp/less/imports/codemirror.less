@@ -79,3 +79,40 @@ textarea, .CodeMirror {
         color: #fff !important;
     }
 }
+
+/* CodeMirror 6 Preview */
+
+.cm6-preview {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+
+    .disclaimer {
+        margin: 4px;
+        width: calc(100% - 8px);
+    }
+
+    .mirrorsharp {
+        flex-grow: 1;
+        display: flex;
+    }
+
+    .cm-wrap {
+        width: 100%;
+    }
+
+    // TODO: understand CM priorities
+    .cm-scroller.cm-scroller {
+        .code-text();
+    }
+
+    .theme-dark & .mirrorsharp {
+        // TODO: Not supported yet
+        background-color: #fff;
+        color: #000;
+    }
+}

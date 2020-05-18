@@ -427,10 +427,13 @@ Microsoft.FSharp.Core
   FSharpFunc`2: Allowed
      .ctor: Allowed
      Equals: Allowed
+     FromConverter: Allowed
      GetHashCode: Allowed
      GetType: Allowed
      Invoke: Allowed
      InvokeFast: Allowed
+     op_Implicit: Allowed
+     ToConverter: Allowed
      ToString: Allowed
   FSharpInterfaceDataVersionAttribute: Denied
   FSharpOption`1: Allowed
@@ -598,6 +601,7 @@ Microsoft.FSharp.Core
      Log10: Allowed
      Max: Allowed
      Min: Allowed
+     NameOf: Allowed
      Not: Allowed
      NullArg: Allowed
      op_Addition: Allowed
@@ -838,6 +842,7 @@ Microsoft.VisualBasic
   ErrObject: Denied
   FileAttribute: Denied
   FileSystem: Denied
+  Financial: Denied
   FirstDayOfWeek: Denied
   FirstWeekOfYear: Denied
   HideModuleNameAttribute: Denied
@@ -979,11 +984,15 @@ SharpLab.Runtime.Internal
      ReportRefValue: Allowed (NoGuardRewriter)
      ReportSpanValue: Allowed (NoGuardRewriter)
      ReportValue: Allowed (NoGuardRewriter)
+     Reset: Denied
      ToString: Denied
   Flow+Step: Denied
+  IAllocationInspector: Denied
   IInspection: Denied
+  IMemoryBytesInspector: Denied
+  IMemoryGraphBuilder: Denied
   InspectionGroup: Denied
-  InspectionSettings: Denied
+  IValuePresenter: Denied
   MemoryGraphArgumentNames: Allowed
      AddToNext: Allowed (NoGuardRewriter)
      AllocateNext: Allowed (CountArgumentRewriter(count))
@@ -998,6 +1007,7 @@ SharpLab.Runtime.Internal
   MemoryInspection: Denied
   MemoryInspectionLabel: Denied
   Output: Denied
+  RuntimeServices: Denied
   SimpleInspection: Denied
   ValuePresenterLimits: Denied
 System
@@ -1675,7 +1685,14 @@ System
      TryFormat: Allowed
      TryParse: Allowed
      TryParseExact: Allowed
-  DayOfWeek: Denied
+  DayOfWeek: Allowed
+     CompareTo: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     GetTypeCode: Allowed
+     HasFlag: Allowed
+     ToString: Allowed
   DBNull: Allowed
      Equals: Allowed
      GetHashCode: Allowed
@@ -2108,8 +2125,10 @@ System
   IAsyncDisposable: Denied
   IAsyncResult: Denied
   ICloneable: Denied
-  IComparable: Denied
-  IComparable`1: Denied
+  IComparable: Allowed
+     CompareTo: Allowed
+  IComparable`1: Allowed
+     CompareTo: Allowed
   IConvertible: Allowed
      GetTypeCode: Allowed
      ToBoolean: Allowed
@@ -2131,7 +2150,8 @@ System
   ICustomFormatter: Denied
   IDisposable: Allowed
      Dispose: Allowed
-  IEquatable`1: Denied
+  IEquatable`1: Allowed
+     Equals: Allowed
   IFormatProvider: Denied
   IFormattable: Allowed
      ToString: Allowed
@@ -2279,7 +2299,48 @@ System
      Tanh: Allowed
      ToString: Allowed
      Truncate: Allowed
-  MathF: Denied
+  MathF: Allowed
+     Abs: Allowed
+     Acos: Allowed
+     Acosh: Allowed
+     Asin: Allowed
+     Asinh: Allowed
+     Atan: Allowed
+     Atan2: Allowed
+     Atanh: Allowed
+     BitDecrement: Allowed
+     BitIncrement: Allowed
+     Cbrt: Allowed
+     Ceiling: Allowed
+     CopySign: Allowed
+     Cos: Allowed
+     Cosh: Allowed
+     Equals: Allowed
+     Exp: Allowed
+     Floor: Allowed
+     FusedMultiplyAdd: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     IEEERemainder: Allowed
+     ILogB: Allowed
+     Log: Allowed
+     Log10: Allowed
+     Log2: Allowed
+     Max: Allowed
+     MaxMagnitude: Allowed
+     Min: Allowed
+     MinMagnitude: Allowed
+     Pow: Allowed
+     Round: Allowed
+     ScaleB: Allowed
+     Sign: Allowed
+     Sin: Allowed
+     Sinh: Allowed
+     Sqrt: Allowed
+     Tan: Allowed
+     Tanh: Allowed
+     ToString: Allowed
+     Truncate: Allowed
   MemberAccessException: Denied
   Memory`1: Denied
   MemoryExtensions: Allowed
@@ -2891,7 +2952,7 @@ System
      GetCustomAttributes: Denied
      GetCustomAttributesData: Denied
      GetDefaultMembers: Denied
-     GetElementType: Denied
+     GetElementType: Allowed
      GetEnumName: Denied
      GetEnumNames: Denied
      GetEnumUnderlyingType: Denied
@@ -5258,7 +5319,16 @@ System.Reflection
   CustomAttributeNamedArgument: Denied
   CustomAttributeTypedArgument: Denied
   DeclarativeSecurityAction: Denied
-  DefaultMemberAttribute: Denied
+  DefaultMemberAttribute: Allowed
+     .ctor: Allowed
+     Equals: Allowed
+     get_MemberName: Allowed
+     get_TypeId: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     IsDefaultAttribute: Allowed
+     Match: Allowed
+     ToString: Allowed
   DispatchProxy: Denied
   EventAttributes: Allowed
      CompareTo: Allowed
@@ -6098,7 +6168,33 @@ System.Runtime.CompilerServices
   TupleElementNamesAttribute: Denied
   TypeForwardedFromAttribute: Denied
   TypeForwardedToAttribute: Denied
-  Unsafe: Denied
+  Unsafe: Allowed
+     Add: Denied
+     AddByteOffset: Denied
+     AreSame: Allowed
+     As: Denied
+     AsPointer: Denied
+     AsRef: Denied
+     ByteOffset: Allowed
+     Copy: Denied
+     CopyBlock: Denied
+     CopyBlockUnaligned: Denied
+     Equals: Denied
+     GetHashCode: Denied
+     GetType: Denied
+     InitBlock: Denied
+     InitBlockUnaligned: Denied
+     IsAddressGreaterThan: Allowed
+     IsAddressLessThan: Allowed
+     Read: Denied
+     ReadUnaligned: Denied
+     SizeOf: Allowed
+     Subtract: Denied
+     SubtractByteOffset: Denied
+     ToString: Denied
+     Unbox: Denied
+     Write: Denied
+     WriteUnaligned: Denied
   UnsafeValueTypeAttribute: Denied
   ValueTaskAwaiter: Denied
   ValueTaskAwaiter`1: Denied

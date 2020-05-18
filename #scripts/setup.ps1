@@ -45,20 +45,10 @@ if ($LastExitCode -ne 0) {
 } 
 
 Write-Host "Building and publishing"
-Push-Location 'source'
-try {
-    dotnet build -c Debug
-    if ($LastExitCode -ne 0) {
-        throw "dotnet build failed with exit code $LastExitCode"
-    }
-
-    dotnet publish Server.AspNetCore -c Debug --no-restore --no-build
-    if ($LastExitCode -ne 0) {
-        throw "dotnet publish failed with exit code $LastExitCode"
-    }
-}
-finally {
-    Pop-Location
+&"$PSScriptRoot\build.ps1" -Configuration Debug
+dotnet publish source/Server -c Debug --no-restore --no-build
+if ($LastExitCode -ne 0) {
+    throw "dotnet publish failed with exit code $LastExitCode"
 }
 
 Write-Host "Creating web sites (IIS)"

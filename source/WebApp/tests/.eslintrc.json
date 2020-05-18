@@ -1,20 +1,16 @@
 {
-    "plugins": ["import"],
     "env": {
         "jest": true,
         "browser": true,
         "es6": true
     },
     "parserOptions": {
-        "sourceType": "module",
-        "ecmaVersion": 2020
+        "project": "./tests/tsconfig.json"
     },
-    "extends": [
-        "plugin:import/errors",
-        "plugin:import/warnings"
-    ],
     "rules": {
-        "import/namespace": "off",
-        "require-await": "off"
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/require-await": "off",
+        "@typescript-eslint/unbound-method": "off"
     }
 }

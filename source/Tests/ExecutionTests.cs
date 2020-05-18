@@ -1,12 +1,6 @@
 using System;
 using System.Collections.Generic;
-#if DEBUG
-using System.IO;
-#endif
 using System.Linq;
-#if DEBUG
-using System.Reflection;
-#endif
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -19,9 +13,6 @@ using Pedantic.IO;
 using MirrorSharp.Testing;
 using MirrorSharp.Testing.Results;
 using SharpLab.Server.Common;
-#if DEBUG
-using SharpLab.Server.Common.Diagnostics;
-#endif
 using SharpLab.Tests.Internal;
 
 namespace SharpLab.Tests {
@@ -30,24 +21,8 @@ namespace SharpLab.Tests {
 
         public ExecutionTests(ITestOutputHelper testOutputHelper) {
             _testOutputHelper = testOutputHelper;
-
+            //TestAssemblyLog.Enable(output);
             #if DEBUG
-            var testName = ((ITest)
-                _testOutputHelper
-                    .GetType()
-                    .GetField("test", BindingFlags.Instance | BindingFlags.NonPublic)!
-                    .GetValue(_testOutputHelper)!
-            ).DisplayName.Replace(GetType().FullName + ".", "");
-            var safeTestName = Regex.Replace(testName, "[^a-zA-Z._-]+", "_");
-            if (safeTestName.Length > 100)
-                safeTestName = safeTestName.Substring(0, 100) + "-" + safeTestName.GetHashCode();
-
-            var testPath = Path.Combine(
-                AppContext.BaseDirectory, "assembly-log",
-                GetType().Name, safeTestName,
-                "{0}.dll"
-            );
-            //AssemblyLog.Enable(testPath);
             //PerformanceLog.Enable((name, ticks) => testOutputHelper.WriteLine("[Perf] {0}: {1:F2}ms", name, (double)ticks / TimeSpan.TicksPerMillisecond));
             #endif
         }
@@ -231,7 +206,7 @@ namespace SharpLab.Tests {
             var code = TestCode.FromResource("Execution." + resourceName);
             var driver = await NewTestDriverAsync(code.Original);
 
-            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            var result = await SendSlowUpdateWithRetryOnMovedObjectsAsync(driver);
 
             AssertIsSuccess(result, allowRuntimeException: allowExceptions);
             code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _testOutputHelper);
@@ -273,7 +248,7 @@ namespace SharpLab.Tests {
             var code = TestCode.FromResource("Execution." + resourceName);
             var driver = await NewTestDriverAsync(code.Original);
 
-            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            var result = await SendSlowUpdateWithRetryOnMovedObjectsAsync(driver);
 
             AssertIsSuccess(result);
             code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _testOutputHelper);
@@ -400,11 +375,13 @@ namespace SharpLab.Tests {
 
         [Theory]
         [InlineData("Regression.CertainLoop.cs")]
-        //[InlineData("Regression.FSharpNestedLambda.fs", LanguageNames.FSharp)]
+        [InlineData("Regression.FSharpNestedLambda.fs", LanguageNames.FSharp)]
         [InlineData("Regression.NestedAnonymousObject.cs")]
         [InlineData("Regression.ReturnRef.cs")]
+        [InlineData("Regression.CatchWithNameSameLineAsClosingTryBracket.cs")]
+        [InlineData("Regression.MoreThanFourArguments.cs")]
         public async Task SlowUpdate_DoesNotFail(string resourceName, string languageName = LanguageNames.CSharp) {
-            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), languageName);            
+            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), languageName);
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
             AssertIsSuccess(result);
         }
@@ -472,6 +449,19 @@ namespace SharpLab.Tests {
             Assert.DoesNotMatch("GuardException", result.ExtensionResult?.GetOutputAsString());
         }
 
+        // Currently Inspect.Heap/MemoryGraph does not promise to always work as expected if GCs happen
+        // during its operation. So for now we retry in the tests.
+        private async Task<SlowUpdateResult<ExecutionResultData>> SendSlowUpdateWithRetryOnMovedObjectsAsync(MirrorSharpTestDriver driver) {
+            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+            var tryCount = 1;
+            while ((result.ExtensionResult?.GetOutputAsString().Contains("Failed to find object type for address") ?? false) && tryCount < 10) {
+                _testOutputHelper.WriteLine($"Failed to find object type for address, retrying ({tryCount}) ...");
+                result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
+                tryCount += 1;
+            }
+            return result!;
+        }
+
         private static void AssertIsSuccess(SlowUpdateResult<ExecutionResultData> result, bool allowRuntimeException = false) {
             var errors = result.JoinErrors();
             Assert.True(string.IsNullOrEmpty(errors), errors);
@@ -499,7 +489,7 @@ namespace SharpLab.Tests {
             string languageName = LanguageNames.CSharp,
             string optimize = Optimize.Debug
         ) {
-            var driver = MirrorSharpTestDriver.New(TestEnvironment.MirrorSharpOptions).SetText(code);
+            var driver = TestEnvironment.NewDriver().SetText(code);
             await driver.SendSetOptionsAsync(languageName, TargetNames.Run, optimize);
             return driver;
         }

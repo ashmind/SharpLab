@@ -33,8 +33,11 @@ namespace SharpLab.Server.Owin {
             app.UseCors(corsOptions);
 
             var container = CreateContainer();
-            var mirrorSharpOptions = StartupHelper.CreateMirrorSharpOptions(container);
-            app.UseMirrorSharp(mirrorSharpOptions);
+            app.MapMirrorSharp(
+                "/mirrorsharp",
+                StartupHelper.CreateMirrorSharpOptions(container),
+                StartupHelper.CreateMirrorSharpServices(container)
+            );
 
             app.Map("/status", a => a.Use((c, next) => {
                 c.Response.ContentType = "text/plain";

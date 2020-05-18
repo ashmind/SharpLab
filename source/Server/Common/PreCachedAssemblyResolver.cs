@@ -30,7 +30,10 @@ namespace SharpLab.Server.Common {
 
         public PEFile? Resolve(IAssemblyReference reference) {
             if (!_peFileCache.TryGetValue(reference.Name, out var assembly)) {
-                if (reference is AssemblyReference assemblyReference && assemblyReference.Module.Name == "mscorlib")
+                // F# assembly graph includes these for some reason
+                if (reference.Name == "System.Security.Permissions")
+                    return null;
+                if (reference.Name == "System.Threading.AccessControl")
                     return null;
 
                 throw new Exception($"Assembly {reference.Name} was not found in cache.");

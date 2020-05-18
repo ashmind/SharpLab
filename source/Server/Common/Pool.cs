@@ -21,7 +21,7 @@ namespace SharpLab.Server.Common {
             _pool.Add(value);
         }
 
-        public struct Lease : IDisposable {
+        public readonly struct Lease : IDisposable {
             private readonly Pool<T> _pool;
 
             internal Lease(Pool<T> pool, T value) {

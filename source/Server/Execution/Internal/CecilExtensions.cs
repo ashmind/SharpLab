@@ -8,7 +8,7 @@ namespace SharpLab.Server.Execution.Internal {
             return code == Code.Leave || code == Code.Leave_S;
         }
 
-        public static Instruction CreateLdargBest(this ILProcessor il, ParameterReference parameter) {
+        public static Instruction CreateLdargBest(this ILProcessor il, ParameterDefinition parameter) {
             var index = parameter.Index;
             if (il.Body.Method.HasThis)
                 index += 1;
@@ -19,8 +19,8 @@ namespace SharpLab.Server.Execution.Internal {
                 case 3: return il.Create(OpCodes.Ldarg_3);
                 default:
                     if (IsSByte(index))
-                        return il.Create(OpCodes.Ldarg_S, (sbyte)index);
-                    return il.Create(OpCodes.Ldarg, index);
+                        return il.Create(OpCodes.Ldarg_S, parameter);
+                    return il.Create(OpCodes.Ldarg, parameter);
             }
         }
 

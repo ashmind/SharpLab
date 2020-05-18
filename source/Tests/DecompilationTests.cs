@@ -8,6 +8,7 @@ using Xunit;
 using Xunit.Abstractions;
 using SharpLab.Server.Common;
 using SharpLab.Tests.Internal;
+using System.Runtime.Intrinsics.X86;
 
 namespace SharpLab.Tests {
     public class DecompilationTests {
@@ -15,12 +16,13 @@ namespace SharpLab.Tests {
 
         public DecompilationTests(ITestOutputHelper output) {
             _output = output;
+            //TestAssemblyLog.Enable(output);
         }
 
         [Theory]
         [InlineData("class C { void M((int, string) t) {} }")] // Tuples, https://github.com/ashmind/SharpLab/issues/139
         public async Task SlowUpdate_DecompilesSimpleCodeWithoutErrors(string code) {
-            var driver = MirrorSharpTestDriver.New(TestEnvironment.MirrorSharpOptions).SetText(code);
+            var driver = TestEnvironment.NewDriver().SetText(code);
             await driver.SendSetOptionsAsync(LanguageNames.CSharp, LanguageNames.CSharp);
 
             var result = await driver.SendSlowUpdateAsync<string>();
@@ -44,6 +46,7 @@ namespace SharpLab.Tests {
         [InlineData("Finalizer.Exception.cs2il")] // https://github.com/ashmind/SharpLab/issues/205
         [InlineData("Parameters.Optional.Decimal.cs2cs")] // https://github.com/ashmind/SharpLab/issues/316
         [InlineData("Unsafe.FixedBuffer.cs2cs")] // https://github.com/ashmind/SharpLab/issues/398
+        [InlineData("Switch.String.Large.cs2cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string resourceName) {
             var data = TestCode.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);
@@ -80,7 +83,7 @@ namespace SharpLab.Tests {
         [InlineData(LanguageNames.CSharp,"/// <summary><see cref=\"Incorrect\"/></summary>\r\npublic class C {}", "CS1574")] // https://github.com/ashmind/SharpLab/issues/219
         [InlineData(LanguageNames.VisualBasic, "''' <summary><see cref=\"Incorrect\"/></summary>\r\nPublic Class C\r\nEnd Class", "BC42309")]
         public async Task SlowUpdate_ReturnsExpectedWarnings_ForXmlDocumentation(string sourceLanguageName, string code, string expectedWarningId) {
-            var driver = MirrorSharpTestDriver.New(TestEnvironment.MirrorSharpOptions).SetText(code);
+            var driver = TestEnvironment.NewDriver().SetText(code);
             await driver.SendSetOptionsAsync(sourceLanguageName, TargetNames.IL);
 
             var result = await driver.SendSlowUpdateAsync<string>();
@@ -94,7 +97,7 @@ namespace SharpLab.Tests {
         [InlineData(LanguageNames.CSharp, "public class C {}")]
         [InlineData(LanguageNames.VisualBasic, "Public Class C\r\nEnd Class")]
         public async Task SlowUpdate_DoesNotReturnWarnings_ForCodeWithoutXmlDocumentation(string sourceLanguageName, string code) {
-            var driver = MirrorSharpTestDriver.New(TestEnvironment.MirrorSharpOptions).SetText(code);
+            var driver = TestEnvironment.NewDriver().SetText(code);
             await driver.SendSetOptionsAsync(sourceLanguageName, TargetNames.IL);
 
             var result = await driver.SendSlowUpdateAsync<string>();
@@ -141,7 +144,15 @@ namespace SharpLab.Tests {
         [InlineData("JitAsm.Generic.Nested.AttributeOnTop.cs2asm")]
         [InlineData("JitAsm.Generic.Nested.AttributeOnNested.cs2asm")]
         [InlineData("JitAsm.Generic.Nested.AttributeOnBoth.cs2asm")]
+        [InlineData("JitAsm.Vectors.Avx2.cs2asm")]
+        [InlineData("JitAsm.Math.FusedMultiplyAdd.Fma.cs2asm")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForJitAsm(string resourceName) {
+            // https://github.com/ashmind/SharpLab/issues/514
+            if (resourceName.Contains(".Fma.") && !Fma.IsSupported)
+                resourceName = resourceName.Replace(".Fma.", ".NoFma.");
+            if (resourceName.Contains(".Avx2.") && !Avx2.IsSupported)
+                resourceName = resourceName.Replace(".Avx2.", ".NoAvx2.");
+
             var data = TestCode.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);
 
@@ -158,7 +169,7 @@ namespace SharpLab.Tests {
         [InlineData("class C { static C() {} }")]
         [InlineData("class C { class N { static N() {} } }")]
         public async Task SlowUpdate_ReturnsNotSupportedError_ForJitAsmWithStaticConstructors(string code) {
-            var driver = MirrorSharpTestDriver.New(TestEnvironment.MirrorSharpOptions).SetText(code);
+            var driver = TestEnvironment.NewDriver().SetText(code);
             await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.JitAsm);
 
             await Assert.ThrowsAsync<NotSupportedException>(() => driver.SendSlowUpdateAsync<string>());
@@ -182,7 +193,7 @@ namespace SharpLab.Tests {
         }
 
         private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestCode code, string optimize = Optimize.Release) {
-            var driver = MirrorSharpTestDriver.New(TestEnvironment.MirrorSharpOptions);
+            var driver = TestEnvironment.NewDriver();
             await driver.SendSetOptionsAsync(code.SourceLanguageName, code.TargetName, optimize);
             driver.SetText(code.Original);
             return driver;

@@ -1,4 +1,4 @@
-﻿type Empty = class end
+type Empty = class end
 
 #=>
 

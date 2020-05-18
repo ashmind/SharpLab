@@ -6,19 +6,12 @@ $SolutionRoot = Resolve-Path "$PSScriptRoot/.."
 Write-Output 'git submodule update --recursive --init'
 git submodule update --recursive --init
 
-Write-Output 'msbuild source\Native.Profiler\Native.Profiler.vcxproj'
-$msbuild = (@(Get-Item "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\*\MSBuild\Current\Bin\msbuild.exe")[0]).FullName
-&$msbuild source\Native.Profiler\Native.Profiler.vcxproj /p:Configuration=Release /p:Platform=x64 /p:SolutionName=SharpLab
-if ($LastExitCode -ne 0) { throw "msbuild exited with code $LastExitCode" }
-
-Write-Output 'dotnet build source'
-dotnet build source -c Release-CI /p:UnbreakablePolicyReportEnabled=false
-if ($LastExitCode -ne 0) { throw "dotnet build exited with code $LastExitCode" }
+&"$PSScriptRoot\build.ps1" -Configuration Release
 
 Write-Output 'dotnet publish source/Server/Server.csproj ...'
 dotnet publish source/Server/Server.csproj -c Release --no-build --no-restore
 if ($LastExitCode -ne 0) { throw "dotnet publish exited with code $LastExitCode" }
-$serverPublishRoot = 'source/Server/bin/Release/netcoreapp3.0/publish'
+$serverPublishRoot = 'source/Server/bin/Release/netcoreapp3.1/publish'
 Write-Output "Compress-Archive -Path $serverPublishRoot/* -DestinationPath $SolutionRoot/Server.zip"
 Compress-Archive -Path "$serverPublishRoot/*" -DestinationPath "$SolutionRoot/Server.zip"
 
@@ -32,6 +25,6 @@ Compress-Archive -Path "$netfxPublishRoot/*" -DestinationPath "$SolutionRoot/Ser
 Write-Output 'dotnet publish source/WebApp/WebApp.csproj ...'
 dotnet publish source/WebApp/WebApp.csproj -c Release --no-build --no-restore
 if ($LastExitCode -ne 0) { throw "dotnet publish exited with code $LastExitCode" }
-$webAppPublishRoot = 'source/WebApp/bin/Release/netcoreapp3.0/publish'
+$webAppPublishRoot = 'source/WebApp/bin/Release/netcoreapp3.1/publish'
 Write-Output "Compress-Archive -Path $webAppPublishRoot/* -DestinationPath $SolutionRoot/WebApp.zip"
 Compress-Archive -Path "$webAppPublishRoot/*" -DestinationPath "$SolutionRoot/WebApp.zip"

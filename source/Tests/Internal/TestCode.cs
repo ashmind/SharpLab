@@ -55,7 +55,7 @@ namespace SharpLab.Tests.Internal {
             if (result == null)
                 return null;
 
-            result = Regex.Replace(result, @"0x[\dA-Fa-f]{7,12}(?=$|[^\dA-Fa-f])", "0x<IGNORE>");
+            result = Regex.Replace(result, @"0x[\dA-Fa-f]{7,16}(?=$|[^\dA-Fa-f])", "0x<IGNORE>");
 
             if (TargetName == TargetNames.JitAsm)
                 result = Regex.Replace(result, @"CLR v[\d\.]+", "CLR v<IGNORE>");

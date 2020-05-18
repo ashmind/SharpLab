@@ -1,0 +1,41 @@
+{
+  "name": "roslyn-branches",
+  "version": "0.0.0",
+  "description": "Build process for Roslyn branches",
+  "private": true,
+  "scripts": {
+    "generate-run-matrix": "ts-node-script ./generateGitHubRunMatrix.ts",
+    "build-branch": "ts-node-script ./buildBranch.ts"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "0.4.33",
+    "@types/dateformat": "3.0.1",
+    "@types/fs-extra": "9.0.0",
+    "@types/node": "14.0.1",
+    "@types/yargs": "15.0.5",
+    "@typescript-eslint/eslint-plugin": "2.33.0",
+    "@typescript-eslint/parser": "2.33.0",
+    "eslint": "7.0.0",
+    "eslint-plugin-import": "2.20.2"
+  },
+  "dependencies": {
+    "@azure/arm-appservice": "6.0.0",
+    "@azure/arm-resources": "2.1.0",
+    "@azure/ms-rest-nodeauth": "3.0.3",
+    "@azure/storage-blob": "12.1.1",
+    "adm-zip": "0.4.14",
+    "chalk": "4.0.0",
+    "dateformat": "3.0.3",
+    "delay": "4.3.0",
+    "dotenv": "8.2.0",
+    "execa": "4.0.1",
+    "extract-zip": "2.0.0",
+    "fs-extra": "9.0.0",
+    "get-stream": "5.1.0",
+    "globby": "11.0.0",
+    "got": "11.1.4",
+    "simple-git": "2.4.0",
+    "ts-node": "8.10.1",
+    "typescript": "3.9.2"
+  }
+}

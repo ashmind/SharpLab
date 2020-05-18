@@ -57,8 +57,6 @@ namespace SharpLab.Server.Execution {
 
             using (streams)
             using (var definition = AssemblyDefinition.ReadAssembly(streams.AssemblyStream, readerParameters)) {
-                AssemblyLog.Log("1.Initial", definition);
-
                 foreach (var rewriter in _rewriters) {
                     rewriter.Rewrite(definition, session);
                 }
