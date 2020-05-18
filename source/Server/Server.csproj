@@ -30,7 +30,7 @@
     <PackageReference Include="Autofac" Version="4.9.2" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="5.0.0" />
     <PackageReference Include="Autofac.Extras.FileSystemRegistration" Version="1.0.0-pre-03" />
-    <PackageReference Include="ICSharpCode.Decompiler" Version="4.0.0.4521" />
+    <PackageReference Include="ICSharpCode.Decompiler" Version="5.0.2.5153" />
     <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.4.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.3.1" />
@@ -47,10 +47,10 @@
     <PackageReference Include="Octokit" Version="0.32.0" />
     <PackageReference Include="Iced" Version="1.6.0" />
     <PackageReference Include="SharpYaml" Version="1.6.2" />
-    <PackageReference Include="System.IO.Pipelines" Version="4.5.3" />
+    <PackageReference Include="System.IO.Pipelines" Version="4.7.2" />
     <PackageReference Include="System.Memory" Version="4.5.4" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0-preview2-26406-04" />
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.3" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     <PackageReference Include="Unbreakable" Version="0.18.1-unproven" />
     <PackageReference Include="Unbreakable.Policy" Version="13.0.0" />
   </ItemGroup>
@@ -69,13 +69,7 @@
   </ItemGroup>
 
   <Target Name="_UpdatePolicyReport" AfterTargets="Build" Inputs="Execution\Unbreakable\ApiPolicySetup.cs" Outputs="Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt" Condition="'$(Configuration)' == 'Debug'">
-    <Exec WorkingDirectory="$(OutputPath)" Command="
-        dotnet unbreakable-policy-report ^
-            --assembly &quot;$(TargetPath)&quot; ^
-            --factory SharpLab.Server.Execution.Unbreakable.ApiPolicySetup ^
-            --method CreatePolicy ^
-            --output &quot;$(MSBuildThisFileDirectory)Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt&quot;
-    " />
+    <Exec WorkingDirectory="$(OutputPath)" Command="&#xD;&#xA;        dotnet unbreakable-policy-report ^&#xD;&#xA;            --assembly &quot;$(TargetPath)&quot; ^&#xD;&#xA;            --factory SharpLab.Server.Execution.Unbreakable.ApiPolicySetup ^&#xD;&#xA;            --method CreatePolicy ^&#xD;&#xA;            --output &quot;$(MSBuildThisFileDirectory)Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt&quot;&#xD;&#xA;    " />
   </Target>
 
   <Target Name="CopyFrameworkXmlDocumentation" AfterTargets="ResolveReferences">

@@ -42,10 +42,10 @@ public class C
     public void M()
     {
         Func<int, int> func = <>c.<>9__0_0 ?? (<>c.<>9__0_0 = new Func<int, int>(<>c.<>9.<M>b__0_0));
-        int[] obj = new int[4];
-        RuntimeHelpers.InitializeArray(obj, (RuntimeFieldHandle)/*OpCode not supported: LdMemberToken*/);
-        obj[3] = func(1);
-        Console.WriteLine(obj[3]);
+        int[] array = new int[4];
+        RuntimeHelpers.InitializeArray(array, (RuntimeFieldHandle)/*OpCode not supported: LdMemberToken*/);
+        array[3] = func(1);
+        Console.WriteLine(array[3]);
     }
 }
 [CompilerGenerated]

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading;
+using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Disassembler;
 using ICSharpCode.Decompiler.Metadata;
 using Mono.Cecil.Cil;
@@ -27,7 +28,7 @@ namespace SharpLab.Server.Decompilation {
                 //assembly.Write(@"d:\Temp\assembly\" + System.DateTime.Now.Ticks + "-il.dll");
                 //#endif
 
-                var output = new SpaceIndentingPlainTextOutput(codeWriter);
+                var output = new PlainTextOutput(codeWriter) { IndentationString = "    " };
                 var disassembler = new ReflectionDisassembler(output, CancellationToken.None) {
                     DebugInfo = debugInfo,
                     ShowSequencePoints = true

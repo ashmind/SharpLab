@@ -11,8 +11,8 @@ namespace SharpLab.Server.Decompilation {
         private static readonly CSharpFormattingOptions FormattingOptions = CreateFormattingOptions();
         private static readonly DecompilerSettings DecompilerSettings = new DecompilerSettings(ICSharpCode.Decompiler.CSharp.LanguageVersion.CSharp1) {
             ArrayInitializers = false,
-            AutomaticEvents = false,            
-            DecimalConstants = false,            
+            AutomaticEvents = false,
+            DecimalConstants = false,
             FixedBuffers = false,
             UsingStatement = false
         };
