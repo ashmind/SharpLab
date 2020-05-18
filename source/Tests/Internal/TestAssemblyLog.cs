@@ -28,7 +28,9 @@ namespace SharpLab.Tests.Internal {
                 testType.Name, safeTestName,
                 "{0}.dll"
             );
+            #if DEBUG
             AssemblyLog.Enable(testPath);
+            #endif
         }
     }
 }
