@@ -113,7 +113,7 @@ const manifest = task('manifest', async () => {
         if (template === line)
             return [line];
 
-        return iconSizes.map(size => template.replace('{size}', size.toString()));
+        return iconSizes.map(size => template.replace(/\{size\}/g, size.toString()));
     }).join('\n');
 
     await jetpack.writeAsync(paths.to.manifest, content);
