@@ -1,0 +1,12 @@
+{
+    "short_name": "SharpLab",
+    "name": "SharpLab",
+    "icons": [
+        { "src": "icon-{build:each-size}.png", "type": "image/png", "sizes": "{size}x{size}", "purpose": "any maskable" },
+        { "src": "icon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any maskable" }
+    ],
+    "start_url": ".",
+    "background_color": "#fff",
+    "theme_color": "#4684ee",
+    "display": "minimal-ui"
+}
