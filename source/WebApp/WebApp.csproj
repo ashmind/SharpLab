@@ -9,8 +9,12 @@
 
   <ItemGroup>
     <Folder Include="wwwroot/" />
+
     <Content Remove="**/*.json" />
-    <None Include="**/*.json" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder);wwwroot/**" />
+    <Content Include="wwwroot/**/*.json" Exclude="wwwroot/!*.json" CopyToPublishDirectory="PreserveNewest" />
+
+    <None Include="**/.*.json" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder);wwwroot/**/*.json" />
+    <None Include="wwwroot/!*.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,14 +29,6 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="5.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_StaticOutputs Include="wwwroot\**\*.*" Exclude="wwwroot\!branches.json" />
-    <_StaticInputs Include="@(None)" Exclude="**\!*.*; @(_StaticOutputs)" />
-  </ItemGroup>
-  <ItemGroup Condition="'@(_StaticOutputs)' == ''">
-    <_StaticOutputs Include="$(wwwroot)\.any" />
   </ItemGroup>
 
   <Target Name="CopyFrameworkXmlDocumentation" AfterTargets="ResolveReferences">
