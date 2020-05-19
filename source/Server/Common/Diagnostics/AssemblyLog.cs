@@ -1,5 +1,8 @@
 using System.Diagnostics;
 using System.IO;
+#if DEBUG
+using System.Threading;
+#endif
 using Mono.Cecil;
 
 namespace SharpLab.Server.Common.Diagnostics {
