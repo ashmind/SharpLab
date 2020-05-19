@@ -3,7 +3,7 @@
   "isRoot": true,
   "tools": {
     "unbreakable.tools.policyreport": {
-      "version": "0.3",
+      "version": "0.4",
       "commands": [
         "dotnet-unbreakable-policy-report"
       ]
