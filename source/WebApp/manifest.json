@@ -2,20 +2,11 @@
     "short_name": "SharpLab",
     "name": "SharpLab",
     "icons": [
-        {
-            "src": "/images/icons-192.png",
-            "type": "image/png",
-            "sizes": "192x192"
-        },
-        {
-            "src": "/images/icons-512.png",
-            "type": "image/png",
-            "sizes": "512x512"
-        }
+        { "src": "{build:each-size} icon-{size}.png", "type": "image/png", "sizes": "{size}x{size}", "purpose": "any maskable" },
+        { "src": "icon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any maskable" }
     ],
-    "start_url": "/?source=pwa",
-    "background_color": "#000000",
-    "display": "standalone",
-    "scope": "/",
-    "theme_color": "#000000"
+    "start_url": ".",
+    "background_color": "#fff",
+    "theme_color": "#4684ee",
+    "display": "minimal-ui"
 }

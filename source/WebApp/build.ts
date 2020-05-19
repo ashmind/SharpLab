@@ -24,20 +24,24 @@ const parallel = (...promises: ReadonlyArray<Promise<unknown>>) => Promise.all(p
 const paths = {
     from: {
         less: `${dirname}/less/app.less`,
-        favicon: `${dirname}/favicon.svg`,
+        icon: `${dirname}/icon.svg`,
         html: `${dirname}/index.html`,
         manifest: `${__dirname}/manifest.json`
     },
     to: {
         css: `${outputRoot}/app.min.css`,
-        favicon: {
-            svg: `${outputRoot}/favicon.svg`,
-            png: `${outputRoot}/favicon-{size}.png`
+        icon: {
+            svg: `${outputRoot}/icon.svg`,
+            png: `${outputRoot}/icon-{size}.png`
         },
         html: `${outputRoot}/index.html`,
         manifest: `${outputRoot}/manifest.json`
     }
 };
+
+const iconSizes = [
+    16, 32, 64, 72, 96, 120, 128, 144, 152, 180, 192, 196, 256, 384, 512
+];
 
 const less = task('less', async () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -83,29 +87,40 @@ const ts = task('ts', async () => {
     ]
 });
 
-const favicons = task('favicons', async () => {
+const icons = task('icons', async () => {
     await jetpack.dirAsync(outputRoot);
-    const pngGeneration = [16, 32, 64, 96, 128, 196, 256].map(size => {
+    const pngGeneration = iconSizes.map(size => {
         // https://github.com/lovell/sharp/issues/729
         const density = size > 128 ? Math.round(72 * size / 128) : 72;
-        return sharp(paths.from.favicon, { density })
+        return sharp(paths.from.icon, { density })
             .resize(size, size)
             .png()
-            .toFile(paths.to.favicon.png.replace('{size}', size.toString()));
+            .toFile(paths.to.icon.png.replace('{size}', size.toString()));
     });
 
     return parallel(
-        jetpack.copyAsync(paths.from.favicon, paths.to.favicon.svg, { overwrite: true }),
+        jetpack.copyAsync(paths.from.icon, paths.to.icon.svg, { overwrite: true }),
         ...pngGeneration
     ) as unknown as Promise<void>;
-}, { inputs: [paths.from.favicon] });
+}, { inputs: [paths.from.icon] });
 
 const manifest = task('manifest', async () => {
-    jetpack.copyAsync(paths.from.manifest, paths.to.manifest, { overwrite: true });
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    let content = (await jetpack.readAsync(paths.from.manifest))!;
+
+    content = content.split(/[\r\n]+/).flatMap(line => {
+        const template = line.replace(/{build:each-size}\s*/, '');
+        if (template === line)
+            return [line];
+
+        return iconSizes.map(size => template.replace('{size}', size.toString()));
+    }).join('\n');
+
+    await jetpack.writeAsync(paths.to.manifest, content);
 }, { inputs: [paths.from.manifest] });
 
 const html = task('html', async () => {
-    const faviconDataUrl = await getFaviconDataUrl();
+    const iconDataUrl = await getIconDataUrl();
     const templates = await getCombinedTemplates();
     const [jsHash, cssHash] = await parallel(
         md5File('wwwroot/app.min.js'),
@@ -117,7 +132,7 @@ const html = task('html', async () => {
         .replace('{build:js}', 'app.min.js?' + jsHash)
         .replace('{build:css}', 'app.min.css?' + cssHash)
         .replace('{build:templates}', templates)
-        .replace('{build:favicon-svg}', faviconDataUrl);
+        .replace('{build:favicon-svg}', iconDataUrl);
     html = htmlMinifier.minify(html, { collapseWhitespace: true });
     await jetpack.writeAsync(paths.to.html, html);
 }, {
@@ -126,7 +141,7 @@ const html = task('html', async () => {
         paths.to.css,
         `${outputRoot}/app.min.js`,
         paths.from.html,
-        paths.from.favicon
+        paths.from.icon
     ]
 });
 
@@ -137,15 +152,15 @@ task('default', () => {
     };
 
     return parallel(
-        favicons(),
+        icons(),
         manifest(),
         htmlAll()
     ) as unknown as Promise<void>;
 });
 
-async function getFaviconDataUrl() {
+async function getIconDataUrl() {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const faviconSvg = (await jetpack.readAsync(paths.from.favicon))!;
+    const faviconSvg = (await jetpack.readAsync(paths.from.icon))!;
     // http://codepen.io/jakob-e/pen/doMoML
     return faviconSvg
         .replace(/"/g, '\'')
