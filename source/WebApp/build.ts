@@ -106,17 +106,21 @@ const icons = task('icons', async () => {
 
 const manifest = task('manifest', async () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    let content = (await jetpack.readAsync(paths.from.manifest))!;
+    const content = JSON.parse((await jetpack.readAsync(paths.from.manifest))!) as {
+        icons: ReadonlyArray<{ src: string }>;
+    };
 
-    content = content.split(/[\r\n]+/).flatMap(line => {
-        const template = line.replace(/{build:each-size}\s*/, '');
-        if (template === line)
-            return [line];
+    content.icons = content.icons.flatMap(icon => {
+        if (!icon.src.includes('{build:each-size}'))
+            return [icon];
 
-        return iconSizes.map(size => template.replace(/\{size\}/g, size.toString()));
-    }).join('\n');
+        const template = JSON.stringify(icon); // simpler than Object.entries
+        return iconSizes.map(size => JSON.parse(
+            template.replace(/\{(?:build:each-)?size\}/g, size.toString())
+        ) as typeof icon);
+    });
 
-    await jetpack.writeAsync(paths.to.manifest, content);
+    await jetpack.writeAsync(paths.to.manifest, JSON.stringify(content));
 }, { inputs: [paths.from.manifest] });
 
 const html = task('html', async () => {
