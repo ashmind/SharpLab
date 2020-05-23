@@ -1,0 +1,13 @@
+name: sharplab
+
+services:
+
+- name: webapp-assets
+  executable: pwsh
+  args: -Command "npm run watch"
+  workingDirectory: source/WebApp
+  
+- name: webapp-dotnet
+  project: source/WebApp/WebApp.csproj
+  bindings:
+  - protocol: http
