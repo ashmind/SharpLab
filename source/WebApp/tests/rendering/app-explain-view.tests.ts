@@ -1,9 +1,9 @@
 import ExplainView from '../../components/app-explain-view';
-import { cases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
+import { themeCases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
 
 beforeEach(() => loadComponentTemplate('app-explain-view'));
 
-test.each(cases)('empty%s', async (_, bodyClass) => {
+test.each(themeCases)('empty%s', async (_, bodyClass) => {
     const view = createView({ explanations: [] });
 
     const rendered = await renderComponent(view, { bodyClass });
@@ -11,7 +11,7 @@ test.each(cases)('empty%s', async (_, bodyClass) => {
     expect(rendered).toMatchImageSnapshot();
 });
 
-test.each(cases)('with explanations%s', async (_, bodyClass) => {
+test.each(themeCases)('with explanations%s', async (_, bodyClass) => {
     const explanations = [{
         code: 'in int i',
         name: 'in parameter',

@@ -1,13 +1,16 @@
 import Vue, { VueConstructor } from 'vue';
 import GistManager from '../../components/app-gist-manager';
 import { fromPartial } from '../helpers';
-import { cases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
+import { themeCases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
 
 jest.mock('../../ts/helpers/github/auth');
 
-beforeEach(() => loadComponentTemplate('app-gist-manager'));
+beforeEach(() => {
+    loadComponentTemplate('app-modal', 'internal');
+    loadComponentTemplate('app-gist-manager');
+});
 
-test.each(cases)('no gist%s', async (_, bodyClass) => {
+test.each(themeCases)('no gist%s', async (_, bodyClass) => {
     const manager = createManager({ gist: null });
 
     const rendered = await renderComponent(manager, { bodyClass });
@@ -15,7 +18,7 @@ test.each(cases)('no gist%s', async (_, bodyClass) => {
     expect(rendered).toMatchImageSnapshot();
 });
 
-test.each(cases)('with gist%s', async (_, bodyClass) => {
+test.each(themeCases)('with gist%s', async (_, bodyClass) => {
     const manager = createManager({
         gist: {
             id: '6c1d9daeabca29e89d197dfb8ea949ef',
@@ -31,7 +34,7 @@ test.each(cases)('with gist%s', async (_, bodyClass) => {
     expect(rendered).toMatchImageSnapshot();
 });
 
-test.each(cases)('modal open%s', async (_, bodyClass) => {
+test.each(themeCases)('modal open%s', async (_, bodyClass) => {
     const PortalTarget = (Vue as unknown as { options: { components: { PortalTarget: VueConstructor } } }).options.components.PortalTarget;
     const parent = new Vue({
         el: document.createElement('div'),
@@ -56,7 +59,8 @@ function createManager({ gist }: PickPropTypes<typeof GistManager, 'gist'>) {
     return new GistManager({
         el: document.createElement('div'),
         propsData: {
-            gist
+            gist,
+            buttonClass: 'header-text-button'
         }
     });
 }

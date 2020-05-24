@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import outputViewGroupSettings from '../../components/internal/app-output-view-group';
-import { loadComponentTemplate, cases, renderComponent, PickPropTypes } from './helpers';
+import { loadComponentTemplate, themeCases, renderComponent, PickPropTypes } from './helpers';
 import * as groups from './data/inspections-groups';
 
 beforeEach(() => {
@@ -9,7 +9,7 @@ beforeEach(() => {
 });
 const OutputViewGroup = Vue.component('x', outputViewGroupSettings);
 
-test.each(cases)('allocations%s', async (_, bodyClass) => {
+test.each(themeCases)('allocations%s', async (_, bodyClass) => {
     const view = createView({ group: groups.allocations });
 
     const rendered = await renderComponent(view, { bodyClass });

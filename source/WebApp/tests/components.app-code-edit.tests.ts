@@ -1,7 +1,8 @@
+import Vue from 'vue';
 import { createMockProxy } from 'jest-mock-proxy';
 import mirrorsharp from 'mirrorsharp';
 import AppCodeEdit from '../components/app-code-edit-stable';
-import { vueNextTickWithErrorHandling, MockProxy, MockFunction, fromPartial } from './helpers';
+import { MockProxy, MockFunction, fromPartial } from './helpers';
 
 jest.mock('mirrorsharp');
 let cm: MockProxy<CodeMirror.Editor>;
@@ -20,9 +21,9 @@ test('app-code-edit replaces newlines in line value notes', async () => {
     const edit = new AppCodeEdit({
         el: document.createElement('app-code-edit')
     });
-    await vueNextTickWithErrorHandling();
+    await Vue.nextTick();
     edit.executionFlow = [{ line: 1, notes: '\r\r\n\n' }];
-    await vueNextTickWithErrorHandling();
+    await Vue.nextTick();
 
     expect(cm.setBookmark).toBeCalledWith(
         expect.objectContaining({ line: 0 }),

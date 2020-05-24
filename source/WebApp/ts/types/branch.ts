@@ -23,9 +23,3 @@ export interface BranchCommit {
     readonly hash: string;
     readonly date: Date;
 }
-
-export interface BranchGroup {
-    readonly name: string;
-    readonly kind: Branch['kind'];
-    readonly branches: ReadonlyArray<Branch>;
-}

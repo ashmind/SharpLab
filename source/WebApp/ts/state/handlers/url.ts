@@ -1,5 +1,5 @@
 ﻿import LZString from 'lz-string';
-import type { AppOptions } from '../../types/app';
+import type { RawOptions } from '../../types/raw-options';
 import type { Gist } from '../../types/gist';
 import { languages } from '../../helpers/languages';
 import { targets } from '../../helpers/targets';
@@ -19,7 +19,7 @@ import loadGistAsync from './url/load-gist-async';
 const last = {
     hash: null as string|null
 };
-function save(code: string|null|undefined, options: AppOptions, { gist = null }: { gist?: Gist|null } = {}) {
+function save(code: string|null|undefined, options: RawOptions, { gist = null }: { gist?: Gist|null } = {}) {
     if (code == null) // too early?
         return {};
 
@@ -44,7 +44,7 @@ function save(code: string|null|undefined, options: AppOptions, { gist = null }:
     return {};
 }
 
-function saveGist(code: string, options: AppOptions, gist: Gist) {
+function saveGist(code: string, options: RawOptions, gist: Gist) {
     if (code !== gist.code)
         return false;
 

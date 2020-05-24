@@ -8,4 +8,7 @@ import './app-output-view';
 import './app-gist-manager';
 import './app-theme-manager';
 import './app-cm6-preview-manager';
-import './app-warnings-section';
+import './app-section-warnings';
+import './app-section-branch-details';
+import './app-mobile-settings';
+import './app-select';

@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import Select from '../../components/app-select';
-import { cases, renderComponent, PickPropTypes } from './helpers';
+import { themeCases, renderComponent, PickPropTypes } from './helpers';
 
-test.each(cases)('empty%s', async (_, bodyClass) => {
+test.each(themeCases)('empty%s', async (_, bodyClass) => {
     const select = createSelect({ value: null, options: [] });
 
     const rendered = await renderComponent(select, { bodyClass });
@@ -10,7 +10,7 @@ test.each(cases)('empty%s', async (_, bodyClass) => {
     expect(rendered).toMatchImageSnapshot();
 });
 
-test.each(cases)('with value%s', async (_, bodyClass) => {
+test.each(themeCases)('with value%s', async (_, bodyClass) => {
     const select = createSelect({
         value: 'test',
         options: [{ text: 'Test', value: 'test' }]

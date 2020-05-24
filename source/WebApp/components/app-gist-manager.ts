@@ -1,45 +1,54 @@
 import Vue from 'vue';
-import '../ts/ui/setup/portal-vue';
 import type { AppOptions } from '../ts/types/app';
 import type { Result } from '../ts/types/results';
 import type { Gist } from '../ts/types/gist';
-import extendType from '../ts/helpers/extend-type';
+import withRefsType from '../ts/helpers/with-refs-type';
 import auth from '../ts/helpers/github/auth';
 import { createGistAsync } from '../ts/helpers/github/gists';
+import toRawOptions from '../ts/helpers/to-raw-options';
+import { uid } from '../ts/ui/helpers/uid';
+import type AppModal from './internal/app-modal';
+// eslint-disable-next-line no-duplicate-imports
+import './internal/app-modal';
 
-export default Vue.component('app-gist-manager', {
+// only doing it once per page load, even if
+// multiple app-gist-managers are created
+let postAuthRedirectModalOpened = false;
+
+export default withRefsType<{
+    modal: InstanceType<typeof AppModal>;
+    name: HTMLInputElement;
+}>(Vue).component('app-gist-manager', {
     props: {
         gist: Object as () => Gist|null,
         code: String,
         options: Object as () => AppOptions,
-        result: Object as () => Result
+        result: Object as () => Result,
+
+        useLabel: Boolean,
+        buttonClass: String as () => string|null
     },
-    data: () => extendType({
-        modalOpen: false,
+    data: () => ({
+        id: uid(),
         name: null as string|null,
         saving: false,
         error: null
-    })<{
-        escListener: (e: KeyboardEvent) => void;
-    }>(),
+    }),
     computed: {
         canSave(): boolean { return !!this.name && !this.saving; }
     },
     async mounted() {
-        if (auth.isBackFromRedirect)
+        if (auth.isBackFromRedirect && !postAuthRedirectModalOpened) {
+            postAuthRedirectModalOpened = true;
             await this.openModalAsync();
+        }
     },
     methods: {
         async openModalAsync() {
-            this.escListener = e => {
-                if (e.key === 'Escape')
-                    this.closeModal();
-            };
             await auth.redirectIfRequiredAsync();
-            this.modalOpen = true;
-            document.addEventListener('keyup', this.escListener);
+            this.$refs.modal.open();
             await Vue.nextTick();
-            (this.$refs.name as HTMLInputElement).focus();
+            this.$refs.name.focus();
         },
 
         async saveAsync() {
@@ -56,7 +65,7 @@ export default Vue.component('app-gist-manager', {
                 gist = await createGistAsync({
                     name: this.name,
                     code: this.code,
-                    options: this.options,
+                    options: toRawOptions(this.options),
                     result: this.result
                 });
             }
@@ -65,16 +74,14 @@ export default Vue.component('app-gist-manager', {
                 this.saving = false;
                 return;
             }
-            this.closeModal();
+            this.$refs.modal.close();
             this.$emit('save', gist);
             this.saving = false;
         },
 
-        closeModal() {
-            this.modalOpen = false;
+        handleModalClose() {
             this.name = null;
             this.error = null;
-            document.removeEventListener('keyup', this.escListener);
         },
 
         handleFormSubmit(e: Event) {

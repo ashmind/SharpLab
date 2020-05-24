@@ -11,8 +11,7 @@ import trackFeature from './helpers/track-feature';
 import { languages } from './helpers/languages';
 import { targets, TargetName } from './helpers/targets';
 import extractRangesFromIL from './helpers/extract-ranges-from-il';
-import getBranchesAsync from './server/get-branches-async';
-import { getBranchDisplayName, groupAndSortBranches } from './ui/branches';
+import { branchesPromise, resolveBranch } from './ui/branches';
 import state from './state/index';
 import url from './state/handlers/url';
 import defaults from './state/handlers/defaults';
@@ -89,7 +88,7 @@ function applyConnectionChange(this: App, connectionState: MirrorSharpConnection
     this.online = (connectionState === 'open');
 }
 
-function getServiceUrl(branch: Branch|null|undefined) {
+function getServiceUrl(branch: Branch|null) {
     const httpRoot = branch ? branch.url : window.location.origin;
     return `${httpRoot.replace(/^http/, 'ws')}/mirrorsharp`;
 }
@@ -127,11 +126,7 @@ async function createAppAsync() {
         languages,
         targets,
 
-        branches: {
-            groups: [],
-            ungrouped: []
-        },
-        branch: null,
+        branches: [],
 
         online: true,
         loading: true,
@@ -148,25 +143,15 @@ async function createAppAsync() {
         highlightedCodeRange: null,
         gist: null
     } as Omit<AppData, 'code'|'options'|'serviceUrl'> & Partial<Pick<AppData, 'code'|'options'|'serviceUrl'>>;
-    await state.loadAsync(data);
+
+    // not awaiting as we don't want this to block UI
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    (async () => data.branches = await branchesPromise)();
+
+    await state.loadAsync(data, resolveBranch);
     data.lastLoadedCode = data.code;
-
-    const branchesPromise = (async () => {
-        const branches = await getBranchesAsync() as ReadonlyArray<PartiallyMutable<Branch, 'displayName'>>;
-        for (const branch of branches) {
-            branch.displayName = getBranchDisplayName(branch);
-        }
-        data.branches = groupAndSortBranches(branches);
-        return branches;
-    })();
-
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (data.options!.branchId) {
-        const branches = await branchesPromise;
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        data.branch = branches.find(b => b.id === data.options!.branchId);
-    }
-    data.serviceUrl = getServiceUrl(data.branch);
+    data.serviceUrl = getServiceUrl(data.options!.branch);
 
     return {
         data,
@@ -207,8 +192,7 @@ async function createAppAsync() {
 
     ui.watch('options', () => state.save(data), { deep: true });
     ui.watch('code', () => state.save(data));
-    ui.watch('branch', value => {
-        data.options.branchId = value ? value.id : null;
+    ui.watch('options.branch', value => {
         if (value)
             trackFeature('Branch: ' + value.id);
         data.loading = true;
@@ -217,9 +201,10 @@ async function createAppAsync() {
 
     ui.watch('options.language', (newLanguage, oldLanguage) => {
         trackFeature('Language: ' + newLanguage);
-        if (data.branch && newLanguage === languages.fsharp) {
-            if (data.branch.kind === 'roslyn' || data.branch.id === 'core-x64-profiled')
-                data.branch = null;
+        const { options } = data;
+        if (options.branch && newLanguage === languages.fsharp) {
+            if (options.branch.kind === 'roslyn' || options.branch.id === 'core-x64-profiled')
+                options.branch = null;
         }
 
         const target = data.options.target;
@@ -240,7 +225,7 @@ async function createAppAsync() {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     url.changed(async () => {
-        await state.loadAsync(data);
+        await state.loadAsync(data, resolveBranch);
         data.lastLoadedCode = data.code;
     });
 })();

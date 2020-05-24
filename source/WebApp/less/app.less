@@ -88,8 +88,10 @@ header .spacer {
 .top-section-group {
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
+.block-section,
 .top-section {
     display: flex;
     flex-direction: column;
@@ -99,15 +101,15 @@ header .spacer {
         position: relative;
         display: flex;
         align-items: center;
-    }
 
-    h1 {
-        display: inline-block;
-        margin-top: auto;
-        margin-bottom: auto;
+        > h1 {
+            display: inline-block;
+            margin-top: auto;
+            margin-bottom: auto;
 
-        font-size: 100%;
-        font-weight: normal;
+            font-size: 100%;
+            font-weight: normal;
+        }
     }
 
     .content {
@@ -135,17 +137,19 @@ header .spacer {
     color: var(--content-loader-color);
 }
 
-.option-language {
-    display: inline-block;
-}
+header {
+    .option-language {
+        display: inline-block;
+    }
 
-.option-language, .option-target-language {
-    margin-left: @header-block-margin;
-    margin-right: @header-block-margin;
-}
+    .option-language, .option-target-language {
+        margin-left: @header-block-margin;
+        margin-right: @header-block-margin;
+    }
 
-.option-branch, .option-optimizations {
-    margin-left: auto;
+    .option-branch, .option-optimizations {
+        margin-left: auto;
+    }
 }
 
 .option-branch select {
@@ -269,7 +273,6 @@ section.details-only {
 @import 'imports/loader.less';
 @import 'imports/expanders.less';
 @import 'imports/markdown.less';
-@import 'imports/mobile.less';
 @import 'imports/branches.less';
 @import 'imports/ast.less';
 @import 'imports/explanations.less';
@@ -279,3 +282,4 @@ section.details-only {
 @import 'imports/github.less';
 @import 'imports/offline.less';
 @import 'imports/dark.less';
+@import 'imports/mobile.less';

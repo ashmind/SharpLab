@@ -1,0 +1,10 @@
+<app-select v-model="branch" class="option-branch option" v-bind:id="id">
+  <option v-bind:value="null">Default</option>
+  <option v-for="branch in ungrouped"
+          v-bind:value="branch">{{branch.displayName}}</option>
+  <optgroup v-bind:label="group.name" v-for="group in groups" v-show="group.kind !== 'roslyn' || language !== languages.fsharp">
+    <option v-for="branch in group.branches"
+            v-bind:value="branch"
+            v-show="branch.id !== 'core-x64-profiled' || language !== languages.fsharp">{{branch.displayName}}</option>
+  </optgroup>
+</app-select>

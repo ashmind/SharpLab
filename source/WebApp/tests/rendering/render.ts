@@ -94,12 +94,16 @@ export default async function render({
     html,
     bodyClass = '',
     styles = [],
+    width = 800,
+    height = 600,
 
     debug = false
 }: {
     html: string;
     bodyClass?: string;
     styles?: ReadonlyArray<{ path: string }>;
+    width?: number;
+    height?: number;
     debug?: boolean;
 }) {
     const content = `<!DOCTYPE html><html><head></head><body class="${bodyClass}">${html}</body></html>`;
@@ -109,6 +113,7 @@ export default async function render({
 
     const { waitForUnfinishedRequests } = await setupRequestInterception(page);
 
+    await page.setViewport({ width, height });
     await page.setContent(content);
     for (const style of styles) {
         await page.addStyleTag(style);

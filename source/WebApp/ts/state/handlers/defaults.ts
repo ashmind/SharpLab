@@ -15,7 +15,6 @@ const code = asLookup({
 
 export default {
     getOptions: () => ({
-        branchId:   null,
         language:   languages.csharp,
         target:     languages.csharp,
         release:    false

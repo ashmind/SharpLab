@@ -1,5 +1,5 @@
 import AstView from '../../components/app-ast-view';
-import { cases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
+import { themeCases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
 import rootsSimple from './data/ast-roots-simple';
 
 beforeEach(() => {
@@ -7,7 +7,7 @@ beforeEach(() => {
     Element.prototype.scrollIntoView = () => {};
 });
 
-test.each(cases)('empty%s', async (_, bodyClass) => {
+test.each(themeCases)('empty%s', async (_, bodyClass) => {
     const view = createView({ roots: [] });
 
     const rendered = await renderComponent(view, { bodyClass });
@@ -15,7 +15,7 @@ test.each(cases)('empty%s', async (_, bodyClass) => {
     expect(rendered).toMatchImageSnapshot();
 });
 
-test.each(cases)('simple tree%s', async (_, bodyClass) => {
+test.each(themeCases)('simple tree%s', async (_, bodyClass) => {
     const view = createView({ roots: rootsSimple });
     view.selectDeepestByOffset(58); // space before }
 

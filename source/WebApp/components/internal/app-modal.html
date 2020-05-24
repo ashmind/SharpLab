@@ -1,0 +1,16 @@
+<portal to="modals">
+  <div class="modal-wrapper" v-if="wasOpen" v-show="isOpen">
+    <div class="modal">
+      <header>
+        <span>{{title}}</span>
+        <button type="button"
+                class="modal-close-button"
+                v-on:click="close"
+                v-bind:disabled="!canClose"></button>
+      </header>
+      <div>
+        <slot></slot>
+      </div>
+    </div>
+  </div>
+</portal>

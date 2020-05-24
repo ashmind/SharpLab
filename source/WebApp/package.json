@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "jest": {
+    "maxConcurrency": 10,
     "globals": {
       "ts-jest": {
         "tsConfig": "<rootDir>/tests/tsconfig.json"
@@ -26,6 +27,7 @@
       "<rootDir>/ts/polyfills/index.ts"
     ],
     "setupFilesAfterEnv": [
+      "<rootDir>/tests/setup.ts",
       "<rootDir>/tests/rendering/setup.ts"
     ],
     "testMatch": [
@@ -69,7 +71,7 @@
     "jest-mock-proxy": "3.0.0",
     "less": "3.8.1",
     "md5-file": "3.1.1",
-    "oldowan": "1.0.0-preview-3",
+    "oldowan": "1.0.0-preview-4",
     "postcss": "7.0.2",
     "postcss-csso": "3.0.0",
     "puppeteer": "2.1.1",

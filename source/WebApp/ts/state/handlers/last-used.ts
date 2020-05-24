@@ -1,6 +1,6 @@
-﻿import type { AppOptions } from '../../types/app';
-import extendType from '../../helpers/extend-type';
+﻿import extendType from '../../helpers/extend-type';
 import warn from '../../helpers/warn';
+import type { RawOptions } from '../../types/raw-options';
 
 const version = 3;
 export default {
@@ -13,7 +13,7 @@ export default {
             const parsed = JSON.parse(loaded) as { version?: number };
             if (parsed.version !== version)
                 return null;
-            return (extendType(parsed)<{ options: AppOptions }>()).options;
+            return (extendType(parsed)<{ options: RawOptions }>()).options;
         }
         catch (ex) {
             warn('Failed to load options:', ex);
@@ -21,7 +21,7 @@ export default {
         }
     },
 
-    saveOptions(options: AppOptions) {
+    saveOptions(options: RawOptions) {
         try {
             localStorage['sharplab.options'] = JSON.stringify({ version, options });
         }

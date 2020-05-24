@@ -2,7 +2,7 @@ import type { VueConstructor } from 'vue';
 import type { MirrorSharpSlowUpdateResult, MirrorSharpConnectionState } from 'mirrorsharp';
 import type { TargetName } from '../helpers/targets';
 import type { LanguageName } from '../helpers/languages';
-import type { BranchGroup, Branch } from './branch';
+import type { Branch } from './branch';
 import type { ServerOptions } from './server-options';
 import type { HighlightedRange } from './highlighted-range';
 import type { Result, CodeResult, AstResult, ExplainResult, AstItem } from './results';
@@ -13,18 +13,14 @@ import type { CodeRange } from './code-range';
 export type AppTheme = 'light'|'dark'|'auto';
 
 export interface AppOptions {
-    readonly language: LanguageName;
-    readonly target: TargetName|string;
-    readonly release: boolean;
-    branchId?: string|null;
+    language: LanguageName;
+    target: TargetName|string;
+    release: boolean;
+    branch: Branch|null;
 }
 
 export interface AppData {
-    branches: {
-        readonly groups: ReadonlyArray<BranchGroup>;
-        readonly ungrouped: ReadonlyArray<Readonly<Branch>>;
-    };
-    branch: Branch|null|undefined;
+    branches: ReadonlyArray<Branch>;
 
     loadingDelay?: ReturnType<typeof setTimeout>|null;
     loading: boolean;

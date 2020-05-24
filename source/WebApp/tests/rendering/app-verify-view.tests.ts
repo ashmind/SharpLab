@@ -1,7 +1,7 @@
 import VerifyView from '../../components/app-verify-view';
-import { cases, renderComponent, PickPropTypes } from './helpers';
+import { themeCases, renderComponent, PickPropTypes } from './helpers';
 
-test.each(cases)('success%s', async (_, bodyClass) => {
+test.each(themeCases)('success%s', async (_, bodyClass) => {
     const view = createView({ value: '✔️ Compilation completed.' });
 
     const rendered = await renderComponent(view, { bodyClass });

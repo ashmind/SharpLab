@@ -1,11 +1,11 @@
 import Vue from 'vue';
 import outputViewSimpleSettings from '../../components/internal/app-output-view-simple';
-import { loadComponentTemplate, cases, renderComponent, PickPropTypes } from './helpers';
+import { loadComponentTemplate, themeCases, renderComponent, PickPropTypes } from './helpers';
 
 beforeEach(() => loadComponentTemplate('app-output-view-simple', 'internal'));
 const OutputViewSimple = Vue.component('x', outputViewSimpleSettings);
 
-test.each(cases)('simple%s', async (_, bodyClass) => {
+test.each(themeCases)('simple%s', async (_, bodyClass) => {
     const view = createView({ inspection: {
         type: 'inspection:simple',
         title: 'Inspect',
@@ -17,7 +17,7 @@ test.each(cases)('simple%s', async (_, bodyClass) => {
     expect(rendered).toMatchImageSnapshot();
 });
 
-test.each(cases)('multiline%s', async (_, bodyClass) => {
+test.each(themeCases)('multiline%s', async (_, bodyClass) => {
     const view = createView({ inspection: {
         type: 'inspection:simple',
         title: 'Inspect',
@@ -29,7 +29,7 @@ test.each(cases)('multiline%s', async (_, bodyClass) => {
     expect(rendered).toMatchImageSnapshot();
 });
 
-test.each(cases)('exception%s', async (_, bodyClass) => {
+test.each(themeCases)('exception%s', async (_, bodyClass) => {
     const view = createView({ inspection: {
         type: 'inspection:simple',
         title: 'Exception',
@@ -41,7 +41,7 @@ test.each(cases)('exception%s', async (_, bodyClass) => {
     expect(rendered).toMatchImageSnapshot();
 });
 
-test.each(cases)('warning%s', async (_, bodyClass) => {
+test.each(themeCases)('warning%s', async (_, bodyClass) => {
     const view = createView({ inspection: {
         type: 'inspection:simple',
         title: 'Warning',

@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import outputViewMemorySettings from '../components/internal/app-output-view-memory';
-import { vueNextTickWithErrorHandling } from './helpers';
 
 const OutputViewMemory = Vue.component('x', outputViewMemorySettings);
 
@@ -15,7 +14,7 @@ test('app-output-view-memory renders padding correctly', async () => {
             }
         }
     });
-    await vueNextTickWithErrorHandling();
+    await Vue.nextTick();
 
     const labelTds = [...view.$el.querySelectorAll('td.inspection-data-label')];
 

@@ -1,9 +1,9 @@
 import ThemeManager from '../../components/app-theme-manager';
-import { loadComponentTemplate, cases, renderComponent } from './helpers';
+import { loadComponentTemplate, themeCases, renderComponent } from './helpers';
 
 beforeEach(() => loadComponentTemplate('app-theme-manager'));
 
-test.each(cases)('auto%s', async (_, bodyClass) => {
+test.each(themeCases)('auto%s', async (_, bodyClass) => {
     const view = createManager();
 
     const rendered = await renderComponent(view, {

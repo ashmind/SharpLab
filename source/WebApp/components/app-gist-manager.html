@@ -1,50 +1,40 @@
-<div class="fragment header-block gist-manager">
+<div class="fragment gist-manager">
+  <label v-if="useLabel" v-bind:for="gist ? `gist-{id}-link` : `gist-{id}-create`">Gist:</label>
   <button v-show="!gist"
-          class="header-text-button gist-create"
-          v-on:click="openModalAsync">Create Gist</button>
+          v-bind:id="`gist-{id}-create`"
+          v-bind:class="`${buttonClass} gist-create online-only`"
+          v-on:click="openModalAsync">{{useLabel ? 'Create' : 'Create Gist'}}</button>
   <a class="gist-link"
      v-if="gist"
+     v-bind:id="`gist-{id}-link`"
      v-bind:href="gist.url"
      v-bind:title="`Gist: ${gist.name}`"
      target="_blank"
-     rel="noopener">Gist: {{gist.name}}</a>
+     rel="noopener">{{useLabel ? gist.name : `Gist: ${gist.name}`}}</a>
 
-  <portal to="modals">
-    <div class="modal-wrapper" v-if="modalOpen">
-      <div class="modal gist-save-modal">
-        <header>
-          <span>Gist</span>
-          <button type="button"
-                  class="modal-close-button"
-                  v-on:click="closeModal"
-                  v-bind:disabled="saving"></button>
-        </header>
-        <div>
-          <small class="disclaimer">
-            <p>The main purpose is to shorten SharpLab URLs, so the functionality is minimal at the moment.</p>
-            <p>For example, you can't update existing Gists.</p>
-          </small>
-          <form class="modal-body" v-on:submit="handleFormSubmit">
-            <div class="form-line">
-              <label>Name:</label>
-              <input type="text" v-model="name" ref="name" required>
-            </div>
-
-            <div class="form-line form-errors">{{error}}</div>
-
-            <div class="form-line modal-buttons">
-              <button v-bind:disabled="!canSave"
-                      class="form-button"
-                      type="submit">
-                <template v-if="!saving">
-                  Create Gist
-                </template>
-                <span v-else class="loader loading"></span>
-              </button>
-            </div>
-          </form>
-        </div>
+  <app-modal title="Gist" ref="modal" v-bind:can-close="!saving" v-on:close="handleModalClose">
+    <small class="disclaimer">
+      <p>The main purpose is to shorten SharpLab URLs, so the functionality is minimal at the moment.</p>
+      <p>For example, you can't update existing Gists.</p>
+    </small>
+    <form class="modal-body" v-on:submit="handleFormSubmit">
+      <div class="form-line">
+        <label>Name:</label>
+        <input type="text" v-model="name" ref="name" required>
       </div>
-    </div>
-  </portal>
+
+      <div class="form-line form-errors">{{error}}</div>
+
+      <div class="form-line modal-buttons">
+        <button v-bind:disabled="!canSave"
+                class="form-button-primary"
+                type="submit">
+          <template v-if="!saving">
+            Create Gist
+          </template>
+          <span v-else class="loader loading"></span>
+        </button>
+      </div>
+    </form>
+  </app-modal>
 </div>

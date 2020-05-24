@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import CodeView from '../../components/app-code-view';
-import { cases, renderComponent, PickPropTypes } from './helpers';
+import { themeCases, renderComponent, PickPropTypes } from './helpers';
 import { basicCSharp } from './data/code';
 
 beforeEach(() => {
@@ -18,7 +18,7 @@ beforeEach(() => {
     });
 });
 
-test.each(cases)('empty%s', async (_, bodyClass) => {
+test.each(themeCases)('empty%s', async (_, bodyClass) => {
     const view = createView({ value: '', language: 'C#', ranges: [] });
     await Vue.nextTick();
 
@@ -27,7 +27,7 @@ test.each(cases)('empty%s', async (_, bodyClass) => {
     expect(rendered).toMatchImageSnapshot();
 });
 
-test.each(cases)('basic C#%s', async (_, bodyClass) => {
+test.each(themeCases)('basic C#%s', async (_, bodyClass) => {
     // TODO: fix height
     const view = createView({
         value: basicCSharp,

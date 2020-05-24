@@ -13,6 +13,7 @@ input {
 select,
 label,
 input,
+legend,
 .header-text-button,
 .form-button,
 .form-line {
@@ -25,6 +26,7 @@ select {
     border: none;
     appearance: none;
     padding: 1px 15px 1px 5px;
+    width: 100%;
 }
 
 option, optgroup {
@@ -34,7 +36,7 @@ option, optgroup {
 
 .select-wrapper {
     position: relative;
-    border: 1px solid var(--header-control-border-color);
+    border: 1px solid var(--border-color);
 
     &::after {
         content: '\0025be'; /* ▾ */
@@ -45,12 +47,40 @@ option, optgroup {
     }
 }
 
+fieldset {
+    border: none;
+    padding: 0;
+
+    & + & {
+        margin-top: 20px;
+    }
+}
+
+legend {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    color: var(--border-color);
+    text-transform: uppercase;
+
+    &::after {
+        content: '';
+        margin-left: 10px;
+        flex-grow: 1;
+        height: 1px;
+        border-top: 1px solid var(--border-color);
+    }
+}
+
 .form-line {
     display: flex;
     align-items: center;
-    & + & {
-        margin-top: 10px;
-    }
+}
+
+legend + .form-line,
+.form-line + .form-line {
+    margin-top: 10px;
 }
 
 .form-errors {
@@ -75,26 +105,37 @@ input {
 }
 
 button {
+    appearance: none;
+    border-radius: 0;
     cursor: pointer;
-}
-
-header button, footer button {
-    .custom-button();
+    background: none;
 }
 
 .header-text-button {
     border: 1px solid var(--header-control-border-color);
-    background: none;
 }
 
-.form-button {
-    .custom-button();
-    border: none;
-    padding: 3px 6px;
-    background-color: @primary-color;
-    color: #fff;
+form button {
+    border: 1px solid var(--border-color);
 
     &[disabled] {
         background-color: var(--border-color);
+    }
+}
+
+.form-button-primary {
+    padding: 3px 6px;
+    border: none;
+    background-color: @primary-color;
+    color: #fff;
+}
+
+.form-aligned {
+    label {
+        min-width: 4.5em;
+    }
+
+    .select-wrapper {
+        flex-grow: 1;
     }
 }

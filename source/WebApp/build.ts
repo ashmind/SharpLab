@@ -72,19 +72,14 @@ const less = task('less', async () => {
         jetpack.writeAsync(paths.to.css, css),
         jetpack.writeAsync(paths.to.css + '.map', map)
     );
-}, { inputs: [`${dirname}/less/**/*.less`] });
+}, { watch: [`${dirname}/less/**/*.less`] });
 
-const tsLint = task('tsLint', () => exec('eslint . --max-warnings 0 --ext .js,.ts'));
+const tsLint = task('ts-lint', () => exec('eslint . --max-warnings 0 --ext .js,.ts'));
+const tsMain = task('ts-main', () => exec('rollup -c'), { watch: () => exec('rollup -c -w') })
 
 const ts = task('ts', async () => {
     await tsLint();
-    await exec('rollup -c');
-}, {
-    inputs: [
-        `${dirname}/ts/**/*.ts`,
-        `${dirname}/components/**/*.ts`,
-        `${dirname}/package.json`
-    ]
+    await tsMain();
 });
 
 const icons = task('icons', async () => {
@@ -102,7 +97,7 @@ const icons = task('icons', async () => {
         jetpack.copyAsync(paths.from.icon, paths.to.icon.svg, { overwrite: true }),
         ...pngGeneration
     ) as unknown as Promise<void>;
-}, { inputs: [paths.from.icon] });
+}, { watch: [paths.from.icon] });
 
 const manifest = task('manifest', async () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -121,7 +116,7 @@ const manifest = task('manifest', async () => {
     });
 
     await jetpack.writeAsync(paths.to.manifest, JSON.stringify(content));
-}, { inputs: [paths.from.manifest] });
+}, { watch: [paths.from.manifest] });
 
 const html = task('html', async () => {
     const iconDataUrl = await getIconDataUrl();
@@ -140,7 +135,7 @@ const html = task('html', async () => {
     html = htmlMinifier.minify(html, { collapseWhitespace: true });
     await jetpack.writeAsync(paths.to.html, html);
 }, {
-    inputs: [
+    watch: [
         `${dirname}/components/**/*.html`,
         paths.to.css,
         `${outputRoot}/app.min.js`,

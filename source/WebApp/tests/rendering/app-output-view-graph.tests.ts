@@ -1,12 +1,12 @@
 import Vue from 'vue';
 import outputViewGraphSettings from '../../components/internal/app-output-view-graph';
-import { cases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
+import { themeCases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
 
 const OutputViewGraph = Vue.component('x', outputViewGraphSettings);
 
 beforeEach(() => loadComponentTemplate('app-output-view-graph', 'internal'));
 
-test.each(cases)('empty%s', async (_, bodyClass) => {
+test.each(themeCases)('empty%s', async (_, bodyClass) => {
     const view = createView({ inspection: {
         type: 'inspection:memory-graph',
         stack: [],

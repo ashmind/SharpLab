@@ -26,34 +26,38 @@
       'root-status-offline': !status.online,
       'root-status-error':   status.error
     }">
+      <app-mobile-settings
+          v-bind:options="options"
+          v-bind:branches="branches"
+          v-bind:gist="gist">
+        <template v-slot:gist-manager>
+          <app-gist-manager v-bind:gist="gist"
+                            v-bind:code="code"
+                            v-bind:options="options"
+                            v-bind:result="result"
+                            v-bind:use-label="true"
+                            v-on:save="applyGistSave"></app-gist-manager>
+        </template>
+      </app-mobile-settings>
+      <div class="mobile-offline-notice">connection lost, reconnecting…</div>
+
       <div class="top-section-group top-section-group-code">
         <section class="top-section code">
           <header>
-            <button class="mobile-menu-button" v-app-class-toggle="{ target: '.code', class: 'mobile-menu-open' }"></button>
             <h1>Code</h1>
-            <app-select v-model="options.language" class="option-language option">
-              <option v-bind:value="languages.csharp">C#</option>
-              <option v-bind:value="languages.vb">Visual Basic</option>
-              <option v-bind:value="languages.fsharp">F#</option>
-            </app-select>
-            <app-gist-manager v-bind:gist="gist"
+            <app-select-language v-model="options.language"></app-select-language>
+            <app-gist-manager class="header-block"
+                              button-class="header-text-button"
+                              v-bind:gist="gist"
                               v-bind:code="code"
                               v-bind:options="options"
                               v-bind:result="result"
                               v-on:save="applyGistSave"></app-gist-manager>
             <div class="offline-only">[connection lost, reconnecting…]</div>
 
-            <app-select v-model="branch" class="option-branch option">
-              <option v-bind:value="null">Default</option>
-              <option v-for="branch in branches.ungrouped"
-                      v-bind:value="branch">{{branch.displayName}}</option>
-              <optgroup v-bind:label="group.name" v-for="group in branches.groups" v-show="group.kind !== 'roslyn' || options.language !== languages.fsharp">
-                <option v-for="branch in group.branches"
-                        v-bind:value="branch"
-                        v-show="branch.id !== 'core-x64-profiled' || options.language !== languages.fsharp">{{branch.displayName}}</option>
-              </optgroup>
-            </app-select>
-            <div class="mobile-menu"></div>
+            <app-select-branch v-model="options.branch"
+                               v-bind:branches="branches"
+                               v-bind:language="options.language"></app-select-branch>
           </header>
           <div class="content">
             <app-code-edit v-bind:initial-text="lastLoadedCode"
@@ -71,53 +75,15 @@
           </div>
         </section>
 
-        <section v-if="branch && branch.commits" class="top-section details-only branch-details non-code">
-          <header>
-            <button class="expander" v-app-class-toggle="{ target: '.branch-details', class: 'collapsed' }"></button>
-            <h1>Branch {{branch.displayName}}</h1>
-          </header>
-          <div class="content">
-            <div v-if="branch.feature && branch.feature.url" class="branch-feature-link">
-              <a v-bind:href="branch.feature.url" target="_blank">{{branch.feature.url}}</a>
-            </div>
-            <div>
-              Latest commit
-              <a v-bind:href="'https://github.com/dotnet/roslyn/commit/' + branch.commits[0].hash" target="_blank">{{branch.commits[0].hash.substr(0, 7)}}</a>
-              by {{branch.commits[0].author}}:
-            </div>
-            <div class="branch-commit-message">{{branch.commits[0].message.trim()}}</div>
-          </div>
-        </section>
+        <app-section-branch-details v-bind:branch="options.branch" class="top-section"></app-section-branch-details>
       </div>
 
       <div class="top-section-group top-section-group-results" v-bind:class="{ loading: loading }">
         <section class="top-section result">
           <header>
-            <button class="mobile-menu-button" v-app-class-toggle="{ target: '.top-section-group-results', class: 'mobile-menu-open' }"></button>
             <h1>Results</h1>
-
-            <app-select v-model="options.target" class="option-target-language option">
-              <optgroup label="Decompile">
-                <option v-bind:value="targets.csharp">C#</option>
-                <option v-show="options.target === targets.vb" v-bind:value="targets.vb">Visual Basic</option>
-                <option v-bind:value="targets.il">IL</option>
-                <option v-bind:value="targets.asm">JIT Asm</option>
-              </optgroup>
-              <optgroup label="Other">
-                <option v-bind:value="targets.ast">Syntax Tree</option>
-                <option v-bind:value="targets.verify">Verify Only</option>
-                <option v-bind:value="targets.explain">Explain</option>
-              </optgroup>
-              <optgroup label="Experimental">
-                <option v-bind:value="targets.run">Run</option>
-              </optgroup>
-            </app-select>
-
-            <app-select v-model="options.release" class="option-optimizations option">
-              <option v-bind:value="false">Debug</option>
-              <option v-bind:value="true">Release</option>
-            </app-select>
-            <div class="mobile-menu"></div>
+            <app-select-target v-model="options.target"></app-select-target>
+            <app-select-mode v-model="options.release"></app-select-mode>
           </header>
           <div class="content">
             <div class="loader"></div>
@@ -159,10 +125,10 @@
           </div>
         </section>
 
-        <app-warnings-section v-bind:warnings="result.warnings"></app-warnings-section>
+        <app-section-warnings class="top-section collapsed" v-bind:warnings="result.warnings"></app-section-warnings>
       </div>
 
-      <portal-target name="modals" multiple slim></portal-target>
+      <portal-target name="modals" multiple class="fragment"></portal-target>
     </main>
     <footer>
       <app-cm6-preview-manager></app-cm6-preview-manager>

@@ -11,6 +11,7 @@ import './hooks/app-theme-color-manager';
 
 type WatchParameters = Parameters<Vue['$watch']>;
 type WatchMap = AppData & {
+    'options.branch': AppData['options']['branch'];
     'options.language': AppData['options']['language'];
     'options.target': AppData['options']['target'];
 };
