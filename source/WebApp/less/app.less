@@ -142,7 +142,7 @@ header {
         display: inline-block;
     }
 
-    .option-language, .option-target-language {
+    .option-language, .option-target {
         margin-left: @header-block-margin;
         margin-right: @header-block-margin;
     }
@@ -246,7 +246,8 @@ section.details-only {
 }
 
 .result-content {
-    padding: 4px;
+    --result-container-padding: 4px;
+    padding: var(--result-container-padding);
 }
 
 .disclaimer {

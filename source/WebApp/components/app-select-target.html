@@ -1,4 +1,4 @@
-<app-select v-model="target" class="option-target-language option online-only" v-bind:id="id">
+<app-select v-model="target" class="option-target option online-only" v-bind:id="id">
   <optgroup label="Decompile">
     <option v-bind:value="targets.csharp">C#</option>
     <option v-show="target === targets.vb" v-bind:value="targets.vb">Visual Basic</option>
