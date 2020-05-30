@@ -2,8 +2,11 @@ import Vue from 'vue';
 
 export default Vue.component('app-select-mode', {
     props: {
-        id: String as () => string|null,
-        value: Boolean
+        value: Boolean,
+        useAriaLabel: {
+            default: true,
+            type: Boolean
+        }
     },
 
     data() {
@@ -20,8 +23,13 @@ export default Vue.component('app-select-mode', {
         }
     },
 
+    inheritAttrs: false,
+
     template: `
-        <app-select v-model="release" class="option-optimizations option online-only" v-bind:id="id">
+        <app-select v-model="release"
+                    class="option-optimizations option online-only"
+                    v-bind:aria-label="useAriaLabel ? 'Build Mode' : null"
+                    v-bind="$attrs">
             <option v-bind:value="false">Debug</option>
             <option v-bind:value="true">Release</option>
         </app-select>

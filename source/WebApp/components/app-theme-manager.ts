@@ -1,11 +1,13 @@
 import Vue from 'vue';
 import type { AppTheme } from '../ts/types/app';
+import { uid } from '../ts/ui/helpers/uid';
 import { getUserTheme, setUserTheme } from '../ts/helpers/theme';
 import asLookup from '../ts/helpers/as-lookup';
 
 const component = Vue.component('app-theme-manager', {
     data: () => ({
-        theme: 'auto' as AppTheme
+        theme: 'auto' as AppTheme,
+        id: uid()
     }),
     computed: {
         themeLabel() {

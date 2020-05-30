@@ -26,7 +26,10 @@ export default withRefsType<{
         result: Object as () => Result,
 
         useLabel: Boolean,
-        buttonClass: String as () => string|null
+        buttonProps: {
+            default: () => ({}),
+            type: Object
+        }
     },
     data: () => ({
         id: uid(),

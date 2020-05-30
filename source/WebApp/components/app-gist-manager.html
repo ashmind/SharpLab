@@ -1,12 +1,13 @@
 <div class="fragment gist-manager">
-  <label v-if="useLabel" v-bind:for="gist ? `gist-{id}-link` : `gist-{id}-create`">Gist:</label>
+  <label v-if="useLabel" v-bind:for="gist ? `gist-${id}-link` : `gist-${id}-create`">Gist:</label>
   <button v-show="!gist"
-          v-bind:id="`gist-{id}-create`"
-          v-bind:class="`${buttonClass} gist-create online-only`"
-          v-on:click="openModalAsync">{{useLabel ? 'Create' : 'Create Gist'}}</button>
+          v-bind:id="`gist-${id}-create`"
+          v-bind:class="`${buttonProps.class || ''} gist-create online-only`"
+          v-on:click="openModalAsync"
+          v-bind="buttonProps">{{useLabel ? 'Create' : 'Create Gist'}}</button>
   <a class="gist-link"
      v-if="gist"
-     v-bind:id="`gist-{id}-link`"
+     v-bind:id="`gist-${id}-link`"
      v-bind:href="gist.url"
      v-bind:title="`Gist: ${gist.name}`"
      target="_blank"

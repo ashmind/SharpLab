@@ -1,4 +1,7 @@
-<app-select v-model="branch" class="option-branch option" v-bind:id="id">
+<app-select v-model="branch"
+            class="option-branch option"
+            v-bind:aria-label="useAriaLabel ? 'Platform or Roslyn branch' : null"
+            v-bind="$attrs">
   <option v-bind:value="null">Default</option>
   <option v-for="branch in ungrouped"
           v-bind:value="branch">{{branch.displayName}}</option>

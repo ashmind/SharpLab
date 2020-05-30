@@ -4,8 +4,11 @@ import './app-select';
 
 export default Vue.component('app-select-target', {
     props: {
-        id: String as () => string|null,
-        value: String as () => TargetName
+        value: String as () => TargetName,
+        useAriaLabel: {
+            default: true,
+            type: Boolean
+        }
     },
 
     data() {
@@ -24,6 +27,8 @@ export default Vue.component('app-select-target', {
             this.$emit('input', this.target);
         }
     },
+
+    inheritAttrs: false,
 
     template: '#app-select-target'
 });
