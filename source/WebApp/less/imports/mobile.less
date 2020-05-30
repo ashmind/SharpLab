@@ -65,7 +65,10 @@
     }
 
     // leave space for scrollbar
-    @option-target-right: var(--js-scrollbar-width, 0px);
+    // ~ required by https://github.com/less/less.js/issues/3463
+    @option-target-right: ~"max(var(--js-scrollbar-width, 0px), 5px)";
+    // for browsers that don't support min()
+    @option-target-right-compatibility: var(--js-scrollbar-width, 0px);
 
     .result > header {
         display: contents;
@@ -77,6 +80,7 @@
         .option-target {
             position: absolute;
             z-index: 15;
+            right: @option-target-right-compatibility;
             right: @option-target-right;
             top: 0;
             margin: 0;
@@ -88,6 +92,7 @@
 
     .result .loader {
         top: 25px;
+        right: @option-target-right-compatibility;
         right: @option-target-right;
     }
 
@@ -99,6 +104,7 @@
     .explanations .markdown p:first-child,
     .output .disclaimer {
         // leaves space for options target
+        max-width: calc(100% - (@option-target-right-compatibility + 7.5rem - var(--result-container-padding)));
         max-width: calc(100% - (@option-target-right + 7.5rem - var(--result-container-padding)));
     }
 
