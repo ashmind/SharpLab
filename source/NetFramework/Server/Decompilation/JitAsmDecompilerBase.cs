@@ -45,8 +45,8 @@ namespace SharpLab.Server.Decompilation {
 
         private void WriteJitInfo(ClrInfo clr, TextWriter writer) {
             writer.WriteLine(
-                "; {0:G} CLR {1} ({2}) on {3}.",
-                clr.Flavor, clr.Version, Path.GetFileName(clr.ModuleInfo.FileName), clr.DacInfo.TargetArchitecture.ToString("G").ToLowerInvariant()
+                "; {0:G} CLR {1} on {2}",
+                clr.Flavor, clr.Version, clr.DacInfo.TargetArchitecture.ToString("G").ToLowerInvariant()
             );
         }
 

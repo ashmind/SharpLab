@@ -1,10 +1,10 @@
-﻿static class C {
+static class C {
     static int M() => 0x12345;
 }
 
 #=>
 
-; Desktop CLR v<IGNORE> (clr.dll) on x86.
+; Desktop CLR v<IGNORE> on x86
 
 C.M()
     L0000: mov eax, 0x12345

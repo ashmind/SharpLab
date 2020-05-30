@@ -10,7 +10,7 @@ static class C {
 
 #=>
 
-; Desktop CLR v<IGNORE> (clr.dll) on x86.
+; Desktop CLR v<IGNORE> on x86
 
 C+N`1[[System.Int32, mscorlib]].get_M()
     L0000: xor eax, eax

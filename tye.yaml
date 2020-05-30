@@ -11,3 +11,4 @@ services:
   project: source/WebApp/WebApp.csproj
   bindings:
   - protocol: http
+    port: 54100

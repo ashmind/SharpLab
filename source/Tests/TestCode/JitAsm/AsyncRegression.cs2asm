@@ -15,7 +15,7 @@ static class C {
 
 #=>
 
-; Core CLR v<IGNORE> (coreclr.dll) on amd64.
+; Core CLR v<IGNORE> on amd64
 
 C.M(Int32)
     L0000: sub rsp, 0x28

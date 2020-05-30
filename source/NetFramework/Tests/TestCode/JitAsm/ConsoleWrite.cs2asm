@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 static class C {
     static void M() => Console.WriteLine("test");
 }
 
 #=>
 
-; Desktop CLR v<IGNORE> (clr.dll) on x86.
+; Desktop CLR v<IGNORE> on x86
 
 C.M()
     L0000: mov ecx, [0x<IGNORE>]

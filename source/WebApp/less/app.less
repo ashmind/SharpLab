@@ -7,6 +7,7 @@
 @import 'imports/forms.less';
 
 :root {
+    --background-color: #fff;
     --header-separator-color: #fff;
     --error-header-color: @error-color;
     --warning-header-color: @warning-color;
@@ -28,6 +29,7 @@ html, body {
 body {
     display: flex;
     flex-direction: column;
+    background-color: var(--background-color);
 
     &.loading {
         visibility: hidden;

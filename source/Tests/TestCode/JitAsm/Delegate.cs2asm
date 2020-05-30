@@ -2,7 +2,7 @@ delegate void D();
 
 #=>
 
-; Core CLR v<IGNORE> (coreclr.dll) on amd64.
+; Core CLR v<IGNORE> on amd64
 
 D..ctor(System.Object, IntPtr)
     ; Cannot produce JIT assembly for runtime-implemented method.

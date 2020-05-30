@@ -5,7 +5,7 @@ static class C {
 
 #=>
 
-; Core CLR v<IGNORE> (coreclr.dll) on amd64.
+; Core CLR v<IGNORE> on amd64
 
 C.M()
     L0000: mov rcx, 0x<IGNORE>

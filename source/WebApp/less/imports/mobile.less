@@ -64,8 +64,8 @@
         display: none;
     }
 
-    // leaves space for scrollbars
-    @option-target-right: 18px;
+    // leave space for scrollbar
+    @option-target-right: var(--js-scrollbar-width, 0px);
 
     .result > header {
         display: contents;
@@ -80,9 +80,9 @@
             right: @option-target-right;
             top: 0;
             margin: 0;
+            background: var(--background-color);
             border-color: var(--border-color);
             border-top: 0;
-            border-bottom-left-radius: 10px;
         }
     }
 

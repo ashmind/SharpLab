@@ -12,7 +12,7 @@ public class C
 
 #=>
 
-; Desktop CLR v<IGNORE> (clr.dll) on x86.
+; Desktop CLR v<IGNORE> on x86
 
 C..ctor()
     L0000: ret

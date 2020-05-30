@@ -1,4 +1,4 @@
-﻿open SharpLab.Runtime
+open SharpLab.Runtime
 
 [<JitGeneric(typedefof<int>)>]
 [<JitGeneric(typedefof<string>)>]
@@ -6,7 +6,7 @@ let M<'T> = Unchecked.defaultof<'T>
 
 #=>
 
-; Desktop CLR v<IGNORE> (clr.dll) on x86.
+; Desktop CLR v<IGNORE> on x86
 
 _.M[[System.Int32, mscorlib]]()
     L0000: xor eax, eax

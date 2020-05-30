@@ -1,4 +1,4 @@
-﻿static class C {
+static class C {
     static int M(int[] x) {
         return x[0];
     }
@@ -6,7 +6,7 @@
 
 #=>
 
-; Desktop CLR v<IGNORE> (clr.dll) on x86.
+; Desktop CLR v<IGNORE> on x86
 
 C.M(Int32[])
     L0000: cmp dword [ecx+0x4], 0x0

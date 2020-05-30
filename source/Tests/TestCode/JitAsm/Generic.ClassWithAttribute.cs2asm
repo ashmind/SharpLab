@@ -11,7 +11,7 @@ static class C<T> {
 
 #=>
 
-; Core CLR v<IGNORE> (coreclr.dll) on amd64.
+; Core CLR v<IGNORE> on amd64
 
 C`1[[System.Int32, System.Private.CoreLib]].M()
     L0000: xor eax, eax

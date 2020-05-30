@@ -1,3 +1,4 @@
+import './setup/scrollbar-size';
 import Vue from 'vue';
 import type { AppDefinition, AppData } from '../types/app';
 import './mixins/format-date';

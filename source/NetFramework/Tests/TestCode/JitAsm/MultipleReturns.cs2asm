@@ -1,4 +1,4 @@
-﻿static class C {
+static class C {
     static int M(bool x) {
         return x ? 1 : 2;
     }
@@ -6,7 +6,7 @@
 
 #=>
 
-; Desktop CLR v<IGNORE> (clr.dll) on x86.
+; Desktop CLR v<IGNORE> on x86
 
 C.M(Boolean)
     L0000: and ecx, 0xff
