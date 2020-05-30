@@ -13,6 +13,7 @@ using MirrorSharp;
 using MirrorSharp.Advanced;
 using SharpLab.Runtime;
 using SharpLab.Server.Common.Internal;
+using SharpLab.Server.Compilation;
 using SharpLab.Server.Compilation.Internal;
 using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
@@ -28,8 +29,13 @@ namespace SharpLab.Server.Common.Languages {
         private static readonly ImmutableArray<string> DebugPreprocessorSymbols = PreprocessorSymbols.Debug.Add("__DEMO_EXPERIMENTAL__");
 
         private readonly ImmutableList<MetadataReference> _references;
+        private readonly ICSharpTopLevelProgramSupport _topLevelProgramSupport;
 
-        public CSharpAdapter(IAssemblyReferenceCollector referenceCollector, IAssemblyDocumentationResolver documentationResolver) {
+        public CSharpAdapter(
+            IAssemblyReferenceCollector referenceCollector,
+            IAssemblyDocumentationResolver documentationResolver,
+            ICSharpTopLevelProgramSupport topLevelProgramSupport
+        ) {
             var referencedAssemblies = referenceCollector.SlowGetAllReferencedAssembliesRecursive(
                 // Essential
                 NetFrameworkRuntime.AssemblyOfValueTask,
@@ -53,6 +59,7 @@ namespace SharpLab.Server.Common.Languages {
             _references = referencedAssemblies
                 .Select(a => (MetadataReference)MetadataReference.CreateFromFile(a.Location, documentation: documentationResolver.GetDocumentation(a)))
                 .ToImmutableList();
+            _topLevelProgramSupport = topLevelProgramSupport;
         }
 
         public string LanguageName => LanguageNames.CSharp;
@@ -88,7 +95,9 @@ namespace SharpLab.Server.Common.Languages {
         }
 
         public void SetOptionsForTarget(IWorkSession session, string target) {
-            var outputKind = target != TargetNames.Run ? OutputKind.DynamicallyLinkedLibrary : OutputKind.ConsoleApplication;
+            var outputKind = target != TargetNames.Run
+                ? OutputKind.DynamicallyLinkedLibrary
+                : OutputKind.ConsoleApplication;
             var allowUnsafe = target != TargetNames.Run;
 
             var project = session.Roslyn.Project;
@@ -96,6 +105,8 @@ namespace SharpLab.Server.Common.Languages {
             session.Roslyn.Project = project.WithCompilationOptions(
                 options.WithOutputKind(outputKind).WithAllowUnsafe(allowUnsafe)
             );
+
+            _topLevelProgramSupport.UpdateOutputKind(session);
         }
 
         public ImmutableArray<int> GetMethodParameterLines(IWorkSession session, int lineInMethod, int columnInMethod) {

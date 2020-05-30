@@ -20,6 +20,7 @@ using SharpLab.Server.Explanation;
 namespace SharpLab.Server.MirrorSharp {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class SlowUpdate : ISlowUpdateExtension {
+        private readonly ICSharpTopLevelProgramSupport _topLevelProgramSupport;
         private readonly ICompiler _compiler;
         private readonly IReadOnlyDictionary<string, IDecompiler> _decompilers;
         private readonly IReadOnlyDictionary<string, IAstTarget> _astTargets;
@@ -28,6 +29,7 @@ namespace SharpLab.Server.MirrorSharp {
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;
 
         public SlowUpdate(
+            ICSharpTopLevelProgramSupport topLevelProgramSupport,
             ICompiler compiler,
             IReadOnlyCollection<IDecompiler> decompilers,
             IReadOnlyCollection<IAstTarget> astTargets,
@@ -35,6 +37,7 @@ namespace SharpLab.Server.MirrorSharp {
             IExplainer explainer,
             RecyclableMemoryStreamManager memoryStreamManager
         ) {
+            _topLevelProgramSupport = topLevelProgramSupport;
             _compiler = compiler;
             _decompilers = decompilers.ToDictionary(d => d.LanguageName);
             _astTargets = astTargets
@@ -48,6 +51,8 @@ namespace SharpLab.Server.MirrorSharp {
         public async Task<object?> ProcessAsync(IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
             PerformanceLog.Checkpoint("SlowUpdate.ProcessAsync.Start");
             var targetName = GetAndEnsureTargetName(session);
+
+            _topLevelProgramSupport.UpdateOutputKind(session, diagnostics);
 
             if (targetName == TargetNames.Ast || targetName == TargetNames.Explain) {
                 var astTarget = _astTargets[session.LanguageName];

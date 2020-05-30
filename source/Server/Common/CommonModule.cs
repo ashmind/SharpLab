@@ -6,6 +6,7 @@ using Microsoft.IO;
 using Mono.Cecil.Cil;
 using SharpLab.Server.Common.Internal;
 using SharpLab.Server.Common.Languages;
+using SharpLab.Server.Compilation;
 
 namespace SharpLab.Server.Common {
     [UsedImplicitly]
@@ -28,6 +29,10 @@ namespace SharpLab.Server.Common {
 
             builder.RegisterType<CSharpAdapter>()
                    .As<ILanguageAdapter>()
+                   .SingleInstance();
+
+            builder.RegisterType<CSharpTopLevelProgramSupport>()
+                   .As<ICSharpTopLevelProgramSupport>()
                    .SingleInstance();
 
             builder.RegisterType<VisualBasicAdapter>()
