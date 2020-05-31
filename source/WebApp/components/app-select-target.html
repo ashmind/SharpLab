@@ -1,4 +1,7 @@
-<app-select v-model="target" class="option-target option online-only" v-bind:id="id">
+<app-select v-model="target"
+            class="option-target option online-only"
+            v-bind:aria-label="useAriaLabel ? 'Output Mode' : null"
+            v-bind="$attrs">
   <optgroup label="Decompile">
     <option v-bind:value="targets.csharp">C#</option>
     <option v-show="target === targets.vb" v-bind:value="targets.vb">Visual Basic</option>

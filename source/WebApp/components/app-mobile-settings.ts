@@ -18,7 +18,8 @@ export default withRefsType<{
 }>(Vue).component('app-mobile-settings', {
     props: {
         options: Object as () => AppOptions,
-        branches: Array as () => ReadonlyArray<Branch>
+        branches: Array as () => ReadonlyArray<Branch>,
+        buttonProps: Object
     },
     data: () => ({
         id: uid()

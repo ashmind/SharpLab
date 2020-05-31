@@ -8,6 +8,7 @@ import { themeCases, themeAndStatusCases, loadComponentTemplate, renderComponent
 
 beforeEach(() => {
     loadComponentTemplate('app-modal', 'internal');
+    loadComponentTemplate('app-select-language');
     loadComponentTemplate('app-select-branch');
     loadComponentTemplate('app-section-branch-details');
     loadComponentTemplate('app-select-target');

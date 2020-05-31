@@ -1,4 +1,6 @@
 <div class="cm6-preview-manager">
-  <label v-bind:for="`cm6-preview-toggle-${id}`">Editor:</label>
-  <button v-bind:id="`cm6-preview-toggle-${id}`" v-on:click="toggle">{{editorName}}</button>
+  <label v-bind:for="`cm6-preview-${id}-toggle`">Editor:</label>
+  <button v-bind:id="`cm6-preview-${id}-toggle`"
+          v-on:click="toggle"
+          v-bind:aria-label="`Editor Toggle, Current: ${editorName}`">{{editorName}}</button>
 </div>

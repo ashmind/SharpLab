@@ -60,7 +60,7 @@ function createManager({ gist }: PickPropTypes<typeof GistManager, 'gist'>) {
         el: document.createElement('div'),
         propsData: {
             gist,
-            buttonClass: 'header-text-button'
+            buttonProps: { class: 'header-text-button' }
         }
     });
 }

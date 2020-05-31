@@ -29,7 +29,8 @@
       <app-mobile-settings
           v-bind:options="options"
           v-bind:branches="branches"
-          v-bind:gist="gist">
+          v-bind:gist="gist"
+          v-bind:button-props="{ tabindex: 1 }">
         <template v-slot:gist-manager>
           <app-gist-manager v-bind:gist="gist"
                             v-bind:code="code"
@@ -45,9 +46,9 @@
         <section class="top-section code">
           <header>
             <h1>Code</h1>
-            <app-select-language v-model="options.language"></app-select-language>
+            <app-select-language v-model="options.language" tabindex="1"></app-select-language>
             <app-gist-manager class="header-block"
-                              button-class="header-text-button"
+                              v-bind:button-props="{ class: 'header-text-button', tabindex: 2 }"
                               v-bind:gist="gist"
                               v-bind:code="code"
                               v-bind:options="options"
@@ -57,7 +58,8 @@
 
             <app-select-branch v-model="options.branch"
                                v-bind:branches="branches"
-                               v-bind:language="options.language"></app-select-branch>
+                               v-bind:language="options.language"
+                               tabindex="3"></app-select-branch>
           </header>
           <div class="content">
             <app-code-edit v-bind:initial-text="lastLoadedCode"
@@ -82,8 +84,8 @@
         <section class="top-section result">
           <header>
             <h1>Results</h1>
-            <app-select-target v-model="options.target"></app-select-target>
-            <app-select-mode v-model="options.release"></app-select-mode>
+            <app-select-target v-model="options.target" tabindex="4"></app-select-target>
+            <app-select-mode v-model="options.release" tabindex="5"></app-select-mode>
           </header>
           <div class="content">
             <div class="loader"></div>
@@ -134,7 +136,7 @@
       <app-cm6-preview-manager></app-cm6-preview-manager>
       <app-theme-manager></app-theme-manager>
       <span class="footer-author-full">
-        Built by Andrey Shchekin (<a href="http://twitter.com/ashmind">@ashmind</a>) — see <a href="http://github.com/ashmind/SharpLab">SharpLab on GitHub</a>.
+        Built by <a href="http://twitter.com/ashmind">Andrey Shchekin (@ashmind)</a> — see <a href="http://github.com/ashmind/SharpLab">SharpLab on GitHub</a>.
       </span>
       <span class="footer-author-mobile">
         <a href="http://github.com/ashmind/SharpLab">SharpLab</a> by <a href="http://twitter.com/ashmind">Andrey Shchekin (@ashmind)</a>
