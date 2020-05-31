@@ -16,7 +16,6 @@
     border: none;
     padding: 0;
     top: 5px;
-    right: 5px;
     height: 30px;
     width: 30px;
     border-radius: 50%;
@@ -54,6 +53,10 @@
     .mobile-settings-button,
     .mobile-warnings-button {
         display: block;
+    }
+
+    .mobile-settings-button {
+        right: calc(50% + 5px);
     }
 
     .root-status-offline .mobile-offline-notice {
@@ -96,7 +99,7 @@
         right: @option-target-right;
     }
 
-    .result .CodeMirror {
+    .CodeMirror {
         font-size: 80%;
     }
 
@@ -157,6 +160,10 @@
     .top-section-group-results section header,
     .top-section-group-results .content {
         border-left: none;
+    }
+
+    .mobile-settings-button {
+        right: 5px;
     }
 
     .footer-author-mobile {
