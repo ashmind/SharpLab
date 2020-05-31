@@ -27,6 +27,8 @@ export const themeAndStatusCases = [
     [' (dark, offline)', 'theme-dark root-status-offline']
 ];
 
+export const mobilePortraitSize = { width: 400, height: 800 };
+
 export function loadComponentTemplate(id: string, subDirectory = '') {
     const template = document.createElement('script');
     template.id = id;

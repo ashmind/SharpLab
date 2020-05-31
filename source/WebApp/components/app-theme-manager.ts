@@ -46,14 +46,9 @@ function updateBodyClass(theme: AppTheme) {
     } as const)[theme];
 
     const body = document.body;
-    for (const className of allClasses) {
-        if (className === newClassName) {
-            body.classList.add(className);
-        }
-        else {
-            body.classList.remove(className);
-        }
-    }
+    body.classList.remove(...allClasses);
+    if (newClassName)
+        body.classList.add(newClassName);
 }
 
 export default component;

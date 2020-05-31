@@ -45,8 +45,15 @@
     border-bottom-right-radius: 5px;
 }
 
+.mobile-font-size-manager {
+    display: none;
+}
+
 .footer-author-mobile {
     display: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 @media screen and (max-width: @mobile-max-width-for-menu) {
@@ -103,6 +110,10 @@
         font-size: 80%;
     }
 
+    .mobile-font-size-large .CodeMirror {
+        font-size: 100%;
+    }
+
     .explanations dl:first-child dt,
     .explanations .markdown p:first-child,
     .output .disclaimer {
@@ -135,10 +146,12 @@
         .cm6-preview-manager {
             display: none;
         }
+    }
 
-        .theme-manager {
-            border-left: none;
-        }
+    .mobile-font-size-manager {
+        display: flex;
+        margin-left: 0;
+        border-left: none;
     }
 }
 

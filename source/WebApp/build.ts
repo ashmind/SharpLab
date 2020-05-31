@@ -97,7 +97,10 @@ const icons = task('icons', async () => {
         jetpack.copyAsync(paths.from.icon, paths.to.icon.svg, { overwrite: true }),
         ...pngGeneration
     ) as unknown as Promise<void>;
-}, { watch: [paths.from.icon] });
+}, {
+    timeout: 5000,
+    watch: [paths.from.icon]
+});
 
 const manifest = task('manifest', async () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

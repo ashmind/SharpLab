@@ -1,10 +1,10 @@
-const storageKey = 'sharplab.experiments.cm6preview';
-const state = {
-    enabled: localStorage[storageKey] === 'true'
-};
+import defineState from '../../ts/helpers/define-state';
 
-export const cm6PreviewState = state as Readonly<typeof state>;
-export function setCM6PreviewEnabled(value: boolean) {
-    localStorage[storageKey] = value;
-    state.enabled = value;
-}
+const storageKey = 'sharplab.experiments.cm6preview';
+
+const [cm6PreviewEnabled, setCM6PreviewEnabled] = defineState(
+    localStorage[storageKey] === 'true',
+    { beforeSet: value => { localStorage[storageKey] = value; } }
+);
+
+export { cm6PreviewEnabled, setCM6PreviewEnabled };

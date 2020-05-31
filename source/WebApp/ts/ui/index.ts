@@ -26,7 +26,7 @@ const documentReadyPromise = new Promise(resolve => {
 
 async function createUIAsync(app: AppDefinition) {
     const main = await createTopLevelUIComponentAsync(app, 'main', allHooks.main);
-    await createTopLevelUIComponentAsync(app, 'main + footer', allHooks.footer);
+    await createTopLevelUIComponentAsync(app, 'main + app-footer', allHooks.footer);
 
     return main;
 }

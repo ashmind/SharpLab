@@ -1,0 +1,6 @@
+<div class="mobile-font-size-manager block-with-label">
+  <label v-bind:for="`mobile-font-size-${id}-toggle`">Font Size:</label>
+  <button v-on:click="toggle"
+          v-bind:id="`mobile-font-size-${id}-toggle`"
+          v-bind:aria-label="`Font Size Toggle, Current: ${sizeLabel}`">{{sizeLabel}}</button>
+</div>

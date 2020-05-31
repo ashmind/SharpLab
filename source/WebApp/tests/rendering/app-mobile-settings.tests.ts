@@ -4,7 +4,14 @@ import { languages } from '../../ts/helpers/languages';
 import { targets } from '../../ts/helpers/targets';
 import MobileSettings from '../../components/app-mobile-settings';
 import { fromPartial } from '../helpers';
-import { themeCases, themeAndStatusCases, loadComponentTemplate, renderComponent, PickPropTypes } from './helpers';
+import {
+    themeCases,
+    themeAndStatusCases,
+    loadComponentTemplate,
+    renderComponent,
+    PickPropTypes,
+    mobilePortraitSize
+} from './helpers';
 
 beforeEach(() => {
     loadComponentTemplate('app-modal', 'internal');
@@ -16,12 +23,10 @@ beforeEach(() => {
     loadComponentTemplate('app-mobile-settings');
 });
 
-const mobileSize = { width: 400, height: 800 };
-
 test.each(themeAndStatusCases)('button%s', async (_, bodyClass) => {
     const settings = createSettings({ options: fromPartial({}) });
 
-    const rendered = await renderComponent(settings, { bodyClass, ...mobileSize });
+    const rendered = await renderComponent(settings, { bodyClass, ...mobilePortraitSize });
 
     expect(rendered).toMatchImageSnapshot();
 });
@@ -48,7 +53,7 @@ test.each(themeCases)('modal open%s', async (_, bodyClass) => {
     (settings as InstanceType<typeof MobileSettings>).openModal();
     await Vue.nextTick();
 
-    const rendered = await renderComponent(parent, { bodyClass, ...mobileSize });
+    const rendered = await renderComponent(parent, { bodyClass, ...mobilePortraitSize });
 
     parent.$destroy();
     expect(rendered).toMatchImageSnapshot();
