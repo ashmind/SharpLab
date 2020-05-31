@@ -18,7 +18,7 @@ export default {
             name: 'rollup-plugin-adhoc-resolve-vue',
             // @ts-ignore
             resolveId: id => (id === 'vue')
-                ? path.resolve(`./node_modules/vue/dist/vue${process.env.NODE_ENV === 'production' ? '.min' : ''}.js`)
+                ? path.resolve(`./node_modules/vue/dist/vue${process.env.NODE_ENV === 'ci' ? '.min' : ''}.js`)
                 : null
         },
         pluginNodeResolve(),
@@ -32,7 +32,7 @@ export default {
                 'node_modules/**'
             ]
         }),
-        terser()
+        ...(process.env.NODE_ENV === 'ci' ? [terser()] : [])
     ],
     output: {
         format: 'iife',
