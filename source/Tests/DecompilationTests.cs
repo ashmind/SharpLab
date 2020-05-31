@@ -47,6 +47,7 @@ namespace SharpLab.Tests {
         [InlineData("Parameters.Optional.Decimal.cs2cs")] // https://github.com/ashmind/SharpLab/issues/316
         [InlineData("Unsafe.FixedBuffer.cs2cs")] // https://github.com/ashmind/SharpLab/issues/398
         [InlineData("Switch.String.Large.cs2cs")]
+        [InlineData("Lock.Simple.cs2cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string resourceName) {
             var data = TestCode.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);
