@@ -18,7 +18,7 @@ export default Vue.component('app-select-mode', {
             this.release = this.value;
         },
 
-        language() {
+        release() {
             this.$emit('input', this.release);
         }
     },
