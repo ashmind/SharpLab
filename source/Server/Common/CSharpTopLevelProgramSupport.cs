@@ -12,6 +12,15 @@ namespace SharpLab.Server.Compilation {
     using static OutputKind;
 
     public class CSharpTopLevelProgramSupport : ICSharpTopLevelProgramSupport {
+        private static class DiagnosticIds {
+            // "Program using top-level statements must be an executable."
+            public const string TopLevelNotInExecutable = "CS8805"; // final code
+            public const string TopLevelNotInExecutableOld = "CS9004"; // old code in feature branch
+
+            // "Program does not contain a static 'Main' method suitable for an entry point"
+            public const string NoStaticMain = "CS8805";
+        }
+
         // not all branches have this yet, so we can't use the normal enum value
         private static readonly SyntaxKind? GlobalStatement = (SyntaxKind?)typeof(SyntaxKind).GetField("GlobalStatement")?.GetValue(null);
 
@@ -39,7 +48,11 @@ namespace SharpLab.Server.Compilation {
             if (isExecutable == shouldBeExecutable)
                 return;
 
-            diagnostics?.RemoveWhere(d => d.Id == (shouldBeExecutable ? "CS9004" : "CS5001"));
+            diagnostics?.RemoveWhere(
+                d => shouldBeExecutable
+                   ? (d.Id == DiagnosticIds.TopLevelNotInExecutable || d.Id == DiagnosticIds.TopLevelNotInExecutableOld)
+                   : (d.Id == DiagnosticIds.NoStaticMain)
+            );
 
             var project = session.Roslyn.Project;
             session.Roslyn.Project = project.WithCompilationOptions(
