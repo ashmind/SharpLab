@@ -65,7 +65,7 @@ deploy:
     secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
   artifact: WebApp.zip
   on:
-    branch: master
+    branch: main
 
 - provider: AzureAppServiceZipDeploy
   website: sl-a-core-x64
@@ -74,7 +74,7 @@ deploy:
     secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
   artifact: Server.zip
   on:
-    branch: master
+    branch: main
 
 - provider: AzureAppServiceZipDeploy
   website: sl-a-core-x64-profiled
@@ -83,7 +83,7 @@ deploy:
     secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
   artifact: Server.zip
   on:
-    branch: master
+    branch: main
 
 - provider: AzureAppServiceZipDeploy
   website: sl-a-x64
@@ -92,7 +92,7 @@ deploy:
     secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
   artifact: Server.NetFramework.zip
   on:
-    branch: master
+    branch: main
 
 - provider: AzureAppServiceZipDeploy
   website: sl-a-netfx
@@ -101,4 +101,4 @@ deploy:
     secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
   artifact: Server.NetFramework.zip
   on:
-    branch: master
+    branch: main
