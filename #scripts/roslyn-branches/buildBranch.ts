@@ -208,6 +208,7 @@ async function buildSharpLab(roslynPackagesRoot: string) {
         '--source', 'https://api.nuget.org/v3/index.json',
         '--source', 'https://dotnet.myget.org/F/roslyn-analyzers/api/v3/index.json',
         '--source', 'https://dotnet.myget.org/F/symreader-converter/api/v3/index.json',
+        '--source', 'https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet5/nuget/v3/index.json',
         '--source', roslynPackagesRoot,
         '--verbosity', 'minimal'
     ], {

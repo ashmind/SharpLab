@@ -1,21 +1,32 @@
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
 
-$setMatrix = &"$PSScriptRoot/roslyn-branches/Write-GitHubRunMatrix.ps1"
-Write-Host "(captured by roslyn-branches.ps1)"
-Write-Host ""
-
-$matrix = ConvertFrom-Json ($setMatrix -replace '^.+::','')
-$matrix.include | % {
-    $row = $_
-    try {
-        &"$PSScriptRoot/roslyn-branches/Update-Branch.ps1" $row.branch
-    }
-    catch {
-        if (!$row.required) {
-            Write-Warning "Branch $($row.branch) failed: $_"
-            return
+Push-Location "$PSScriptRoot/roslyn-branches"
+try {
+    $matrix = $null
+    npm run generate-run-matrix | % {
+        Write-Host $_
+        if ($_ -match '^::set-output name=matrix::(.+)') {
+            $matrix = ConvertFrom-Json $matches[1]    
+            Write-Host ""
+            Write-Host "[matrix captured by roslyn-branches.ps1]" -ForegroundColor DarkCyan
         }
-        Write-Error "Branch $($row.branch) failed: $_"
     }
+
+    $matrix.include | % {
+        $row = $_
+        try {
+            npm run build-branch -- $row.branch
+        }
+        catch {
+            if (!$row.required) {
+                Write-Warning "Branch $($row.branch) failed: $_"
+                return
+            }
+            Write-Error "Branch $($row.branch) failed: $_"
+        }
+    }
+}
+finally {
+    Pop-Location
 }
