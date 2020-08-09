@@ -2,6 +2,7 @@
 
 #include <array>
 #include <atomic>
+#include <memory>
 #include "cor.h"
 #include "corprof.h"
 
