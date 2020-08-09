@@ -1265,7 +1265,7 @@ System
      Initialize: Denied
      LastIndexOf: Denied
      Resize: Allowed (CountArgumentRewriter(newSize))
-     Reverse: Denied
+     Reverse: Allowed
      SetValue: Allowed
      Sort: Denied
      ToString: Denied
