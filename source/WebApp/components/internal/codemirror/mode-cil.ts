@@ -11,7 +11,7 @@ CodeMirror.defineMode('cil', () => {
             'private', 'public', 'assembly', 'family', 'famorassem',
             'beforefieldinit', 'init',
             'ansi', 'auto', 'cil', 'managed',
-            'extends', 'hidebysig', 'newslot', 'virtual', 'abstract', 'sealed',
+            'implements', 'extends', 'hidebysig', 'newslot', 'virtual', 'abstract', 'sealed',
             'instance', 'static',
             'specialname', 'rtspecialname'
             /* spellchecker: enable */
