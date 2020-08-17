@@ -2,7 +2,6 @@
   "name": "sharplab",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "build": "ts-node-script ./build.ts",
     "watch": "ts-node-script ./build.ts --watch",
