@@ -3,7 +3,7 @@ image: Visual Studio 2019
 
 install:
 - ps: |-
-    Install-Product node 12.16.1 x64
+    Install-Product node 12.18.3 x64
 
 cache:
 - source/WebApp/node_modules -> source/WebApp/package.json
