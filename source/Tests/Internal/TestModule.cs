@@ -37,7 +37,7 @@ namespace SharpLab.Tests.Internal {
 
         private class TestDataMessageHandler : HttpMessageHandler {
             protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
-                if (request.RequestUri.Authority != "testdata")
+                if (request.RequestUri?.Authority != "testdata")
                     throw new NotSupportedException();
 
                 var resourcePath = "TestData" + request.RequestUri.LocalPath

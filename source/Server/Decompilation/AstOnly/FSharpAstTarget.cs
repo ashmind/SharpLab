@@ -169,7 +169,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 return;
             writer.WriteEndArray();
         }
-        
+
         private static SerializeChildrenAction GetChildrenSerializer(Type type) {
             return ChildrenSerializers.GetOrAdd(
                 type,
@@ -196,7 +196,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 if (method == null)
                     continue;
 
-                var propertyName = (string?)property.Name;
+                var propertyName = property.Name;
                 if (Regex.IsMatch(propertyName, @"^Item\d*$"))
                     propertyName = null;
                 body.Add(Expression.Call(method, Expression.Property(node, property), writer, Expression.Constant(propertyName, typeof(string)), refChildrenStarted, session));
@@ -308,7 +308,8 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 if (valueProperty == null)
                     continue;
 
-                var toString = valueProperty.PropertyType.GetMethod("ToString", Type.EmptyTypes);
+                // We assume that FSharp discriminated union members always have their ToString method overriden.
+                var toString = valueProperty.PropertyType.GetMethod("ToString", Type.EmptyTypes)!;
                 var constUntyped = Expression.Parameter(typeof(Ast.SynConst));
                 getters.Add(type, Expression.Lambda<Func<Ast.SynConst, string>>(
                     Expression.Call(Expression.Property(Expression.Convert(constUntyped, type), valueProperty), toString),
