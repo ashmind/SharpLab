@@ -7,7 +7,7 @@ using Mono.Cecil;
 
 namespace SharpLab.Server.Common.Diagnostics {
     public static class AssemblyLog {
-        #if DEBUG 
+        #if DEBUG
         private static readonly AsyncLocal<string> _pathFormat = new AsyncLocal<string>();
 
         public static void Enable(string pathFormat) {
@@ -42,7 +42,7 @@ namespace SharpLab.Server.Common.Diagnostics {
 
             var path = string.Format(format, stepName);
             var directoryPath = Path.GetDirectoryName(path);
-            if (!Directory.Exists(directoryPath))
+            if (directoryPath != null && !Directory.Exists(directoryPath))
                 Directory.CreateDirectory(directoryPath);
             return path;
         }

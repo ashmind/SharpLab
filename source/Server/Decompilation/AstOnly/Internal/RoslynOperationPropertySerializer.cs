@@ -45,7 +45,8 @@ namespace SharpLab.Server.Decompilation.Internal {
         }
 
         private Expression SlowExpressSerializeProperty(ParameterExpression operation, PropertyInfo property, ParameterExpression writer) {
-            var propertyValue = Expression.Property(Expression.Convert(operation, property.DeclaringType), property);
+            // MemberInfo.DeclaringType is null only on global module methods.
+            var propertyValue = Expression.Property(Expression.Convert(operation, property.DeclaringType!), property);
 
             if (property.PropertyType.GetTypeInfo().IsGenericTypeDefinedAs(typeof(Optional<>))) {
                 return Expression.Condition(

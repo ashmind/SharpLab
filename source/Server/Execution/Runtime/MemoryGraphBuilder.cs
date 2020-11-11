@@ -28,7 +28,7 @@ namespace SharpLab.Server.Execution.Runtime {
             var stackAddress = (ulong)Unsafe.AsPointer(ref Unsafe.AsRef(in value));
             var stackSize = Unsafe.SizeOf<T>();
 
-            var name = _argumentNames.ElementAtOrDefault(_nextArgumentIndex);
+            var name = _nextArgumentIndex < _argumentNames.Count ? _argumentNames[_nextArgumentIndex] : "(undefined)";
             _nextArgumentIndex += 1;
 
             var isStack = typeof(T).IsValueType || value == null;
