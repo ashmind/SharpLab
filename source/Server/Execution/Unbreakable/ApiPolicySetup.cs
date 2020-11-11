@@ -76,7 +76,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
                         t => t.Member(nameof(Conversions.FromCharAndCount), Allowed, new CountArgumentRewriter("Count"))
                               // Those need extra review
                               .Member(nameof(Conversions.ChangeType), Denied)
-                              .Member(nameof(Conversions.FallbackUserDefinedConversion), Denied)
+                              .Member("Conversions.FallbackUserDefinedConversion", Denied)
                               .Member(nameof(Conversions.FromCharArray), Denied)
                               .Member(nameof(Conversions.FromCharArraySubset), Denied)
                               .Member(nameof(Conversions.ToCharArrayRankOne), Denied)
