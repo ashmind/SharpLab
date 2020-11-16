@@ -18,7 +18,7 @@ Compress-Archive -Path "$serverPublishRoot/*" -DestinationPath "$SolutionRoot/Se
 Write-Output 'dotnet msbuild source/NetFramework/Server/Server.csproj /t:Publish ...'
 dotnet msbuild source/NetFramework/Server/Server.csproj /t:Publish /p:Configuration=Release /p:UnbreakablePolicyReportEnabled=false /verbosity:minimal
 if ($LastExitCode -ne 0) { throw "dotnet msbuild exited with code $LastExitCode" }
-$netfxPublishRoot = 'source/NetFramework/Server/bin/Release/net47/publish'
+$netfxPublishRoot = 'source/NetFramework/Server/bin/Release/net48/publish'
 Write-Output "Compress-Archive -Path $netfxPublishRoot/* -DestinationPath $SolutionRoot/Server.NetFramework.zip"
 Compress-Archive -Path "$netfxPublishRoot/*" -DestinationPath "$SolutionRoot/Server.NetFramework.zip"
 
