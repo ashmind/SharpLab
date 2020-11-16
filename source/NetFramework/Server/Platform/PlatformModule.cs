@@ -11,7 +11,7 @@ namespace SharpLab.Server.Owin.Platform {
                    .As<IConfigurationAdapter>()
                    .SingleInstance();
 
-            builder.RegisterType<Net47AssemblyDocumentationResolver>()
+            builder.RegisterType<Net48AssemblyDocumentationResolver>()
                    .As<IAssemblyDocumentationResolver>()
                    .SingleInstance();
         }

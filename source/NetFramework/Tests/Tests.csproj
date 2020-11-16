@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AssemblyName>SharpLab.Tests</AssemblyName>
     <RootNamespace>SharpLab.Tests</RootNamespace>
   </PropertyGroup>
@@ -16,7 +16,7 @@
     <EmbeddedResource Include="TestCode\**\*.*" />
     <EmbeddedResource Include="TestData\language-syntax-explanations\*.yml" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="AshMind.Extensions" Version="3.0.0-pre-20190808-01" />
     <PackageReference Include="MirrorSharp.Testing" version="2.2.1" />
@@ -24,7 +24,7 @@
     <PackageReference Include="xunit" version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\Server\Server.csproj" />
   </ItemGroup>
@@ -32,7 +32,7 @@
   <ItemGroup>
     <Reference Include="System.Net.Http" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Folder Include="TestData\" />
   </ItemGroup>

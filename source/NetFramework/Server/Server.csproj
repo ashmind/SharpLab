@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net47</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AssemblyName>SharpLab.Server</AssemblyName>
     <RootNamespace>SharpLab.Server</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -49,18 +49,15 @@
     <ProjectReference Include="..\..\#external\SourcePath\Roslyn\Roslyn.csproj" />
     <ProjectReference Include="..\Runtime\Runtime.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Net.Http" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
     <Reference Include="System.Web" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Compile Update="Execution\Unbreakable\ApiPolicySetup.cs" />
   </ItemGroup>
