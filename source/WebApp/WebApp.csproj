@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="5.0.0" />
   </ItemGroup>
 
   <Target Name="CopyFrameworkXmlDocumentation" AfterTargets="ResolveReferences">
