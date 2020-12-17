@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using MirrorSharp.Advanced.EarlyAccess;
 using MirrorSharp.Testing;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -191,6 +192,22 @@ namespace SharpLab.Tests {
             var json = result.ExtensionResult?.ToString();
 
             data.AssertIsExpected(json, _output);
+        }
+
+        [Theory]
+        [InlineData(LanguageNames.CSharp, "class X<A,B,C,D,E> { class Y: X<Y,Y,Y,Y,Y> {Y.Y.Y.Y.Y.Y.Y.Y.Y y; } }")] // https://codegolf.stackexchange.com/a/69200
+        [InlineData(LanguageNames.VisualBasic, @"
+            Class X (Of A, B, C, D, E)
+                Class Y Inherits X (Of Y, Y, Y, Y, Y)
+                    Private y As Y.Y.Y.Y.Y.Y.Y.Y.Y
+                End Class
+            End Class
+        ")]
+        public async Task SlowUpdate_ReturnsRoslynGuardException_ForCompilerBombs(string languageName, string code) {
+            var driver = TestEnvironment.NewDriver().SetText(code);
+            await driver.SendSetOptionsAsync(languageName, TargetNames.IL);
+
+            await Assert.ThrowsAsync<RoslynGuardException>(() => driver.SendSlowUpdateAsync<string>());
         }
 
         private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestCode code, string optimize = Optimize.Release) {

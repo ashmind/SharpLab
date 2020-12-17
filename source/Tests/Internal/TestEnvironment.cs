@@ -2,6 +2,7 @@ using System;
 using Autofac;
 using MirrorSharp;
 using MirrorSharp.Advanced;
+using MirrorSharp.Advanced.EarlyAccess;
 using MirrorSharp.Testing;
 using SharpLab.Server;
 
@@ -18,6 +19,7 @@ namespace SharpLab.Tests.Internal {
         public static MirrorSharpServices MirrorSharpServices { get; } = new MirrorSharpServices {
             SetOptionsFromClient = Container.ResolveOptional<ISetOptionsFromClientExtension>(),
             SlowUpdate = Container.ResolveOptional<ISlowUpdateExtension>(),
+            RoslynGuard = Container.ResolveOptional<IRoslynGuard>(),
             ExceptionLogger = Container.ResolveOptional<IExceptionLogger>()
         };
 
