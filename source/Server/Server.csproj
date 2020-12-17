@@ -47,7 +47,7 @@
     <PackageReference Include="Octokit" Version="0.32.0" />
     <PackageReference Include="Iced" Version="1.6.0" />
     <PackageReference Include="SharpYaml" Version="1.6.2" />
-    <PackageReference Include="System.IO.Pipelines" Version="4.7.2" />
+    <PackageReference Include="System.IO.Pipelines" Version="5.0.1" />
     <PackageReference Include="System.Memory" Version="4.5.4" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0-preview2-26406-04" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
