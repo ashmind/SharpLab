@@ -1,0 +1,116 @@
+using System;
+using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
+
+static class C {
+    static int M(int x) {
+        return Foo(x + 0x12345).Result;
+    }
+
+    static async Task<int> Foo(int x) {
+        return x;
+    }
+}
+
+#=>
+
+; Desktop CLR v<IGNORE> on x86
+
+C.M(Int32)
+    L0000: push ebp
+    L0001: mov ebp, esp
+    L0003: add ecx, 0x12345
+    L0009: call dword [0x<IGNORE>]
+    L000f: mov ecx, eax
+    L0011: cmp [ecx], ecx
+    L0013: call dword [0x<IGNORE>]
+    L0019: pop ebp
+    L001a: ret
+
+C.Foo(Int32)
+    L0000: push ebp
+    L0001: mov ebp, esp
+    L0003: push edi
+    L0004: push esi
+    L0005: sub esp, 0x2c
+    L0008: mov esi, ecx
+    L000a: lea edi, [ebp-0x34]
+    L000d: mov ecx, 0xb
+    L0012: xor eax, eax
+    L0014: rep stosd
+    L0016: mov ecx, esi
+    L0018: mov [ebp-0x18], ecx
+    L001b: lea edi, [ebp-0x34]
+    L001e: xor eax, eax
+    L0020: xorps xmm0, xmm0
+    L0023: movq [edi], xmm0
+    L0027: add edi, 0x8
+    L002a: stosd
+    L002b: lea edi, [ebp-0x34]
+    L002e: xorps xmm0, xmm0
+    L0031: movq [edi], xmm0
+    L0035: add edi, 0x8
+    L0038: stosd
+    L0039: lea edi, [ebp-0x14]
+    L003c: lea esi, [ebp-0x34]
+    L003f: call 0x<IGNORE>
+    L0044: call 0x<IGNORE>
+    L0049: call 0x<IGNORE>
+    L004e: mov dword [ebp-0x1c], 0x<IGNORE>
+    L0055: lea edi, [ebp-0x28]
+    L0058: lea esi, [ebp-0x14]
+    L005b: movsd
+    L005c: movsd
+    L005d: movsd
+    L005e: lea ecx, [ebp-0x28]
+    L0061: lea edx, [ebp-0x1c]
+    L0064: call dword [0x<IGNORE>]
+    L006a: lea ecx, [ebp-0x14]
+    L006d: call dword [0x<IGNORE>]
+    L0073: lea esp, [ebp-0x8]
+    L0076: pop esi
+    L0077: pop edi
+    L0078: pop ebp
+    L0079: ret
+
+C+<Foo>d__1.MoveNext()
+    L0000: push ebp
+    L0001: mov ebp, esp
+    L0003: sub esp, 0x18
+    L0006: xor eax, eax
+    L0008: mov [ebp-0x14], eax
+    L000b: mov [ebp-0x10], eax
+    L000e: mov [ebp-0xc], eax
+    L0011: mov [ebp-0x8], eax
+    L0014: mov [ebp-0x18], ecx
+    L0017: mov edx, [ebp-0x18]
+    L001a: mov eax, [edx+0x4]
+    L001d: jmp L003e
+    L001f: mov edx, eax
+    L0021: mov eax, [ebp-0x18]
+    L0024: mov dword [eax], 0x<IGNORE>
+    L002a: cmp [eax], al
+    L002c: mov ecx, eax
+    L002e: add ecx, 0x8
+    L0031: call dword [0x<IGNORE>]
+    L0037: call 0x<IGNORE>
+    L003c: jmp L0053
+    L003e: mov dword [edx], 0x<IGNORE>
+    L0044: cmp [edx], al
+    L0046: add edx, 0x8
+    L0049: mov ecx, edx
+    L004b: mov edx, eax
+    L004d: call dword [0x<IGNORE>]
+    L0053: mov esp, ebp
+    L0055: pop ebp
+    L0056: ret
+
+C+<Foo>d__1.SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)
+    L0000: cmp [ecx], al
+    L0002: add ecx, 0x8
+    L0005: mov eax, ecx
+    L0007: cmp [eax], al
+    L0009: add eax, 0x4
+    L000c: mov ecx, eax
+    L000e: call System.Runtime.CompilerServices.AsyncMethodBuilderCore.SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)
+    L0013: ret
