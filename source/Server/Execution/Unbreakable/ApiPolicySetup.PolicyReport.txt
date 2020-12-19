@@ -1609,14 +1609,14 @@ System
   ContextMarshalException: Denied
   ContextStaticAttribute: Denied
   Convert: Allowed
-     ChangeType: Allowed
-     Equals: Allowed
+     ChangeType: Denied
+     Equals: Denied
      FromBase64CharArray: Allowed (ArrayReturnRewriter)
      FromBase64String: Allowed (ArrayReturnRewriter)
-     FromHexString: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
-     GetTypeCode: Allowed
+     FromHexString: Allowed (ArrayReturnRewriter)
+     GetHashCode: Denied
+     GetType: Denied
+     GetTypeCode: Denied
      IsDBNull: Allowed
      ToBase64CharArray: Allowed
      ToBase64String: Allowed (StringReturnRewriter)
@@ -1626,13 +1626,13 @@ System
      ToDateTime: Allowed
      ToDecimal: Allowed
      ToDouble: Allowed
-     ToHexString: Allowed
+     ToHexString: Allowed (StringReturnRewriter)
      ToInt16: Allowed
      ToInt32: Allowed
      ToInt64: Allowed
      ToSByte: Allowed
      ToSingle: Allowed
-     ToString: Allowed
+     ToString: Allowed (StringReturnRewriter)
      ToUInt16: Allowed
      ToUInt32: Allowed
      ToUInt64: Allowed
@@ -2345,7 +2345,36 @@ System
      TryParse: Allowed
      TryParseExact: Allowed
      TryWriteBytes: Allowed
-  Half: Denied
+  Half: Allowed
+     CompareTo: Allowed
+     Equals: Allowed
+     get_Epsilon: Allowed
+     get_MaxValue: Allowed
+     get_MinValue: Allowed
+     get_NaN: Allowed
+     get_NegativeInfinity: Allowed
+     get_PositiveInfinity: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     IsFinite: Allowed
+     IsInfinity: Allowed
+     IsNaN: Allowed
+     IsNegative: Allowed
+     IsNegativeInfinity: Allowed
+     IsNormal: Allowed
+     IsPositiveInfinity: Allowed
+     IsSubnormal: Allowed
+     op_Equality: Allowed
+     op_Explicit: Allowed
+     op_GreaterThan: Allowed
+     op_GreaterThanOrEqual: Allowed
+     op_Inequality: Allowed
+     op_LessThan: Allowed
+     op_LessThanOrEqual: Allowed
+     Parse: Allowed
+     ToString: Allowed
+     TryFormat: Allowed
+     TryParse: Allowed
   HashCode: Denied
   HttpStyleUriParser: Denied
   IAsyncDisposable: Denied
@@ -2873,7 +2902,7 @@ System
      CopyTo: Allowed
      Create: Allowed
      EndsWith: Allowed
-     EnumerateRunes: Allowed
+     EnumerateRunes: Allowed (DisposableReturnRewriter)
      Equals: Allowed
      Format: Allowed
      get_Chars: Allowed
@@ -3217,7 +3246,7 @@ System
      HasSameMetadataDefinitionAs: Denied
      InvokeMember: Denied
      IsAssignableFrom: Allowed
-     IsAssignableTo: Denied
+     IsAssignableTo: Allowed
      IsDefined: Denied
      IsEnumDefined: Denied
      IsEquivalentTo: Denied
@@ -3701,7 +3730,14 @@ System.Collections.Generic
      TryGetValue: Allowed
   IReadOnlyList`1: Allowed
      get_Item: Allowed
-  IReadOnlySet`1: Denied
+  IReadOnlySet`1: Allowed
+     Contains: Allowed
+     IsProperSubsetOf: Allowed
+     IsProperSupersetOf: Allowed
+     IsSubsetOf: Allowed
+     IsSupersetOf: Allowed
+     Overlaps: Allowed
+     SetEquals: Allowed
   ISet`1: Allowed
      Add: Allowed (AddCallRewriter)
      ExceptWith: Allowed
@@ -3867,7 +3903,12 @@ System.Collections.Generic
      GetType: Allowed
      MoveNext: Allowed
      ToString: Allowed
-  ReferenceEqualityComparer: Denied
+  ReferenceEqualityComparer: Allowed
+     Equals: Allowed
+     get_Instance: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
   SortedDictionary`2: Allowed
      .ctor: Allowed (CountArgumentRewriter(capacity))
      Add: Allowed (AddCallRewriter)
@@ -6349,7 +6390,11 @@ System.Runtime.CompilerServices
   IsConst: Denied
   IsCopyConstructed: Denied
   IsExplicitlyDereferenced: Denied
-  IsExternalInit: Denied
+  IsExternalInit: Allowed
+     Equals: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     ToString: Allowed
   IsImplicitlyDereferenced: Denied
   IsJitIntrinsic: Denied
   IsLong: Denied
@@ -6385,7 +6430,15 @@ System.Runtime.CompilerServices
   MethodImplOptions: Denied
   ModuleInitializerAttribute: Denied
   NativeCppClassAttribute: Denied
-  PreserveBaseOverridesAttribute: Denied
+  PreserveBaseOverridesAttribute: Allowed
+     .ctor: Allowed
+     Equals: Allowed
+     get_TypeId: Allowed
+     GetHashCode: Allowed
+     GetType: Allowed
+     IsDefaultAttribute: Allowed
+     Match: Allowed
+     ToString: Allowed
   ReadOnlyCollectionBuilder`1: Denied
   ReferenceAssemblyAttribute: Denied
   RequiredAttributeAttribute: Denied
@@ -6889,52 +6942,52 @@ System.Text
   EncoderReplacementFallback: Denied
   EncoderReplacementFallbackBuffer: Denied
   Encoding: Allowed
-     Clone: Allowed
+     Clone: Denied
      Convert: Allowed (ArrayReturnRewriter)
-     CreateTranscodingStream: Allowed
-     Equals: Allowed
+     CreateTranscodingStream: Denied
+     Equals: Denied
      get_ASCII: Allowed
      get_BigEndianUnicode: Allowed
      get_BodyName: Allowed
      get_CodePage: Allowed
-     get_DecoderFallback: Allowed
+     get_DecoderFallback: Denied
      get_Default: Allowed
-     get_EncoderFallback: Allowed
+     get_EncoderFallback: Denied
      get_EncodingName: Allowed
-     get_HeaderName: Allowed
-     get_IsBrowserDisplay: Allowed
-     get_IsBrowserSave: Allowed
-     get_IsMailNewsDisplay: Allowed
-     get_IsMailNewsSave: Allowed
+     get_HeaderName: Denied
+     get_IsBrowserDisplay: Denied
+     get_IsBrowserSave: Denied
+     get_IsMailNewsDisplay: Denied
+     get_IsMailNewsSave: Denied
      get_IsReadOnly: Allowed
      get_IsSingleByte: Allowed
      get_Latin1: Allowed
      get_Preamble: Allowed
      get_Unicode: Allowed
      get_UTF32: Allowed
-     get_UTF7: Allowed
+     get_UTF7: Denied
      get_UTF8: Allowed
      get_WebName: Allowed
      get_WindowsCodePage: Allowed
-     GetByteCount: Allowed
+     GetByteCount: Denied
      GetBytes: Allowed (ArrayReturnRewriter)
      GetCharCount: Allowed
      GetChars: Allowed (ArrayReturnRewriter)
-     GetDecoder: Allowed
-     GetEncoder: Allowed
+     GetDecoder: Denied
+     GetEncoder: Denied
      GetEncoding: Allowed
      GetEncodings: Allowed (ArrayReturnRewriter)
-     GetHashCode: Allowed
+     GetHashCode: Denied
      GetMaxByteCount: Allowed
      GetMaxCharCount: Allowed
      GetPreamble: Allowed (ArrayReturnRewriter)
      GetString: Allowed (StringReturnRewriter)
-     GetType: Allowed
+     GetType: Denied
      IsAlwaysNormalized: Allowed
      RegisterProvider: Denied
      set_DecoderFallback: Denied
      set_EncoderFallback: Denied
-     ToString: Allowed
+     ToString: Denied
   EncodingExtensions: Denied
   EncodingInfo: Denied
   EncodingProvider: Denied
