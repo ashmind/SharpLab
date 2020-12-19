@@ -366,6 +366,6 @@ async function run() {
 }
 
 run().catch(e => {
-    console.error(e);
+    console.error("::error::" + e);
     process.exit(1);
 });
