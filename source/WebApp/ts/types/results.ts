@@ -37,15 +37,24 @@ export interface MemoryInspection {
 
 export interface MemoryGraphNode {
     readonly id: number;
-    readonly title: string;
     readonly value: string;
-    readonly nestedNodes?: ReadonlyArray<MemoryGraphNode>;
+    readonly nestedNodes?: ReadonlyArray<MemoryGraphNestedNode>;
     readonly nestedNodesLimit?: true;
 }
 
 export interface MemoryGraphStackNode extends MemoryGraphNode {
+    readonly title?: string;
     readonly offset: number;
     readonly size: number;
+}
+
+export interface MemoryGraphHeapNode extends MemoryGraphNode {
+    readonly title: string;
+}
+
+export interface MemoryGraphNestedNode extends MemoryGraphNode {
+    readonly title: string;
+    readonly nestedNodes?: ReadonlyArray<MemoryGraphHeapNode>;
 }
 
 export interface MemoryGraphReference {
@@ -56,7 +65,7 @@ export interface MemoryGraphReference {
 export interface MemoryGraphInspection {
     readonly type: 'inspection:memory-graph';
     readonly stack: ReadonlyArray<MemoryGraphStackNode>;
-    readonly heap: ReadonlyArray<MemoryGraphNode>;
+    readonly heap: ReadonlyArray<MemoryGraphHeapNode>;
     readonly references: ReadonlyArray<MemoryGraphReference>;
 }
 

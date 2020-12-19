@@ -9,7 +9,7 @@ namespace SharpLab.Runtime.Internal {
 
         private MemoryGraphNode(
             int id,
-            string title,
+            string? title,
             object value,
             object? heapKey = null,
             ulong? stackAddress = null,
@@ -23,11 +23,11 @@ namespace SharpLab.Runtime.Internal {
             StackSize = stackSize;
         }
 
-        public static MemoryGraphNode OnStack(int id, string title, StringBuilder value, ulong stackAddress, int stackSize) {
+        public static MemoryGraphNode OnStack(int id, string? title, StringBuilder value, ulong stackAddress, int stackSize) {
             return new MemoryGraphNode(id, title, value, stackAddress: stackAddress, stackSize: stackSize);
         }
 
-        public static MemoryGraphNode OnStack(int id, string title, string value, ulong stackAddress, int stackSize) {
+        public static MemoryGraphNode OnStack(int id, string? title, string value, ulong stackAddress, int stackSize) {
             return new MemoryGraphNode(id, title, value, stackAddress: stackAddress, stackSize: stackSize);
         }
 
@@ -63,7 +63,7 @@ namespace SharpLab.Runtime.Internal {
         }
 
         public int Id { get; }
-        public string Title { get; }
+        public string? Title { get; }
         public object Value { get; }
         public int? StackOffset { get; set; }
         public int? StackSize { get; }

@@ -12,10 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.dll" Link="SharpLab.Native.Profiler.dll" Condition="Exists('..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.dll')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
