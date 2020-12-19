@@ -2577,24 +2577,24 @@ System
      Contains: Allowed
      CopyTo: Allowed
      EndsWith: Allowed
-     EnumerateRunes: Allowed
-     Equals: Allowed
-     GetHashCode: Allowed
-     GetType: Allowed
+     EnumerateRunes: Denied
+     Equals: Denied
+     GetHashCode: Denied
+     GetType: Denied
      IndexOf: Allowed
      IndexOfAny: Allowed
      IsWhiteSpace: Allowed
      LastIndexOf: Allowed
      LastIndexOfAny: Allowed
      Overlaps: Allowed
-     Reverse: Allowed
+     Reverse: Denied
      SequenceCompareTo: Allowed
      SequenceEqual: Allowed
-     Sort: Allowed
+     Sort: Denied
      StartsWith: Allowed
      ToLower: Allowed
      ToLowerInvariant: Allowed
-     ToString: Allowed
+     ToString: Denied
      ToUpper: Allowed
      ToUpperInvariant: Allowed
      Trim: Allowed

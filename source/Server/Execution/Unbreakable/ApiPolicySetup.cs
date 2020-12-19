@@ -92,7 +92,7 @@ namespace SharpLab.Server.Execution.Unbreakable {
                           // required by F#'s printf
                           .Getter(nameof(Console.Out), Allowed)
                 )
-                .Type(typeof(MemoryExtensions), Allowed)
+                .Type(typeof(MemoryExtensions), Neutral, SetupSystemMemoryExtensions)
                 .Type(typeof(ReadOnlySpan<>), Allowed,
                     t => t.Member(nameof(ReadOnlySpan<object>.ToArray), Allowed, ArrayReturnRewriter.Default)
                 )
@@ -104,6 +104,33 @@ namespace SharpLab.Server.Execution.Unbreakable {
                 .Type(typeof(STAThreadAttribute), Allowed)
                 .Type(typeof(NotImplementedException), Neutral, t => t.Constructor(Allowed))
                 .Type(typeof(Type), Neutral, SetupSystemType);
+        }
+
+        private static void SetupSystemMemoryExtensions(TypePolicy typePolicy) {
+            typePolicy
+                .Member(nameof(MemoryExtensions.AsMemory), Allowed)
+                .Member(nameof(MemoryExtensions.AsSpan), Allowed)
+                .Member(nameof(MemoryExtensions.BinarySearch), Allowed)
+                .Member(nameof(MemoryExtensions.CompareTo), Allowed)
+                .Member(nameof(MemoryExtensions.Contains), Allowed)
+                .Member(nameof(MemoryExtensions.CopyTo), Allowed)
+                .Member(nameof(MemoryExtensions.EndsWith), Allowed)
+                .Member(nameof(MemoryExtensions.IndexOf), Allowed)
+                .Member(nameof(MemoryExtensions.IndexOfAny), Allowed)
+                .Member(nameof(MemoryExtensions.IsWhiteSpace), Allowed)
+                .Member(nameof(MemoryExtensions.LastIndexOf), Allowed)
+                .Member(nameof(MemoryExtensions.LastIndexOfAny), Allowed)
+                .Member(nameof(MemoryExtensions.Overlaps), Allowed)
+                .Member(nameof(MemoryExtensions.SequenceCompareTo), Allowed)
+                .Member(nameof(MemoryExtensions.SequenceEqual), Allowed)
+                .Member(nameof(MemoryExtensions.StartsWith), Allowed)
+                .Member(nameof(MemoryExtensions.ToLower), Allowed)
+                .Member(nameof(MemoryExtensions.ToLowerInvariant), Allowed)
+                .Member(nameof(MemoryExtensions.ToUpper), Allowed)
+                .Member(nameof(MemoryExtensions.ToUpperInvariant), Allowed)
+                .Member(nameof(MemoryExtensions.Trim), Allowed)
+                .Member(nameof(MemoryExtensions.TrimEnd), Allowed)
+                .Member(nameof(MemoryExtensions.TrimStart), Allowed);
         }
 
         private static void SetupSystemType(TypePolicy typePolicy) {
