@@ -1,0 +1,24 @@
+name: WebApp (JS)
+
+on:
+  push:
+    paths:
+    - '.github/workflows/web-app.yml'
+    - 'WebApp/**'
+  pull_request:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: source/WebApp
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.16.1'
+
+    - run: npm ci      
+    - run: npm run build
+    - run: npm test
