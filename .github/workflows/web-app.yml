@@ -4,7 +4,7 @@ on:
   push:
     paths:
     - '.github/workflows/web-app.yml'
-    - 'WebApp/**'
+    - 'source/WebApp/**'
   pull_request:
 
 jobs:
