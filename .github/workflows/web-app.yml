@@ -8,7 +8,8 @@ on:
   pull_request:
 
 jobs:
-  build-and-publish:
+  build:
+    name: Build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -29,3 +30,11 @@ jobs:
         name: __diff_output__
         path: source/WebApp/tests/rendering/__image_snapshots__/__diff_output__
         if-no-files-found: ignore
+
+    - uses: softprops/action-gh-release@v1
+      with:
+        tag_name: experimental-webapp-release-${{ github.run_number }}
+        files: source/WebApp/wwwroot/**
+        prerelease: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
