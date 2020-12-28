@@ -120,6 +120,7 @@ export default async function render({
         await page.addStyleTag(style);
     }
     await waitForUnfinishedRequests();
+    await page.evaluate(() => document.fonts.ready);
 
     const screenshot = await page.screenshot();
     if (debug)

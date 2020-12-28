@@ -45,6 +45,7 @@
     "@types/applicationinsights-js": "1.0.9",
     "@types/autoprefixer": "9.7.2",
     "@types/codemirror": "0.0.78",
+    "@types/css-font-loading-module": "0.0.4",
     "@types/d3": "5.7.2",
     "@types/d3-force": "1.2.1",
     "@types/dateformat": "3.0.1",
