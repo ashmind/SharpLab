@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <AssemblyName>SharpLab.Server</AssemblyName>
@@ -8,6 +8,9 @@
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     <MSBuildWarningsAsMessages>MSB3836</MSBuildWarningsAsMessages>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <!-- Helps running project directly in IIS: -->
+    <OutputPath>bin\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -63,7 +66,13 @@
   </ItemGroup>
 
   <Target Name="_UpdatePolicyReport" AfterTargets="Build" Inputs="Execution\Unbreakable\ApiPolicySetup.cs" Outputs="Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt" Condition="'$(TargetFramework)' == 'netcoreapp30' And '$(Configuration)' == 'Debug'">
-    <Exec WorkingDirectory="$(OutputPath)" Command="&#xD;&#xA;      dotnet unbreakable-policy-report ^&#xD;&#xA;          --assembly &quot;$(TargetPath)&quot; ^&#xD;&#xA;          --factory SharpLab.Server.Execution.Unbreakable.ApiPolicySetup ^&#xD;&#xA;          --method CreatePolicy ^&#xD;&#xA;          --output &quot;$(MSBuildThisFileDirectory)Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt&quot;" />
+    <Exec WorkingDirectory="$(OutputPath)" Command="
+        dotnet unbreakable-policy-report ^
+            --assembly &quot;$(TargetPath)&quot; ^
+            --factory SharpLab.Server.Execution.Unbreakable.ApiPolicySetup ^
+            --method CreatePolicy ^
+            --output &quot;$(MSBuildThisFileDirectory)Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt&quot;
+    " />
   </Target>
 
   <Target Name="EnsureGenerateBindingRedirectsUsesWebConfig" BeforeTargets="GenerateBindingRedirects">
