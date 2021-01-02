@@ -9,8 +9,10 @@ import render from './render';
 export type PickPropTypes<TVueConstructor extends VueConstructor, TKey extends keyof InstanceType<TVueConstructor>> =
     Pick<InstanceType<TVueConstructor>, TKey>;
 
+// eslint-disable-next-line no-sync
+const rootStylePath = fs.readFileSync(`${__dirname}/../../public/latest`, { encoding: 'utf-8' });
 const styles = [
-    { path: `${__dirname}/../../wwwroot/app.min.css` }
+    { path: `${rootStylePath}/app.min.css` }
 ] as const;
 
 export const themeCases = [
