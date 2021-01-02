@@ -31,10 +31,17 @@ jobs:
         path: source/WebApp/tests/rendering/__image_snapshots__/__diff_output__
         if-no-files-found: ignore
 
-    - uses: softprops/action-gh-release@91409e712cf565ce9eff10c87a8d1b11b81757ae
+    - uses: actions/create-release@v1
+      id: create_release
       with:
         tag_name: experimental-webapp-release-${{ github.run_number }}
-        files: source/WebApp/WebApp.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./source/WebApp/WebApp.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -55,8 +62,7 @@ jobs:
         with:
           args: unzip -qq WebApp.zip -d WebApp
 
-      - run: Rename-Item ./WebApp/latest latest-edge
-        shell: pwsh
+      - run: mv ./WebApp/latest ./WebApp/latest-edge
 
       - uses: azure/login@v1
         with:
