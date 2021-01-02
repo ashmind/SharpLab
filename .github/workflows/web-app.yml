@@ -61,9 +61,7 @@ jobs:
           file: WebApp.zip
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: montudor/action-zip@c25e01d7489d0274569440a2f0281b4569df16bc
-        with:
-          args: unzip -qq WebApp.zip -d WebApp
+      - run: unzip -qq WebApp.zip -d WebApp
 
       - run: |
           ls -l .
