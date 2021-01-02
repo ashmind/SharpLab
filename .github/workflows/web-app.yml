@@ -75,7 +75,7 @@ jobs:
         with:
             azcliversion: 2.0.72
             inlineScript: |
-                az storage blob upload-batch --account-name sharplab -d edge -s WebApp
+                az storage blob upload-batch --account-name slpublic -d assets -s WebApp
 
       - name: "Run azure/CLI@v1: az cdn endpoint purge"
         uses: azure/CLI@v1
