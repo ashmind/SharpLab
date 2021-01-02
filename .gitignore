@@ -10,7 +10,7 @@ launchSettings.json
 node_modules/
 bin/
 obj/
-wwwroot/
+/source/WebApp/public/
 /source/Native.Profiler/x64/
 __diff_output__/
 .ionide/

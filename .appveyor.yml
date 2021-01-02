@@ -1,6 +1,12 @@
 version: '{branch}-{build}'
 image: Visual Studio 2019
 
+skip_commits:
+  files:
+    - *.md
+    - .github/**
+    - source/WebApp/**
+
 install:
 - ps: |-
     Install-Product node 12.18.3 x64

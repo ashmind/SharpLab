@@ -10,4 +10,4 @@ export default async () => {
         chromeContainerId
     ]);
     console.log('Stopped Chrome container', chromeContainerId);
-}
+};

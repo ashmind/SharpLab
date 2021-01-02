@@ -1,23 +1,20 @@
-// Common:
 import path from 'path';
 import { task, exec, build as run } from 'oldowan';
 import execa from 'execa';
 import jetpack from 'fs-jetpack';
-// CSS:
 import lessRender from 'less';
 import postcss from 'postcss';
 import autoprefixer from 'autoprefixer';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore (no typings)
 import csso from 'postcss-csso';
-// Favicons:
 import sharp from 'sharp';
-// HTML:
 import htmlMinifier from 'html-minifier';
+import AdmZip from 'adm-zip';
 
 const dirname = __dirname;
 
-const outputSharedRoot = `${dirname}/wwwroot`;
+const outputSharedRoot = `${dirname}/public`;
 const outputVersionRoot = `${outputSharedRoot}/${process.env.GITHUB_RUN_NUMBER ?? Date.now()}`;
 
 // TODO: expose in oldowan
@@ -143,18 +140,33 @@ const latest = task('latest', () => jetpack.writeAsync(
     `${outputSharedRoot}/latest`, htmlOutputPath.replace(outputSharedRoot, '').replace(/^[\\/]/, '')
 ));
 
-const build = task('build', () => Promise.all([
-    less(),
-    ts(),
-    icons(),
-    manifest(),
-    html(),
-    latest()
-]));
+const build = task('build', async () => {
+    await jetpack.removeAsync(outputSharedRoot);
+    await Promise.all([
+        less(),
+        ts(),
+        icons(),
+        manifest(),
+        html(),
+        latest()
+    ]);
+});
 
 task('start', () => build(), {
     watch: async () => exec2('http-server', [outputSharedRoot, '-p', '54200', '--cors'])
-})
+});
+
+// Assumes we already ran the build
+const zip = task('zip', () => {
+    const zip = new AdmZip();
+    zip.addLocalFolder(outputSharedRoot);
+    zip.writeZip(`${dirname}/WebApp.zip`);
+});
+
+task('build-ci', async () => {
+    await build();
+    await zip();
+});
 
 async function getIconDataUrl() {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

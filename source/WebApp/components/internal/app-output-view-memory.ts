@@ -13,7 +13,7 @@ const specialChars = asLookup({
 type InterimLabel = MemoryInspectionLabel & {
     levelSpan?: number;
     levelSpanPlaceholder?: never;
-}
+};
 
 interface SpanPlaceholder {
     readonly offset: number;
