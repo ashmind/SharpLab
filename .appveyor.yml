@@ -5,11 +5,7 @@ install:
 - ps: |-
     Install-Product node 12.18.3 x64
 
-cache:
-- source/WebApp/node_modules -> source/WebApp/package.json
-
 build_script:
-- SET NODE_ENV=ci
 - cmd: sl ci
 
 artifacts:
@@ -17,8 +13,8 @@ artifacts:
   name: Server.zip
 - path: ./Server.NetFramework.zip
   name: Server.NetFramework.zip
-- path: ./WebApp.zip
-  name: WebApp.zip
+- path: ./WebApp.Server.zip
+  name: WebApp.Server.zip
 
 deploy:
 
@@ -27,7 +23,7 @@ deploy:
   username: ashmind
   password:
     secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
-  artifact: WebApp.zip
+  artifact: WebApp.Server.zip
   on:
     branch: edge
 
@@ -72,7 +68,7 @@ deploy:
   username: ashmind
   password:
     secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
-  artifact: WebApp.zip
+  artifact: WebApp.Server.zip
   on:
     branch: main
 
