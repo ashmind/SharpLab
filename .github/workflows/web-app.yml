@@ -84,8 +84,5 @@ jobs:
             inlineScript: |
                 az cdn endpoint purge --content-paths /assets/latest-edge --profile-name "SharpLab-CDN" --name slpublic --resource-group SharpLab
 
-      - run: |
-          Set-ScriptMode -Version 2
-          $ErrorActionPreference = 'Stop'
-          Invoke-RestMethod -Method POST -Uri 'https://edge.sharplab.io/assets/reload' -Authentication Bearer -Token $(ConvertTo-SecureString '${{ secrets.SHARPLAB_ASSETS_RELOAD_TOKEN }}')
+      - run: Invoke-RestMethod -Method POST -Uri 'https://edge.sharplab.io/assets/reload' -Authentication Bearer -Token $(ConvertTo-SecureString '${{ secrets.SHARPLAB_ASSETS_RELOAD_TOKEN }}')
         shell: pwsh
