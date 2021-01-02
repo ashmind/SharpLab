@@ -47,7 +47,7 @@ jobs:
 
       - uses: dsaltares/fetch-gh-release-asset@aa37ae5c44d3c9820bc12fe675e8670ecd93bd1c
         with:
-          version: experimental-webapp-release-${{ github.run_number }}
+          version: tags/experimental-webapp-release-${{ github.run_number }}
           file: WebApp.zip
           token: ${{ secrets.GITHUB_TOKEN }}
 
