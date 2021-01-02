@@ -61,17 +61,11 @@ jobs:
           file: WebApp.zip
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: unzip -qq WebApp.zip -d WebApp
+      - run: Expand-Archive WebApp.zip ./WebApp
+        shell: pwsh
 
-      # - run: |
-      #     ls -l .
-      #     ls -l ./WebApp
-      #     chmod o+w ./WebApp
-      #     chmod o+w ./WebApp/latest
-      #     ls -l .
-      #     ls -l ./WebApp
-
-      - run: mv ./WebApp/latest ./WebApp/latest-edge
+      - run: Rename-Item ./WebApp/latest latest-edge
+        shell: pwsh
 
       # - uses: azure/login@v1
       #   with:
