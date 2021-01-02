@@ -1,19 +1,18 @@
-/* eslint-disable import/no-duplicates */
 import fs from 'fs';
+import path from 'path';
 import type Vue from 'vue';
 // eslint-disable-next-line no-duplicate-imports
 import type { VueConstructor } from 'vue';
-/* eslint-enable import/no-duplicates */
 import render from './render';
 
 export type PickPropTypes<TVueConstructor extends VueConstructor, TKey extends keyof InstanceType<TVueConstructor>> =
     Pick<InstanceType<TVueConstructor>, TKey>;
 
-const publicRootPath = `${__dirname}/../../public`;
+const publicRootPath = path.resolve(`${__dirname}/../../public`);
 // eslint-disable-next-line no-sync
-const styleVersionPath = fs.readFileSync(`${publicRootPath}/latest`, { encoding: 'utf-8' });
+const indexHtmlPath = fs.readFileSync(`${publicRootPath}/latest`, { encoding: 'utf-8' });
 const styles = [
-    { path: `${publicRootPath}/${styleVersionPath}/app.min.css` }
+    { path: `${publicRootPath}/${path.basename(indexHtmlPath)}/app.min.css` }
 ] as const;
 
 export const themeCases = [
