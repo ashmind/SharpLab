@@ -59,6 +59,15 @@ deploy:
     branch: edge
 
 - provider: AzureAppServiceZipDeploy
+  website: sl-a-edge-netfx-x64
+  username: ashmind
+  password:
+    secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
+  artifact: Server.NetFramework.zip
+  on:
+    branch: edge
+
+- provider: AzureAppServiceZipDeploy
   website: sharplab
   username: ashmind
   password:
