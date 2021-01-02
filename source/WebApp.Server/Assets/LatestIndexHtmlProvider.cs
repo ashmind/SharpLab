@@ -5,11 +5,11 @@ using HtmlAgilityPack;
 
 namespace SharpLab.WebApp.Server.Assets {
     public class LatestIndexHtmlProvider : IIndexHtmlProvider {
-        private readonly Uri _baseUrl;
+        private readonly Uri _latestUrl;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public LatestIndexHtmlProvider(Uri baseUrl, IHttpClientFactory httpClientFactory) {
-            _baseUrl = baseUrl;
+        public LatestIndexHtmlProvider(Uri latestUrl, IHttpClientFactory httpClientFactory) {
+            _latestUrl = latestUrl;
             _httpClientFactory = httpClientFactory;
         }
 
@@ -45,10 +45,10 @@ namespace SharpLab.WebApp.Server.Assets {
         private async Task<(Uri url, string content)> GetRawIndexHtmlAsync() {
             using var client = _httpClientFactory.CreateClient();
 
-            var latestUrlRelative = await client.GetStringAsync(new Uri(_baseUrl, "latest"));
-            var latestUrl = new Uri(_baseUrl, new Uri(latestUrlRelative, UriKind.Relative));
+            var indexUrlRelative = await client.GetStringAsync(_latestUrl);
+            var indexUrl = new Uri(_latestUrl, new Uri(indexUrlRelative, UriKind.Relative));
 
-            return (latestUrl, await client.GetStringAsync(latestUrl));
+            return (indexUrl, await client.GetStringAsync(indexUrl));
         }
     }
 }

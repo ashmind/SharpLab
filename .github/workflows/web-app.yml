@@ -55,21 +55,27 @@ jobs:
         with:
           args: unzip -qq WebApp.zip -d WebApp
 
+      - run: Rename-Item ./WebApp/latest latest-edge
+        shell: pwsh
+
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - uses: azure/CLI@v1
+      - name: "Run azure/CLI@v1: az storage blob upload-batch"
+        uses: azure/CLI@v1
         with:
             azcliversion: 2.0.72
             inlineScript: |
                 az storage blob upload-batch --account-name sharplab -d edge -s WebApp
 
-      - uses: azure/CLI@v1
+      - name: "Run azure/CLI@v1: az cdn endpoint purge"
+        uses: azure/CLI@v1
         with:
             azcliversion: 2.0.72
             inlineScript: |
-                az cdn endpoint purge --content-paths /edge/latest --profile-name "SharpLab-CDN" --name sharplab
+                az cdn endpoint purge --content-paths /assets/latest-edge --profile-name "SharpLab-CDN" --name slpublic --resource-group SharpLab
+
       - run: |
           Set-ScriptMode -Version 2
           $ErrorActionPreference = 'Stop'

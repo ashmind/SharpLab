@@ -4,10 +4,10 @@ using Autofac;
 namespace SharpLab.WebApp.Server.Assets {
     public class AssetsModule : Module {
         protected override void Load(ContainerBuilder builder) {
-            var baseUrl = Environment.GetEnvironmentVariable("SHARPLAB_ASSETS_BASE_URL")
-                       ?? throw new Exception("SHARPLAB_ASSETS_BASE_URL was not found in the environment.");
+            var latestUrl = Environment.GetEnvironmentVariable("SHARPLAB_ASSETS_LATEST_URL")
+                         ?? throw new Exception("SHARPLAB_ASSETS_LATEST_URL was not found in the environment.");
             builder.RegisterType<LatestIndexHtmlProvider>()
-                   .WithParameter(new NamedParameter("baseUrl", new Uri(baseUrl)))
+                   .WithParameter(new NamedParameter("latestUrl", new Uri(latestUrl)))
                    .As<IIndexHtmlProvider>()
                    .SingleInstance();
 
