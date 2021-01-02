@@ -41,6 +41,7 @@ jobs:
 
   deploy-to-edge:
     name: Deploy (Edge)
+    needs: build
     environment: edge
     runs-on: ubuntu-latest
     steps:
