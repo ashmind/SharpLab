@@ -63,13 +63,13 @@ jobs:
 
       - run: unzip -qq WebApp.zip -d WebApp
 
-      - run: |
-          ls -l .
-          ls -l ./WebApp
-          chmod o+w ./WebApp
-          chmod o+w ./WebApp/latest
-          ls -l .
-          ls -l ./WebApp
+      # - run: |
+      #     ls -l .
+      #     ls -l ./WebApp
+      #     chmod o+w ./WebApp
+      #     chmod o+w ./WebApp/latest
+      #     ls -l .
+      #     ls -l ./WebApp
 
       - run: mv ./WebApp/latest ./WebApp/latest-edge
 
