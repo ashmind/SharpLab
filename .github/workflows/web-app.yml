@@ -8,56 +8,55 @@ on:
   pull_request:
 
 jobs:
-  # build:
-  #   name: Build
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       working-directory: source/WebApp
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - uses: actions/setup-node@v1
-  #     with:
-  #       node-version: '12.16.1'
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: source/WebApp
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.16.1'
 
-  #   - run: npm ci
-  #   - run: npm run build-ci
-  #   - run: npm test
+    - run: npm ci
+    - run: npm run build-ci
+    - run: npm test
 
-  #   - uses: actions/upload-artifact@v2
-  #     if: failure()
-  #     with:
-  #       name: __diff_output__
-  #       path: source/WebApp/tests/rendering/__image_snapshots__/__diff_output__
-  #       if-no-files-found: ignore
+    - uses: actions/upload-artifact@v2
+      if: failure()
+      with:
+        name: __diff_output__
+        path: source/WebApp/tests/rendering/__image_snapshots__/__diff_output__
+        if-no-files-found: ignore
 
-  #   - uses: actions/create-release@v1
-  #     id: create_release
-  #     with:
-  #       tag_name: experimental-webapp-release-${{ github.run_number }}
-  #     env:
-  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/create-release@v1
+      id: create_release
+      with:
+        tag_name: experimental-webapp-release-${{ github.run_number }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  #   - uses: actions/upload-release-asset@v1
-  #     with:
-  #       upload_url: ${{ steps.create_release.outputs.upload_url }}
-  #       asset_path: ./source/WebApp/WebApp.zip
-  #       asset_name: WebApp.zip
-  #       asset_content_type: application/zip
-  #     env:
-  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./source/WebApp/WebApp.zip
+        asset_name: WebApp.zip
+        asset_content_type: application/zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-to-edge:
     name: Deploy (Edge)
-    #needs: build
+    needs: build
     environment: edge
     runs-on: ubuntu-latest
     steps:
 
       - uses: dsaltares/fetch-gh-release-asset@aa37ae5c44d3c9820bc12fe675e8670ecd93bd1c
         with:
-          #version: tags/experimental-webapp-release-${{ github.run_number }}
-          version: tags/experimental-webapp-release-18
+          version: tags/experimental-webapp-release-${{ github.run_number }}
           file: WebApp.zip
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -67,26 +66,26 @@ jobs:
       - run: Rename-Item ./WebApp/latest latest-edge
         shell: pwsh
 
-      # - uses: azure/login@v1
-      #   with:
-      #     creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # - name: "Run azure/CLI@v1: az storage blob upload-batch"
-      #   uses: azure/CLI@v1
-      #   with:
-      #       azcliversion: 2.0.72
-      #       inlineScript: |
-      #           az storage blob upload-batch --account-name sharplab -d edge -s WebApp
+      - name: "Run azure/CLI@v1: az storage blob upload-batch"
+        uses: azure/CLI@v1
+        with:
+            azcliversion: 2.0.72
+            inlineScript: |
+                az storage blob upload-batch --account-name sharplab -d edge -s WebApp
 
-      # - name: "Run azure/CLI@v1: az cdn endpoint purge"
-      #   uses: azure/CLI@v1
-      #   with:
-      #       azcliversion: 2.0.72
-      #       inlineScript: |
-      #           az cdn endpoint purge --content-paths /assets/latest-edge --profile-name "SharpLab-CDN" --name slpublic --resource-group SharpLab
+      - name: "Run azure/CLI@v1: az cdn endpoint purge"
+        uses: azure/CLI@v1
+        with:
+            azcliversion: 2.0.72
+            inlineScript: |
+                az cdn endpoint purge --content-paths /assets/latest-edge --profile-name "SharpLab-CDN" --name slpublic --resource-group SharpLab
 
-      # - run: |
-      #     Set-ScriptMode -Version 2
-      #     $ErrorActionPreference = 'Stop'
-      #     Invoke-RestMethod -Method POST -Uri 'https://edge.sharplab.io/assets/reload' -Authentication Bearer -Token $(ConvertTo-SecureString '${{ secrets.SHARPLAB_ASSETS_RELOAD_TOKEN }}')
-      #   shell: pwsh
+      - run: |
+          Set-ScriptMode -Version 2
+          $ErrorActionPreference = 'Stop'
+          Invoke-RestMethod -Method POST -Uri 'https://edge.sharplab.io/assets/reload' -Authentication Bearer -Token $(ConvertTo-SecureString '${{ secrets.SHARPLAB_ASSETS_RELOAD_TOKEN }}')
+        shell: pwsh
