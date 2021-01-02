@@ -35,7 +35,6 @@ jobs:
       with:
         tag_name: experimental-webapp-release-${{ github.run_number }}
         files: source/WebApp/WebApp.zip
-        prerelease: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
