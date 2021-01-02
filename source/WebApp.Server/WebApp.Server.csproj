@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>SharpLab.WebApp.Server</AssemblyName>
+    <RootNamespace>SharpLab.WebApp.Server</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Update=".env">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Server\Server.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.9.2" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="5.0.0" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.29" />
+  </ItemGroup>
+
+  <Target Name="CopyFrameworkXmlDocumentation" AfterTargets="ResolveReferences">
+    <ItemGroup>
+      <Content Include="@(Reference->'%(RootDir)%(Directory)%(Filename).xml')" Link="@(Reference->'xmldocs\%(Filename).xml')" Condition="$([System.String]::new('%(Filename)').StartsWith('System.')) and Exists('%(RootDir)%(Directory)%(Filename).xml')">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+  </Target>
+</Project>

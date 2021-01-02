@@ -1,8 +1,8 @@
 // Common:
 import path from 'path';
-import { task, exec, build } from 'oldowan';
+import { task, exec, build as run } from 'oldowan';
+import execa from 'execa';
 import jetpack from 'fs-jetpack';
-import md5File from 'md5-file/promise';
 // CSS:
 import lessRender from 'less';
 import postcss from 'postcss';
@@ -17,37 +17,26 @@ import htmlMinifier from 'html-minifier';
 
 const dirname = __dirname;
 
-const outputRoot = `${dirname}/wwwroot`;
+const outputSharedRoot = `${dirname}/wwwroot`;
+const outputVersionRoot = `${outputSharedRoot}/${process.env.GITHUB_RUN_NUMBER ?? Date.now()}`;
 
-const parallel = (...promises: ReadonlyArray<Promise<unknown>>) => Promise.all(promises);
-
-const paths = {
-    from: {
-        less: `${dirname}/less/app.less`,
-        icon: `${dirname}/icon.svg`,
-        html: `${dirname}/index.html`,
-        manifest: `${__dirname}/manifest.json`
-    },
-    to: {
-        css: `${outputRoot}/app.min.css`,
-        icon: {
-            svg: `${outputRoot}/icon.svg`,
-            png: `${outputRoot}/icon-{size}.png`
-        },
-        html: `${outputRoot}/index.html`,
-        manifest: `${outputRoot}/manifest.json`
-    }
-};
+// TODO: expose in oldowan
+const exec2 = (command: string, args: ReadonlyArray<string>) => execa(command, args, {
+    preferLocal: true,
+    stdout: process.stdout,
+    stderr: process.stderr
+});
 
 const iconSizes = [
     16, 32, 64, 72, 96, 120, 128, 144, 152, 180, 192, 196, 256, 384, 512
 ];
 
 const less = task('less', async () => {
+    const sourcePath = `${dirname}/less/app.less`;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const content = (await jetpack.readAsync(paths.from.less))!;
+    const content = (await jetpack.readAsync(sourcePath))!;
     let { css, map } = await lessRender.render(content, {
-        filename: paths.from.less,
+        filename: sourcePath,
         sourceMap: {
             sourceMapBasepath: `${dirname}`,
             outputSourceFiles: true
@@ -61,50 +50,56 @@ const less = task('less', async () => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         csso({ restructure: false })
     ]).process(css, {
-        from: paths.from.less,
+        from: sourcePath,
         map: {
             inline: false,
             prev: map
         }
     }));
 
-    await parallel(
-        jetpack.writeAsync(paths.to.css, css),
-        jetpack.writeAsync(paths.to.css + '.map', map)
-    );
+    const outputPath = `${outputVersionRoot}/app.min.css`;
+    await Promise.all([
+        jetpack.writeAsync(outputPath, css),
+        jetpack.writeAsync(outputPath + '.map', map)
+    ]);
 }, { watch: [`${dirname}/less/**/*.less`] });
 
 const tsLint = task('ts-lint', () => exec('eslint . --max-warnings 0 --ext .js,.ts'));
-const tsMain = task('ts-main', () => exec('rollup -c'), { watch: () => exec('rollup -c -w') })
+const jsOutputPath = `${outputVersionRoot}/app.min.js`;
+const tsMain = task('ts-main', () => exec2('rollup', ['-c', '-o', jsOutputPath]), {
+    watch: () => exec2('rollup', ['-c', '-w', '-o', jsOutputPath])
+});
 
 const ts = task('ts', async () => {
     await tsLint();
     await tsMain();
 });
 
+const iconSvgSourcePath = `${dirname}/icon.svg`;
 const icons = task('icons', async () => {
-    await jetpack.dirAsync(outputRoot);
-    const pngGeneration = iconSizes.map(size => {
+    await jetpack.dirAsync(outputVersionRoot);
+    const pngGeneration = iconSizes.map(async size => {
         // https://github.com/lovell/sharp/issues/729
         const density = size > 128 ? Math.round(72 * size / 128) : 72;
-        return sharp(paths.from.icon, { density })
+        await sharp(iconSvgSourcePath, { density })
             .resize(size, size)
             .png()
-            .toFile(paths.to.icon.png.replace('{size}', size.toString()));
+            .toFile(`${outputVersionRoot}/icon-${size}.png`);
     });
 
-    return parallel(
-        jetpack.copyAsync(paths.from.icon, paths.to.icon.svg, { overwrite: true }),
+    return Promise.all([
+        jetpack.copyAsync(iconSvgSourcePath, `${outputVersionRoot}/icon.svg`, { overwrite: true }),
         ...pngGeneration
-    ) as unknown as Promise<void>;
+    ]);
 }, {
-    timeout: 5000,
-    watch: [paths.from.icon]
+    timeout: 10000,
+    watch: [iconSvgSourcePath]
 });
 
+const manifestSourcePath = `${dirname}/manifest.json`;
 const manifest = task('manifest', async () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const content = JSON.parse((await jetpack.readAsync(paths.from.manifest))!) as {
+    const content = JSON.parse((await jetpack.readAsync(manifestSourcePath))!) as {
         icons: ReadonlyArray<{ src: string }>;
     };
 
@@ -118,51 +113,52 @@ const manifest = task('manifest', async () => {
         ) as typeof icon);
     });
 
-    await jetpack.writeAsync(paths.to.manifest, JSON.stringify(content));
-}, { watch: [paths.from.manifest] });
+    await jetpack.writeAsync(`${outputVersionRoot}/manifest.json`, JSON.stringify(content));
+}, { watch: [manifestSourcePath] });
 
+const htmlSourcePath = `${dirname}/index.html`;
+const htmlOutputPath = `${outputVersionRoot}/index.html`;
 const html = task('html', async () => {
     const iconDataUrl = await getIconDataUrl();
     const templates = await getCombinedTemplates();
-    const [jsHash, cssHash] = await parallel(
-        md5File('wwwroot/app.min.js'),
-        md5File('wwwroot/app.min.css')
-    );
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    let html = (await jetpack.readAsync(paths.from.html))!;
+    let html = (await jetpack.readAsync(htmlSourcePath))!;
     html = html
-        .replace('{build:js}', 'app.min.js?' + jsHash)
-        .replace('{build:css}', 'app.min.css?' + cssHash)
+        .replace('{build:js}', 'app.min.js')
+        .replace('{build:css}', 'app.min.css')
         .replace('{build:templates}', templates)
         .replace('{build:favicon-svg}', iconDataUrl);
     html = htmlMinifier.minify(html, { collapseWhitespace: true });
-    await jetpack.writeAsync(paths.to.html, html);
+    await jetpack.writeAsync(htmlOutputPath, html);
 }, {
     watch: [
         `${dirname}/components/**/*.html`,
-        paths.to.css,
-        `${outputRoot}/app.min.js`,
-        paths.from.html,
-        paths.from.icon
+        htmlSourcePath,
+        iconSvgSourcePath
     ]
 });
 
-task('default', () => {
-    const htmlAll = async () => {
-        await parallel(less(), ts());
-        await html();
-    };
+const latest = task('latest', () => jetpack.writeAsync(
+    `${outputSharedRoot}/latest`, htmlOutputPath.replace(outputSharedRoot, '').replace(/^[\\/]/, '')
+));
 
-    return parallel(
-        icons(),
-        manifest(),
-        htmlAll()
-    ) as unknown as Promise<void>;
-});
+const build = task('build', () => Promise.all([
+    less(),
+    ts(),
+    icons(),
+    manifest(),
+    html(),
+    latest()
+]));
+
+task('start', () => build(), {
+    watch: async () => exec2('http-server', [outputSharedRoot, '-p', '54200', '--cors'])
+})
 
 async function getIconDataUrl() {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const faviconSvg = (await jetpack.readAsync(paths.from.icon))!;
+    const faviconSvg = (await jetpack.readAsync(iconSvgSourcePath))!;
     // http://codepen.io/jakob-e/pen/doMoML
     return faviconSvg
         .replace(/"/g, '\'')
@@ -188,4 +184,4 @@ async function getCombinedTemplates() {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-build();
+run();
