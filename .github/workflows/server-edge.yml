@@ -35,7 +35,7 @@ jobs:
         path: Server.NetFramework.zip
 
   deploy-netfx-x86:
-    name: 'Deploy (netfx-x86)'
+    name: 'Deploy to Edge (.NET Framework, x86)'
     runs-on: ubuntu-latest
     needs: build-netfx
     environment: edge-server
@@ -54,7 +54,7 @@ jobs:
         shell: pwsh
 
   deploy-netfx-x64:
-    name: 'Deploy (netfx-x64)'
+    name: 'Deploy to Edge (.NET Framework, x64)'
     runs-on: ubuntu-latest
     needs: build-netfx
     environment: edge-server
