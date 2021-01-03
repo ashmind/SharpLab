@@ -37,7 +37,7 @@ jobs:
       if: github.ref == 'refs/heads/edge'
       id: create_release
       with:
-        tag_name: webapp-release-${{ github.run_number }}
+        tag_name: webapp-release-${{ github.run_id }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -61,7 +61,7 @@ jobs:
 
       - uses: dsaltares/fetch-gh-release-asset@aa37ae5c44d3c9820bc12fe675e8670ecd93bd1c
         with:
-          version: tags/webapp-release-${{ github.run_number }}
+          version: tags/webapp-release-${{ github.run_id }}
           file: WebApp.zip
           token: ${{ secrets.GITHUB_TOKEN }}
 

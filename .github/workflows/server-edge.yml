@@ -4,7 +4,7 @@ on:
   push:
     paths-ignore:
     - '.github/workflows/roslyn-branches.yml'
-    - '.github/workflows/web-app*.yml'
+    - '.github/workflows/webapp*.yml'
     - 'source/WebApp/**'
   pull_request:
 
@@ -89,7 +89,7 @@ jobs:
       - uses: actions/create-release@v1
         id: create_release
         with:
-          tag_name: experimental-server-release-${{ github.run_number }}
+          tag_name: experimental-server-release-${{ github.run_id }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Run actions/upload-release-asset@v1: Server.NetFramework.zip'
