@@ -7,10 +7,6 @@ skip_commits:
     - '.github/**'
     - 'source/WebApp/**'
 
-install:
-- ps: |-
-    Install-Product node 12.18.3 x64
-
 build_script:
 - cmd: sl ci
 
