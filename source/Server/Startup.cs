@@ -10,9 +10,9 @@ using MirrorSharp.AspNetCore;
 using System.Reflection;
 using Autofac.Extras.FileSystemRegistration;
 using MirrorSharp;
-using MirrorSharp.Advanced;
 using SharpLab.Server.Common;
 using SharpLab.Server.Common.Diagnostics;
+using Microsoft.AspNetCore.Routing;
 
 namespace SharpLab.Server {    
     public class Startup {
@@ -20,6 +20,7 @@ namespace SharpLab.Server {
         private static readonly TimeSpan CorsPreflightMaxAge = TimeSpan.FromHours(1);
 
         public void ConfigureServices(IServiceCollection services) {
+            services.AddHttpClient();
             services.AddCors();
             services.AddControllers();
         }
@@ -64,14 +65,13 @@ namespace SharpLab.Server {
                     return context.Response.BodyWriter.WriteAsync(okBytes).AsTask();
                 });
 
+                MapOtherEndpoints(e);
+
                 e.MapControllers();
             });
-
-            ConfigureStaticFiles(app);
         }
 
-        protected virtual void ConfigureStaticFiles(IApplicationBuilder app) {
-            app.UseStaticFiles();
+        protected virtual void MapOtherEndpoints(IEndpointRouteBuilder endpoints) {
         }
     }
 }

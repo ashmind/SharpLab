@@ -4,11 +4,11 @@ services:
 
 - name: webapp-assets
   executable: pwsh
-  args: -Command "npm run watch"
+  args: -Command "npm run start"
   workingDirectory: source/WebApp
   
-- name: webapp-dotnet
-  project: source/WebApp/WebApp.csproj
+- name: webapp-server
+  project: source/WebApp.Server/WebApp.Server.csproj
   bindings:
   - protocol: http
     port: 54100

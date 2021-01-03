@@ -1,0 +1,36 @@
+name: WebApp (JS) - Main
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+    - '.github/workflows/web-app-main.yml'
+
+jobs:
+  deploy-to-main:
+    name: Deploy (Main)
+    environment: main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: "Run azure/CLI@v1: az storage copy"
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.9.1
+          inlineScript: |
+            az storage copy -s https://slpublic.blob.core.windows.net/assets/latest-edge -d https://slpublic.blob.core.windows.net/assets/latest-main
+
+      - name: "Run azure/CLI@v1: az cdn endpoint purge"
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.9.1
+          inlineScript: |
+            az cdn endpoint purge --content-paths /assets/latest-main --profile-name "SharpLab-CDN" --name slpublic --resource-group SharpLab
+
+      - run: Invoke-RestMethod -Method POST -Uri 'https://sharplab.io/assets/reload' -Authentication Bearer -Token $(ConvertTo-SecureString $env:SHARPLAB_ASSETS_RELOAD_TOKEN -AsPlainText)
+        shell: pwsh
+        env:
+          SHARPLAB_ASSETS_RELOAD_TOKEN: ${{ secrets.SHARPLAB_ASSETS_RELOAD_TOKEN }}

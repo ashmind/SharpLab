@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import puppeteer, { Page } from 'puppeteer';
+import port from './port';
 
 function getCachePath(url: string) {
     return path.join(__dirname, '__request_cache__', url.replace(/[^a-z._=+-]/ig, '_') + '.json');
@@ -108,7 +109,7 @@ export default async function render({
 }) {
     const content = `<!DOCTYPE html><html><head></head><body class="${bodyClass}">${html}</body></html>`;
 
-    const browser = await puppeteer.launch({ headless: !debug });
+    const browser = await puppeteer.connect({ browserURL: `http://localhost:${port}` });
     const page = await browser.newPage();
 
     const { waitForUnfinishedRequests } = await setupRequestInterception(page);
@@ -119,12 +120,14 @@ export default async function render({
         await page.addStyleTag(style);
     }
     await waitForUnfinishedRequests();
+    await page.evaluate(() => document.fonts.ready);
 
     const screenshot = await page.screenshot();
     if (debug)
         debugger; // eslint-disable-line no-debugger
 
-    await browser.close();
+    await page.close();
+    browser.disconnect();
 
     return screenshot;
 }

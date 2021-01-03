@@ -7,7 +7,7 @@ export default function defineState<T>(initialValue: T, { beforeSet }: { beforeS
         if (beforeSet)
             beforeSet(value);
         state.value = value;
-    }
+    };
 
     return [state as Readonly<typeof state>, setState] as const;
 }

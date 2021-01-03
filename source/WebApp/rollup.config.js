@@ -36,7 +36,6 @@ export default {
     ],
     output: {
         format: 'iife',
-        file: './wwwroot/app.min.js',
         sourcemap: true
     }
 };

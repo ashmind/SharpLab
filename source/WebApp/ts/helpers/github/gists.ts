@@ -112,7 +112,7 @@ export async function getGistAsync(id: string) {
         code: codeFile.content,
         options
     };
-    return result as { readonly [key in keyof Gist]: (typeof result)[key] }
+    return result as { readonly [key in keyof Gist]: (typeof result)[key] };
 }
 
 export async function createGistAsync(

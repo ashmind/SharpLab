@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using SharpLab.Server.Common;
 
-namespace SharpLab.WebApp {
+namespace SharpLab.WebApp.Server {
     public class Program {
         public static void Main(string[] args) {
             DotEnv.Load();

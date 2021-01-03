@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using Autofac;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Http;
 using Microsoft.IO;
 using Mono.Cecil.Cil;
 using SharpLab.Server.Common.Internal;
@@ -48,6 +49,7 @@ namespace SharpLab.Server.Common {
             builder.RegisterInstance(new RecyclableMemoryStreamManager())
                    .AsSelf();
 
+            // older approach, needs to be updated to use factory now
             builder.RegisterInstance<Func<HttpClient>>(() => new HttpClient())
                    .As<Func<HttpClient>>()
                    .SingleInstance()

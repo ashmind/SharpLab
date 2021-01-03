@@ -1,0 +1,93 @@
+name: WebApp (JS) - Edge
+
+on:
+  push:
+    paths:
+    - '.github/workflows/web-app-edge.yml'
+    - 'source/WebApp/**'
+  pull_request:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: source/WebApp
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.16.1'
+
+    - run: npm ci
+    - run: npm run build-ci
+    - run: npm test
+
+    - uses: actions/upload-artifact@v2
+      if: failure()
+      with:
+        name: __diff_output__
+        path: source/WebApp/tests/rendering/__image_snapshots__/__diff_output__
+        if-no-files-found: ignore
+
+    - uses: actions/create-release@v1
+      if: github.ref == 'refs/heads/edge'
+      id: create_release
+      with:
+        tag_name: webapp-release-${{ github.run_number }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: actions/upload-release-asset@v1
+      if: github.ref == 'refs/heads/edge'
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./source/WebApp/WebApp.zip
+        asset_name: WebApp.zip
+        asset_content_type: application/zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-to-edge:
+    name: Deploy (Edge)
+    needs: build
+    if: github.ref == 'refs/heads/edge'
+    environment: edge
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: dsaltares/fetch-gh-release-asset@aa37ae5c44d3c9820bc12fe675e8670ecd93bd1c
+        with:
+          version: tags/webapp-release-${{ github.run_number }}
+          file: WebApp.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: Expand-Archive WebApp.zip ./WebApp
+        shell: pwsh
+
+      - run: Rename-Item ./WebApp/latest latest-edge
+        shell: pwsh
+
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: "Run azure/CLI@v1: az storage blob upload-batch"
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.9.1
+          inlineScript: |
+            az storage blob upload-batch --account-name slpublic -d assets -s WebApp
+
+      - name: "Run azure/CLI@v1: az cdn endpoint purge"
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.9.1
+          inlineScript: |
+            az cdn endpoint purge --content-paths /assets/latest-edge --profile-name "SharpLab-CDN" --name slpublic --resource-group SharpLab
+
+      - run: Invoke-RestMethod -Method POST -Uri 'https://edge.sharplab.io/assets/reload' -Authentication Bearer -Token $(ConvertTo-SecureString $env:SHARPLAB_ASSETS_RELOAD_TOKEN -AsPlainText)
+        shell: pwsh
+        env:
+          SHARPLAB_ASSETS_RELOAD_TOKEN: ${{ secrets.SHARPLAB_ASSETS_RELOAD_TOKEN }}

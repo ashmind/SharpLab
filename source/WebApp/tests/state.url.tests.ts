@@ -82,7 +82,7 @@ describe('gist', () => {
         window.location.hash = '#gist:_';
         const { options } = await url.loadAsync()!;
         expect(options.target).toBe(targets.csharp);
-    })
+    });
 
     test(`load returns branchId if specified`, async () => {
         asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
