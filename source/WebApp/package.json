@@ -83,6 +83,7 @@
     "postcss": "7.0.2",
     "postcss-csso": "3.0.0",
     "puppeteer": "2.1.1",
+    "regex-combiner": "am11/regex-combiner#feature/char-class",
     "rollup": "2.9.1",
     "rollup-plugin-babel": "4.4.0",
     "rollup-plugin-commonjs": "10.1.0",
