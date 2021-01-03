@@ -1,10 +1,6 @@
 name: WebApp (JS) - Main
 
-on:
-  workflow_dispatch:
-  push:
-    paths:
-    - '.github/workflows/web-app-main.yml'
+on: workflow_dispatch
 
 jobs:
   deploy-to-main:
