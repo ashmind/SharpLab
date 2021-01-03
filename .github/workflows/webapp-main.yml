@@ -5,7 +5,7 @@ on: workflow_dispatch
 jobs:
   deploy-to-main:
     name: Deploy (Main)
-    environment: main
+    environment: main-webapp
     runs-on: ubuntu-latest
     steps:
       - uses: azure/login@v1

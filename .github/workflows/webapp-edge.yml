@@ -3,7 +3,7 @@ name: WebApp (JS) - Edge
 on:
   push:
     paths:
-    - '.github/workflows/web-app-edge.yml'
+    - '.github/workflows/webapp-edge.yml'
     - 'source/WebApp/**'
   pull_request:
 
@@ -55,7 +55,7 @@ jobs:
     name: Deploy (Edge)
     needs: build
     if: github.ref == 'refs/heads/edge'
-    environment: edge
+    environment: edge-webapp
     runs-on: ubuntu-latest
     steps:
 
