@@ -56,3 +56,21 @@ jobs:
           asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-netfx-x64:
+    name: 'Deploy (netfx-x64)'
+    runs-on: ubuntu-latest
+    needs: create-release
+    environment: edge-server
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: Server.NetFramework
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: 'Run Azure webapp deploy action using publish profile credentials'
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: sl-a-edge-netfx-x64
+          package: Server.NetFramework.zip
