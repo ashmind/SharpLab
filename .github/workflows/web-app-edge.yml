@@ -22,6 +22,8 @@ jobs:
 
     - run: npm ci
     - run: npm run build-ci
+      env:
+        NODE_ENV: ci
     - run: npm test
 
     - uses: actions/upload-artifact@v2

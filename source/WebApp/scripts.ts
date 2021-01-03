@@ -164,6 +164,8 @@ const zip = task('zip', () => {
 });
 
 task('build-ci', async () => {
+    if (process.env.NODE_ENV !== 'ci')
+        throw new Error('Command build-ci should only be run under NODE_ENV=ci.');
     await build();
     await zip();
 });
