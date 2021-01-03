@@ -3,9 +3,9 @@ image: Visual Studio 2019
 
 skip_commits:
   files:
-    - *.md
-    - .github/**
-    - source/WebApp/**
+    - '*.md'
+    - '.github/**'
+    - 'source/WebApp/**'
 
 install:
 - ps: |-
