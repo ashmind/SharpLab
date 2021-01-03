@@ -1,4 +1,4 @@
-name: Server
+name: Server (.NET) - Edge
 
 on:
   push:
