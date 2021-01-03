@@ -20,9 +20,12 @@ jobs:
       with:
         dotnet-version: 5.0.x
 
-    - run: dotnet build source/NetFramework/Tests
-    - run: dotnet test source/NetFramework/Tests --no-restore --no-build
-    - run: dotnet publish source/NetFramework/Server --no-restore --no-build
+    # https://github.com/actions/setup-dotnet/issues/155
+    - run: dotnet nuget locals all --clear
+
+    - run: dotnet build source/NetFramework/Tests --configuration Release
+    - run: dotnet test source/NetFramework/Tests --no-restore --no-build --configuration Release
+    - run: dotnet publish source/NetFramework/Server --no-restore --no-build --configuration Release
     - run: Compress-Archive -Path 'source/NetFramework/Server/bin/publish/*' -DestinationPath 'Server.NetFramework.zip'
       shell: pwsh
 
