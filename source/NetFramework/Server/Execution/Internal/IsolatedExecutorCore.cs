@@ -36,9 +36,6 @@ namespace SharpLab.Server.Execution {
                 if (ex is RegexMatchTimeoutException)
                     ex = new TimeGuardException("Time limit reached while evaluating a Regex.\r\nNote that timeout was added by SharpLab — in real code this would not throw, but might run for a very long time.", ex);
 
-                if (ex is StackGuardException sgex)
-                    throw new Exception($"{sgex.Message} {sgex.StackBaseline} {sgex.StackOffset} {sgex.StackLimit} {sgex.StackSize}");
-
                 Flow.ReportException(ex);
                 Output.Write(new SimpleInspection("Exception", ex.ToString()));
                 return new ExecutionResultWithException(new ExecutionResult(Output.Stream, Flow.Steps), ex);

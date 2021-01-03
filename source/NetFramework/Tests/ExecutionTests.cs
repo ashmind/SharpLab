@@ -435,7 +435,7 @@ namespace SharpLab.Tests {
         }
 
         [Theory]
-        [InlineData("Regression.Disposable.cs")]
+        [InlineData("Regression.Disposable.cs", Skip = "Fails GitHub Actions, see https://github.com/ashmind/SharpLab/issues/591")]
         public async Task SlowUpdate_DoesNotFail_OnAnyGuard(string resourceName) {
             var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), LanguageNames.CSharp);
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
