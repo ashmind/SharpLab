@@ -8,7 +8,7 @@ const code = asLookup({
     [languages.vb]: 'Imports System\r\nPublic Class C\r\n    Public Sub M()\r\n    End Sub\r\nEnd Class',
     [languages.fsharp]: 'open System\r\ntype C() =\r\n    member _.M() = ()',
 
-    [`${languages.csharp}.run`]: `using System;\r\n${help.run.csharp}\r\npublic static class Program {\r\n    public static void Main() {\r\n        Console.WriteLine("🌄");\r\n    }\r\n}`,
+    [`${languages.csharp}.run`]: `${help.run.csharp}\r\nusing System;\r\n\r\nConsole.WriteLine("🌄");`,
     [`${languages.vb}.run`]: 'Imports System\r\nPublic Module Program\r\n    Public Sub Main()\r\n        Console.WriteLine("🌄")\r\n    End Sub\r\nEnd Module',
     [`${languages.fsharp}.run`]: 'printfn "🌄"'
 } as const);
