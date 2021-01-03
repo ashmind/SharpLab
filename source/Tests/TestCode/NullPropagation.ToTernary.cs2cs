@@ -41,7 +41,7 @@ public class Point
 
     public int M(Point p)
     {
-        Nullable<int> num = (p != null) ? new Nullable<int>(p.X) : null;
+        Nullable<int> num = ((p != null) ? new Nullable<int>(p.X) : null);
         return num.GetValueOrDefault();
     }
 }

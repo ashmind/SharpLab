@@ -35,50 +35,52 @@ public class C
 {
     public string M(string key)
     {
-        switch (<PrivateImplementationDetails>.ComputeStringHash(key))
+        uint num = <PrivateImplementationDetails>.ComputeStringHash(key);
+        if (num <= 455788110)
         {
-            case 506120967u:
-                if (!(key == "Key1"))
+            if (num != 422232872)
+            {
+                if (num != 439010491)
                 {
-                    break;
+                    if (num == 455788110 && key == "Key6")
+                    {
+                        return "6";
+                    }
                 }
-                return "1";
-            case 522898586u:
-                if (!(key == "Key2"))
+                else if (key == "Key5")
                 {
-                    break;
+                    return "5";
                 }
-                return "2";
-            case 539676205u:
-                if (!(key == "Key3"))
-                {
-                    break;
-                }
-                return "3";
-            case 422232872u:
-                if (!(key == "Key4"))
-                {
-                    break;
-                }
+            }
+            else if (key == "Key4")
+            {
                 return "4";
-            case 439010491u:
-                if (!(key == "Key5"))
+            }
+        }
+        else if (num <= 506120967)
+        {
+            if (num != 472565729)
+            {
+                if (num == 506120967 && key == "Key1")
                 {
-                    break;
+                    return "1";
                 }
-                return "5";
-            case 455788110u:
-                if (!(key == "Key6"))
-                {
-                    break;
-                }
-                return "6";
-            case 472565729u:
-                if (!(key == "Key7"))
-                {
-                    break;
-                }
+            }
+            else if (key == "Key7")
+            {
                 return "7";
+            }
+        }
+        else if (num != 522898586)
+        {
+            if (num == 539676205 && key == "Key3")
+            {
+                return "3";
+            }
+        }
+        else if (key == "Key2")
+        {
+            return "2";
         }
         return "?";
     }
@@ -92,9 +94,11 @@ internal sealed class <PrivateImplementationDetails>
         if (s != null)
         {
             num = 2166136261u;
-            for (int i = 0; i < s.Length; i++)
+            int num2 = 0;
+            while (num2 < s.Length)
             {
-                num = (s[i] ^ num) * 16777619;
+                num = (s[num2] ^ num) * 16777619;
+                num2++;
             }
         }
         return num;

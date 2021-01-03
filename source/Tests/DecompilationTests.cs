@@ -17,7 +17,7 @@ namespace SharpLab.Tests {
 
         public DecompilationTests(ITestOutputHelper output) {
             _output = output;
-            //TestAssemblyLog.Enable(output);
+            // TestAssemblyLog.Enable(output);
         }
 
         [Theory]
@@ -49,6 +49,7 @@ namespace SharpLab.Tests {
         [InlineData("Unsafe.FixedBuffer.cs2cs")] // https://github.com/ashmind/SharpLab/issues/398
         [InlineData("Switch.String.Large.cs2cs")]
         [InlineData("Lock.Simple.cs2cs")]
+        [InlineData("Property.InitOnly.cs2cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string resourceName) {
             var data = TestCode.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);

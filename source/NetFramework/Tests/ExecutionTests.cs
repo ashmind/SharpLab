@@ -24,17 +24,17 @@ using SharpLab.Tests.Internal;
 
 namespace SharpLab.Tests {
     public class ExecutionTests {
-        private readonly ITestOutputHelper _testOutputHelper;
+        private readonly ITestOutputHelper _output;
 
-        public ExecutionTests(ITestOutputHelper testOutputHelper) {
-            _testOutputHelper = testOutputHelper;
+        public ExecutionTests(ITestOutputHelper output) {
+            _output = output;
 
             #if DEBUG
             var testName = ((ITest)
-                _testOutputHelper
+                _output
                     .GetType()
                     .GetField("test", BindingFlags.Instance | BindingFlags.NonPublic)!
-                    .GetValue(_testOutputHelper)!
+                    .GetValue(_output)!
             ).DisplayName.Replace(GetType().FullName + ".", "");
             var safeTestName = Regex.Replace(testName, "[^a-zA-Z._-]+", "_");
             if (safeTestName.Length > 100)
@@ -231,7 +231,7 @@ namespace SharpLab.Tests {
             var result = await SendSlowUpdateWithRetryOnMovedObjectsAsync(driver);
 
             AssertIsSuccess(result, allowRuntimeException: allowExceptions);
-            code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _testOutputHelper);
+            code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _output);
         }
 
         [Theory]
@@ -248,7 +248,7 @@ namespace SharpLab.Tests {
             var result = await SendSlowUpdateWithRetryOnMovedObjectsAsync(driver);
 
             AssertIsSuccess(result);
-            code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _testOutputHelper);
+            code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _output);
         }
 
         [Theory]
@@ -446,10 +446,11 @@ namespace SharpLab.Tests {
 
         // Currently Inspect.Heap/MemoryGraph does not promise to always work as expected if GCs happen
         // during its operation. So for now we retry in the tests.
-        private static async Task<SlowUpdateResult<ExecutionResultData>> SendSlowUpdateWithRetryOnMovedObjectsAsync(MirrorSharpTestDriver driver) {
+        private async Task<SlowUpdateResult<ExecutionResultData>> SendSlowUpdateWithRetryOnMovedObjectsAsync(MirrorSharpTestDriver driver) {
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
             var tryCount = 1;
-            while (result.JoinErrors().Contains("Failed to find object type for address") && tryCount < 10) {
+            while ((result.ExtensionResult?.GetOutputAsString().Contains("Failed to find object type for address") ?? false) && tryCount < 10) {
+                _output.WriteLine($"Failed to find object type for address, retrying ({tryCount}) ...");
                 result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
                 tryCount += 1;
             }

@@ -1,6 +1,5 @@
 public class C {
-    public void M(decimal d = 5.0m) {
-    }
+    public int P { get; init; }
 }
 
 #=>
@@ -8,7 +7,6 @@ public class C {
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
 
@@ -20,7 +18,20 @@ using System.Security.Permissions;
 [module: UnverifiableCode]
 public class C
 {
-    public void M([Optional][DecimalConstant(1, 0, 0u, 0u, 50u)] decimal d)
+    [CompilerGenerated]
+    private readonly int <P>k__BackingField;
+
+    public int P
     {
+        [CompilerGenerated]
+        get
+        {
+            return <P>k__BackingField;
+        }
+        [CompilerGenerated]
+        init
+        {
+            <P>k__BackingField = value;
+        }
     }
 }

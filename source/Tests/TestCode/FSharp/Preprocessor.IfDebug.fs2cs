@@ -6,13 +6,13 @@
 
 #=>
 
-using <StartupCode$_>;
-using Microsoft.FSharp.Core;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using <StartupCode$_>;
+using Microsoft.FSharp.Core;
 
 [assembly: FSharpInterfaceDataVersion(2, 0, 0)]
 [assembly: AssemblyVersion("0.0.0.0")]

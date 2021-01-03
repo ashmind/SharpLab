@@ -16,7 +16,16 @@ namespace SharpLab.Server.Decompilation {
             FixedBuffers = false,
             UsingStatement = false,
             SwitchStatementOnString = false,
-            LockStatement = false
+            LockStatement = false,
+            ForStatement = false,
+            ForEachStatement = false,
+            SparseIntegerSwitch = false,
+            DoWhileStatement = false,
+            StringConcat = false,
+            UseRefLocalsForAccurateOrderOfEvaluation = true,
+            InitAccessors = true,
+            FunctionPointers = true,
+            NativeIntegers = true
         };
 
         private readonly IAssemblyResolver _assemblyResolver;

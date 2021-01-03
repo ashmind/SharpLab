@@ -20,7 +20,7 @@ using System.Security.Permissions;
 [module: UnverifiableCode]
 public class C
 {
-    public void M([Optional] [DecimalConstant(1, 0, 0u, 0u, 50u)] decimal d)
+    public void M([Optional][DecimalConstant(1, 0, 0u, 0u, 50u)] decimal d)
     {
     }
 }

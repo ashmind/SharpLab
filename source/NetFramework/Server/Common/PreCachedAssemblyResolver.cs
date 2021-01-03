@@ -57,6 +57,8 @@ namespace SharpLab.Server.Common {
             throw new NotSupportedException();
         }
 
+        public bool IsGacAssembly(IAssemblyReference reference) => false;
+
         public void Dispose() {
         }
     }
