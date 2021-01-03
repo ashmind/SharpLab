@@ -69,7 +69,7 @@ jobs:
         with:
           app-name: sl-a-edge-netfx-x64
           package: Server.NetFramework.zip
-      - run: Invoke-RestMethod "https://sl-a-edge-netfx.azurewebsites.net/status"
+      - run: Invoke-RestMethod "https://sl-a-edge-netfx-x64.azurewebsites.net/status"
         shell: pwsh
 
   # Since we are deploying to the edge, we can actually create
