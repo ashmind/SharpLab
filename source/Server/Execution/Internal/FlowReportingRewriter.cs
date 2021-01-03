@@ -176,10 +176,10 @@ namespace SharpLab.Server.Execution.Internal {
             if (instruction.OpCode.Code == Code.Ret) {
                 if (instruction.Previous?.Previous?.OpCode.Code == Code.Tail)
                     return null;
-                var returnType = il.Body.Method.ReturnType;
-                if (returnType.IsVoid())
+                var method = il.Body.Method;
+                if (method.ReturnsVoid())
                     return null;
-                return ("return", returnType);
+                return ("return", method.ReturnType);
             }
 
             return null;

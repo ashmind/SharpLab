@@ -112,8 +112,16 @@ namespace SharpLab.Server.Execution.Internal {
                 handler.HandlerEnd = to;
         }
 
-        public static bool IsVoid([NotNull] this TypeReference type) {
-            return type.Name == "Void" && type.Namespace == "System";
+        public static bool ReturnsVoid(this MethodReference method) {
+            return IsVoidInReturnContext(method.ReturnType);
         }
+
+        private static bool IsVoidInReturnContext(TypeReference type) => type switch {
+            // e.g. init-only modreq
+            RequiredModifierType r => IsVoidInReturnContext(r.ElementType),
+            OptionalModifierType o => IsVoidInReturnContext(o.ElementType),
+            { Namespace: "System", Name: "Void" } => true,
+            _ => false
+        };
     }
 }

@@ -17,13 +17,13 @@ using SharpLab.Tests.Internal;
 
 namespace SharpLab.Tests {
     public class ExecutionTests {
-        private readonly ITestOutputHelper _testOutputHelper;
+        private readonly ITestOutputHelper _output;
 
-        public ExecutionTests(ITestOutputHelper testOutputHelper) {
-            _testOutputHelper = testOutputHelper;
-            //TestAssemblyLog.Enable(output);
+        public ExecutionTests(ITestOutputHelper output) {
+            _output = output;
+            // TestAssemblyLog.Enable(output);
             #if DEBUG
-            //PerformanceLog.Enable((name, ticks) => testOutputHelper.WriteLine("[Perf] {0}: {1:F2}ms", name, (double)ticks / TimeSpan.TicksPerMillisecond));
+            // PerformanceLog.Enable((name, ticks) => testOutputHelper.WriteLine("[Perf] {0}: {1:F2}ms", name, (double)ticks / TimeSpan.TicksPerMillisecond));
             #endif
         }
 
@@ -209,7 +209,7 @@ namespace SharpLab.Tests {
             var result = await SendSlowUpdateWithRetryOnMovedObjectsAsync(driver);
 
             AssertIsSuccess(result, allowRuntimeException: allowExceptions);
-            code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _testOutputHelper);
+            code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _output);
         }
 
         [Fact]
@@ -251,7 +251,7 @@ namespace SharpLab.Tests {
             var result = await SendSlowUpdateWithRetryOnMovedObjectsAsync(driver);
 
             AssertIsSuccess(result);
-            code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _testOutputHelper);
+            code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _output);
         }
 
         [Theory]
@@ -380,6 +380,7 @@ namespace SharpLab.Tests {
         [InlineData("Regression.ReturnRef.cs")]
         [InlineData("Regression.CatchWithNameSameLineAsClosingTryBracket.cs")]
         [InlineData("Regression.MoreThanFourArguments.cs")]
+        [InlineData("Regression.InitOnlyProperty.cs")]
         public async Task SlowUpdate_DoesNotFail(string resourceName, string languageName = LanguageNames.CSharp) {
             var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), languageName);
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
@@ -455,7 +456,7 @@ namespace SharpLab.Tests {
             var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
             var tryCount = 1;
             while ((result.ExtensionResult?.GetOutputAsString().Contains("Failed to find object type for address") ?? false) && tryCount < 10) {
-                _testOutputHelper.WriteLine($"Failed to find object type for address, retrying ({tryCount}) ...");
+                _output.WriteLine($"Failed to find object type for address, retrying ({tryCount}) ...");
                 result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
                 tryCount += 1;
             }
