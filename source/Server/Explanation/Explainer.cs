@@ -85,7 +85,7 @@ namespace SharpLab.Server.Explanation {
                 return;
             }
 
-            var simplified = SimplifyingCodeDisplayRewriter.Default.Visit(fragment.AsNode());
+            var simplified = SimplifyingCodeDisplayRewriter.Default.Visit(fragment.AsNode()!);
             simplified.WriteTo(code);
         }
     }

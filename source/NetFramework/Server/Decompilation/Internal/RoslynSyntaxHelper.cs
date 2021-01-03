@@ -39,7 +39,7 @@ namespace SharpLab.Server.Decompilation.Internal {
             return GetParentPropertyName(node, node.Parent, CompiledSyntaxNodeGetParentPropertyName);
         }
 
-        private static string? GetParentPropertyName<T>(T value, SyntaxNode parent, ConcurrentDictionary<Type, Lazy<Func<T, SyntaxNode, string>>> compiledCache) {
+        private static string? GetParentPropertyName<T>(T value, SyntaxNode? parent, ConcurrentDictionary<Type, Lazy<Func<T, SyntaxNode, string>>> compiledCache) {
             if (parent == null)
                 return null;
             var compiled = compiledCache.GetOrAdd(

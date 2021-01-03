@@ -35,53 +35,50 @@ public class C
 {
     public string M(string key)
     {
-        if (key != null)
+        switch (<PrivateImplementationDetails>.ComputeStringHash(key))
         {
-            switch (<PrivateImplementationDetails>.ComputeStringHash(key))
-            {
-                case 506120967u:
-                    if (!(key == "Key1"))
-                    {
-                        break;
-                    }
-                    return "1";
-                case 522898586u:
-                    if (!(key == "Key2"))
-                    {
-                        break;
-                    }
-                    return "2";
-                case 539676205u:
-                    if (!(key == "Key3"))
-                    {
-                        break;
-                    }
-                    return "3";
-                case 422232872u:
-                    if (!(key == "Key4"))
-                    {
-                        break;
-                    }
-                    return "4";
-                case 439010491u:
-                    if (!(key == "Key5"))
-                    {
-                        break;
-                    }
-                    return "5";
-                case 455788110u:
-                    if (!(key == "Key6"))
-                    {
-                        break;
-                    }
-                    return "6";
-                case 472565729u:
-                    if (!(key == "Key7"))
-                    {
-                        break;
-                    }
-                    return "7";
-            }
+            case 506120967u:
+                if (!(key == "Key1"))
+                {
+                    break;
+                }
+                return "1";
+            case 522898586u:
+                if (!(key == "Key2"))
+                {
+                    break;
+                }
+                return "2";
+            case 539676205u:
+                if (!(key == "Key3"))
+                {
+                    break;
+                }
+                return "3";
+            case 422232872u:
+                if (!(key == "Key4"))
+                {
+                    break;
+                }
+                return "4";
+            case 439010491u:
+                if (!(key == "Key5"))
+                {
+                    break;
+                }
+                return "5";
+            case 455788110u:
+                if (!(key == "Key6"))
+                {
+                    break;
+                }
+                return "6";
+            case 472565729u:
+                if (!(key == "Key7"))
+                {
+                    break;
+                }
+                return "7";
         }
         return "?";
     }

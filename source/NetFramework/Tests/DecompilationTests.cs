@@ -155,7 +155,7 @@ namespace SharpLab.Tests {
         }      
 
         [Theory]
-        [InlineData("class C { static int F = 0; }")]
+        [InlineData("class C { static int F = 1; }")]
         [InlineData("class C { static C() {} }")]
         [InlineData("class C { class N { static N() {} } }")]
         public async Task SlowUpdate_ReturnsNotSupportedError_ForJitAsmWithStaticConstructors(string code) {

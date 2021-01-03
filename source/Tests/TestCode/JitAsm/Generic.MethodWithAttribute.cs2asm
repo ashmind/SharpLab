@@ -17,9 +17,10 @@ C.M[[System.Int32, System.Private.CoreLib]]()
     L0002: ret
 
 C.M[[System.Decimal, System.Private.CoreLib]]()
-    L0000: vzeroupper
-    L0003: vxorps xmm0, xmm0, xmm0
-    L0007: vmovdqu [rcx], xmm0
+    L0000: xor eax, eax
+    L0002: mov [rcx], eax
+    L0004: mov [rcx+4], eax
+    L0007: mov [rcx+8], rax
     L000b: mov rax, rcx
     L000e: ret
 

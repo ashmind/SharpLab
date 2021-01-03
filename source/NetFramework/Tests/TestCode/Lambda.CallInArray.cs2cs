@@ -56,5 +56,5 @@ internal sealed class <PrivateImplementationDetails>
     {
     }
 
-    internal static readonly __StaticArrayInitTypeSize=16 7C7D749A182D008FD83D960F228CB2B1A0177992/* Not supported: data(01 00 00 00 02 00 00 00 03 00 00 00 00 00 00 00) */;
+    internal static readonly __StaticArrayInitTypeSize=16 81C1A5A2F482E82CA2C66653482AB24E6D90944BF183C8164E8F8F8D72DB60DB/* Not supported: data(01 00 00 00 02 00 00 00 03 00 00 00 00 00 00 00) */;
 }

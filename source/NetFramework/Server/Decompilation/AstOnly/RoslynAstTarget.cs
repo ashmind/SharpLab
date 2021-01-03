@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -18,8 +19,14 @@ namespace SharpLab.Server.Decompilation.AstOnly {
 
         public async Task<object> GetAstAsync(IWorkSession session, CancellationToken cancellationToken) {
             var document = session.Roslyn.Project.Documents.Single();
-            var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-            var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+
+            var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false)
+                // should not happen with MirrorSharp documents
+                ?? throw new InvalidOperationException("Document was unable to provide SyntaxRoot");
+
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false)
+                // should not happen with MirrorSharp documents
+                ?? throw new InvalidOperationException("Document was unable to provide SemanticModel");
 
             return new RoslynAst(syntaxRoot, semanticModel);
         }
@@ -51,7 +58,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
 
             foreach (var child in node.ChildNodesAndTokens()) {
                 if (child.IsNode) {
-                    SerializeNode(child.AsNode(), semanticModel, writer);
+                    SerializeNode(child.AsNode()!, semanticModel, writer);
                 }
                 else {
                     SerializeToken(child.AsToken(), semanticModel, writer);
@@ -102,7 +109,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             SerializeSpanProperty(trivia.FullSpan, writer);
             if (trivia.HasStructure) {
                 writer.WritePropertyStartArray("children");
-                SerializeNode(trivia.GetStructure(), semanticModel, writer, "Structure");
+                SerializeNode(trivia.GetStructure()!, semanticModel, writer, "Structure");
                 writer.WriteEndArray();
             }
             else {

@@ -10,5 +10,4 @@ static class C {
 C.M()
     L0000: mov rcx, 0x<IGNORE>
     L000a: mov rcx, [rcx]
-    L000d: mov rax, System.Console.WriteLine(System.String)
-    L0017: jmp rax
+    L000d: jmp System.Console.WriteLine(System.String)
