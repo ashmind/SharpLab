@@ -19,7 +19,37 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-    
-    - run: dotnet build source/NetFramework/Server
+
     - run: dotnet build source/NetFramework/Tests
-    - run: dotnet test source/NetFramework/Tests
+    - run: dotnet test source/NetFramework/Tests --no-restore --no-build
+    - run: dotnet publish source/NetFramework/Server --no-restore --no-build
+    - run: Compress-Archive -Path 'source/NetFramework/Server/bin/publish/*' -DestinationPath 'Server.NetFramework.zip'
+      shell: pwsh
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Server.NetFramework
+        path: Server.NetFramework.zip
+
+  create-release:
+    name: 'Create Release'
+    runs-on: ubuntu-latest
+    needs:
+      - build-netfx
+    steps:
+      - uses: actions/download-artifact@v2
+      - uses: actions/create-release@v1
+        id: create_release
+        with:
+          tag_name: experimental-server-release-${{ github.run_number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'Run actions/upload-release-asset@v1: Server.NetFramework.zip'
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./Server.NetFramework/Server.NetFramework.zip
+          asset_name: Server.NetFramework.zip
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
