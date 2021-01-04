@@ -31,9 +31,9 @@ jobs:
     - run: dotnet test source/Tests --no-restore --no-build --configuration Release
     - run: dotnet publish source/Server --no-restore --no-build --configuration Release
     - run: dotnet publish source/WebApp.Server --no-restore --no-build --configuration Release
-    - run: Compress-Archive -Path 'source/Server/bin/publish/*' -DestinationPath 'Server.zip'
+    - run: Compress-Archive -Path 'source/Server/bin/Release/net5.0/publish/*' -DestinationPath 'Server.zip'
       shell: pwsh
-    - run: Compress-Archive -Path 'source/WebApp.Server/bin/publish/*' -DestinationPath 'WebApp.Server.zip'
+    - run: Compress-Archive -Path 'source/WebApp.Server/bin/Release/net5.0/publish/*' -DestinationPath 'WebApp.Server.zip'
       shell: pwsh
 
     - uses: actions/upload-artifact@v2
@@ -191,6 +191,24 @@ jobs:
   #       id: create_release
   #       with:
   #         tag_name: experimental-server-release-${{ steps.version.outputs.version_number }}
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: 'Run actions/upload-release-asset@v1: WebApp.Server.zip'
+  #       uses: actions/upload-release-asset@v1
+  #       with:
+  #         upload_url: ${{ steps.create_release.outputs.upload_url }}
+  #         asset_path: ./WebApp.Server/WebApp.Server.zip
+  #         asset_name: WebApp.Server.zip
+  #         asset_content_type: application/zip
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: 'Run actions/upload-release-asset@v1: Server.zip'
+  #       uses: actions/upload-release-asset@v1
+  #       with:
+  #         upload_url: ${{ steps.create_release.outputs.upload_url }}
+  #         asset_path: ./Server/Server.zip
+  #         asset_name: Server.zip
+  #         asset_content_type: application/zip
   #       env:
   #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   #     - name: 'Run actions/upload-release-asset@v1: Server.NetFramework.zip'

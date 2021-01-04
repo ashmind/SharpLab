@@ -1,6 +1,10 @@
 version: '{branch}-{build}'
 image: Visual Studio 2019
 
+branches:
+  only:
+    - main
+
 skip_commits:
   files:
     - '*.md'
@@ -19,34 +23,6 @@ artifacts:
   name: WebApp.Server.zip
 
 deploy:
-
-- provider: AzureAppServiceZipDeploy
-  website: sharplab-edge
-  username: ashmind
-  password:
-    secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
-  artifact: WebApp.Server.zip
-  on:
-    branch: edge
-
-- provider: AzureAppServiceZipDeploy
-  website: sl-a-edge-core-x64
-  username: ashmind
-  password:
-    secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
-  artifact: Server.zip
-  on:
-    branch: edge
-
-- provider: AzureAppServiceZipDeploy
-  website: sl-a-edge-core-x64-profiled
-  username: ashmind
-  password:
-    secure: FUzpPhO20JDsbK33tI4pWUiu2GJzkMRGPbFpXjXCOHMHAs39F0tPqb6v4qQzGTYix/mA2Qhee4wFcX4H8zSPeA==
-  artifact: Server.zip
-  on:
-    branch: edge
-
 - provider: AzureAppServiceZipDeploy
   website: sharplab
   username: ashmind
