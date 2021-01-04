@@ -5,11 +5,15 @@ using HtmlAgilityPack;
 
 namespace SharpLab.WebApp.Server.Assets {
     public class LatestIndexHtmlProvider : IIndexHtmlProvider {
-        private readonly Uri _latestUrl;
+        // This is normally the CDN URL
+        private readonly Uri _baseUrl;
+        // This is normally the blob URL for /latest (that contains relative URL for index.html)
+        private readonly Uri _latestUrlAbsolute;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public LatestIndexHtmlProvider(Uri latestUrl, IHttpClientFactory httpClientFactory) {
-            _latestUrl = latestUrl;
+        public LatestIndexHtmlProvider(Uri baseUrl, Uri latestUrlAbsolute, IHttpClientFactory httpClientFactory) {
+            _baseUrl = baseUrl;
+            _latestUrlAbsolute = latestUrlAbsolute;
             _httpClientFactory = httpClientFactory;
         }
 
@@ -45,8 +49,8 @@ namespace SharpLab.WebApp.Server.Assets {
         private async Task<(Uri url, string content)> GetRawIndexHtmlAsync() {
             using var client = _httpClientFactory.CreateClient();
 
-            var indexUrlRelative = await client.GetStringAsync(_latestUrl);
-            var indexUrl = new Uri(_latestUrl, new Uri(indexUrlRelative, UriKind.Relative));
+            var indexUrlRelative = await client.GetStringAsync(_latestUrlAbsolute);
+            var indexUrl = new Uri(_baseUrl, new Uri(indexUrlRelative, UriKind.Relative));
 
             return (indexUrl, await client.GetStringAsync(indexUrl));
         }

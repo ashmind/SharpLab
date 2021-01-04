@@ -4,15 +4,18 @@ using Autofac;
 namespace SharpLab.WebApp.Server.Assets {
     public class AssetsModule : Module {
         protected override void Load(ContainerBuilder builder) {
-            var latestUrl = Environment.GetEnvironmentVariable("SHARPLAB_ASSETS_LATEST_URL")
-                         ?? throw new Exception("SHARPLAB_ASSETS_LATEST_URL was not found in the environment.");
+            string GetRequiredEnvironmentVariable(string key) => Environment.GetEnvironmentVariable(key)
+                ?? throw new Exception($"{key} was not found in the environment.");
+
+            var baseUrl = GetRequiredEnvironmentVariable("SHARPLAB_ASSETS_BASE_URL");
+            var latestUrl = GetRequiredEnvironmentVariable("SHARPLAB_ASSETS_LATEST_URL_V2");
             builder.RegisterType<LatestIndexHtmlProvider>()
-                   .WithParameter(new NamedParameter("latestUrl", new Uri(latestUrl)))
+                   .WithParameter(new NamedParameter("baseUrl", new Uri(baseUrl)))
+                   .WithParameter(new NamedParameter("latestUrlAbsolute", new Uri(latestUrl)))
                    .As<IIndexHtmlProvider>()
                    .SingleInstance();
 
-            var reloadToken = Environment.GetEnvironmentVariable("SHARPLAB_ASSETS_RELOAD_TOKEN")
-                           ?? throw new Exception("SHARPLAB_ASSETS_RELOAD_TOKEN was not found in the environment.");
+            var reloadToken = GetRequiredEnvironmentVariable("SHARPLAB_ASSETS_RELOAD_TOKEN");
             builder.RegisterType<IndexHtmlEndpoints>()
                    .WithParameter(new NamedParameter("reloadToken", reloadToken))
                    .AsSelf()                   

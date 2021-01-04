@@ -82,13 +82,6 @@ jobs:
           inlineScript: |
             az storage blob upload-batch --account-name slpublic -d assets -s WebApp
 
-      - name: "Run azure/CLI@v1: az cdn endpoint purge"
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.9.1
-          inlineScript: |
-            az cdn endpoint purge --content-paths /assets/latest-edge --profile-name "SharpLab-CDN" --name slpublic --resource-group SharpLab
-
       - run: Invoke-RestMethod -Method POST -Uri 'https://edge.sharplab.io/assets/reload' -Authentication Bearer -Token $(ConvertTo-SecureString $env:SHARPLAB_ASSETS_RELOAD_TOKEN -AsPlainText)
         shell: pwsh
         env:
