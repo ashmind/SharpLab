@@ -85,11 +85,13 @@ jobs:
       - deploy-netfx-x64
     if: github.ref == 'refs/heads/edge'
     steps:
+      - run: 'git show ${{ github.sha }} --format="::set-output name=version_number::%cd" --date=format:%Y%m%d%H%M --no-patch'
+        id: version
       - uses: actions/download-artifact@v2
       - uses: actions/create-release@v1
         id: create_release
         with:
-          tag_name: experimental-server-release-${{ github.run_id }}
+          tag_name: experimental-server-release-${{ steps.version.outputs.version_number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Run actions/upload-release-asset@v1: Server.NetFramework.zip'
