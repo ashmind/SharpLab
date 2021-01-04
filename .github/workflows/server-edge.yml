@@ -24,7 +24,7 @@ jobs:
     # https://github.com/actions/setup-dotnet/issues/155
     - run: dotnet nuget locals all --clear
 
-    - run: msbuild Native.Profiler\Native.Profiler.vcxproj /p:SolutionName=SharpLab /p:Configuration=$configuration /p:Platform=x64
+    - run: msbuild source/Native.Profiler/Native.Profiler.vcxproj /p:SolutionName=SharpLab /p:Configuration=$configuration /p:Platform=x64
     - run: dotnet build source/Tests --configuration Release
     # Tests do not reference that one yet
     - run: dotnet build source/WebApp.Server --configuration Release
