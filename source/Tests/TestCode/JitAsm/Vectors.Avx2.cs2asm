@@ -13,10 +13,10 @@ public class C
 #=>
 
 ; Core CLR v<IGNORE> on amd64
- 
+
 C..ctor()
     L0000: ret
- 
+
 C.M(System.Runtime.Intrinsics.Vector256`1<Int32>)
     L0000: vzeroupper
     L0003: vmovupd ymm0, [rdx]

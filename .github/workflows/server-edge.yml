@@ -45,6 +45,66 @@ jobs:
         name: WebApp.Server
         path: WebApp.Server.zip
 
+  deploy-webapp-server:
+    name: 'Deploy to Edge (WebApp Server / Default)'
+    runs-on: ubuntu-latest
+    needs: build-core
+    # if: github.ref == 'refs/heads/edge'
+    environment: edge-server
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: WebApp.Server
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: azure/webapps-deploy@v2
+        with:
+          app-name: sharplab-edge
+          package: WebApp.Server.zip
+      - run: Invoke-RestMethod "https://edge.sharplab.io"
+        shell: pwsh
+
+  deploy-core-x64:
+    name: 'Deploy to Edge (x64)'
+    runs-on: ubuntu-latest
+    needs: build-core
+    # if: github.ref == 'refs/heads/edge'
+    environment: edge-server
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: Server
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: azure/webapps-deploy@v2
+        with:
+          app-name: sl-a-edge-core-x64
+          package: Server.zip
+      - run: Invoke-RestMethod "https://sl-a-edge-core-x64.azurewebsites.net/status"
+        shell: pwsh
+
+  deploy-core-x64-profiled:
+    name: 'Deploy to Edge (x64, Profiler)'
+    runs-on: ubuntu-latest
+    needs: build-core
+    # if: github.ref == 'refs/heads/edge'
+    environment: edge-server
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: Server
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: azure/webapps-deploy@v2
+        with:
+          app-name: sl-a-edge-core-x64-profiled
+          package: Server.zip
+      - run: Invoke-RestMethod "https://sl-a-edge-core-x64-profiled.azurewebsites.net/status"
+        shell: pwsh
+
   # build-netfx:
   #   name: 'Build (.NET Framework)'
   #   runs-on: windows-latest
@@ -117,6 +177,9 @@ jobs:
   #   name: 'Create Release'
   #   runs-on: ubuntu-latest
   #   needs:
+  #     - deploy-webapp-server
+  #     - deploy-core-x64
+  #     - deploy-core-x64-profiled
   #     - deploy-netfx-x86
   #     - deploy-netfx-x64
   #   if: github.ref == 'refs/heads/edge'
