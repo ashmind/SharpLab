@@ -134,7 +134,7 @@ jobs:
     name: 'Deploy to Edge (.NET Framework, x86)'
     runs-on: ubuntu-latest
     needs: build-netfx
-    if: github.ref == 'refs/heads/edge'
+    # if: github.ref == 'refs/heads/edge'
     environment: edge-server
     steps:
       - uses: actions/download-artifact@v2
@@ -154,7 +154,7 @@ jobs:
     name: 'Deploy to Edge (.NET Framework, x64)'
     runs-on: ubuntu-latest
     needs: build-netfx
-    if: github.ref == 'refs/heads/edge'
+    # if: github.ref == 'refs/heads/edge'
     environment: edge-server
     steps:
       - uses: actions/download-artifact@v2
@@ -182,7 +182,7 @@ jobs:
       - deploy-core-x64-profiled
       - deploy-netfx-x86
       - deploy-netfx-x64
-    if: github.ref == 'refs/heads/edge'
+    # if: github.ref == 'refs/heads/edge'
     steps:
       - run: 'git show ${{ github.sha }} --format="::set-output name=version_number::%cd" --date=format:%Y%m%d%H%M --no-patch'
         id: version
