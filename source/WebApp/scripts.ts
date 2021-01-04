@@ -11,14 +11,17 @@ import csso from 'postcss-csso';
 import sharp from 'sharp';
 import htmlMinifier from 'html-minifier';
 import AdmZip from 'adm-zip';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore 
-// @ts-ignore (no typings) 
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore (no typings)
 import regexCombiner from 'regex-combiner';
 
 const dirname = __dirname;
 
 const outputSharedRoot = `${dirname}/public`;
-const outputVersionRoot = `${outputSharedRoot}/${process.env.GITHUB_RUN_NUMBER ?? Date.now()}`;
+const outputVersion = process.env.NODE_ENV === 'ci'
+    ? (process.env.SHARPLAB_WEBAPP_BUILD_VERSION ?? (() => { throw 'SHARPLAB_WEBAPP_BUILD_VERSION was not provided.'; })())
+    : Date.now();
+const outputVersionRoot = `${outputSharedRoot}/${outputVersion}`;
 
 // TODO: expose in oldowan
 const exec2 = (command: string, args: ReadonlyArray<string>) => execa(command, args, {

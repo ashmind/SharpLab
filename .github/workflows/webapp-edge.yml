@@ -20,10 +20,14 @@ jobs:
       with:
         node-version: '12.16.1'
 
+    - run: 'git show ${{ github.sha }} --format="::set-output name=version_number::%cd" --date=format:%Y%m%d%H%M --no-patch'
+      id: version
+
     - run: npm ci
     - run: npm run build-ci
       env:
         NODE_ENV: ci
+        SHARPLAB_WEBAPP_BUILD_VERSION: ${{ steps.version.outputs.version_number }}
     - run: npm test
 
     - uses: actions/upload-artifact@v2
@@ -33,11 +37,16 @@ jobs:
         path: source/WebApp/tests/rendering/__image_snapshots__/__diff_output__
         if-no-files-found: ignore
 
+    - uses: actions/upload-artifact@v2
+      with:
+        name: WebApp
+        path: WebApp.zip
+
     - uses: actions/create-release@v1
       if: github.ref == 'refs/heads/edge'
       id: create_release
       with:
-        tag_name: webapp-release-${{ github.run_id }}
+        tag_name: webapp-release-${{ steps.version.outputs.version_number }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -58,12 +67,9 @@ jobs:
     environment: edge-webapp
     runs-on: ubuntu-latest
     steps:
-
-      - uses: dsaltares/fetch-gh-release-asset@aa37ae5c44d3c9820bc12fe675e8670ecd93bd1c
+      - uses: actions/download-artifact@v2
         with:
-          version: tags/webapp-release-${{ github.run_id }}
-          file: WebApp.zip
-          token: ${{ secrets.GITHUB_TOKEN }}
+          name: WebApp
 
       - run: Expand-Archive WebApp.zip ./WebApp
         shell: pwsh
