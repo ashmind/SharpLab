@@ -94,9 +94,9 @@ const tsAsmRegex = task('asm', async () => {
 });
 
 const ts = task('ts', async () => {
+    await tsAsmRegex();
     await tsLint();
     await tsMain();
-    await tsAsmRegex();
 });
 
 const iconSvgSourcePath = `${dirname}/icon.svg`;
