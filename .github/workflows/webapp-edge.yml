@@ -40,7 +40,8 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: WebApp
-        path: WebApp.zip
+        path: source/WebApp/WebApp.zip
+        if-no-files-found: error
 
     - uses: actions/create-release@v1
       if: github.ref == 'refs/heads/edge'
