@@ -161,7 +161,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - run: 'git show ${{ github.sha }} --format="::set-output name=version_number::%cd" --date=format:%Y%m%d%H%M --no-patch'
+      - run: 'git show ${{ github.sha }} --format="::set-output name=version_number::%cd" --date=format:%Y-%m-%d-%H%M --no-patch'
         id: version
 
       - uses: actions/download-artifact@v2

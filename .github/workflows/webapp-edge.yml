@@ -20,7 +20,7 @@ jobs:
       with:
         node-version: '12.16.1'
 
-    - run: 'git show ${{ github.sha }} --format="::set-output name=version_number::%cd" --date=format:%Y%m%d%H%M --no-patch'
+    - run: 'git show ${{ github.sha }} --format="::set-output name=version_number::%cd" --date=format:%Y-%m-%d-%H%M --no-patch'
       id: version
 
     - run: npm ci
