@@ -62,7 +62,7 @@ jobs:
         with:
           app-name: sharplab-edge
           package: WebApp.Server.zip
-      - run: Invoke-RestMethod "https://edge.sharplab.io"
+      - run: Invoke-RestMethod "https://edge.sharplab.io" -MaximumRetryCount 10 -RetryIntervalSec 2
         shell: pwsh
 
   deploy-core-x64:
@@ -82,7 +82,7 @@ jobs:
         with:
           app-name: sl-a-edge-core-x64
           package: Server.zip
-      - run: Invoke-RestMethod "https://sl-a-edge-core-x64.azurewebsites.net/status"
+      - run: Invoke-RestMethod "https://sl-a-edge-core-x64.azurewebsites.net/status" -MaximumRetryCount 10 -RetryIntervalSec 2
         shell: pwsh
 
   deploy-core-x64-profiled:
@@ -102,7 +102,7 @@ jobs:
         with:
           app-name: sl-a-edge-core-x64-profiled
           package: Server.zip
-      - run: Invoke-RestMethod "https://sl-a-edge-core-x64-profiled.azurewebsites.net/status"
+      - run: Invoke-RestMethod "https://sl-a-edge-core-x64-profiled.azurewebsites.net/status" -MaximumRetryCount 10 -RetryIntervalSec 2
         shell: pwsh
 
   build-netfx:
@@ -147,7 +147,7 @@ jobs:
         with:
           app-name: sl-a-edge-netfx
           package: Server.NetFramework.zip
-      - run: Invoke-RestMethod "https://sl-a-edge-netfx.azurewebsites.net/status"
+      - run: Invoke-RestMethod "https://sl-a-edge-netfx.azurewebsites.net/status" -MaximumRetryCount 10 -RetryIntervalSec 2
         shell: pwsh
 
   deploy-netfx-x64:
@@ -167,7 +167,7 @@ jobs:
         with:
           app-name: sl-a-edge-netfx-x64
           package: Server.NetFramework.zip
-      - run: Invoke-RestMethod "https://sl-a-edge-netfx-x64.azurewebsites.net/status"
+      - run: Invoke-RestMethod "https://sl-a-edge-netfx-x64.azurewebsites.net/status" -MaximumRetryCount 10 -RetryIntervalSec 2
         shell: pwsh
 
   # Since we are deploying to the edge, we can actually create
