@@ -8,8 +8,9 @@ jobs:
       matrix:
        include:
          - name: 'WebApp Server / Default'
-           artifact: WebApp.Server
+           package: WebApp.Server.zip
            app: sharplab
+           stop-app: true
            url: https://edge.sharplab.io
 
          - name: x64
