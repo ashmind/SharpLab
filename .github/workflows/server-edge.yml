@@ -28,9 +28,9 @@ jobs:
     - run: dotnet build source/Tests --configuration Release
     # Tests do not reference that one yet
     - run: dotnet build source/WebApp.Server --configuration Release
-    - run: dotnet test source/Tests --no-restore --no-build --configuration Release
-    - run: dotnet publish source/Server --no-restore --no-build --configuration Release
-    - run: dotnet publish source/WebApp.Server --no-restore --no-build --configuration Release
+    - run: dotnet test source/Tests --no-build --configuration Release
+    - run: dotnet publish source/Server --no-build --configuration Release
+    - run: dotnet publish source/WebApp.Server --no-build --configuration Release
     - run: Compress-Archive -Path 'source/Server/bin/Release/net5.0/publish/*' -DestinationPath 'Server.zip'
       shell: pwsh
     - run: Compress-Archive -Path 'source/WebApp.Server/bin/Release/net5.0/publish/*' -DestinationPath 'WebApp.Server.zip'
@@ -120,8 +120,8 @@ jobs:
     - run: dotnet nuget locals all --clear
 
     - run: dotnet build source/NetFramework/Tests --configuration Release
-    - run: dotnet test source/NetFramework/Tests --no-restore --no-build --configuration Release
-    - run: dotnet publish source/NetFramework/Server --no-restore --no-build --configuration Release
+    - run: dotnet test source/NetFramework/Tests --no-build --configuration Release
+    - run: dotnet publish source/NetFramework/Server --no-build --configuration Release
     - run: Compress-Archive -Path 'source/NetFramework/Server/bin/publish/*' -DestinationPath 'Server.NetFramework.zip'
       shell: pwsh
 
@@ -184,15 +184,20 @@ jobs:
       - deploy-netfx-x64
     # if: github.ref == 'refs/heads/edge'
     steps:
+      - uses: actions/checkout@v2
+
       - run: 'git show ${{ github.sha }} --format="::set-output name=version_number::%cd" --date=format:%Y%m%d%H%M --no-patch'
         id: version
+
       - uses: actions/download-artifact@v2
+
       - uses: actions/create-release@v1
         id: create_release
         with:
           tag_name: experimental-server-release-${{ steps.version.outputs.version_number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: 'Run actions/upload-release-asset@v1: WebApp.Server.zip'
         uses: actions/upload-release-asset@v1
         with:
@@ -202,6 +207,7 @@ jobs:
           asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: 'Run actions/upload-release-asset@v1: Server.zip'
         uses: actions/upload-release-asset@v1
         with:
@@ -211,6 +217,7 @@ jobs:
           asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: 'Run actions/upload-release-asset@v1: Server.NetFramework.zip'
         uses: actions/upload-release-asset@v1
         with:
