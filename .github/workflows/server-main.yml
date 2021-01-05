@@ -1,0 +1,93 @@
+name: Server (.NET) - Main
+
+on: workflow_dispatch
+
+jobs:
+  deploy-netfx:
+    strategy:
+      matrix:
+       include:
+         - name: 'WebApp Server / Default'
+           artifact: WebApp.Server
+           app: sharplab
+           url: https://edge.sharplab.io
+
+         - name: x64
+           package: Server.zip
+           app: sl-a-core-x64
+           stop-app: true
+           url: https://sl-a-core-x64.azurewebsites.net/status
+
+         - name: 'x64, Profiler'
+           package: Server.zip
+           app: sl-a-core-x64-profiled
+           stop-app: true
+           url: https://sl-a-core-x64-profiled.azurewebsites.net/status
+
+         - name: '.NET Framework, x86'
+           package: Server.NetFramework.zip
+           app: sl-a-netfx
+           stop-app: false
+           url: https://sl-a-netfx.azurewebsites.net/status
+
+         - name: '.NET Framework, x64'
+           package: Server.NetFramework.zip
+           app: sl-a-netfx-x64
+           stop-app: false
+           url: https://sl-a-netfx-x64.azurewebsites.net/status
+
+    name: 'Deploy to Main (${{ matrix.name }})'
+    runs-on: ubuntu-latest
+    environment: main-server
+    steps:
+      - uses: actions/github-script@v3
+        id: get-release-tag
+        with:
+          script: |
+            return (await github.graphql(`{
+              repository(name: "SharpLab", owner: "ashmind") {
+                releases(orderBy: {field: CREATED_AT, direction: DESC}, first: 50) {
+                  edges { node { tagName } }
+                }
+              }
+            }`)).repository.releases.edges
+              .map(e => e.node.tagName)
+              .find(t => t.startsWith('server-release-'));
+          result-encoding: string
+
+      - uses: dsaltares/fetch-gh-release-asset@9b9f2b2336797d56925bd755fb9033ece2b37f3c
+        with:
+          version: tags/${{ steps.get-release-tag.outputs.result }}
+          file: ${{ matrix.package }}
+
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # https://github.com/Azure/webapps-deploy/issues/100
+      - name: "Run azure/CLI@v1: az webapp stop"
+        if: matrix.stop-app
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.9.1
+          inlineScript: az webapp stop --name ${{ matrix.app }} --resource-group SharpLab
+
+      # https://github.com/Azure/webapps-deploy/issues/100#issuecomment-754368190
+      - run: Start-Sleep -Seconds 10
+        if: matrix.stop-app
+        shell: pwsh
+
+      - uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ matrix.app }}
+          package: ${{ matrix.package }}
+
+      - name: "Run azure/CLI@v1: az webapp start"
+        uses: azure/CLI@v1
+        if: matrix.stop-app
+        with:
+          azcliversion: 2.9.1
+          inlineScript: az webapp start --name ${{ matrix.app }} --resource-group SharpLab
+
+      - run: Invoke-RestMethod "${{ matrix.url }}" -MaximumRetryCount 10 -RetryIntervalSec 2
+        shell: pwsh

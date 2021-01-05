@@ -5,6 +5,7 @@ on:
     paths-ignore:
     - '.github/workflows/roslyn-branches.yml'
     - '.github/workflows/webapp*.yml'
+    - '.github/workflows/server-main.yml'
     - 'source/WebApp/**'
   pull_request:
 
