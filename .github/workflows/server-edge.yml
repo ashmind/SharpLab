@@ -79,6 +79,9 @@ jobs:
         with:
           azcliversion: 2.9.1
           inlineScript: az webapp stop --name ${{ matrix.app }} --resource-group SharpLab
+      # https://github.com/Azure/webapps-deploy/issues/100#issuecomment-754368190
+      - run: Start-Sleep -Seconds 10
+        shell: pwsh
       - uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ matrix.app }}
