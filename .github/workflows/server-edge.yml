@@ -45,8 +45,23 @@ jobs:
         name: WebApp.Server
         path: WebApp.Server.zip
 
-  deploy-webapp-server:
-    name: 'Deploy to Edge (WebApp Server / Default)'
+  deploy-core:
+    strategy:
+      matrix:
+       include:
+         - name: 'WebApp Server / Default'
+           artifact: WebApp.Server
+           app: sharplab-edge
+           url: https://edge.sharplab.io
+         - name: x64
+           artifact: Server
+           app: sl-a-edge-core-x64
+           url: https://sl-a-edge-core-x64.azurewebsites.net/status
+         - name: 'x64, Profiler'
+           artifact: Server
+           app: sl-a-edge-core-x64-profiled
+           url: https://sl-a-edge-core-x64-profiled.azurewebsites.net/status
+    name: 'Deploy to Edge (${{ matrix.name }})'
     runs-on: ubuntu-latest
     needs: build-core
     # if: github.ref == 'refs/heads/edge'
@@ -54,55 +69,26 @@ jobs:
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: WebApp.Server
+          name: ${{ matrix.artifact }}
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # https://github.com/Azure/webapps-deploy/issues/100
+      - name: "Run azure/CLI@v1: az webapp stop"
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.9.1
+          inlineScript: az webapp stop --name ${{ matrix.app }} --resource-group SharpLab
       - uses: azure/webapps-deploy@v2
         with:
-          app-name: sharplab-edge
-          package: WebApp.Server.zip
-      - run: Invoke-RestMethod "https://edge.sharplab.io" -MaximumRetryCount 10 -RetryIntervalSec 2
-        shell: pwsh
-
-  deploy-core-x64:
-    name: 'Deploy to Edge (x64)'
-    runs-on: ubuntu-latest
-    needs: build-core
-    # if: github.ref == 'refs/heads/edge'
-    environment: edge-server
-    steps:
-      - uses: actions/download-artifact@v2
+          app-name: ${{ matrix.app }}
+          package: ${{ matrix.artifact }}.zip
+      - name: "Run azure/CLI@v1: az webapp start"
+        uses: azure/CLI@v1
         with:
-          name: Server
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - uses: azure/webapps-deploy@v2
-        with:
-          app-name: sl-a-edge-core-x64
-          package: Server.zip
-      - run: Invoke-RestMethod "https://sl-a-edge-core-x64.azurewebsites.net/status" -MaximumRetryCount 10 -RetryIntervalSec 2
-        shell: pwsh
-
-  deploy-core-x64-profiled:
-    name: 'Deploy to Edge (x64, Profiler)'
-    runs-on: ubuntu-latest
-    needs: build-core
-    # if: github.ref == 'refs/heads/edge'
-    environment: edge-server
-    steps:
-      - uses: actions/download-artifact@v2
-        with:
-          name: Server
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - uses: azure/webapps-deploy@v2
-        with:
-          app-name: sl-a-edge-core-x64-profiled
-          package: Server.zip
-      - run: Invoke-RestMethod "https://sl-a-edge-core-x64-profiled.azurewebsites.net/status" -MaximumRetryCount 10 -RetryIntervalSec 2
+          azcliversion: 2.9.1
+          inlineScript: az webapp start --name ${{ matrix.app }} --resource-group SharpLab
+      - run: Invoke-RestMethod "${{ matrix.url }}" -MaximumRetryCount 10 -RetryIntervalSec 2
         shell: pwsh
 
   build-netfx:
@@ -130,8 +116,17 @@ jobs:
         name: Server.NetFramework
         path: Server.NetFramework.zip
 
-  deploy-netfx-x86:
-    name: 'Deploy to Edge (.NET Framework, x86)'
+  deploy-netfx:
+    strategy:
+      matrix:
+       include:
+         - name: '.NET Framework, x86'
+           app: sl-a-edge-netfx
+           url: https://sl-a-edge-netfx.azurewebsites.net/status
+         - name: '.NET Framework, x64'
+           app: sl-a-edge-netfx-x64
+           url: https://sl-a-edge-netfx-x64.azurewebsites.net/status
+    name: 'Deploy to Edge (${{ matrix.name }})'
     runs-on: ubuntu-latest
     needs: build-netfx
     # if: github.ref == 'refs/heads/edge'
@@ -145,29 +140,9 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - uses: azure/webapps-deploy@v2
         with:
-          app-name: sl-a-edge-netfx
+          app-name: ${{ matrix.app }}
           package: Server.NetFramework.zip
-      - run: Invoke-RestMethod "https://sl-a-edge-netfx.azurewebsites.net/status" -MaximumRetryCount 10 -RetryIntervalSec 2
-        shell: pwsh
-
-  deploy-netfx-x64:
-    name: 'Deploy to Edge (.NET Framework, x64)'
-    runs-on: ubuntu-latest
-    needs: build-netfx
-    # if: github.ref == 'refs/heads/edge'
-    environment: edge-server
-    steps:
-      - uses: actions/download-artifact@v2
-        with:
-          name: Server.NetFramework
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - uses: azure/webapps-deploy@v2
-        with:
-          app-name: sl-a-edge-netfx-x64
-          package: Server.NetFramework.zip
-      - run: Invoke-RestMethod "https://sl-a-edge-netfx-x64.azurewebsites.net/status" -MaximumRetryCount 10 -RetryIntervalSec 2
+      - run: Invoke-RestMethod "${{ matrix.url }}" -MaximumRetryCount 10 -RetryIntervalSec 2
         shell: pwsh
 
   # Since we are deploying to the edge, we can actually create
@@ -177,11 +152,8 @@ jobs:
     name: 'Create Release'
     runs-on: ubuntu-latest
     needs:
-      - deploy-webapp-server
-      - deploy-core-x64
-      - deploy-core-x64-profiled
-      - deploy-netfx-x86
-      - deploy-netfx-x64
+      - deploy-core
+      - deploy-netfx
     # if: github.ref == 'refs/heads/edge'
     steps:
       - uses: actions/checkout@v2
