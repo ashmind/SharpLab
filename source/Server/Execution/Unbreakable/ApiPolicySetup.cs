@@ -92,6 +92,9 @@ namespace SharpLab.Server.Execution.Unbreakable {
                           // required by F#'s printf
                           .Getter(nameof(Console.Out), Allowed)
                 )
+                .Type(typeof(Environment), Neutral,
+                    t => t.Getter(nameof(Environment.StackTrace), Allowed, new StringReturnRewriter())
+                )
                 .Type(typeof(MemoryExtensions), Neutral, SetupSystemMemoryExtensions)
                 .Type(typeof(ReadOnlySpan<>), Allowed,
                     t => t.Member(nameof(ReadOnlySpan<object>.ToArray), Allowed, ArrayReturnRewriter.Default)
