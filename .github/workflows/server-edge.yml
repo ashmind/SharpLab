@@ -64,7 +64,7 @@ jobs:
     name: 'Deploy to Edge (${{ matrix.name }})'
     runs-on: ubuntu-latest
     needs: build-core
-    if: github.ref == 'refs/heads/edge'
+    if: github.ref == 'refs/heads/main'
     environment: edge-server
     steps:
       - uses: actions/download-artifact@v2
@@ -132,7 +132,7 @@ jobs:
     name: 'Deploy to Edge (${{ matrix.name }})'
     runs-on: ubuntu-latest
     needs: build-netfx
-    if: github.ref == 'refs/heads/edge'
+    if: github.ref == 'refs/heads/main'
     environment: edge-server
     steps:
       - uses: actions/download-artifact@v2
@@ -157,7 +157,7 @@ jobs:
     needs:
       - deploy-core
       - deploy-netfx
-    if: github.ref == 'refs/heads/edge'
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v2
 

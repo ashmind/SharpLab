@@ -44,7 +44,7 @@ jobs:
         if-no-files-found: error
 
     - uses: actions/create-release@v1
-      if: github.ref == 'refs/heads/edge'
+      if: github.ref == 'refs/heads/main'
       id: create_release
       with:
         tag_name: webapp-release-${{ steps.version.outputs.version_number }}
@@ -52,7 +52,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - uses: actions/upload-release-asset@v1
-      if: github.ref == 'refs/heads/edge'
+      if: github.ref == 'refs/heads/main'
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./source/WebApp/WebApp.zip
@@ -64,7 +64,7 @@ jobs:
   deploy-to-edge:
     name: Deploy (Edge)
     needs: build
-    if: github.ref == 'refs/heads/edge'
+    if: github.ref == 'refs/heads/main'
     environment: edge-webapp
     runs-on: ubuntu-latest
     steps:
