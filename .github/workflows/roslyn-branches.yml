@@ -1,4 +1,4 @@
-name: roslyn-branches
+name: Roslyn Branches
 
 on:
   schedule:
