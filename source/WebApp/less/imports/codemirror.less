@@ -100,15 +100,11 @@ textarea, .CodeMirror {
     .mirrorsharp {
         flex-grow: 1;
         display: flex;
+        .code-text();
     }
 
     .cm-wrap {
         width: 100%;
-    }
-
-    // TODO: understand CM priorities
-    .cm-scroller.cm-scroller {
-        .code-text();
     }
 
     .theme-dark & .mirrorsharp {
