@@ -207,17 +207,17 @@ namespace SharpLab.Tests {
         }
 
         [Theory]
-        [InlineData("x[][][][]")]
-        [InlineData("x [,,,] [,] [,,,]   [,,,]")]
-        [InlineData("x [] [] []   []")]
-        [InlineData("x[1][2][3][4]")]
-        [InlineData("x[[[[[][][][]]]]]")]
+        [InlineData("x[][][][][]")]
+        [InlineData("x [,,,] [,] [,,,]   [,,,] [,]")]
+        [InlineData("x [] [] []   [] []")]
+        [InlineData("x[1][2][3][4][5]")]
+        [InlineData("x[[[[[][][][][]]]]]")]
         [InlineData("x[[[[[[]]]]]]")]
-        [InlineData("x()()()()")]
-        [InlineData("x (,,,) (,) (,,,)   (,,,)")]
-        [InlineData("x () () ()   ()")]
-        [InlineData("x(1)(2)(3)(4)")]
-        [InlineData("x((((()()()()))))")]
+        [InlineData("x()()()()()")]
+        [InlineData("x (,,,) (,) (,,,)   (,,,) (,)")]
+        [InlineData("x () () ()   () ()")]
+        [InlineData("x(1)(2)(3)(4)(5)")]
+        [InlineData("x((((()()()()()))))")]
         [InlineData("x(((((())))))")]
         public async Task SetOptions_ReturnsRoslynGuardException_ForTextExceedingTokenLimits(string code) {
             var driver = TestEnvironment.NewDriver().SetText(code);

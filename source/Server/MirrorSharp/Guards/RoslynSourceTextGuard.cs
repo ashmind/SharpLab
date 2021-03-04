@@ -8,7 +8,7 @@ using SharpLab.Server.Common;
 namespace SharpLab.Server.MirrorSharp.Guards {
     public class RoslynSourceTextGuard : IRoslynSourceTextGuard {
         private const int BracketsNestingLimit = 5;
-        private const int BracketsAdjacentPairLimit = 3;
+        private const int BracketsAdjacentPairLimit = 4;
 
         private static readonly Pool<ValidatingSourceTextWriter> _validatingWriterPool = new Pool<ValidatingSourceTextWriter>(
             () => new ValidatingSourceTextWriter()
