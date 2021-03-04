@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <LangVersion>8</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>RS1022; CS1030</NoWarn>

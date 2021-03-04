@@ -27,8 +27,8 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             new ConcurrentDictionary<Type, Lazy<GetRangeFunc?>>();
         private static readonly Lazy<IReadOnlyDictionary<Type, Func<object, string>>> TagNameGetters =
             new Lazy<IReadOnlyDictionary<Type, Func<object, string>>>(CompileTagNameGetters, LazyThreadSafetyMode.ExecutionAndPublication);
-        private static readonly Lazy<IReadOnlyDictionary<Type, Func<Ast.SynConst, string>>> ConstValueGetters =
-            new Lazy<IReadOnlyDictionary<Type, Func<Ast.SynConst, string>>>(CompileConstValueGetters, LazyThreadSafetyMode.ExecutionAndPublication);
+        private static readonly Lazy<IReadOnlyDictionary<Type, Func<SyntaxTree.SynConst, string>>> ConstValueGetters =
+            new Lazy<IReadOnlyDictionary<Type, Func<SyntaxTree.SynConst, string>>>(CompileConstValueGetters, LazyThreadSafetyMode.ExecutionAndPublication);
         private static readonly Lazy<IReadOnlyDictionary<Type, string>> AstTypeNames =
             new Lazy<IReadOnlyDictionary<Type, string>>(CollectAstTypeNames, LazyThreadSafetyMode.ExecutionAndPublication);
 
@@ -40,9 +40,9 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             public static readonly MethodInfo SerializeList =
                 ((SerializeChildAction<FSharpList<object>>)FSharpAstTarget.SerializeList).Method.GetGenericMethodDefinition();
             public static readonly MethodInfo SerializeIdent =
-                ((SerializeChildAction<Ast.Ident>)FSharpAstTarget.SerializeIdent).Method;
+                ((SerializeChildAction<SyntaxTree.Ident>)FSharpAstTarget.SerializeIdent).Method;
             public static readonly MethodInfo SerializeIdentList =
-                ((SerializeChildAction<FSharpList<Ast.Ident>>)FSharpAstTarget.SerializeIdentList).Method;
+                ((SerializeChildAction<FSharpList<SyntaxTree.Ident>>)FSharpAstTarget.SerializeIdentList).Method;
             public static readonly MethodInfo SerializeEnum =
                 ((SerializeChildAction<int>)FSharpAstTarget.SerializeEnum).Method.GetGenericMethodDefinition();
             // ReSharper restore HeapView.DelegateAllocation
@@ -63,7 +63,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
         }
 
         public void SerializeAst(object ast, IFastJsonWriter writer, IWorkSession session) {
-            var root = ((Ast.ParsedInput.ImplFile)ast).Item;
+            var root = ((SyntaxTree.ParsedInput.ImplFile)ast).Item;
             writer.WriteStartArray();
             var childrenStarted = true;
             SerializeNode(root, writer, null, ref childrenStarted, session.FSharp());
@@ -77,13 +77,13 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             if (parentPropertyName != null)
                 writer.WriteProperty("property", parentPropertyName);
 
-            if (node is Ast.SynConst @const) {
+            if (node is SyntaxTree.SynConst @const) {
                 writer.WriteProperty("type", "token");
-                if (@const is Ast.SynConst.String @string) {
+                if (@const is SyntaxTree.SynConst.String @string) {
                     writer.WritePropertyName("value");
                     writer.WriteValueFromParts("\"", @string.text, "\"");
                 }
-                else if (@const is Ast.SynConst.Char @char) {
+                else if (@const is SyntaxTree.SynConst.Char @char) {
                     writer.WritePropertyName("value");
                     writer.WriteValueFromParts("'", @char.Item, "'");
                 }
@@ -116,11 +116,11 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             }
         }
 
-        private static void SerializeIdent(Ast.Ident ident, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
+        private static void SerializeIdent(SyntaxTree.Ident ident, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
             EnsureChildrenStarted(ref parentChildrenStarted, writer);
             writer.WriteStartObject();
             writer.WriteProperty("type", "token");
-            writer.WriteProperty("kind", "Ast.Ident");
+            writer.WriteProperty("kind", "SyntaxTree.Ident");
             if (parentPropertyName != null)
                 writer.WriteProperty("property", parentPropertyName);
             writer.WriteProperty("value", ident.idText);
@@ -128,7 +128,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             writer.WriteEndObject();
         }
 
-        private static void SerializeIdentList(FSharpList<Ast.Ident> list, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
+        private static void SerializeIdentList(FSharpList<SyntaxTree.Ident> list, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
             foreach (var ident in list) {
                 SerializeIdent(ident, writer, parentPropertyName, ref parentChildrenStarted, session);
             }
@@ -209,10 +209,10 @@ namespace SharpLab.Server.Decompilation.AstOnly {
         }
 
         private static MethodInfo? GetMethodToSerialize(Type propertyType) {
-            if (propertyType == typeof(Ast.Ident))
+            if (propertyType == typeof(SyntaxTree.Ident))
                 return Methods.SerializeIdent;
 
-            if (propertyType == typeof(FSharpList<Ast.Ident>))
+            if (propertyType == typeof(FSharpList<SyntaxTree.Ident>))
                 return Methods.SerializeIdentList;
 
             if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(FSharpList<>)) {
@@ -250,15 +250,13 @@ namespace SharpLab.Server.Decompilation.AstOnly {
         }
 
         private static bool ShouldSkipNodeProperty(Type type, PropertyInfo property) {
-            return (type == typeof(Ast.LongIdentWithDots) && property.Name == nameof(Ast.LongIdentWithDots.id));
+            return (type == typeof(SyntaxTree.LongIdentWithDots) && property.Name == nameof(SyntaxTree.LongIdentWithDots.id));
         }
 
         private static bool IsNodeType(Type type) {
-            return type.DeclaringType == typeof(Ast)
-                && type != typeof(Ast.QualifiedNameOfFile)
-                && type != typeof(Ast.XmlDocCollector)
-                && type != typeof(Ast.PreXmlDoc)
-                && type != typeof(Ast.SynModuleOrNamespaceKind)
+            return type.DeclaringType == typeof(SyntaxTree)
+                && type != typeof(SyntaxTree.QualifiedNameOfFile)
+                && type != typeof(SyntaxTree.SynModuleOrNamespaceKind)
                 && !(type.Name.StartsWith("SequencePoint"));
         }
 
@@ -270,7 +268,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
 
         private static IReadOnlyDictionary<Type, Func<object, string>> CompileTagNameGetters() {
             var getters = new Dictionary<Type, Func<object, string>>();
-            CompileAndCollectTagNameGettersRecursive(getters, typeof(Ast));
+            CompileAndCollectTagNameGettersRecursive(getters, typeof(SyntaxTree));
             return getters;
         }
 
@@ -298,10 +296,10 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             return instance => tagMap[tagGetter(instance)];
         }
 
-        private static IReadOnlyDictionary<Type, Func<Ast.SynConst, string>> CompileConstValueGetters() {
-            var getters = new Dictionary<Type, Func<Ast.SynConst, string>>();
-            foreach (var type in typeof(Ast.SynConst).GetNestedTypes()) {
-                if (type.BaseType != typeof(Ast.SynConst))
+        private static IReadOnlyDictionary<Type, Func<SyntaxTree.SynConst, string>> CompileConstValueGetters() {
+            var getters = new Dictionary<Type, Func<SyntaxTree.SynConst, string>>();
+            foreach (var type in typeof(SyntaxTree.SynConst).GetNestedTypes()) {
+                if (type.BaseType != typeof(SyntaxTree.SynConst))
                     continue;
 
                 var valueProperty = type.GetProperty("Item");
@@ -309,8 +307,8 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                     continue;
 
                 var toString = valueProperty.PropertyType.GetMethod("ToString", Type.EmptyTypes);
-                var constUntyped = Expression.Parameter(typeof(Ast.SynConst));
-                getters.Add(type, Expression.Lambda<Func<Ast.SynConst, string>>(
+                var constUntyped = Expression.Parameter(typeof(SyntaxTree.SynConst));
+                getters.Add(type, Expression.Lambda<Func<SyntaxTree.SynConst, string>>(
                     Expression.Call(Expression.Property(Expression.Convert(constUntyped, type), valueProperty), toString),
                     constUntyped
                 ).Compile());
@@ -329,7 +327,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 }
             }
 
-            CollectRecusive(typeof(Ast), "");
+            CollectRecusive(typeof(SyntaxTree), "");
             return results;
         }
 

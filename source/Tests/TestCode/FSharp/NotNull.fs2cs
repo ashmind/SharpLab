@@ -20,7 +20,11 @@ public static class @_
     {
         public bool notNull<a>(a x) where a : class
         {
-            return x != null || 1 == 0;
+            if (x != null)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

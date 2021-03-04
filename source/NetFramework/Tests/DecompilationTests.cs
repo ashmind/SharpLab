@@ -183,12 +183,38 @@ namespace SharpLab.Tests {
         }
 
         [Theory]
-        [InlineData("class X<A,B,C,D,E>{class Y:X<Y,Y,Y,Y,Y>{Y.Y.Y.Y.Y.Y.Y.Y.Y y;}}")] // https://codegolf.stackexchange.com/a/69200
-        public async Task SlowUpdate_ReturnsRoslynGuardException_ForCompilerBombs(string code) {
+        [InlineData(LanguageNames.CSharp, "class X<A,B,C,D,E> { class Y: X<Y,Y,Y,Y,Y> {Y.Y.Y.Y.Y.Y.Y.Y.Y y; } }")] // https://codegolf.stackexchange.com/a/69200
+        [InlineData(LanguageNames.VisualBasic, @"
+            Class X (Of A, B, C, D, E)
+                Class Y Inherits X (Of Y, Y, Y, Y, Y)
+                    Private y As Y.Y.Y.Y.Y.Y.Y.Y.Y
+                End Class
+            End Class
+        ")]
+        public async Task SlowUpdate_ReturnsRoslynGuardException_ForCompilerBombs(string languageName, string code) {
             var driver = TestEnvironment.NewDriver().SetText(code);
-            await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.IL);
+            await driver.SendSetOptionsAsync(languageName, TargetNames.IL);
 
-            await Assert.ThrowsAsync<RoslynGuardException>(() => driver.SendSlowUpdateAsync<string>());
+            await Assert.ThrowsAsync<RoslynCompilationGuardException>(() => driver.SendSlowUpdateAsync<string>());
+        }
+
+        [Theory]
+        [InlineData("x[][][][]")]
+        [InlineData("x [,,,] [,] [,,,]   [,,,]")]
+        [InlineData("x [] [] []   []")]
+        [InlineData("x[1][2][3][4]")]
+        [InlineData("x[[[[[][][][]]]]]")]
+        [InlineData("x[[[[[[]]]]]]")]
+        [InlineData("x()()()()")]
+        [InlineData("x (,,,) (,) (,,,)   (,,,)")]
+        [InlineData("x () () ()   ()")]
+        [InlineData("x(1)(2)(3)(4)")]
+        [InlineData("x((((()()()()))))")]
+        [InlineData("x(((((())))))")]
+        public async Task SetOptions_ReturnsRoslynGuardException_ForTextExceedingTokenLimits(string code) {
+            var driver = TestEnvironment.NewDriver().SetText(code);
+
+            await Assert.ThrowsAsync<RoslynSourceTextGuardException>(() => driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.IL));
         }
 
         private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestCode code, string optimize = Optimize.Release) {

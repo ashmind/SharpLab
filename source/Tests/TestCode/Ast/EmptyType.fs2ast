@@ -1,42 +1,43 @@
-﻿type Empty = class end
+type Empty = class end
 
 #=>
 
 [
   {
-    "kind": "Ast.ParsedImplFileInput",
+    "kind": "SyntaxTree.ParsedImplFileInput",
     "type": "node",
     "children": [
       {
-        "kind": "Ast.SynModuleOrNamespace",
+        "kind": "SyntaxTree.SynModuleOrNamespace",
         "type": "node",
         "range": "0-22",
         "children": [
           {
             "type": "token",
-            "kind": "Ast.Ident",
+            "kind": "SyntaxTree.Ident",
             "property": "longId",
             "value": "_",
             "range": "0-0"
           },
           {
-            "kind": "Ast.SynModuleDecl.Types",
+            "kind": "SyntaxTree.SynModuleDecl.Types",
             "type": "node",
             "range": "0-18",
             "children": [
               {
-                "kind": "Ast.SynTypeDefn",
+                "kind": "SyntaxTree.SynTypeDefn",
                 "type": "node",
                 "range": "5-18",
                 "children": [
                   {
-                    "kind": "Ast.SynComponentInfo",
+                    "kind": "SyntaxTree.SynComponentInfo",
+                    "property": "typeInfo",
                     "type": "node",
                     "range": "5-10",
                     "children": [
                       {
                         "type": "token",
-                        "kind": "Ast.Ident",
+                        "kind": "SyntaxTree.Ident",
                         "property": "longId",
                         "value": "Empty",
                         "range": "5-10"
@@ -44,12 +45,14 @@
                     ]
                   },
                   {
-                    "kind": "Ast.SynTypeDefnRepr.ObjectModel",
+                    "kind": "SyntaxTree.SynTypeDefnRepr.ObjectModel",
+                    "property": "typeRepr",
                     "type": "node",
                     "range": "13-18",
                     "children": [
                       {
-                        "kind": "Ast.SynTypeDefnKind",
+                        "kind": "SyntaxTree.SynTypeDefnKind",
+                        "property": "kind",
                         "type": "node",
                         "value": "TyconClass"
                       }

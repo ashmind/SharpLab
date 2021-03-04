@@ -203,7 +203,26 @@ namespace SharpLab.Tests {
             var driver = TestEnvironment.NewDriver().SetText(code);
             await driver.SendSetOptionsAsync(languageName, TargetNames.IL);
 
-            await Assert.ThrowsAsync<RoslynGuardException>(() => driver.SendSlowUpdateAsync<string>());
+            await Assert.ThrowsAsync<RoslynCompilationGuardException>(() => driver.SendSlowUpdateAsync<string>());
+        }
+
+        [Theory]
+        [InlineData("x[][][][]")]
+        [InlineData("x [,,,] [,] [,,,]   [,,,]")]
+        [InlineData("x [] [] []   []")]
+        [InlineData("x[1][2][3][4]")]
+        [InlineData("x[[[[[][][][]]]]]")]
+        [InlineData("x[[[[[[]]]]]]")]
+        [InlineData("x()()()()")]
+        [InlineData("x (,,,) (,) (,,,)   (,,,)")]
+        [InlineData("x () () ()   ()")]
+        [InlineData("x(1)(2)(3)(4)")]
+        [InlineData("x((((()()()()))))")]
+        [InlineData("x(((((())))))")]
+        public async Task SetOptions_ReturnsRoslynGuardException_ForTextExceedingTokenLimits(string code) {
+            var driver = TestEnvironment.NewDriver().SetText(code);
+
+            await Assert.ThrowsAsync<RoslynSourceTextGuardException>(() => driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.IL));
         }
 
         private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestCode code, string optimize = Optimize.Release) {

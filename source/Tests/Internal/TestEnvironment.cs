@@ -19,7 +19,8 @@ namespace SharpLab.Tests.Internal {
         public static MirrorSharpServices MirrorSharpServices { get; } = new MirrorSharpServices {
             SetOptionsFromClient = Container.ResolveOptional<ISetOptionsFromClientExtension>(),
             SlowUpdate = Container.ResolveOptional<ISlowUpdateExtension>(),
-            RoslynGuard = Container.ResolveOptional<IRoslynGuard>(),
+            RoslynSourceTextGuard = Container.ResolveOptional<IRoslynSourceTextGuard>(),
+            RoslynCompilationGuard = Container.ResolveOptional<IRoslynCompilationGuard>(),
             ExceptionLogger = Container.ResolveOptional<IExceptionLogger>()
         };
 

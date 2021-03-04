@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using FSharp.Compiler;
 using FSharp.Compiler.SourceCodeServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Emit;
@@ -10,6 +9,7 @@ using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Control;
 using MirrorSharp.Advanced;
 using MirrorSharp.FSharp.Advanced;
+using SyntaxTree = FSharp.Compiler.SyntaxTree;
 
 namespace SharpLab.Server.Compilation {
     public class Compiler : ICompiler {
@@ -43,7 +43,7 @@ namespace SharpLab.Server.Compilation {
             var parsed = fsharp.GetLastParseResults()!;
             using (var virtualAssemblyFile = FSharpFileSystem.RegisterVirtualFile(assemblyStream)) {
                 var compiled = await FSharpAsync.StartAsTask(fsharp.Checker.Compile(
-                    FSharpList<Ast.ParsedInput>.Cons(parsed.ParseTree.Value, FSharpList<Ast.ParsedInput>.Empty),
+                    FSharpList<SyntaxTree.ParsedInput>.Cons(parsed.ParseTree.Value, FSharpList<SyntaxTree.ParsedInput>.Empty),
                     "_", virtualAssemblyFile.Name,
                     fsharp.AssemblyReferencePathsAsFSharpList,
                     pdbFile: null,

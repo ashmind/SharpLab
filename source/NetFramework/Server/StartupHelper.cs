@@ -4,6 +4,7 @@ using Autofac;
 using Autofac.Extras.FileSystemRegistration;
 using MirrorSharp;
 using MirrorSharp.Advanced;
+using MirrorSharp.Advanced.EarlyAccess;
 using MirrorSharp.Owin;
 using SharpLab.Server.Common;
 
@@ -35,6 +36,8 @@ namespace SharpLab.Server {
             return new MirrorSharpServices {
                 SetOptionsFromClient = container.Resolve<ISetOptionsFromClientExtension>(),
                 SlowUpdate = container.Resolve<ISlowUpdateExtension>(),
+                RoslynSourceTextGuard = container.Resolve<IRoslynSourceTextGuard>(),
+                RoslynCompilationGuard = container.Resolve<IRoslynCompilationGuard>(),
                 ExceptionLogger = container.Resolve<IExceptionLogger>()
             };
         }

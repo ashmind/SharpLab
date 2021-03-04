@@ -1,4 +1,4 @@
-﻿1
+1
 'c'
 "a
 b"
@@ -8,33 +8,39 @@ b"
 
 [
   {
-    "kind": "Ast.ParsedImplFileInput",
+    "kind": "SyntaxTree.ParsedImplFileInput",
     "type": "node",
     "children": [
       {
-        "kind": "Ast.SynModuleOrNamespace",
+        "kind": "SyntaxTree.SynModuleOrNamespace",
         "type": "node",
         "range": "0-14",
         "children": [
           {
             "type": "token",
-            "kind": "Ast.Ident",
+            "kind": "SyntaxTree.Ident",
             "property": "longId",
             "value": "_",
             "range": "0-0"
           },
           {
-            "kind": "Ast.SynModuleDecl.DoExpr",
+            "kind": "SyntaxTree.SynModuleDecl.DoExpr",
             "type": "node",
             "range": "0-1",
             "children": [
               {
-                "kind": "Ast.SynExpr.Const",
+                "kind": "SyntaxTree.DebugPointForBinding.DebugPointAtBinding",
+                "property": "spInfo",
+                "type": "node"
+              },
+              {
+                "kind": "SyntaxTree.SynExpr.Const",
+                "property": "expr",
                 "type": "node",
                 "range": "0-1",
                 "children": [
                   {
-                    "kind": "Ast.SynConst.Int32",
+                    "kind": "SyntaxTree.SynConst.Int32",
                     "property": "constant",
                     "type": "token",
                     "value": "1"
@@ -44,17 +50,23 @@ b"
             ]
           },
           {
-            "kind": "Ast.SynModuleDecl.DoExpr",
+            "kind": "SyntaxTree.SynModuleDecl.DoExpr",
             "type": "node",
             "range": "3-6",
             "children": [
               {
-                "kind": "Ast.SynExpr.Const",
+                "kind": "SyntaxTree.DebugPointForBinding.DebugPointAtBinding",
+                "property": "spInfo",
+                "type": "node"
+              },
+              {
+                "kind": "SyntaxTree.SynExpr.Const",
+                "property": "expr",
                 "type": "node",
                 "range": "3-6",
                 "children": [
                   {
-                    "kind": "Ast.SynConst.Char",
+                    "kind": "SyntaxTree.SynConst.Char",
                     "property": "constant",
                     "type": "token",
                     "value": "'c'"
@@ -64,17 +76,23 @@ b"
             ]
           },
           {
-            "kind": "Ast.SynModuleDecl.DoExpr",
+            "kind": "SyntaxTree.SynModuleDecl.DoExpr",
             "type": "node",
             "range": "8-14",
             "children": [
               {
-                "kind": "Ast.SynExpr.Const",
+                "kind": "SyntaxTree.DebugPointForBinding.DebugPointAtBinding",
+                "property": "spInfo",
+                "type": "node"
+              },
+              {
+                "kind": "SyntaxTree.SynExpr.Const",
+                "property": "expr",
                 "type": "node",
                 "range": "8-14",
                 "children": [
                   {
-                    "kind": "Ast.SynConst.String",
+                    "kind": "SyntaxTree.SynConst.String",
                     "property": "constant",
                     "type": "token",
                     "value": "\"a\r\nb\""
