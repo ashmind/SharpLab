@@ -27,7 +27,7 @@ console.log(chalk.white('Writing matrix...'));
 const matrix = {
     include: branches.map(branch => ({
         branch,
-        optional: (branch !== 'master')
+        optional: (branch !== 'main')
     }))
 };
 
