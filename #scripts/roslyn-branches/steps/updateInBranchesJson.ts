@@ -6,7 +6,7 @@ import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
 import useAzure from './useAzure';
 import { getAzureCredentialsForAudience } from './getAzureCredentials';
 
-const languageFeatureMapUrl = 'https://raw.githubusercontent.com/dotnet/roslyn/master/docs/Language%20Feature%20Status.md';
+const languageFeatureMapUrl = 'https://raw.githubusercontent.com/dotnet/roslyn/main/docs/Language%20Feature%20Status.md';
 const branchesJsonFileName = 'branches.json';
 
 async function getRoslynBranchFeatureMap(buildRoot: string) {

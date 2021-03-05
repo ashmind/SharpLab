@@ -100,9 +100,9 @@ function groupSortOrder(a: BranchGroup, b: BranchGroup) {
 }
 
 function branchSortOrder(a: Branch, b: Branch) {
-    // master always goes first
-    if (a.name === 'master') return -1;
-    if (b.name === 'master') return +1;
+    // main always goes first
+    if (a.name === 'main') return -1;
+    if (b.name === 'main') return +1;
 
     // if this has a language, sort by language first, with newer lang versions on top
     if (a.feature) {

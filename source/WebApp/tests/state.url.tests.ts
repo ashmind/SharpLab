@@ -14,7 +14,7 @@ describe('legacy load', () => {
 
 describe('v2', () => {
     for (const [name, value] of ([
-        ['branchId', 'master'],
+        ['branchId', 'main'],
         ...Object.values(languages).map(l => ['language', l]),
         ...Object.values(targets).map(t => ['target', t]),
         ['release', true],

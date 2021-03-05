@@ -1,9 +1,9 @@
 export const branch = {
-    id: 'master',
-    name: 'master',
+    id: 'main',
+    name: 'main',
     group: 'Roslyn branches',
     kind: 'roslyn',
-    url: 'https://sl-b-dotnet-master.azurewebsites.net',
+    url: 'https://sl-b-dotnet-main.azurewebsites.net',
     commits: [{
         date: new Date('2020-05-22T18:57:31Z'),
         message: 'Merge pull request #44520 from sharwell/increase-timeouts\n\nIncrease timeouts to account for slower build machines',
