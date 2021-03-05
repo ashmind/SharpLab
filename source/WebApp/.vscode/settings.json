@@ -137,9 +137,7 @@
     "search.exclude": {
         "/.git/": true,
         "/node_modules/": true,
-        "/bin/": true,
-        "/obj/": true,
-        "/wwwroot/": true
+        "/public/": true
     },
     "typescript.tsdk": "./node_modules/typescript/lib",
     "editor.codeActionsOnSave": {
@@ -147,12 +145,6 @@
     },
     "files.exclude": {
         "**/.git": true,
-        "Properties/": true,
-        "bin/": true,
-        "obj/": true,
-        "*.cs": true,
-        "*.csproj*": true,
-        "appsettings.*": true,
         "!*": true
     }
 }
