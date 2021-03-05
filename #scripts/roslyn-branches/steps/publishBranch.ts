@@ -15,6 +15,7 @@ import { getAzureCredentials } from './getAzureCredentials';
 const pipeline = promisify(stream.pipeline);
 
 const resourceGroupName = 'SharpLab';
+const appServicePlanName = 'SharpLab-Main';
 
 export default async function publishBranch({ webAppName, iisSiteName, webAppUrl, branchArtifactsRoot, branchSiteRoot }: {
     webAppName: string;
@@ -72,10 +73,12 @@ export default async function publishBranch({ webAppName, iisSiteName, webAppUrl
         const azureWebAppClient = new WebSiteManagementClient(credentials, subscriptionId);
 
         const resourceGroup = await azureResourceClient.resourceGroups.get(resourceGroupName);
+        const appServicePlan = await azureWebAppClient.appServicePlans.get(resourceGroupName, appServicePlanName);
 
         console.log(`  Creating or updating web app...`);
         const result = await azureWebAppClient.webApps.createOrUpdate(resourceGroupName, webAppName, {
             location: resourceGroup.location,
+            serverFarmId: appServicePlan.id!,
             siteConfig: {
                 webSocketsEnabled: true,
                 appSettings: Object.entries({
