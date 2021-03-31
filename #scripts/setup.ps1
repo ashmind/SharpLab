@@ -8,8 +8,8 @@ if ($LastExitCode -ne 0) {
 }
 
 Write-Host "Creating stub .env" -ForegroundColor White
-if (!(Test-Path './source/WebApp/.env')) {
-    Copy-Item './source/WebApp/.env.template' './source/WebApp/.env'
+if (!(Test-Path './source/WebApp.Server/.env')) {
+    Copy-Item './source/WebApp.Server/.env.template' './source/WebApp.Server/.env'
 }
 
 Write-Host "Installing local tools" -ForegroundColor White
@@ -33,5 +33,5 @@ finally {
 Write-Host ""
 Write-Host "SharpLab setup done." -ForegroundColor White
 Write-Host "Run " -ForegroundColor White -NoNewLine
-Write-Host "dotnet tye run" -ForegroundColor Cyan -NoNewLine
+Write-Host "sl run" -ForegroundColor Cyan -NoNewLine
 Write-Host " to start." -ForegroundColor White -NoNewLine
