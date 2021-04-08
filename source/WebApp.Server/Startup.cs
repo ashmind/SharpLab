@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
@@ -17,9 +16,6 @@ namespace SharpLab.WebApp.Server {
 
         protected override void MapOtherEndpoints(IEndpointRouteBuilder endpoints) {
             var indexHtmlEndpoints = endpoints.ServiceProvider.GetRequiredService<IndexHtmlEndpoints>();
-            // https://github.com/dotnet/aspnetcore/issues/5897
-            indexHtmlEndpoints.StartAsync().GetAwaiter().GetResult();
-            var reloadToken = Environment.GetEnvironmentVariable("SHARPLAB_ASSETS_RELOAD_TOKEN");
 
             endpoints.MapGet("/", indexHtmlEndpoints.GetRootAsync);
             endpoints.MapPost("/assets/reload", indexHtmlEndpoints.PostReloadAsync);

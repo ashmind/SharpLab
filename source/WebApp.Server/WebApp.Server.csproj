@@ -4,6 +4,14 @@
     <AssemblyName>SharpLab.WebApp.Server</AssemblyName>
     <RootNamespace>SharpLab.WebApp.Server</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="error.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="error.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <None Update=".env">

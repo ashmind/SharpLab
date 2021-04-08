@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Autofac;
 
 namespace SharpLab.WebApp.Server.Assets {
@@ -16,9 +17,11 @@ namespace SharpLab.WebApp.Server.Assets {
                    .SingleInstance();
 
             var reloadToken = GetRequiredEnvironmentVariable("SHARPLAB_ASSETS_RELOAD_TOKEN");
+            var errorHtml = File.ReadAllText("error.html");
             builder.RegisterType<IndexHtmlEndpoints>()
                    .WithParameter(new NamedParameter("reloadToken", reloadToken))
-                   .AsSelf()                   
+                   .WithParameter(new NamedParameter("errorHtml", errorHtml))
+                   .AsSelf()
                    .SingleInstance();
         }
     }
