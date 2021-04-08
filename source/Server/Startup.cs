@@ -1,18 +1,19 @@
 using System;
+using System.Net.Mime;
+using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using MirrorSharp.AspNetCore;
-using System.Reflection;
 using Autofac.Extras.FileSystemRegistration;
 using MirrorSharp;
+using MirrorSharp.AspNetCore;
 using SharpLab.Server.Common;
 using SharpLab.Server.Common.Diagnostics;
-using Microsoft.AspNetCore.Routing;
 
 namespace SharpLab.Server {    
     public class Startup {
@@ -61,13 +62,29 @@ namespace SharpLab.Server {
             app.UseEndpoints(e => {
                 var okBytes = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes("OK"));
                 e.MapGet("/status", context => {
-                    context.Response.ContentType = "text/plain";
+                    context.Response.ContentType = MediaTypeNames.Text.Plain;
                     return context.Response.BodyWriter.WriteAsync(okBytes).AsTask();
                 });
 
+                MapBranchVersion(e, env);
                 MapOtherEndpoints(e);
 
                 e.MapControllers();
+            });
+        }
+
+        // Temporary: until build is updated to something better than a json file on site itself
+        protected virtual void MapBranchVersion(IEndpointRouteBuilder endpoints, IWebHostEnvironment env) {            
+            var file = env.WebRootFileProvider.GetFileInfo("branch-version.json");
+            if (!file.Exists)
+                return;
+
+            using var stream = file.CreateReadStream();
+            var bytes = new byte[stream.Length];
+            stream.Read(bytes, 0, bytes.Length);
+            endpoints.MapGet("/branch-version.json", context => {
+                context.Response.ContentType = MediaTypeNames.Application.Json;
+                return context.Response.BodyWriter.WriteAsync(bytes).AsTask();
             });
         }
 

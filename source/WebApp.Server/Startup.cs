@@ -15,6 +15,9 @@ namespace SharpLab.WebApp.Server {
             base.Configure(app, env);
         }
 
+        // Suppress: there is no need for branch versions on main site
+        protected override void MapBranchVersion(IEndpointRouteBuilder endpoints, IWebHostEnvironment env) {}
+
         protected override void MapOtherEndpoints(IEndpointRouteBuilder endpoints) {
             var indexHtmlEndpoints = endpoints.ServiceProvider.GetRequiredService<IndexHtmlEndpoints>();
             // https://github.com/dotnet/aspnetcore/issues/5897
