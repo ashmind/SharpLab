@@ -26,10 +26,10 @@ namespace SharpLab.Server.MirrorSharp.Guards {
 
         private class ValidatingSourceTextWriter : TextWriter {
             private int _roundBracketsNestingLevel;
-            private readonly int[] _roundBracketsAdjacentPairCounts = new int[BracketsNestingLimit];
+            private readonly int[] _roundBracketsAdjacentPairCounts = new int[BracketsNestingLimit + 1];
 
             private int _squareBracketsNestingLevel;
-            private readonly int[] _squareBracketsAdjacentPairCounts = new int[BracketsNestingLimit];
+            private readonly int[] _squareBracketsAdjacentPairCounts = new int[BracketsNestingLimit + 1];
 
             public override Encoding Encoding => Encoding.UTF8;
 

@@ -225,6 +225,16 @@ namespace SharpLab.Tests {
             await Assert.ThrowsAsync<RoslynSourceTextGuardException>(() => driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.IL));
         }
 
+        [Theory]
+        [InlineData("Append(Append(Append(Append(hash, (byte)value), value>>8), value>>16), value>>24)")]
+        public async Task SetOptions_ProcessesTokenEdgeCases_WithoutTokenValidationErrors(string code) {
+            var driver = TestEnvironment.NewDriver().SetText(code);
+
+            var exception = await Record.ExceptionAsync(() => driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.IL));
+
+            Assert.Null(exception);
+        }
+
         private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestCode code, string optimize = Optimize.Release) {
             var driver = TestEnvironment.NewDriver();
             await driver.SendSetOptionsAsync(code.SourceLanguageName, code.TargetName, optimize);
