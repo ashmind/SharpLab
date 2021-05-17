@@ -180,7 +180,7 @@ const build = task('build', async () => {
 });
 
 task('start', () => build(), {
-    watch: async () => exec2('http-server', [outputSharedRoot, '-p', '54200', '--cors'])
+    watch: () => exec2('http-server', [outputSharedRoot, '-p', '44200', '--cors'])
 });
 
 // Assumes we already ran the build

@@ -25,6 +25,7 @@ namespace SharpLab.Server.MirrorSharp {
         private readonly IReadOnlyDictionary<string, IDecompiler> _decompilers;
         private readonly IReadOnlyDictionary<string, IAstTarget> _astTargets;
         private readonly IExecutor _executor;
+        private readonly IContainerExecutor _containerExecutor;
         private readonly IExplainer _explainer;
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;
 
@@ -34,6 +35,7 @@ namespace SharpLab.Server.MirrorSharp {
             IReadOnlyCollection<IDecompiler> decompilers,
             IReadOnlyCollection<IAstTarget> astTargets,
             IExecutor executor,
+            IContainerExecutor containerExecutor,
             IExplainer explainer,
             RecyclableMemoryStreamManager memoryStreamManager
         ) {
@@ -44,6 +46,7 @@ namespace SharpLab.Server.MirrorSharp {
                 .SelectMany(t => t.SupportedLanguageNames.Select(n => (target: t, languageName: n)))
                 .ToDictionary(x => x.languageName, x => x.target);
             _executor = executor;
+            _containerExecutor = containerExecutor;
             _memoryStreamManager = memoryStreamManager;
             _explainer = explainer;
         }
@@ -54,7 +57,7 @@ namespace SharpLab.Server.MirrorSharp {
 
             _topLevelProgramSupport.UpdateOutputKind(session, diagnostics);
 
-            if (targetName == TargetNames.Ast || targetName == TargetNames.Explain) {
+            if (targetName is TargetNames.Ast or TargetNames.Explain) {
                 var astTarget = _astTargets[session.LanguageName];
                 var ast = await astTarget.GetAstAsync(session, cancellationToken).ConfigureAwait(false);
                 if (targetName == TargetNames.Explain)
@@ -68,14 +71,14 @@ namespace SharpLab.Server.MirrorSharp {
             if (targetName == LanguageNames.VisualBasic)
                 return VisualBasicNotAvailable;
 
-            if (targetName != TargetNames.Run && targetName != TargetNames.Verify && !_decompilers.ContainsKey(targetName))
+            if (targetName is not (TargetNames.Run or TargetNames.RunContainer or TargetNames.Verify) && !_decompilers.ContainsKey(targetName))
                 throw new NotSupportedException($"Target '{targetName}' is not (yet?) supported by this branch.");
 
             MemoryStream? assemblyStream = null;
             MemoryStream? symbolStream = null;
             try {
                 assemblyStream = _memoryStreamManager.GetStream();
-                if (targetName == TargetNames.Run || targetName == TargetNames.IL)
+                if (targetName is TargetNames.Run or TargetNames.RunContainer or TargetNames.IL)
                     symbolStream = _memoryStreamManager.GetStream();
 
                 var compiled = await _compiler.TryCompileToStreamAsync(assemblyStream, symbolStream, session, diagnostics, cancellationToken).ConfigureAwait(false);
@@ -98,6 +101,9 @@ namespace SharpLab.Server.MirrorSharp {
                 var streams = new CompilationStreamPair(assemblyStream, compiled.symbols ? symbolStream : null);
                 if (targetName == TargetNames.Run)
                     return _executor.Execute(streams, session);
+
+                if (targetName == TargetNames.RunContainer)
+                    return await _containerExecutor.ExecuteAsync(streams, session, cancellationToken);
 
                 // it's fine not to Dispose() here -- MirrorSharp will dispose it after calling WriteResult()
                 return streams;

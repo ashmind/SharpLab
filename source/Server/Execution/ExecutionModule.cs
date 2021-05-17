@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using Microsoft.Diagnostics.Runtime;
 using SharpLab.Runtime.Internal;
 using SharpLab.Server.Common;
+using SharpLab.Server.Execution.Container;
 using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.Execution.Runtime;
 using SharpLab.Server.Execution.Unbreakable;
@@ -45,6 +46,21 @@ namespace SharpLab.Server.Execution {
 
             builder.RegisterType<Executor>()
                    .As<IExecutor>()
+                   .SingleInstance();
+
+            var containerRunnerUrl = Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_RUNNER_URL");
+            if (containerRunnerUrl == null)
+                throw new Exception("Required key SHARPLAB_CONTAINER_RUNNER_URL was not provided.");
+
+            builder.RegisterInstance(new ContainerClientSettings(new Uri(containerRunnerUrl)))
+                   .AsSelf();
+
+            builder.RegisterType<ContainerClient>()
+                   .AsSelf()
+                   .SingleInstance();
+
+            builder.RegisterType<ContainerExecutor>()
+                   .As<IContainerExecutor>()
                    .SingleInstance();
 
             RegisterRuntime(builder);

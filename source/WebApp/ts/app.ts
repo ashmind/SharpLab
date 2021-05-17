@@ -16,6 +16,7 @@ import state from './state/index';
 import url from './state/handlers/url';
 import defaults from './state/handlers/defaults';
 import uiAsync from './ui/index';
+import { containerRunServerOptions } from './experiments/container-run';
 
 function getResultType(target: TargetName|string) {
     switch (target) {
@@ -159,7 +160,8 @@ async function createAppAsync() {
             serverOptions(this: App): ServerOptions {
                 return {
                     'x-optimize': this.options.release ? 'release' : 'debug',
-                    'x-target': this.options.target
+                    'x-target': this.options.target,
+                    ...containerRunServerOptions
                 };
             },
             status(this: App): AppStatus {

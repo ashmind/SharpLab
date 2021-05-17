@@ -1,3 +1,4 @@
+import { containerRunTarget } from '../experiments/container-run';
 import { languages } from './languages';
 
 export const targets = Object.freeze({
@@ -7,6 +8,7 @@ export const targets = Object.freeze({
     asm:     'JIT ASM',
     ast:     'AST',
     run:     'Run',
+    ...containerRunTarget,
     verify:  'Verify',
     explain: 'Explain'
 } as const);
