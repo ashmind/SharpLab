@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Docker.DotNet;
@@ -7,6 +8,12 @@ using Docker.DotNet.Models;
 
 namespace SharpLab.Container.Manager.Internal {
     public class DockerManager {
+        private readonly StdinProtocol _stdinProtocol;
+
+        public DockerManager(StdinProtocol stdinProtocol) {
+            _stdinProtocol = stdinProtocol;
+        }
+
         public async Task<string> ExecuteAsync(Stream assemblyStream, CancellationToken cancellationToken) {
             var client = new DockerClientConfiguration().CreateClient();
             string? containerId;
@@ -34,10 +41,10 @@ namespace SharpLab.Container.Manager.Internal {
                 Cmd = new[] { @"c:\\app\SharpLab.Container.exe" },
 
                 AttachStdout = true,
-                //AttachStdin = true,
-                //StdinOnce = true,
+                AttachStdin = true,
+                OpenStdin = true,
 
-                //NetworkDisabled = true,
+                NetworkDisabled = true,
                 HostConfig = new HostConfig {
                     Mounts = new[] {
                         new Mount {
@@ -49,7 +56,7 @@ namespace SharpLab.Container.Manager.Internal {
                     },
                     //Memory = memoryLimit,
                     //MemorySwap = memoryLimit,
-                    //CPUQuota = 50000,
+                    CPUQuota = 50000,
 
                     AutoRemove = true
                 }
@@ -61,11 +68,15 @@ namespace SharpLab.Container.Manager.Internal {
         private async Task<string> ProcessAssemblyAndDisposeClientAsync(DockerClient client, string containerId, Stream assemblyStream, CancellationToken cancellationToken) {
             using var stream = await client.Containers.AttachContainerAsync(containerId, tty: false, new ContainerAttachParameters {
                 Stream = true,
-                //Stdin = true,
+                Stdin = true,
                 Stdout = true
             }, cancellationToken);
 
-            //await stream.CopyFromAsync(assemblyStream, cancellationToken);
+            await _stdinProtocol.WriteExecuteAsync(stream, assemblyStream, cancellationToken);
+
+            var endBytes = Encoding.UTF8.GetBytes("END\n");
+            await stream.WriteAsync(endBytes, 0, endBytes.Length, cancellationToken);
+
             var started = await client.Containers.StartContainerAsync(containerId, new ContainerStartParameters(), cancellationToken);
             if (!started) {
                 client.Dispose();

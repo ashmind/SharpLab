@@ -2,7 +2,6 @@ using System;
 using System.Net.Http;
 using Autofac;
 using JetBrains.Annotations;
-using Microsoft.Extensions.Http;
 using Microsoft.IO;
 using Mono.Cecil.Cil;
 using SharpLab.Server.Common.Internal;

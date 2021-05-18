@@ -1,7 +1,5 @@
 using Autofac;
 using JetBrains.Annotations;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.VisualBasic;
 
 namespace SharpLab.Server.Compilation {
     [UsedImplicitly]

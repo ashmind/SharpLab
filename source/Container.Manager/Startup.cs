@@ -29,7 +29,7 @@ namespace SharpLab.Container.Manager
             app.UseRouting();
             app.UseEndpoints(endpoints => {
                 endpoints.MapPost("/", async context => {
-                    var manager = new DockerManager();
+                    var manager = new DockerManager(new StdinProtocol());
                     var memoryStream = new MemoryStream();
                     await context.Request.Body.CopyToAsync(memoryStream);
                     memoryStream.Seek(0, SeekOrigin.Begin);
