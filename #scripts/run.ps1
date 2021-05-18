@@ -6,4 +6,4 @@ $webappServerUrl = 'http://localhost:44100'
 Write-Host "Opening new window for initial wait" -ForegroundColor White
 Start-Process powershell -ArgumentList "-File `"$PSScriptRoot/run/wait.ps1`""
 
-dotnet tye run
+dotnet tye run --watch

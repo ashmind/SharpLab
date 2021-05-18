@@ -74,7 +74,7 @@ namespace SharpLab.Server {
         }
 
         // Temporary: until build is updated to something better than a json file on site itself
-        protected virtual void MapBranchVersion(IEndpointRouteBuilder endpoints, IWebHostEnvironment env) {            
+        protected virtual void MapBranchVersion(IEndpointRouteBuilder endpoints, IWebHostEnvironment env) {
             var file = env.WebRootFileProvider.GetFileInfo("branch-version.json");
             if (!file.Exists)
                 return;

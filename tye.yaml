@@ -6,9 +6,15 @@ services:
   executable: pwsh
   args: -Command "npm run start"
   workingDirectory: source/WebApp
-  
+
+- name: container-manager
+  project: source/Container.Manager/Container.Manager.csproj
+  bindings:
+  - protocol: http
+    port: 44400
+
 - name: webapp-server
   project: source/WebApp.Server/WebApp.Server.csproj
   bindings:
   - protocol: http
-    port: 54100
+    port: 44100
