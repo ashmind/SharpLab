@@ -64,7 +64,7 @@ jobs:
   deploy-to-edge:
     name: Deploy (Edge)
     needs: build
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feature/container-run'
     environment: edge-webapp
     runs-on: ubuntu-latest
     steps:
