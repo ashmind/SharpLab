@@ -14,6 +14,7 @@ namespace SharpLab.Container.Manager.Internal {
         private readonly StdoutReader _stdoutReader;
         private readonly DockerClientConfiguration _clientConfiguration;
         private readonly MemoryCache _memoryCache = new("_");
+
         private Task? _startTask;
 
         public DockerManager(
@@ -84,7 +85,7 @@ namespace SharpLab.Container.Manager.Internal {
                     HostConfig = new HostConfig {
                         Mounts = new[] {
                             new Mount {
-                                Source = @"d:\Development\VS 2019\SharpLab\source\Container\bin\Debug\net5.0",
+                                Source = AppDomain.CurrentDomain.BaseDirectory,
                                 Target = @"c:\app",
                                 Type = "bind",
                                 ReadOnly = true
