@@ -7,7 +7,7 @@ using SharpLab.Server.Execution.Container;
 
 namespace SharpLab.Server.MirrorSharp {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-    public class SetOptionsFromClient : ISetOptionsFromClientExtension {
+    public class SetOptionsFromClient : ISetOptionsFromClientExtension {        
         private const string Optimize = "x-optimize";
         private const string Target = "x-target";
         private const string ContainerExperimentKey = "x-container-experiment";

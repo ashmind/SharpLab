@@ -2,13 +2,11 @@ using System;
 using System.IO;
 using ProtoBuf;
 using SharpLab.Container.Internal;
-using SharpLab.Container.Protocol;
 using SharpLab.Container.Protocol.Stdin;
 
 namespace SharpLab.Container {
     public static class Program {
         private static readonly Executor _executor = new();
-        private static readonly StdoutProtocol _stdoutProtocol = new();
 
         public static void Main() {
             try {
@@ -37,11 +35,12 @@ namespace SharpLab.Container {
             if (command is ExecuteCommand execute) {
                 Console.WriteLine("EXECUTE");
                 _executor.Execute(new MemoryStream(execute.AssemblyBytes));
-                _stdoutProtocol.WriteEndOutput(execute.OutputId);
+                Console.Out.Write(execute.OutputEndMarker);
+                Console.Out.Flush();
                 return;
             }
 
-            if (command is ExitCommand exit) {
+            if (command is ExitCommand) {
                 Console.WriteLine("EXIT");
                 shouldExit = true;
                 return;

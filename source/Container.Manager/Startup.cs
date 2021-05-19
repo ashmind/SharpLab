@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading;
+using Docker.DotNet;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -22,14 +23,15 @@ namespace SharpLab.Container.Manager
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
 
             app.UseRouting();
+
+            // TODO: DI
+            var manager = new DockerManager(new StdinWriter(), new StdoutReader(), new DockerClientConfiguration());
             app.UseEndpoints(endpoints => {
                 endpoints.MapPost("/", async context => {
-                    var manager = new DockerManager(new StdinProtocol(), new StdoutProtocol());
+                    var sessionId = context.Request.Headers["Sl-Session-Id"][0]!;
                     var memoryStream = new MemoryStream();
                     await context.Request.Body.CopyToAsync(memoryStream);
 
@@ -37,7 +39,7 @@ namespace SharpLab.Container.Manager
                     using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted);
                     timeoutSource.CancelAfter(10000);
                     try {
-                        var result = await manager.ExecuteAsync(memoryStream.ToArray(), timeoutSource.Token);
+                        var result = await manager.ExecuteAsync(sessionId, memoryStream.ToArray(), timeoutSource.Token);
                         await context.Response.WriteAsync(result, context.RequestAborted);
                     }
                     catch (Exception ex) {

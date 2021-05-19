@@ -6,7 +6,7 @@ using ProtoBuf;
 using SharpLab.Container.Protocol.Stdin;
 
 namespace SharpLab.Container.Manager.Internal {
-    public class StdinProtocol {
+    public class StdinWriter {
         public async Task WriteCommandAsync(MultiplexedStream stream, StdinCommand command, CancellationToken cancellationToken) {
             var memoryStream = new MemoryStream();
             Serializer.SerializeWithLengthPrefix(memoryStream, command, PrefixStyle.Base128);

@@ -31,6 +31,7 @@ const targetMap = {
     [targets.asm]:     'asm',
     [targets.ast]:     'ast',
     [targets.run]:     'run',
+    [targets.runc]:    'runc',
     [targets.verify]:  'verify',
     [targets.explain]: 'explain'
 } as const;

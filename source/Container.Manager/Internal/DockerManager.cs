@@ -1,6 +1,5 @@
 using System;
-using System.IO;
-using System.Text;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Docker.DotNet;
@@ -9,89 +8,104 @@ using SharpLab.Container.Protocol.Stdin;
 
 namespace SharpLab.Container.Manager.Internal {
     public class DockerManager {
-        private readonly StdinProtocol _stdinProtocol;
-        private readonly StdoutProtocol _stdoutProtocol;
+        private readonly StdinWriter _stdinWriter;
+        private readonly StdoutReader _stdoutReader;
+        private readonly DockerClientConfiguration _clientConfiguration;
+        private readonly ConcurrentDictionary<string, SessionContainer> _containers = new ConcurrentDictionary<string, SessionContainer>();
 
-        public DockerManager(StdinProtocol stdinProtocol, StdoutProtocol stdoutProtocol) {
-            _stdinProtocol = stdinProtocol;
-            _stdoutProtocol = stdoutProtocol;
+        public DockerManager(StdinWriter stdinWriter, StdoutReader stdoutReader, DockerClientConfiguration clientConfiguration) {
+            _stdinWriter = stdinWriter;
+            _stdoutReader = stdoutReader;
+            _clientConfiguration = clientConfiguration;
         }
 
-        public async Task<string> ExecuteAsync(byte[] assemblyBytes, CancellationToken cancellationToken) {
-            var client = new DockerClientConfiguration().CreateClient();
-            string? containerId;
+        public async Task<string> ExecuteAsync(string sessionId, byte[] assemblyBytes, CancellationToken cancellationToken) {
+            // Note that _containers are never accessed through multiple threads for the same session id,
+            // so atomicity is not required within same session id
+            if (!_containers.TryGetValue(sessionId, out var container)) {
+                container = await CreateAndStartContainerAsync(sessionId, cancellationToken);
+                if (!_containers.TryAdd(sessionId, container))
+                    throw new Exception($"Unexpected concurrency conflict within same sessionId {sessionId}: TryAdd failed.");
+            }
+
             try {
-                containerId = await CreateContainerAndGetIdAsync(client, cancellationToken);
+                return await ExecuteInContainerAsync(container, assemblyBytes, cancellationToken);
+            }
+            catch {
+                //StopAndRemoveContainerAndDisposeClient(client, containerId);
+                throw;
+            }
+        }
+
+        private async Task<SessionContainer> CreateAndStartContainerAsync(string sessionId, CancellationToken cancellationToken) {
+            //var memoryLimit = 10 * 1024 * 1024;
+            var client = _clientConfiguration.CreateClient();
+            string containerId;
+            try {
+                containerId = (await client.Containers.CreateContainerAsync(new CreateContainerParameters {
+                    Name = $"sharplab--{sessionId}--{DateTime.Now:yyyy-MM-dd--HH-mm-ss}",
+                    Image = "mcr.microsoft.com/dotnet/runtime:5.0",
+                    Cmd = new[] { @"c:\\app\SharpLab.Container.exe" },
+
+                    AttachStdout = true,
+                    AttachStdin = true,
+                    OpenStdin = true,
+
+                    //NetworkDisabled = true,
+                    HostConfig = new HostConfig {
+                        Mounts = new[] {
+                            new Mount {
+                                Source = @"d:\Development\VS 2019\SharpLab\source\Container\bin\Debug\net5.0",
+                                Target = @"c:\app",
+                                Type = "bind",
+                                ReadOnly = true
+                            }
+                        },
+                        //Memory = memoryLimit,
+                        //MemorySwap = memoryLimit,
+                        CPUQuota = 50000,
+
+                        AutoRemove = true
+                    }
+                }, cancellationToken)).ID;
             }
             catch {
                 client.Dispose();
                 throw;
             }
 
+            MultiplexedStream stream;
             try {
-                return await ProcessAssemblyAndDisposeClientAsync(client, containerId, assemblyBytes, cancellationToken);
+                stream = await client.Containers.AttachContainerAsync(containerId, tty: false, new ContainerAttachParameters {
+                    Stream = true,
+                    Stdin = true,
+                    Stdout = true
+                }, cancellationToken);
+
+                try {
+                    await client.Containers.StartContainerAsync(containerId, new ContainerStartParameters(), cancellationToken);
+                }
+                catch {
+                    stream.Dispose();
+                    throw;
+                }
             }
-            catch (Exception) {
+            catch {
                 StopAndRemoveContainerAndDisposeClient(client, containerId);
                 throw;
             }
+
+            return new(sessionId, client, containerId, stream);
         }
 
-        private async Task<string> CreateContainerAndGetIdAsync(DockerClient client, CancellationToken cancellationToken) {
-            //var memoryLimit = 10 * 1024 * 1024;
-            var created = await client.Containers.CreateContainerAsync(new CreateContainerParameters {
-                Image = "mcr.microsoft.com/dotnet/runtime:5.0",
-                Cmd = new[] { @"c:\\app\SharpLab.Container.exe" },
-
-                AttachStdout = true,
-                AttachStdin = true,
-                OpenStdin = true,
-
-                //NetworkDisabled = true,
-                HostConfig = new HostConfig {
-                    Mounts = new[] {
-                        new Mount {
-                            Source = @"d:\Development\VS 2019\SharpLab\source\Container\bin\Debug\net5.0",
-                            Target = @"c:\app",
-                            Type = "bind",
-                            ReadOnly = true
-                        }
-                    },
-                    //Memory = memoryLimit,
-                    //MemorySwap = memoryLimit,
-                    CPUQuota = 50000,
-
-                    AutoRemove = true
-                }
-            }, cancellationToken);
-
-            return created.ID;
-        }
-
-        private async Task<string> ProcessAssemblyAndDisposeClientAsync(DockerClient client, string containerId, byte[] assemblyBytes, CancellationToken cancellationToken) {
-            using var stream = await client.Containers.AttachContainerAsync(containerId, tty: false, new ContainerAttachParameters {
-                Stream = true,
-                Stdin = true,
-                Stdout = true
-            }, cancellationToken);
-
-            var executionId = Guid.NewGuid().ToString();
-            await _stdinProtocol.WriteCommandAsync(stream, new ExecuteCommand(assemblyBytes, executionId), cancellationToken);
-            await _stdinProtocol.WriteCommandAsync(stream, new ExitCommand(), cancellationToken);
-
-            var started = await client.Containers.StartContainerAsync(containerId, new ContainerStartParameters(), cancellationToken);
-            if (!started) {
-                client.Dispose();
-                //StopAndRemoveContainerAndDisposeClient(client, containerId);
-                return "Not started?";
-            }
+        private async Task<string> ExecuteInContainerAsync(SessionContainer container, byte[] assemblyBytes, CancellationToken cancellationToken) {
+            var outputEndMarker = "---END-OUTPUT-" + Guid.NewGuid().ToString();
+            await _stdinWriter.WriteCommandAsync(container.Stream, new ExecuteCommand(assemblyBytes, outputEndMarker), cancellationToken);
 
             using var waitCancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            waitCancellationSource.CancelAfter(300);
-            await client.Containers.WaitContainerAsync(containerId, waitCancellationSource.Token);
+            //waitCancellationSource.CancelAfter(300);
 
-            var output = await _stdoutProtocol.ReadOutputAsync(stream, executionId, cancellationToken);
-            client.Dispose();
+            var output = await _stdoutReader.ReadOutputAsync(container.Stream, outputEndMarker, waitCancellationSource.Token);
             return "Success?\r\n" + output;
         }
 
