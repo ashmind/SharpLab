@@ -5,16 +5,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using Docker.DotNet;
 using Docker.DotNet.Models;
+using SharpLab.Container.Protocol.Stdin;
 
 namespace SharpLab.Container.Manager.Internal {
     public class DockerManager {
         private readonly StdinProtocol _stdinProtocol;
+        private readonly StdoutProtocol _stdoutProtocol;
 
-        public DockerManager(StdinProtocol stdinProtocol) {
+        public DockerManager(StdinProtocol stdinProtocol, StdoutProtocol stdoutProtocol) {
             _stdinProtocol = stdinProtocol;
+            _stdoutProtocol = stdoutProtocol;
         }
 
-        public async Task<string> ExecuteAsync(Stream assemblyStream, CancellationToken cancellationToken) {
+        public async Task<string> ExecuteAsync(byte[] assemblyBytes, CancellationToken cancellationToken) {
             var client = new DockerClientConfiguration().CreateClient();
             string? containerId;
             try {
@@ -26,10 +29,10 @@ namespace SharpLab.Container.Manager.Internal {
             }
 
             try {
-                return await ProcessAssemblyAndDisposeClientAsync(client, containerId, assemblyStream, cancellationToken);
+                return await ProcessAssemblyAndDisposeClientAsync(client, containerId, assemblyBytes, cancellationToken);
             }
             catch (Exception) {
-                //StopAndRemoveContainerAndDisposeClient(client, containerId);
+                StopAndRemoveContainerAndDisposeClient(client, containerId);
                 throw;
             }
         }
@@ -44,7 +47,7 @@ namespace SharpLab.Container.Manager.Internal {
                 AttachStdin = true,
                 OpenStdin = true,
 
-                NetworkDisabled = true,
+                //NetworkDisabled = true,
                 HostConfig = new HostConfig {
                     Mounts = new[] {
                         new Mount {
@@ -65,17 +68,16 @@ namespace SharpLab.Container.Manager.Internal {
             return created.ID;
         }
 
-        private async Task<string> ProcessAssemblyAndDisposeClientAsync(DockerClient client, string containerId, Stream assemblyStream, CancellationToken cancellationToken) {
+        private async Task<string> ProcessAssemblyAndDisposeClientAsync(DockerClient client, string containerId, byte[] assemblyBytes, CancellationToken cancellationToken) {
             using var stream = await client.Containers.AttachContainerAsync(containerId, tty: false, new ContainerAttachParameters {
                 Stream = true,
                 Stdin = true,
                 Stdout = true
             }, cancellationToken);
 
-            await _stdinProtocol.WriteExecuteAsync(stream, assemblyStream, cancellationToken);
-
-            var endBytes = Encoding.UTF8.GetBytes("END\n");
-            await stream.WriteAsync(endBytes, 0, endBytes.Length, cancellationToken);
+            var executionId = Guid.NewGuid().ToString();
+            await _stdinProtocol.WriteCommandAsync(stream, new ExecuteCommand(assemblyBytes, executionId), cancellationToken);
+            await _stdinProtocol.WriteCommandAsync(stream, new ExitCommand(), cancellationToken);
 
             var started = await client.Containers.StartContainerAsync(containerId, new ContainerStartParameters(), cancellationToken);
             if (!started) {
@@ -86,16 +88,9 @@ namespace SharpLab.Container.Manager.Internal {
 
             using var waitCancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             waitCancellationSource.CancelAfter(300);
-            try {
-                await client.Containers.WaitContainerAsync(containerId, waitCancellationSource.Token);
-            }
-            catch (OperationCanceledException) {
-                var (outputBeforeCancelled, _) = await stream.ReadOutputToEndAsync(cancellationToken);
-                StopAndRemoveContainerAndDisposeClient(client, containerId);
-                return outputBeforeCancelled + "\r\nCancelled";
-            }
+            await client.Containers.WaitContainerAsync(containerId, waitCancellationSource.Token);
 
-            var (output, _) = await stream.ReadOutputToEndAsync(cancellationToken);
+            var output = await _stdoutProtocol.ReadOutputAsync(stream, executionId, cancellationToken);
             client.Dispose();
             return "Success?\r\n" + output;
         }

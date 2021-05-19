@@ -29,16 +29,15 @@ namespace SharpLab.Container.Manager
             app.UseRouting();
             app.UseEndpoints(endpoints => {
                 endpoints.MapPost("/", async context => {
-                    var manager = new DockerManager(new StdinProtocol());
+                    var manager = new DockerManager(new StdinProtocol(), new StdoutProtocol());
                     var memoryStream = new MemoryStream();
                     await context.Request.Body.CopyToAsync(memoryStream);
-                    memoryStream.Seek(0, SeekOrigin.Begin);
 
                     context.Response.StatusCode = 200;
                     using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted);
                     timeoutSource.CancelAfter(10000);
                     try {
-                        var result = await manager.ExecuteAsync(memoryStream, timeoutSource.Token);
+                        var result = await manager.ExecuteAsync(memoryStream.ToArray(), timeoutSource.Token);
                         await context.Response.WriteAsync(result, context.RequestAborted);
                     }
                     catch (Exception ex) {

@@ -1,10 +1,15 @@
 using System;
 using System.IO;
-using System.Text;
+using ProtoBuf;
 using SharpLab.Container.Internal;
+using SharpLab.Container.Protocol;
+using SharpLab.Container.Protocol.Stdin;
 
 namespace SharpLab.Container {
     public static class Program {
+        private static readonly Executor _executor = new();
+        private static readonly StdoutProtocol _stdoutProtocol = new();
+
         public static void Main() {
             try {
                 SafeMain();
@@ -19,46 +24,28 @@ namespace SharpLab.Container {
 
             Console.WriteLine("START");
 
-            var executor = new Executor();
-            var line = ReadLine(input);
-            while (line != null) {
-                Console.WriteLine("READLINE");
-                if (line.StartsWith("EXECUTE")) {
-                    Console.WriteLine("EXECUTE");
-                    HandleExecute(input, line, executor);
-                }
-                line = null;
-                //line = Console.ReadLine();
+            var shouldExit = false;
+            while (!shouldExit) {
+                var command = Serializer.DeserializeWithLengthPrefix<StdinCommand>(input, PrefixStyle.Base128);
+                HandleCommand(command, ref shouldExit);
             }
+
             Console.WriteLine("END");
         }
 
-        private static ReadOnlySpan<char> ReadLine(Stream input) {
-            var length = 0;
-            var chars = new char[100];
-            while (true) {
-                var @byte = input.ReadByte();
-                if (@byte is -1 or (byte)'\n')
-                    break;
-                chars[length] = (char)@byte;
-                length += 1;
+        private static void HandleCommand(StdinCommand command, ref bool shouldExit) {
+            if (command is ExecuteCommand execute) {
+                Console.WriteLine("EXECUTE");
+                _executor.Execute(new MemoryStream(execute.AssemblyBytes));
+                _stdoutProtocol.WriteEndOutput(execute.OutputId);
+                return;
             }
-            return new ReadOnlySpan<char>(chars, 0, length);
-        }
 
-        private static void HandleExecute(Stream input, ReadOnlySpan<char> line, Executor executor) {
-            var length = int.Parse(line.Slice(line.IndexOf(":") + 1));
-            Console.WriteLine("LENGTH:" + length);
-
-            var bytes = new byte[length];
-
-            var offset = 0;
-            while (offset < length) {
-                Console.WriteLine("OFFSET:" + offset);                
-                offset += input.Read(bytes, offset, length - offset);
-            }            
-
-            executor.Execute(new MemoryStream(bytes));
+            if (command is ExitCommand exit) {
+                Console.WriteLine("EXIT");
+                shouldExit = true;
+                return;
+            }
         }
     }
 }
