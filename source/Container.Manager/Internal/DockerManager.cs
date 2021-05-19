@@ -19,20 +19,30 @@ namespace SharpLab.Container.Manager.Internal {
             _clientConfiguration = clientConfiguration;
         }
 
-        public async Task<string> ExecuteAsync(string sessionId, byte[] assemblyBytes, CancellationToken cancellationToken) {
+        public async Task<ReadOnlyMemory<char>> ExecuteAsync(string sessionId, byte[] assemblyBytes, CancellationToken cancellationToken) {
             // Note that _containers are never accessed through multiple threads for the same session id,
             // so atomicity is not required within same session id
             if (!_containers.TryGetValue(sessionId, out var container)) {
                 container = await CreateAndStartContainerAsync(sessionId, cancellationToken);
                 if (!_containers.TryAdd(sessionId, container))
-                    throw new Exception($"Unexpected concurrency conflict within same sessionId {sessionId}: TryAdd failed.");
+                    throw new Exception($"Unexpected conflict within same sessionId {sessionId}: TryAdd failed.");
+            }
+
+            void CleanupOnError(Exception? ex = null) {
+                var removed = _containers.TryRemove(sessionId, out _);
+                DisposeAndRemoveContainer(container!.Client, container.ContainerId, container.Stream);
+                if (!removed)
+                    throw new Exception($"Unexpected conflict within same sessionId {sessionId}: TryRemove failed.{(ex != null ? "Original error: " + ex.Message : "")}", ex);
             }
 
             try {
-                return await ExecuteInContainerAsync(container, assemblyBytes, cancellationToken);
+                var (output, outputFailed) = await ExecuteInContainerAsync(container, assemblyBytes, cancellationToken);
+                if (outputFailed)
+                    CleanupOnError();
+                return output;
             }
-            catch {
-                //StopAndRemoveContainerAndDisposeClient(client, containerId);
+            catch (Exception ex) {
+                CleanupOnError(ex);
                 throw;
             }
         }
@@ -74,7 +84,7 @@ namespace SharpLab.Container.Manager.Internal {
                 throw;
             }
 
-            MultiplexedStream stream;
+            MultiplexedStream? stream = null;
             try {
                 stream = await client.Containers.AttachContainerAsync(containerId, tty: false, new ContainerAttachParameters {
                     Stream = true,
@@ -91,26 +101,32 @@ namespace SharpLab.Container.Manager.Internal {
                 }
             }
             catch {
-                StopAndRemoveContainerAndDisposeClient(client, containerId);
+                DisposeAndRemoveContainer(client, containerId, stream);
                 throw;
             }
 
             return new(sessionId, client, containerId, stream);
         }
 
-        private async Task<string> ExecuteInContainerAsync(SessionContainer container, byte[] assemblyBytes, CancellationToken cancellationToken) {
+        private async Task<(ReadOnlyMemory<char> output, bool outputFailed)> ExecuteInContainerAsync(SessionContainer container, byte[] assemblyBytes, CancellationToken cancellationToken) {
             var outputEndMarker = "---END-OUTPUT-" + Guid.NewGuid().ToString();
-            await _stdinWriter.WriteCommandAsync(container.Stream, new ExecuteCommand(assemblyBytes, outputEndMarker), cancellationToken);
 
-            using var waitCancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            //waitCancellationSource.CancelAfter(300);
+            using var executeCancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            executeCancellationSource.CancelAfter(10000);
 
-            var output = await _stdoutReader.ReadOutputAsync(container.Stream, outputEndMarker, waitCancellationSource.Token);
-            return "Success?\r\n" + output;
+            await _stdinWriter.WriteCommandAsync(container.Stream, new ExecuteCommand(assemblyBytes, outputEndMarker), executeCancellationSource.Token);
+            return await _stdoutReader.ReadOutputAsync(container.Stream, outputEndMarker, executeCancellationSource.Token);
         }
 
-        public void StopAndRemoveContainerAndDisposeClient(DockerClient client, string containerId) {
+        public void DisposeAndRemoveContainer(DockerClient client, string containerId, MultiplexedStream? stream) {
             async Task StopContainerAndDisposeClientAsync() {
+                try {
+                    stream?.Dispose();
+                }
+                catch (Exception ex) {
+                    Console.Error.WriteLine(ex);
+                }
+
                 try {
                     await client.Containers.StopContainerAsync(
                         containerId, new ContainerStopParameters { WaitBeforeKillSeconds = 1 }

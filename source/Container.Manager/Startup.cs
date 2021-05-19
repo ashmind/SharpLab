@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 using Docker.DotNet;
 using Microsoft.AspNetCore.Builder;
@@ -40,7 +41,9 @@ namespace SharpLab.Container.Manager
                     timeoutSource.CancelAfter(10000);
                     try {
                         var result = await manager.ExecuteAsync(sessionId, memoryStream.ToArray(), timeoutSource.Token);
-                        await context.Response.WriteAsync(result, context.RequestAborted);
+                        var bytes = new byte[Encoding.UTF8.GetByteCount(result.Span)];
+                        Encoding.UTF8.GetBytes(result.Span, bytes);
+                        await context.Response.BodyWriter.WriteAsync(bytes, context.RequestAborted);
                     }
                     catch (Exception ex) {
                         await context.Response.WriteAsync(ex.ToString(), context.RequestAborted);
