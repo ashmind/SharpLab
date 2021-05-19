@@ -29,11 +29,22 @@ namespace SharpLab.Container.Manager
             app.UseRouting();
 
             // TODO: DI
+            var expectedAuthorization = "Bearer " + (
+                Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_ACCESS_TOKEN")
+                ?? throw new Exception("Required environment variable SHARPLAB_CONTAINER_HOST_ACCESS_TOKEN was not provided.")
+            );
             var manager = new DockerManager(new StdinWriter(), new StdoutReader(), new DockerClientConfiguration());
             manager.Start();
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapPost("/", async context => {
+                    // TODO: Proper structure
+                    var authorization = context.Request.Headers["Authorization"][0];
+                    if (authorization != expectedAuthorization) {
+                        context.Response.StatusCode = 401;
+                        return;
+                    }
+
                     var sessionId = context.Request.Headers["Sl-Session-Id"][0]!;
                     var memoryStream = new MemoryStream();
                     await context.Request.Body.CopyToAsync(memoryStream);

@@ -48,11 +48,12 @@ namespace SharpLab.Server.Execution {
                    .As<IExecutor>()
                    .SingleInstance();
 
-            var containerRunnerUrl = Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_RUNNER_URL");
-            if (containerRunnerUrl == null)
-                throw new Exception("Required key SHARPLAB_CONTAINER_RUNNER_URL was not provided.");
+            var containerHostUrl = Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_URL")
+                ?? throw new Exception("Required key SHARPLAB_CONTAINER_HOST_URL was not provided.");
+            var containerAuthorizationToken = Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_ACCESS_TOKEN")
+                ?? throw new Exception("Required key SHARPLAB_CONTAINER_HOST_URL was not provided.");
 
-            builder.RegisterInstance(new ContainerClientSettings(new Uri(containerRunnerUrl)))
+            builder.RegisterInstance(new ContainerClientSettings(new Uri(containerHostUrl), containerAuthorizationToken))
                    .AsSelf();
 
             builder.RegisterType<ContainerClient>()

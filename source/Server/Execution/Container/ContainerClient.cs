@@ -1,5 +1,6 @@
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,6 +19,7 @@ namespace SharpLab.Server.Execution.Container {
                 Headers = {{ "Sl-Session-Id", sessionId }},
                 Content = new StreamContent(assemblyStream)
             };
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _settings.AuthorizationToken);
 
             using var httpClient = _httpClientFactory.CreateClient();
             using var response = await httpClient.SendAsync(request, cancellationToken);

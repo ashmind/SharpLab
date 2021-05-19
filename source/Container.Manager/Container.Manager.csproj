@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Internal\DotEnv.cs~RF1e36def.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Docker.DotNet" Version="3.125.4" />
     <PackageReference Include="protobuf-net" Version="3.0.101" />
     <PackageReference Include="System.Runtime.Caching" Version="5.0.0" />

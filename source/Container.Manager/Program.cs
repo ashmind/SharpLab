@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using SharpLab.Container.Manager.Internal;
 
 namespace SharpLab.Container.Manager {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
+    public class Program {
+        public static void Main(string[] args) {
+            DotEnv.Load();
             CreateHostBuilder(args).Build().Run();
         }
 
