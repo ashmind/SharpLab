@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using Autofac;
 using MirrorSharp;
 using MirrorSharp.Advanced;
@@ -9,6 +10,10 @@ using SharpLab.Server;
 namespace SharpLab.Tests.Internal {
     public static class TestEnvironment {
         public static IContainer Container { get; } = ((Func<IContainer>)(() => {
+            Environment.SetEnvironmentVariable("SHARPLAB_CONTAINER_EXPERIMENT_KEY", "_");
+            Environment.SetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_URL", "http://localhost/test");
+            Environment.SetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_ACCESS_TOKEN", "_");
+
             var builder = new ContainerBuilder();
             new Startup().ConfigureContainer(builder);
             return builder.Build();

@@ -15,6 +15,10 @@ namespace SharpLab.Tests.Internal {
         protected override void Load(ContainerBuilder builder) {
             base.Load(builder);
 
+            builder.RegisterType<StubHttpClientFactory>()
+                   .As<IHttpClientFactory>()
+                   .SingleInstance();
+
             builder.RegisterInstance<Func<HttpClient>>(() => new HttpClient(new TestDataMessageHandler()))
                    .As<Func<HttpClient>>()
                    .SingleInstance();

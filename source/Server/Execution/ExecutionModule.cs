@@ -49,9 +49,9 @@ namespace SharpLab.Server.Execution {
                    .SingleInstance();
 
             var containerHostUrl = Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_URL")
-                ?? throw new Exception("Required key SHARPLAB_CONTAINER_HOST_URL was not provided.");
+                ?? throw new Exception("Required environment variable SHARPLAB_CONTAINER_HOST_URL was not provided.");
             var containerAuthorizationToken = Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_ACCESS_TOKEN")
-                ?? throw new Exception("Required key SHARPLAB_CONTAINER_HOST_URL was not provided.");
+                ?? throw new Exception("Required environment variable SHARPLAB_CONTAINER_HOST_URL was not provided.");
 
             builder.RegisterInstance(new ContainerClientSettings(new Uri(containerHostUrl), containerAuthorizationToken))
                    .AsSelf();
