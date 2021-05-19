@@ -19,7 +19,7 @@ namespace SharpLab.Container.Manager.Internal {
             var cancelled = false;
             while (outputEndIndex < 0) {
                 var (read, readCancelled) = await ReadWithCancellationAsync(stream, byteBuffer, byteIndex, byteBuffer.Length - byteIndex, cancellationToken);
-                if (readCancelled) {                    
+                if (readCancelled) {
                     cancelled = true;
                     break;
                 }

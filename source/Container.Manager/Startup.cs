@@ -30,6 +30,8 @@ namespace SharpLab.Container.Manager
 
             // TODO: DI
             var manager = new DockerManager(new StdinWriter(), new StdoutReader(), new DockerClientConfiguration());
+            manager.Start();
+
             app.UseEndpoints(endpoints => {
                 endpoints.MapPost("/", async context => {
                     var sessionId = context.Request.Headers["Sl-Session-Id"][0]!;
@@ -38,7 +40,7 @@ namespace SharpLab.Container.Manager
 
                     context.Response.StatusCode = 200;
                     using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted);
-                    timeoutSource.CancelAfter(10000);
+                    timeoutSource.CancelAfter(5000);
                     try {
                         var result = await manager.ExecuteAsync(sessionId, memoryStream.ToArray(), timeoutSource.Token);
                         var bytes = new byte[Encoding.UTF8.GetByteCount(result.Span)];
