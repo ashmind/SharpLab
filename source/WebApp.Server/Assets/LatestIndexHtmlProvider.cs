@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 
@@ -17,8 +18,8 @@ namespace SharpLab.WebApp.Server.Assets {
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<string> GetIndexHtmlContentAsync() {
-            var (htmlUrl, htmlString) = await GetRawIndexHtmlAsync();
+        public async Task<string> GetIndexHtmlContentAsync(CancellationToken cancellationToken) {
+            var (htmlUrl, htmlString) = await GetRawIndexHtmlAsync(cancellationToken);
 
             var html = new HtmlDocument();
             html.LoadHtml(htmlString);
@@ -46,10 +47,10 @@ namespace SharpLab.WebApp.Server.Assets {
             element.SetAttributeValue(attributeName, new Uri(baseUrl, url).ToString());
         }
 
-        private async Task<(Uri url, string content)> GetRawIndexHtmlAsync() {
+        private async Task<(Uri url, string content)> GetRawIndexHtmlAsync(CancellationToken cancellationToken) {
             using var client = _httpClientFactory.CreateClient();
 
-            var indexUrlRelative = await client.GetStringAsync(_latestUrlAbsolute);
+            var indexUrlRelative = await client.GetStringAsync(_latestUrlAbsolute, cancellationToken);
             var indexUrl = new Uri(_baseUrl, new Uri(indexUrlRelative, UriKind.Relative));
 
             return (indexUrl, await client.GetStringAsync(indexUrl));

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using ProtoBuf;
 using SharpLab.Container.Internal;
@@ -33,9 +34,12 @@ namespace SharpLab.Container {
 
         private static void HandleCommand(StdinCommand command, ref bool shouldExit) {
             if (command is ExecuteCommand execute) {
+                var stopwatch = Stopwatch.StartNew();
                 Console.WriteLine("EXECUTE");
                 _executor.Execute(new MemoryStream(execute.AssemblyBytes));
-                Console.Out.Write(execute.OutputEndMarker);
+                Console.Out.Write($"PERFORMANCE:");
+                Console.Out.Write($"\n  CONTAINER: {stopwatch.ElapsedMilliseconds,16}ms");
+                Console.Out.Write(execute.OutputEndMarker);                
                 Console.Out.Flush();
                 return;
             }

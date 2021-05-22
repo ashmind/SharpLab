@@ -1,11 +1,6 @@
 name: sharplab
 
 services:
-  
-- name: container-build
-  executable: dotnet
-  args: watch build --no-restore
-  workingDirectory: source/Container
 
 - name: container-manager
   project: source/Container.Manager/Container.Manager.csproj

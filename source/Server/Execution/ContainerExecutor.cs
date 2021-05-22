@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using MirrorSharp.Advanced;
@@ -18,8 +19,11 @@ namespace SharpLab.Server.Execution {
             if (!session.GetContainerExperimentAccessAllowed())
                 throw new UnauthorizedAccessException("Current session is not allowed access to container experiment.");
 
-            using (streams)
-                return await _client.ExecuteAsync(session.GetSessionId(), streams.AssemblyStream, cancellationToken);
+            using (streams) {
+                var stopwatch = Stopwatch.StartNew();
+                var output = await _client.ExecuteAsync(session.GetSessionId(), streams.AssemblyStream, cancellationToken);
+                return output + $"\n  TOTAL: {stopwatch.ElapsedMilliseconds,20}ms";
+            }
         }
     }
 }
