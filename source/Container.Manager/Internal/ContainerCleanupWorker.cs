@@ -51,10 +51,12 @@ namespace SharpLab.Container.Manager.Internal {
 
             var removeTasks = new List<Task>();
             foreach (var container in await client.Containers.ListContainersAsync(new ContainersListParameters { All = true })) {
-                if (!container.Names.Any(_containerNameFormat.IsNameFromPreviousManager))
+                var removableName = container.Names.FirstOrDefault(_containerNameFormat.IsNameFromPreviousManager);
+                if (removableName is null)
                     continue;
 
-                removeTasks.Add(StopAndRemoveContainerAsync(client, container.ID));
+                _logger.LogInformation($"Removing container from previous run: {removableName}");
+                removeTasks.Add(TryStopContainerAsync(client, container.ID));
             }
             await Task.WhenAll(removeTasks);
         }
@@ -77,7 +79,7 @@ namespace SharpLab.Container.Manager.Internal {
                 _logger.LogError(ex, $"Failed to dispose stream for container {containerId}");
             }
 
-            await StopAndRemoveContainerAsync(client, containerId);
+            await TryStopContainerAsync(client, containerId);
 
             try {
                 client.Dispose();
@@ -87,7 +89,7 @@ namespace SharpLab.Container.Manager.Internal {
             }
         }
 
-        private async Task StopAndRemoveContainerAsync(DockerClient client, string containerId) {
+        private async Task TryStopContainerAsync(DockerClient client, string containerId) {
             try {
                 await client.Containers.StopContainerAsync(
                     containerId, new ContainerStopParameters { WaitBeforeKillSeconds = 1 }
@@ -95,15 +97,6 @@ namespace SharpLab.Container.Manager.Internal {
             }
             catch (Exception ex) {
                 _logger.LogError(ex, $"Failed to stop container {containerId}");
-            }
-
-            try {
-                await client.Containers.RemoveContainerAsync(
-                    containerId, new ContainerRemoveParameters { Force = true }
-                );
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, $"Failed to remove container {containerId}");
             }
         }
     }

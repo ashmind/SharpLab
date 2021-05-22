@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Docker.DotNet;
@@ -12,6 +13,7 @@ namespace SharpLab.Container.Manager.Internal {
         private readonly DockerClientConfiguration _dockerClientConfiguration;
         private readonly ContainerNameFormat _containerNameFormat;
         private readonly ContainerCleanupWorker _containerCleanup;
+        private readonly string _containerExeShadowCopyPath;
         private readonly ILogger<ContainerAllocationWorker> _logger;
 
         public ContainerAllocationWorker(
@@ -25,10 +27,12 @@ namespace SharpLab.Container.Manager.Internal {
             _dockerClientConfiguration = dockerClientConfiguration;
             _containerNameFormat = containerNameFormat;
             _containerCleanup = containerCleanup;
+            _containerExeShadowCopyPath = Path.Combine(Path.GetTempPath(), "SharpLab.Container", Guid.NewGuid().ToString("N"));
             _logger = logger;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken) {
+            ShadowCopyContainerExe();
             while (!stoppingToken.IsCancellationRequested) {
                 try {
                     await _containerPool.PreallocatedContainersWriter.WaitToWriteAsync(stoppingToken);
@@ -41,6 +45,15 @@ namespace SharpLab.Container.Manager.Internal {
                 }
             }
             _containerPool.PreallocatedContainersWriter.Complete();
+        }
+
+        private void ShadowCopyContainerExe() {
+            Directory.CreateDirectory(_containerExeShadowCopyPath);
+            foreach (var filePath in Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory)) {
+                var copyFilePath = Path.Combine(_containerExeShadowCopyPath, Path.GetFileName(filePath));
+                _logger.LogInformation("Shadow-copying {0} to {1}", filePath, copyFilePath);
+                File.Copy(filePath, copyFilePath);
+            }
         }
 
         private async Task<ActiveContainer> CreateAndStartContainerAsync(CancellationToken cancellationToken) {
@@ -62,7 +75,7 @@ namespace SharpLab.Container.Manager.Internal {
                     HostConfig = new HostConfig {
                         Mounts = new[] {
                             new Mount {
-                                Source = AppDomain.CurrentDomain.BaseDirectory,
+                                Source = _containerExeShadowCopyPath,
                                 Target = @"c:\app",
                                 Type = "bind",
                                 ReadOnly = true
