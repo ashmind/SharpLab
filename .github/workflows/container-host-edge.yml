@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/container-host-edge.yml'
+      - '.github/actions/deploy-artifact-to-azure-windows-vm/**'
       - 'source/**'
       - '!source/WebApp/**'
   pull_request:
