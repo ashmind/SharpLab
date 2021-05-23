@@ -41,6 +41,7 @@ jobs:
     if: github.ref == 'refs/heads/features/container-run'
     environment: edge-container-host
     steps:
+      - uses: actions/checkout@v2
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
