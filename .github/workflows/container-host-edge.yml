@@ -42,9 +42,14 @@ jobs:
     environment: edge-container-host
     steps:
       - uses: actions/checkout@v2
+
+      - run: 'git show ${{ github.sha }} --format="::set-output name=version_number::%cd" --date=format:%Y-%m-%d-%H%M --no-patch'
+        id: version
+
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - uses: ./.github/actions/deploy-artifact-to-azure-windows-vm
         with:
           artifact-name: Container.Manager
@@ -53,4 +58,6 @@ jobs:
           azure-vm: 'sharplab-container-host'
           artifact-download-path: 'C:\Temp\Container.Manager.zip'
           deploy-script-inline: |
-            Write-Host 'TODO: Deploy'
+            $deploymentPath = "C:\Deployments\${{ steps.version.outputs.version_number }}"
+            [IO.Directory]::CreateDirectory($deploymentPath)
+            Expand-Archive -Path $ArtifactDownloadPath -DestinationPath $deploymentPath

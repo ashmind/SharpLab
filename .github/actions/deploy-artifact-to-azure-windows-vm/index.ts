@@ -13,14 +13,18 @@ import { AzureCliCredential } from '@azure/identity';
         const azureVMName = core.getInput('azure-vm-name');
         const artifactName = core.getInput('artifact-name');
         const artifactDownloadPath = core.getInput('artifact-download-path');
+        const deployScript = core.getInput('deploy-script-inline');
 
         const artifactUrl = await getArtifactUrl(artifactName);
+        console.log(`Artifact URL: ${artifactUrl}`);
+
         await uploadArtifactAndRunDeploy({
             azureSubscriptionId,
             azureResourceGroupName,
             azureVMName,
             artifactUrl,
-            artifactDownloadPath
+            artifactDownloadPath,
+            deployScript
         });
     }
     catch (e) {
@@ -42,13 +46,15 @@ async function uploadArtifactAndRunDeploy({
     azureResourceGroupName,
     azureVMName,
     artifactUrl,
-    artifactDownloadPath
+    artifactDownloadPath,
+    deployScript
 }: {
     azureSubscriptionId: string,
     azureResourceGroupName: string,
     azureVMName: string,
     artifactUrl: string,
-    artifactDownloadPath: string
+    artifactDownloadPath: string,
+    deployScript: string
 }) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const token = (await new AzureCliCredential().getToken('https://management.azure.com/.default'))!.token;
@@ -58,10 +64,12 @@ async function uploadArtifactAndRunDeploy({
         commandId: 'RunPowerShellScript',
         script: [
             "$ErrorActionPreference = 'Stop'",
-            `Invoke-RestMethod $ArtifactUrl -OutFile "${artifactDownloadPath}"`
+            `Invoke-RestMethod $ArtifactUrl -OutFile $ArtifactDownloadPath`,
+            deployScript
         ],
         parameters: [
-            { name: 'ArtifactUrl', value: artifactUrl }
+            { name: 'ArtifactUrl', value: artifactUrl },
+            { name: 'ArtifactDownloadPath', value: artifactDownloadPath }
         ]
     });
 
