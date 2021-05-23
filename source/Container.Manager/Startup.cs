@@ -45,8 +45,14 @@ namespace SharpLab.Container.Manager {
                 ?? throw new Exception("Required environment variable SHARPLAB_CONTAINER_HOST_ACCESS_TOKEN was not provided.")
             );
 
-            var handler = app.ApplicationServices.GetRequiredService<ExecutionHandler>();
             app.UseEndpoints(endpoints => {
+                var okBytes = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes("OK"));
+                endpoints.MapGet("/status", context => {
+                    context.Response.ContentType = "text/plain";
+                    return context.Response.BodyWriter.WriteAsync(okBytes).AsTask();
+                });
+
+                var handler = app.ApplicationServices.GetRequiredService<ExecutionHandler>();
                 endpoints.MapPost("/", async context => {
                     var stopwatch = Stopwatch.StartNew();
                     // TODO: Proper structure

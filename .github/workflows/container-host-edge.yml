@@ -62,6 +62,17 @@ jobs:
           azure-vm: 'sharplab-container-host'
           artifact-download-path: 'D:\Container.Manager.zip'
           deploy-script-inline: |
+            Set-StrictMode -Version 2
+            $ErrorActionPreference = 'Stop'
+            $SiteName = 'SharpLab.Container.Manager'
+
             $deploymentPath = "C:\Deployments\${{ steps.version.outputs.version_number }}"
             [IO.Directory]::CreateDirectory($deploymentPath)
             Expand-Archive -Path $ArtifactDownloadPath -DestinationPath $deploymentPath
+
+            Import-Module IISAdministration
+            Set-ItemProperty IIS:\Sites\$SiteName -name physicalPath -value $deploymentPath
+            Restart-WebAppPool (Get-Website -Name $SiteName).ApplicationPool
+
+      - run: Invoke-RestMethod "http://sharplab-container-host.eastus.cloudapp.azure.com/status" -MaximumRetryCount 10 -RetryIntervalSec 2
+        shell: pwsh

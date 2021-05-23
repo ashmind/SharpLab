@@ -66,13 +66,14 @@ async function uploadArtifactAndRunDeploy({
     const token = (await new AzureCliCredential().getToken('https://management.azure.com/.default'))!.token;
     const computeClient = new ComputeManagementClient(new TokenCredentials(token), azureSubscriptionId);
 
-    console.log('DEBUG: computeClient.virtualMachines.runCommand');
+    console.log('Running command on the VM...');
     const result = (await computeClient.virtualMachines.runCommand(azureResourceGroupName, azureVMName, {
         commandId: 'RunPowerShellScript',
         script: [
             'param ([string] $ArtifactUrl, [string] $ArtifactUrlToken, [string] $ArtifactDownloadPath)',
             "$ErrorActionPreference = 'Stop'",
-            'Invoke-RestMethod $ArtifactUrl -Headers @{ Authorization = "Bearer $ArtifactUrlToken" } -OutFile $ArtifactDownloadPath',
+            '$ArtifactUrlTokenSecure = (ConvertTo-SecureString -String $ArtifactUrlToken -AsPlainText -Force)',
+            'Invoke-RestMethod $ArtifactUrl -Authentication Bearer -Token $ArtifactUrlTokenSecure -OutFile $ArtifactDownloadPath',
             deployScript
         ],
         parameters: [
@@ -93,12 +94,12 @@ async function uploadArtifactAndRunDeploy({
             continue;
 
         if (code === 'ComponentStatus/StdErr/succeeded') {
-            console.error(`[VM] ${message}`);
+            console.error(message);
             error = message;
             continue;
         }
 
-        console.log(`[VM] ${message}`);
+        console.log(message);
     }
 
     if (error)
