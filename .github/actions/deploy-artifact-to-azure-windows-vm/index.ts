@@ -10,12 +10,12 @@ import { AzureCliCredential } from '@azure/identity';
     try {
         const azureSubscriptionId = core.getInput('azure-subscription');
         const azureResourceGroupName = core.getInput('azure-resource-group');
-        const azureVMName = core.getInput('azure-vm-name');
+        const azureVMName = core.getInput('azure-vm');
         const artifactName = core.getInput('artifact-name');
         const artifactDownloadPath = core.getInput('artifact-download-path');
         const deployScript = core.getInput('deploy-script-inline');
 
-        const artifactUrl = await getArtifactUrl(artifactName);
+        const artifactUrl = process.env.LOCAL_TEST_ARTIFACT_URL ?? await getArtifactUrl(artifactName);
         console.log(`Artifact URL: ${artifactUrl}`);
 
         await uploadArtifactAndRunDeploy({
@@ -56,16 +56,15 @@ async function uploadArtifactAndRunDeploy({
     artifactDownloadPath: string,
     deployScript: string
 }) {
-    console.log('DEBUG: new AzureCliCredential().getToken');
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const token = (await new AzureCliCredential().getToken('https://management.azure.com/.default'))!.token;
-    console.log('DEBUG: new ComputeManagementClient');
     const computeClient = new ComputeManagementClient(new TokenCredentials(token), azureSubscriptionId);
 
     console.log('DEBUG: computeClient.virtualMachines.runCommand');
-    const result = await computeClient.virtualMachines.runCommand(azureResourceGroupName, azureVMName, {
+    const result = (await computeClient.virtualMachines.runCommand(azureResourceGroupName, azureVMName, {
         commandId: 'RunPowerShellScript',
         script: [
+            'param ([string] $ArtifactUrl, [string] $ArtifactDownloadPath)',
             "$ErrorActionPreference = 'Stop'",
             `Invoke-RestMethod $ArtifactUrl -OutFile $ArtifactDownloadPath`,
             deployScript
@@ -74,7 +73,27 @@ async function uploadArtifactAndRunDeploy({
             { name: 'ArtifactUrl', value: artifactUrl },
             { name: 'ArtifactDownloadPath', value: artifactDownloadPath }
         ]
-    });
+    })) as unknown as {
+        properties: { output: { value: [{
+            code: 'ComponentStatus/StdOut/succeeded'|'ComponentStatus/StdErr/succeeded',
+            message: string
+        } ] } }
+    };
 
-    console.log(JSON.stringify(result));
+    let error = null;
+    for (const { code, message } of result.properties.output.value) {
+        if (!message)
+            continue;
+
+        if (code === 'ComponentStatus/StdErr/succeeded') {
+            console.error(`[VM] ${message}`);
+            error = message;
+            continue;
+        }
+
+        console.log(`[VM] ${message}`);
+    }
+
+    if (error)
+        throw new Error(`Deploy script reported error from the VM: ${error}`);
 }

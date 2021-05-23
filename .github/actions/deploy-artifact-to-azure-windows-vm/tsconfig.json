@@ -4,6 +4,7 @@
         "moduleResolution": "node",
         "noEmit": true,
         "strict": true,
+        "noImplicitAny": true,
         "importsNotUsedAsValues": "error",
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true
