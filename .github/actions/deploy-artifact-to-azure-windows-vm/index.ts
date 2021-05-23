@@ -65,14 +65,14 @@ async function uploadArtifactAndRunDeploy({
     const result = (await computeClient.virtualMachines.runCommand(azureResourceGroupName, azureVMName, {
         commandId: 'RunPowerShellScript',
         script: [
-            'param ([string] $ArtifactUrl, [string] $ArtifactDownloadPath)',
+            'param ([string] $ArtifactUrl, [string] $ArtifactUrlToken, [string] $ArtifactDownloadPath)',
             "$ErrorActionPreference = 'Stop'",
-            `Invoke-RestMethod $ArtifactUrl -Headers @{ Authorization = $ArtifactUrlAuthorization } -OutFile $ArtifactDownloadPath`,
+            'Invoke-RestMethod $ArtifactUrl -Headers @{ Authorization = "Bearer $ArtifactUrlToken" } -OutFile $ArtifactDownloadPath',
             deployScript
         ],
         parameters: [
             { name: 'ArtifactUrl', value: artifactUrl },
-            { name: 'ArtifactUrlAuthorization', value: `Bearer ${getRuntimeToken()}` },
+            { name: 'ArtifactUrlToken', value: getRuntimeToken() },
             { name: 'ArtifactDownloadPath', value: artifactDownloadPath }
         ]
     })) as unknown as {
