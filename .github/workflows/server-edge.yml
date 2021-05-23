@@ -6,6 +6,8 @@ on:
       - '.github/workflows/server-edge.yml'
       - 'source/**'
       - '!source/WebApp/**'
+      - '!source/Container/**'
+      - '!source/Container.Manager/**'
   pull_request:
 
 jobs:
