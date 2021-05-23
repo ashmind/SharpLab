@@ -28,6 +28,11 @@ import { AzureCliCredential } from '@azure/identity';
         });
     }
     catch (e) {
+        const error = e as Error & { trace?: string };
+        if (error.trace) {
+            core.setFailed(error.message + '\n' + error.trace);
+            return;
+        }
         core.setFailed(e);
     }
 })();
