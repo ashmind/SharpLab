@@ -46,6 +46,9 @@ jobs:
       - run: 'git show ${{ github.sha }} --format="::set-output name=version_number::%cd" --date=format:%Y-%m-%d-%H%M --no-patch'
         id: version
 
+      - run: npm ci
+        working-directory: ./.github/actions/deploy-artifact-to-azure-windows-vm
+
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
