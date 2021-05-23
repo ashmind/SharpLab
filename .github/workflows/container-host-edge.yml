@@ -60,7 +60,7 @@ jobs:
           azure-subscription: ${{ secrets.TEMP_AZURE_SUBSCRIPTION_ID }}
           azure-resource-group: ${{ secrets.TEMP_AZURE_RESOURCE_GROUP }}
           azure-vm: 'sharplab-container-host'
-          artifact-download-path: 'C:\Temp\Container.Manager.zip'
+          artifact-download-path: 'D:\Container.Manager.zip'
           deploy-script-inline: |
             $deploymentPath = "C:\Deployments\${{ steps.version.outputs.version_number }}"
             [IO.Directory]::CreateDirectory($deploymentPath)

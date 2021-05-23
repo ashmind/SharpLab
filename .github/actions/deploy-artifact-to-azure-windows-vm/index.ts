@@ -1,6 +1,7 @@
 import * as core from '@actions/core';
 // TODO: replace internal use with direct REST access
 import { DownloadHttpClient } from '@actions/artifact/lib/internal/download-http-client';
+import { getRuntimeToken } from '@actions/artifact/lib/internal/config-variables';
 import { ComputeManagementClient } from '@azure/arm-compute';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import { AzureCliCredential } from '@azure/identity';
@@ -8,12 +9,12 @@ import { AzureCliCredential } from '@azure/identity';
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 (async () => {
     try {
-        const azureSubscriptionId = core.getInput('azure-subscription');
-        const azureResourceGroupName = core.getInput('azure-resource-group');
-        const azureVMName = core.getInput('azure-vm');
-        const artifactName = core.getInput('artifact-name');
-        const artifactDownloadPath = core.getInput('artifact-download-path');
-        const deployScript = core.getInput('deploy-script-inline');
+        const azureSubscriptionId = core.getInput('azure-subscription', { required: true });
+        const azureResourceGroupName = core.getInput('azure-resource-group', { required: true });
+        const azureVMName = core.getInput('azure-vm', { required: true });
+        const artifactName = core.getInput('artifact-name', { required: true });
+        const artifactDownloadPath = core.getInput('artifact-download-path', { required: true });
+        const deployScript = core.getInput('deploy-script-inline', { required: true });
 
         const artifactUrl = process.env.LOCAL_TEST_ARTIFACT_URL ?? await getArtifactUrl(artifactName);
         console.log(`Artifact URL: ${artifactUrl}`);
@@ -66,11 +67,12 @@ async function uploadArtifactAndRunDeploy({
         script: [
             'param ([string] $ArtifactUrl, [string] $ArtifactDownloadPath)',
             "$ErrorActionPreference = 'Stop'",
-            `Invoke-RestMethod $ArtifactUrl -OutFile $ArtifactDownloadPath`,
+            `Invoke-RestMethod $ArtifactUrl -Headers @{ Authorization = $ArtifactUrlAuthorization } -OutFile $ArtifactDownloadPath`,
             deployScript
         ],
         parameters: [
             { name: 'ArtifactUrl', value: artifactUrl },
+            { name: 'ArtifactUrlAuthorization', value: `Bearer ${getRuntimeToken()}` },
             { name: 'ArtifactDownloadPath', value: artifactDownloadPath }
         ]
     })) as unknown as {
