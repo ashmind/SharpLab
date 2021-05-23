@@ -7,7 +7,7 @@ import OutputViewGraph from './internal/app-output-view-graph';
 
 export default Vue.component('app-output-view', {
     props: {
-        output: Object as () => Array<OutputItem>|string // Array || string
+        output: [Array, String] as unknown as () => Array<OutputItem>|string // Array || string
     },
     computed: {
         parsedOutput(): ReadonlyArray<OutputItem> {
