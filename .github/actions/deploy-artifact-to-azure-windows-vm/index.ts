@@ -39,15 +39,12 @@ async function getArtifactUrl(name: string) {
     if (!artifact)
         throw new Error(`Artifact '${name}' was not found.`);
 
-    const items = await client.getContainerItems(artifact.name, artifact.fileContainerResourceUrl);
-    if (items.count !== 1)
-        throw new Error(`Artifact '${name}' has ${items.count} items: ${items.value.map(i => i.path).join(', ')}. Only 1 item per artifact is currently supported.`);
+    const files = (await client.getContainerItems(artifact.name, artifact.fileContainerResourceUrl))
+        .value.filter(i => i.itemType === 'file');
+    if (files.length !== 1)
+        throw new Error(`Artifact '${name}' has ${files.length} files. Only 1 file per artifact is currently supported.`);
 
-    const [item] = items.value;
-    if (item.itemType !== 'file')
-        throw new Error(`Artifact '${name}' item ${item.path} is a '${item.itemType}'. Only 'file' items are currently supported.`);
-
-    return item.contentLocation;
+    return files[0].contentLocation;
 }
 
 async function uploadArtifactAndRunDeploy({
