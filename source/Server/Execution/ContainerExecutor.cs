@@ -22,7 +22,7 @@ namespace SharpLab.Server.Execution {
             using (streams) {
                 var stopwatch = Stopwatch.StartNew();
                 var output = await _client.ExecuteAsync(session.GetSessionId(), streams.AssemblyStream, cancellationToken);
-                return output + $"\n  TOTAL: {stopwatch.ElapsedMilliseconds,20}ms";
+                return output + $"\n  CONTAINER EXECUTOR: {stopwatch.ElapsedMilliseconds,8}ms";
             }
         }
     }

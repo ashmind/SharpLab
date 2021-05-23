@@ -24,6 +24,7 @@ function getResultType(target: TargetName|string) {
         case targets.ast: return 'ast';
         case targets.explain: return 'explain';
         case targets.run: return 'run';
+        case targets.runc: return 'run';
         default: return 'code';
     }
 }

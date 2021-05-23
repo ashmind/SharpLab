@@ -2,8 +2,8 @@ using System;
 using System.Reflection;
 using System.Runtime.Loader;
 
-namespace SharpLab.Container.Internal {
-    public class CustomAssemblyLoadContext : AssemblyLoadContext, IDisposable {
+namespace SharpLab.Container.Execution {
+    internal class CustomAssemblyLoadContext : AssemblyLoadContext, IDisposable {
         public CustomAssemblyLoadContext() : base(isCollectible: true) {
         }
 

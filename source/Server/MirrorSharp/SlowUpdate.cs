@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -81,7 +82,9 @@ namespace SharpLab.Server.MirrorSharp {
                 if (targetName is TargetNames.Run or TargetNames.RunContainer or TargetNames.IL)
                     symbolStream = _memoryStreamManager.GetStream();
 
+                var compilationStopwatch = Stopwatch.StartNew();
                 var compiled = await _compiler.TryCompileToStreamAsync(assemblyStream, symbolStream, session, diagnostics, cancellationToken).ConfigureAwait(false);
+                compilationStopwatch.Stop();
                 if (!compiled.assembly) {
                     assemblyStream.Dispose();
                     symbolStream?.Dispose();
@@ -103,7 +106,7 @@ namespace SharpLab.Server.MirrorSharp {
                     return _executor.Execute(streams, session);
 
                 if (targetName == TargetNames.RunContainer)
-                    return await _containerExecutor.ExecuteAsync(streams, session, cancellationToken);
+                    return (await _containerExecutor.ExecuteAsync(streams, session, cancellationToken)) + $"\n  COMPILATION: {compilationStopwatch.ElapsedMilliseconds,15}ms";
 
                 // it's fine not to Dispose() here -- MirrorSharp will dispose it after calling WriteResult()
                 return streams;
@@ -121,12 +124,21 @@ namespace SharpLab.Server.MirrorSharp {
                 return;
             }
 
+            var targetName = GetAndEnsureTargetName(session);
             if (result is string s) {
+                if (targetName == TargetNames.RunContainer) {
+                    writer.WriteStartObject();
+                    writer.WriteProperty("output", s);
+                    writer.WritePropertyStartArray("flow");
+                    writer.WriteEndArray();
+                    writer.WriteEndObject();
+                    return;
+                }
+
                 writer.WriteValue(s);
                 return;
             }
 
-            var targetName = GetAndEnsureTargetName(session);
             if (targetName == TargetNames.Ast) {
                 var astTarget = _astTargets[session.LanguageName];
                 astTarget.SerializeAst(result, writer, session);

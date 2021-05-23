@@ -74,7 +74,7 @@ namespace SharpLab.Container.Manager {
                         var bytes = new byte[Encoding.UTF8.GetByteCount(result.Span)];
                         Encoding.UTF8.GetBytes(result.Span, bytes);
                         await context.Response.BodyWriter.WriteAsync(bytes, context.RequestAborted);
-                        await context.Response.BodyWriter.WriteAsync(Encoding.UTF8.GetBytes($"\n  CONTAINER MANAGER: {stopwatch.ElapsedMilliseconds,8}ms"), context.RequestAborted);
+                        await context.Response.BodyWriter.WriteAsync(Encoding.UTF8.GetBytes($"\n  [VM] CONTAINER MANAGER: {stopwatch.ElapsedMilliseconds,4}ms"), context.RequestAborted);
                     }
                     catch (Exception ex) {
                         await context.Response.WriteAsync(ex.ToString(), context.RequestAborted);

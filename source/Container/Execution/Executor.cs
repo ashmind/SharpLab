@@ -1,8 +1,8 @@
 using System;
 using System.IO;
 
-namespace SharpLab.Container.Internal {
-    public class Executor {
+namespace SharpLab.Container.Execution {
+    internal class Executor {
         public void Execute(Stream stream) {
             using var context = new CustomAssemblyLoadContext();
 

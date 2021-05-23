@@ -2,8 +2,10 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using ProtoBuf;
-using SharpLab.Container.Internal;
+using SharpLab.Container.Execution;
 using SharpLab.Container.Protocol.Stdin;
+using SharpLab.Container.Runtime;
+using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Container {
     public static class Program {
@@ -20,8 +22,11 @@ namespace SharpLab.Container {
 
         public static void SafeMain() {
             using var input = Console.OpenStandardInput(1024);
+            using var output = Console.OpenStandardOutput(1024);
 
             Console.WriteLine("START");
+            RuntimeServices.InspectionWriter = new InspectionWriter(output);
+            RuntimeServices.ValuePresenter = new ValuePresenter();
 
             var shouldExit = false;
             while (!shouldExit) {
@@ -38,7 +43,7 @@ namespace SharpLab.Container {
                 Console.WriteLine("EXECUTE");
                 _executor.Execute(new MemoryStream(execute.AssemblyBytes));
                 Console.Out.Write($"PERFORMANCE:");
-                Console.Out.Write($"\n  CONTAINER: {stopwatch.ElapsedMilliseconds,16}ms");
+                Console.Out.Write($"\n  [VM] CONTAINER: {stopwatch.ElapsedMilliseconds,12}ms");
                 Console.Out.Write(execute.OutputEndMarker);                
                 Console.Out.Flush();
                 return;

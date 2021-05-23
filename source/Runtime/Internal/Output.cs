@@ -14,18 +14,27 @@ namespace SharpLab.Runtime.Internal {
         public static TextWriter Writer { get; } = new OutputWriter();
 
         public static void WriteWarning(string message) {
-            WriteObject(new SimpleInspection("Warning", message));
+            Write(new SimpleInspection("Warning", message));
+        }
+
+        public static void Write(SimpleInspection inspection) {
+            if (RuntimeServices.InspectionWriter is {} writer) {
+                writer.Write(inspection);
+                return;
+            }
+
+            WriteObject(inspection);
         }
 
         public static void Write(IInspection inspection) {
             WriteObject(inspection);
         }
 
-        public static void Write(string value) {
+        private static void Write(string value) {
             WriteObject(value);
         }
 
-        public static void Write(char[] value) {
+        private static void Write(char[] value) {
             WriteObject(value);
         }
 
