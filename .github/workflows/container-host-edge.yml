@@ -70,7 +70,7 @@ jobs:
             [IO.Directory]::CreateDirectory($deploymentPath)
             Expand-Archive -Path $ArtifactDownloadPath -DestinationPath $deploymentPath
 
-            Import-Module IISAdministration
+            Import-Module WebAdministration
             Set-ItemProperty IIS:\Sites\$SiteName -name physicalPath -value $deploymentPath
             Restart-WebAppPool (Get-Website -Name $SiteName).ApplicationPool
 
