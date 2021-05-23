@@ -21,6 +21,6 @@ export default {
     }),
 
     getCode: (language: LanguageName|undefined, target: TargetName|string|undefined) => code[
-        (target === targets.run ? language + '.run' : language) as string
+        ((target === targets.run || target === targets.runc) ? language + '.run' : language) as string
     ] ?? ''
 };
