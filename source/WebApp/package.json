@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "ts-node-script ./scripts.ts build",
-    "lint": "ts-node-script ./scripts.ts tsLint",
+    "lint": "ts-node-script ./scripts.ts ts-lint",
     "test": "jest",
     "start": "ts-node-script ./scripts.ts start --watch",
     "build-ci": "ts-node-script ./scripts.ts build-ci"

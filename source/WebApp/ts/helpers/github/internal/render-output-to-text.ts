@@ -1,6 +1,9 @@
 import type { OutputItem } from '../../../types/results';
 
-export default function renderOutputToText(output: ReadonlyArray<OutputItem>) {
+export default function renderOutputToText(output: ReadonlyArray<OutputItem>|string) {
+    if (typeof output === 'string')
+        return output;
+
     return output.map(item => {
         if (typeof item === 'string')
             return item;
