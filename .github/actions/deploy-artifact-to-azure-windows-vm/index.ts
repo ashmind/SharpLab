@@ -28,11 +28,6 @@ import { AzureCliCredential } from '@azure/identity';
         });
     }
     catch (e) {
-        const error = e as Error & { trace?: string };
-        if (error.trace) {
-            core.setFailed(error.message + '\n' + error.trace);
-            return;
-        }
         core.setFailed(e);
     }
 })();
@@ -61,10 +56,13 @@ async function uploadArtifactAndRunDeploy({
     artifactDownloadPath: string,
     deployScript: string
 }) {
+    console.log('DEBUG: new AzureCliCredential().getToken');
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const token = (await new AzureCliCredential().getToken('https://management.azure.com/.default'))!.token;
+    console.log('DEBUG: new ComputeManagementClient');
     const computeClient = new ComputeManagementClient(new TokenCredentials(token), azureSubscriptionId);
 
+    console.log('DEBUG: computeClient.virtualMachines.runCommand');
     const result = await computeClient.virtualMachines.runCommand(azureResourceGroupName, azureVMName, {
         commandId: 'RunPowerShellScript',
         script: [
