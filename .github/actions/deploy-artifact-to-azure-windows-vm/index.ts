@@ -39,7 +39,15 @@ async function getArtifactUrl(name: string) {
     if (!artifact)
         throw new Error(`Artifact '${name}' was not found.`);
 
-    return artifact.url;
+    const items = await client.getContainerItems(artifact.name, artifact.fileContainerResourceUrl);
+    if (items.count !== 1)
+        throw new Error(`Artifact '${name}' has ${items.count} items. Only 1 item per artifact is currently supported.`);
+
+    const [item] = items.value;
+    if (item.itemType !== 'file')
+        throw new Error(`Artifact '${name}' item ${item.path} is a '${item.itemType}'. Only 'file' items are currently supported.`);
+
+    return item.contentLocation;
 }
 
 async function uploadArtifactAndRunDeploy({
@@ -67,7 +75,7 @@ async function uploadArtifactAndRunDeploy({
         script: [
             'param ([string] $ArtifactUrl, [string] $ArtifactUrlToken, [string] $ArtifactDownloadPath)',
             "$ErrorActionPreference = 'Stop'",
-            'Invoke-RestMethod $ArtifactUrl -Headers @{ Authorization = "Bearer $ArtifactUrlToken" } -OutFile $ArtifactDownloadPath',
+            'Invoke-RestMethod $ArtifactUrl -OutFile $ArtifactDownloadPath',
             deployScript
         ],
         parameters: [
