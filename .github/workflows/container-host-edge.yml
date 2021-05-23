@@ -24,8 +24,8 @@ jobs:
     # https://github.com/actions/setup-dotnet/issues/155
     - run: dotnet nuget locals all --clear
 
-    - run: msbuild source/Native.Profiler/Native.Profiler.vcxproj /p:SolutionName=SharpLab /p:Configuration=Release /p:Platform=x64
-    - run: dotnet publish source/Container.Manager --no-build --configuration Release
+    #- run: msbuild source/Native.Profiler/Native.Profiler.vcxproj /p:SolutionName=SharpLab /p:Configuration=Release /p:Platform=x64
+    - run: dotnet publish source/Container.Manager --configuration Release
     - run: Compress-Archive -Path 'source/Container.Manager/bin/Release/net5.0/publish/*' -DestinationPath 'Container.Manager.zip'
       shell: pwsh
 
