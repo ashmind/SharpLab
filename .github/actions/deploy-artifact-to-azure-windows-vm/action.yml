@@ -1,0 +1,25 @@
+name: 'Deploy GitHub Artifact to Azure VM (Windows)'
+description: 'Uploads GitHub artifact to the Azure VM, then runs a custom deployment script'
+inputs:
+  azure-subscription:
+    description: '(TODO: Get from az cli) Azure Subscription Id of the target VM'
+    required: true
+  azure-resource-group:
+    description: 'Azure Resource Group Name of the target VM'
+    required: true
+  azure-vm:
+    description: 'Name of the target VM'
+    required: true
+  artifact-name:
+    description: 'Name of the artifact to deploy (from the current run)'
+    required: true
+  artifact-download-path:
+    description: 'Path where the artifact should be downloaded (on the target VM)'
+    required: true
+  deploy-script-inline:
+    description: 'Deploy script to be run once the artifact is downloaded (on the target VM)'
+    required: true
+
+runs:
+  using: 'node14'
+  main: 'index.js'

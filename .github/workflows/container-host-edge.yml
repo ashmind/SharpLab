@@ -1,0 +1,55 @@
+name: Container Host (.NET) - Edge
+
+on:
+  push:
+    paths:
+      - '.github/workflows/container-host-edge.yml'
+      - 'source/**'
+      - '!source/WebApp/**'
+  pull_request:
+
+jobs:
+  build:
+    name: 'Build (.NET 5)'
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'true'
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - uses: microsoft/setup-msbuild@v1.0.2
+
+    # https://github.com/actions/setup-dotnet/issues/155
+    - run: dotnet nuget locals all --clear
+
+    - run: msbuild source/Native.Profiler/Native.Profiler.vcxproj /p:SolutionName=SharpLab /p:Configuration=Release /p:Platform=x64
+    - run: dotnet publish source/Container.Manager --no-build --configuration Release
+    - run: Compress-Archive -Path 'source/Container.Manager/bin/Release/net5.0/publish/*' -DestinationPath 'Container.Manager.zip'
+      shell: pwsh
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Container.Manager
+        path: Container.Manager.zip
+
+  deploy:
+    name: 'Deploy (Edge)'
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/features/container-run'
+    environment: edge-container-host
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: ./.github/actions/deploy-artifact-to-azure-windows-vm
+        with:
+          artifact-name: Container.Manager
+          azure-subscription: ${{ secrets.TEMP_AZURE_SUBSCRIPTION_ID }}
+          azure-resource-group: ${{ secrets.TEMP_AZURE_RESOURCE_GROUP }}
+          azure-vm: 'sharplab-container-host'
+          artifact-download-path: 'C:\Temp\Container.Manager.zip'
+          deploy-script-inline: |
+            Write-Host 'TODO: Deploy'

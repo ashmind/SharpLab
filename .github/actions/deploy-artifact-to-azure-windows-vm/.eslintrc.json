@@ -1,0 +1,85 @@
+{
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "ignorePatterns": ["index.js"],
+    "parserOptions": {
+        "ecmaVersion": 8,
+        "sourceType": "module",
+        "project": "tsconfig.json"
+    },
+    "plugins": [
+        "@typescript-eslint",
+        "import"
+    ],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:import/errors",
+        "plugin:import/warnings"
+    ],
+    "env": {
+        "node": true
+    },
+    "rules": {
+        "comma-dangle": "error",
+        "radix": "error",
+        "no-undefined": "error",
+        "no-duplicate-imports": "error",
+        "strict": "error",
+        "eqeqeq": ["error", "always", { "null": "ignore" }],
+        "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+        "no-sync": "error",
+        "no-new": "warn",
+        "linebreak-style": ["warn", "windows"],
+        "eol-last": ["warn", "never"],
+        "object-curly-spacing": ["warn", "always"],
+        "arrow-parens": ["warn", "as-needed"],
+        "dot-location": ["warn", "property"],
+        "operator-linebreak": ["warn", "before"],
+        "func-style": ["warn", "declaration", { "allowArrowFunctions": true }],
+        "prefer-object-spread": "warn",
+        "no-mixed-operators": "warn",
+        "space-infix-ops": "warn",
+        "comma-spacing": "warn",
+        "no-path-concat": "warn",
+        "semi": "off",
+
+        "@typescript-eslint/promise-function-async": "off",
+        "@typescript-eslint/no-use-before-define": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-unsafe-call": "error",
+        "@typescript-eslint/no-unsafe-member-access": "error",
+        "@typescript-eslint/no-unsafe-return": "error",
+        "@typescript-eslint/no-unnecessary-type-arguments": "warn",
+        "@typescript-eslint/no-unnecessary-type-assertion": "warn",
+        "@typescript-eslint/no-unnecessary-condition": "warn",
+        "@typescript-eslint/no-floating-promises": "warn",
+        "@typescript-eslint/no-misused-promises": "warn",
+        "@typescript-eslint/unbound-method": "warn",
+        "@typescript-eslint/indent": ["warn", 4, { "SwitchCase": 1, "ignoredNodes": [
+            "TSTypeAliasDeclaration *",
+            "TSTypeReference *",
+            "MemberExpression"
+        ] }],
+        "@typescript-eslint/quotes": ["error", "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
+        "@typescript-eslint/brace-style": ["warn", "stroustrup", { "allowSingleLine": true }],
+        "@typescript-eslint/semi": ["error"],
+        "@typescript-eslint/restrict-template-expressions": ["error", { "allowBoolean": true, "allowNumber": true }],
+        "@typescript-eslint/array-type": ["error", { "default": "generic" }],
+        "@typescript-eslint/prefer-readonly": "warn",
+        "@typescript-eslint/prefer-nullish-coalescing": "warn",
+        "@typescript-eslint/prefer-includes": "warn",
+        "@typescript-eslint/prefer-string-starts-ends-with": "warn",
+        "@typescript-eslint/prefer-optional-chain": "warn",
+
+        // conflicts with TypeScript
+        "import/no-unresolved": "off",
+        // conflicts with ESLint
+        "import/no-duplicates": "off",
+        "import/named": "off",
+        "import/extensions": ["error", "never"],
+        "import/order": ["warn", { "newlines-between": "never" }],
+        "import/newline-after-import": "warn"
+    }
+}
