@@ -41,7 +41,7 @@ async function getArtifactUrl(name: string) {
 
     const items = await client.getContainerItems(artifact.name, artifact.fileContainerResourceUrl);
     if (items.count !== 1)
-        throw new Error(`Artifact '${name}' has ${items.count} items. Only 1 item per artifact is currently supported.`);
+        throw new Error(`Artifact '${name}' has ${items.count} items: ${items.value.map(i => i.path).join(', ')}. Only 1 item per artifact is currently supported.`);
 
     const [item] = items.value;
     if (item.itemType !== 'file')
