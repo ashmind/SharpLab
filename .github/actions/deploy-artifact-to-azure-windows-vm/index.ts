@@ -72,8 +72,7 @@ async function uploadArtifactAndRunDeploy({
         script: [
             'param ([string] $ArtifactUrl, [string] $ArtifactUrlToken, [string] $ArtifactDownloadPath)',
             "$ErrorActionPreference = 'Stop'",
-            '$ArtifactUrlTokenSecure = (ConvertTo-SecureString -String $ArtifactUrlToken -AsPlainText -Force)',
-            'Invoke-RestMethod $ArtifactUrl -Authentication Bearer -Token $ArtifactUrlTokenSecure -OutFile $ArtifactDownloadPath',
+            'Invoke-RestMethod $ArtifactUrl -Headers @{ Authorization = "Bearer $ArtifactUrlToken" } -OutFile $ArtifactDownloadPath',
             deployScript
         ],
         parameters: [
