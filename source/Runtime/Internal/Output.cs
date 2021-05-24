@@ -26,6 +26,15 @@ namespace SharpLab.Runtime.Internal {
             WriteObject(inspection);
         }
 
+        public static void Write(MemoryInspection inspection) {
+            if (RuntimeServices.InspectionWriter is {} writer) {
+                writer.Write(inspection);
+                return;
+            }
+
+            WriteObject(inspection);
+        }
+
         public static void Write(IInspection inspection) {
             WriteObject(inspection);
         }

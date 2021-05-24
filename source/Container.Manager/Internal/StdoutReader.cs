@@ -8,8 +8,8 @@ using static Docker.DotNet.MultiplexedStream;
 namespace SharpLab.Container.Manager.Internal {
     public class StdoutReader {
         public async Task<(ReadOnlyMemory<char> output, bool failed)> ReadOutputAsync(MultiplexedStream stream, string outputEndMarker, CancellationToken cancellationToken) {
-            var byteBuffer = new byte[1024];
-            var charBuffer = new char[1024];
+            var byteBuffer = new byte[2048];
+            var charBuffer = new char[2048];
 
             var decoder = Encoding.UTF8.GetDecoder();
 

@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using Microsoft.Diagnostics.Runtime;
 using ProtoBuf;
 using SharpLab.Container.Execution;
 using SharpLab.Container.Protocol.Stdin;
@@ -25,8 +27,7 @@ namespace SharpLab.Container {
             using var output = Console.OpenStandardOutput(1024);
 
             Console.WriteLine("START");
-            RuntimeServices.InspectionWriter = new InspectionWriter(output);
-            RuntimeServices.ValuePresenter = new ValuePresenter();
+            SetupRuntimeServices(output);
 
             var shouldExit = false;
             while (!shouldExit) {
@@ -38,6 +39,17 @@ namespace SharpLab.Container {
             }
 
             Console.WriteLine("END");
+        }
+
+        private static void SetupRuntimeServices(Stream output) {
+            var valuePresenter = new ValuePresenter();
+            RuntimeServices.ValuePresenter = new ValuePresenter();
+            RuntimeServices.InspectionWriter = new InspectionWriter(output);
+            RuntimeServices.MemoryBytesInspector = new MemoryBytesInspector(new Pool<ClrRuntime>(() => {
+                var dataTarget = DataTarget.AttachToProcess(Current.ProcessId, uint.MaxValue, AttachFlag.Passive);
+                return dataTarget.ClrVersions.Single(c => c.Flavor == ClrFlavor.Core).CreateRuntime();
+            }));
+            RuntimeServices.MemoryGraphBuilderFactory = argumentNames => new MemoryGraphBuilder(argumentNames, valuePresenter);
         }
 
         private static void HandleExecuteCommand(ExecuteCommand command, ref bool shouldExit) {

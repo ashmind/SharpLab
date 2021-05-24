@@ -31,7 +31,7 @@ namespace SharpLab.Container.Manager.Internal {
 
             context.Response.StatusCode = 200;
             using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted);
-            timeoutSource.CancelAfter(5000);
+            timeoutSource.CancelAfter(10000);
             try {
                 var result = await _handler.ExecuteAsync(sessionId, memoryStream.ToArray(), timeoutSource.Token);
                 var bytes = new byte[Encoding.UTF8.GetByteCount(result.Span)];
