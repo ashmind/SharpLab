@@ -68,7 +68,7 @@ jobs:
 
             $deploymentPath = "C:\Deployments\${{ steps.version.outputs.version_number }}"
             [IO.Directory]::CreateDirectory($deploymentPath) | Out-Null
-            Expand-Archive -Path $ArtifactDownloadPath -DestinationPath $deploymentPath
+            Expand-Archive -Path $ArtifactDownloadPath -DestinationPath $deploymentPath -Force
 
             Import-Module WebAdministration
             Set-ItemProperty IIS:\Sites\$SiteName -name physicalPath -value $deploymentPath
