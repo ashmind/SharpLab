@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Docker.DotNet;
@@ -30,6 +29,7 @@ namespace SharpLab.Container.Manager.Internal {
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken) {
+            _logger.LogInformation("ContainerAllocationWorker starting");
             while (!stoppingToken.IsCancellationRequested) {
                 try {
                     await _containerPool.PreallocatedContainersWriter.WaitToWriteAsync(stoppingToken);
@@ -45,12 +45,13 @@ namespace SharpLab.Container.Manager.Internal {
         }
 
         private async Task<ActiveContainer> CreateAndStartContainerAsync(CancellationToken cancellationToken) {
-            var memoryLimit = 50 * 1024 * 1024;
+            var containerName = _containerNameFormat.GenerateName();
+            _logger.LogDebug($"Allocating container {containerName}");
             var client = _dockerClientConfiguration.CreateClient();
             string containerId;
             try {
                 containerId = (await client.Containers.CreateContainerAsync(new CreateContainerParameters {
-                    Name = _containerNameFormat.GenerateName(),
+                    Name = containerName,
                     Image = "mcr.microsoft.com/dotnet/runtime:5.0",
                     Cmd = new[] { @"c:\\app\SharpLab.Container.exe" },
 
@@ -69,8 +70,7 @@ namespace SharpLab.Container.Manager.Internal {
                                 ReadOnly = true
                             }
                         },
-                        Memory = memoryLimit,
-                        //MemorySwap = memoryLimit,
+                        Memory = 50 * 1024 * 1024,
                         CPUQuota = 50000,
 
                         AutoRemove = true

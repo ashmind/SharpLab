@@ -1,12 +1,8 @@
 using System;
-using System.Diagnostics;
-using System.IO;
 using System.Text;
-using System.Threading;
 using Docker.DotNet;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SharpLab.Container.Manager.Internal;
@@ -18,6 +14,13 @@ namespace SharpLab.Container.Manager {
         public void ConfigureServices(IServiceCollection services)
         {
             // TODO: proper DI, e.g. Autofac
+            var executionAuthorization = "Bearer " + (
+                Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_ACCESS_TOKEN")
+                ?? throw new Exception("Required environment variable SHARPLAB_CONTAINER_HOST_ACCESS_TOKEN was not provided.")
+            );
+            services.AddSingleton(new ExecutionEndpointSettings(executionAuthorization));
+            services.AddSingleton<ExecutionEndpoint>();
+
             services.AddSingleton<DockerClientConfiguration>();
 
             services.AddSingleton<ContainerNameFormat>();
@@ -39,12 +42,6 @@ namespace SharpLab.Container.Manager {
 
             app.UseRouting();
 
-            // TODO: DI
-            var expectedAuthorization = "Bearer " + (
-                Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_ACCESS_TOKEN")
-                ?? throw new Exception("Required environment variable SHARPLAB_CONTAINER_HOST_ACCESS_TOKEN was not provided.")
-            );
-
             app.UseEndpoints(endpoints => {
                 var okBytes = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes("OK"));
                 endpoints.MapGet("/status", context => {
@@ -52,34 +49,8 @@ namespace SharpLab.Container.Manager {
                     return context.Response.BodyWriter.WriteAsync(okBytes).AsTask();
                 });
 
-                var handler = app.ApplicationServices.GetRequiredService<ExecutionHandler>();
-                endpoints.MapPost("/", async context => {
-                    var stopwatch = Stopwatch.StartNew();
-                    // TODO: Proper structure
-                    var authorization = context.Request.Headers["Authorization"][0];
-                    if (authorization != expectedAuthorization) {
-                        context.Response.StatusCode = 401;
-                        return;
-                    }
-
-                    var sessionId = context.Request.Headers["Sl-Session-Id"][0]!;
-                    var memoryStream = new MemoryStream();
-                    await context.Request.Body.CopyToAsync(memoryStream);
-
-                    context.Response.StatusCode = 200;
-                    using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted);
-                    timeoutSource.CancelAfter(5000);
-                    try {
-                        var result = await handler.ExecuteAsync(sessionId, memoryStream.ToArray(), timeoutSource.Token);
-                        var bytes = new byte[Encoding.UTF8.GetByteCount(result.Span)];
-                        Encoding.UTF8.GetBytes(result.Span, bytes);
-                        await context.Response.BodyWriter.WriteAsync(bytes, context.RequestAborted);
-                        await context.Response.BodyWriter.WriteAsync(Encoding.UTF8.GetBytes($"\n  [VM] CONTAINER MANAGER: {stopwatch.ElapsedMilliseconds,4}ms"), context.RequestAborted);
-                    }
-                    catch (Exception ex) {
-                        await context.Response.WriteAsync(ex.ToString(), context.RequestAborted);
-                    }
-                });
+                var endpoint = app.ApplicationServices.GetRequiredService<ExecutionEndpoint>();
+                endpoints.MapPost("/", endpoint.ExecuteAsync);
             });
         }
     }

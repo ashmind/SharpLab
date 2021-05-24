@@ -28,6 +28,7 @@ namespace SharpLab.Container.Manager.Internal {
         } 
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken) {
+            _logger.LogInformation("ContainerCleanupWorker starting");
             try {
                 await RemovePreviousContainersOnStartupAsync();
             }
@@ -58,7 +59,10 @@ namespace SharpLab.Container.Manager.Internal {
                 _logger.LogInformation($"Removing container from previous run: {removableName}");
                 removeTasks.Add(TryStopContainerAsync(client, container.ID));
             }
+
+            _logger.LogInformation("Waiting for removal to complete");
             await Task.WhenAll(removeTasks);
+            _logger.LogInformation("Removal completed");
         }
 
         public void QueueForCleanup(DockerClient client, string containerId, MultiplexedStream? stream) {

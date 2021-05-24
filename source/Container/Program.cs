@@ -30,6 +30,7 @@ namespace SharpLab.Container {
 
             var shouldExit = false;
             while (!shouldExit) {
+                Console.WriteLine("READ COMMAND");
                 var command = Serializer.DeserializeWithLengthPrefix<StdinCommand>(input, PrefixStyle.Base128);
                 HandleCommand(command, ref shouldExit);
             }
