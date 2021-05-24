@@ -31,30 +31,24 @@ namespace SharpLab.Container {
             var shouldExit = false;
             while (!shouldExit) {
                 Console.WriteLine("READ COMMAND");
-                var command = Serializer.DeserializeWithLengthPrefix<StdinCommand>(input, PrefixStyle.Base128);
-                HandleCommand(command, ref shouldExit);
+                var command = Serializer.DeserializeWithLengthPrefix<ExecuteCommand?>(input, PrefixStyle.Base128);
+                if (command == null)
+                    break; // end-of-input
+                HandleExecuteCommand(command, ref shouldExit);
             }
 
             Console.WriteLine("END");
         }
 
-        private static void HandleCommand(StdinCommand command, ref bool shouldExit) {
-            if (command is ExecuteCommand execute) {
-                var stopwatch = Stopwatch.StartNew();
-                Console.WriteLine("EXECUTE");
-                _executor.Execute(new MemoryStream(execute.AssemblyBytes));
-                Console.Out.Write($"PERFORMANCE:");
-                Console.Out.Write($"\n  [VM] CONTAINER: {stopwatch.ElapsedMilliseconds,12}ms");
-                Console.Out.Write(execute.OutputEndMarker);                
-                Console.Out.Flush();
-                return;
-            }
-
-            if (command is ExitCommand) {
-                Console.WriteLine("EXIT");
-                shouldExit = true;
-                return;
-            }
+        private static void HandleExecuteCommand(ExecuteCommand command, ref bool shouldExit) {
+            var stopwatch = Stopwatch.StartNew();
+            Console.WriteLine("EXECUTE");
+            _executor.Execute(new MemoryStream(command.AssemblyBytes));
+            Console.Out.Write($"PERFORMANCE:");
+            Console.Out.Write($"\n  [VM] CONTAINER: {stopwatch.ElapsedMilliseconds,12}ms");
+            Console.Out.Write(command.OutputEndMarker);                
+            Console.Out.Flush();
+            return;
         }
     }
 }
