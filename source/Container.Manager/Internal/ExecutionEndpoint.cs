@@ -11,10 +11,12 @@ namespace SharpLab.Container.Manager.Internal {
     public class ExecutionEndpoint {
         private readonly ExecutionHandler _handler;
         private readonly ExecutionEndpointSettings _settings;
+        private readonly SessionDebugLog _sessionDebugLog;
 
-        public ExecutionEndpoint(ExecutionHandler handler, ExecutionEndpointSettings settings) {
+        public ExecutionEndpoint(ExecutionHandler handler, ExecutionEndpointSettings settings, SessionDebugLog sessionDebugLog) {
             _handler = handler;
             _settings = settings;
+            _sessionDebugLog = sessionDebugLog;
         }
 
         public async Task ExecuteAsync(HttpContext context) {
@@ -34,6 +36,12 @@ namespace SharpLab.Container.Manager.Internal {
             timeoutSource.CancelAfter(10000);
             try {
                 var result = await _handler.ExecuteAsync(sessionId, memoryStream.ToArray(), timeoutSource.Token);
+                await context.Response.WriteAsync($"[Session Debug Log]\n", context.RequestAborted);
+                foreach (var message in _sessionDebugLog.GetAllLogMessages(sessionId)) {
+                    await context.Response.WriteAsync(message, context.RequestAborted);
+                }
+                await context.Response.WriteAsync($"[Session Debug Log]\n\n", context.RequestAborted);
+
                 var bytes = new byte[Encoding.UTF8.GetByteCount(result.Span)];
                 Encoding.UTF8.GetBytes(result.Span, bytes);
                 await context.Response.BodyWriter.WriteAsync(bytes, context.RequestAborted);

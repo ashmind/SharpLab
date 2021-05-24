@@ -9,32 +9,41 @@ namespace SharpLab.Container.Manager.Internal {
         private readonly StdinWriter _stdinWriter;
         private readonly StdoutReader _stdoutReader;
         private readonly ContainerCleanupWorker _cleanupWorker;
+        private readonly SessionDebugLog _sessionDebugLog;
 
         public ExecutionHandler(
             ContainerPool containerPool,
             StdinWriter stdinWriter,
             StdoutReader stdoutReader,
-            ContainerCleanupWorker cleanupWorker
+            ContainerCleanupWorker cleanupWorker,
+            SessionDebugLog sessionDebugLog
         ) {
             _containerPool = containerPool;
             _stdinWriter = stdinWriter;
             _stdoutReader = stdoutReader;
             _cleanupWorker = cleanupWorker;
+            _sessionDebugLog = sessionDebugLog;
         }
 
         public async Task<ReadOnlyMemory<char>> ExecuteAsync(string sessionId, byte[] assemblyBytes, CancellationToken cancellationToken) {
             // Note that _containers are never accessed through multiple threads for the same session id,
             // so atomicity is not required within same session id
-            if (_containerPool.GetSessionContainer(sessionId) is not {} container)
+            if (_containerPool.GetSessionContainer(sessionId) is not {} container) {
+                _sessionDebugLog.LogMessage(sessionId, "Requesting new container");
                 container = await _containerPool.AllocateSessionContainerAsync(sessionId, _cleanupWorker.QueueForCleanup, cancellationToken);
+            }
 
             try {
+                _sessionDebugLog.LogMessage(sessionId, "Executing in container");
                 var (output, outputFailed) = await ExecuteInContainerAsync(container, assemblyBytes, cancellationToken);
-                if (outputFailed)
+                if (outputFailed) {
+                    _sessionDebugLog.LogMessage(sessionId, "Output failed, dropping container");
                     _containerPool.RemoveSessionContainer(sessionId);
+                }
                 return output;
             }
             catch {
+                _sessionDebugLog.LogMessage(sessionId, "Execute failed, dropping container");
                 _containerPool.RemoveSessionContainer(sessionId);
                 throw;
             }
