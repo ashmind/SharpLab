@@ -22,10 +22,15 @@ namespace SharpLab.Container {
             }
         }
 
-        public static void SafeMain() {
+        private static void SafeMain() {
             using var input = Console.OpenStandardInput(1024);
             using var output = Console.OpenStandardOutput(1024);
 
+            SafeMain(input, output);
+        }
+
+        // TODO: Change test structure so that this can be inlined
+        internal static void SafeMain(Stream input, Stream output) {
             Console.WriteLine("START");
             SetupRuntimeServices(output);
 

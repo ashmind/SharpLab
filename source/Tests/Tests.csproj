@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>SharpLab.Tests</AssemblyName>
@@ -34,6 +34,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Container.Manager\Container.Manager.csproj" />
+    <ProjectReference Include="..\Container\Container.csproj" />
     <ProjectReference Include="..\Server\Server.csproj" />
   </ItemGroup>
 
