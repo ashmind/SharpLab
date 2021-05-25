@@ -48,7 +48,7 @@ namespace SharpLab.Tests.Internal {
         public void AssertIsExpected(string? result, ITestOutputHelper output) {
             var cleanResult = RemoveNonDeterminism(result?.Trim());
             output.WriteLine(cleanResult ?? "<null>");
-            Assert.Equal(_expected, cleanResult);
+            Assert.Equal(NormalizeNewLines(_expected), NormalizeNewLines(cleanResult));
         }
 
         private string? RemoveNonDeterminism(string? result) {
@@ -78,6 +78,9 @@ namespace SharpLab.Tests.Internal {
 
             return result;
         }
-    }
 
+        private string? NormalizeNewLines(string? value) {
+            return value?.Replace("\r\n", "\n");
+        }
+    }
 }

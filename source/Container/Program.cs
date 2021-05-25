@@ -47,9 +47,6 @@ namespace SharpLab.Container {
         }
 
         private static void SetupRuntimeServices(Stream output) {
-            if (RuntimeServices.ValuePresenter != null)
-                throw new Exception("OH NO");
-
             var valuePresenter = new ValuePresenter();
             RuntimeServices.ValuePresenter = new ValuePresenter();
             RuntimeServices.InspectionWriter = new InspectionWriter(output);

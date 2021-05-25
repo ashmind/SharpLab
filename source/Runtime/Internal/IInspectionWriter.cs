@@ -1,6 +1,7 @@
 namespace SharpLab.Runtime.Internal {
     internal interface IInspectionWriter {
-        void Write(SimpleInspection inspection);
-        void Write(MemoryInspection inspection);
+        void WriteSimple(SimpleInspection simple);
+        void WriteMemory(MemoryInspection memory);
+        void WriteMemoryGraph(MemoryGraphInspection graph);
     }
 }
