@@ -1,12 +1,15 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Loader;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using ProtoBuf;
 using SharpLab.Container;
 using SharpLab.Container.Protocol.Stdin;
+using SharpLab.Runtime.Internal;
 using SharpLab.Server.Common.Internal;
 
 namespace SharpLab.Tests.Of.Container.Internal {
@@ -20,7 +23,16 @@ namespace SharpLab.Tests.Of.Container.Internal {
 
             var stdout = new MemoryStream();
 
-            Program.SafeMain(stdin, stdout);
+            // Requied to ensure RuntimeServices from different tests do not interfere with each other
+            var containerContext = new AssemblyLoadContext(null, isCollectible: true);
+            containerContext.LoadFromAssemblyPath(typeof(ProtoWriter).Assembly.Location);
+            containerContext.LoadFromAssemblyPath(typeof(Serializer).Assembly.Location);
+            containerContext.LoadFromAssemblyPath(typeof(RuntimeServices).Assembly.Location);
+            containerContext.LoadFromAssemblyPath(typeof(Program).Assembly.Location)
+                .GetType(typeof(Program).FullName!, throwOnError: true)!
+                .GetMethod(nameof(Program.Run), BindingFlags.Static | BindingFlags.NonPublic)!
+                .Invoke(null, new[] { stdin, stdout });
+            containerContext.Unload();
 
             return Encoding.UTF8.GetString(stdout.ToArray());
         }

@@ -46,7 +46,7 @@ namespace SharpLab.Tests.Internal {
         }
 
         public void AssertIsExpected(string? result, ITestOutputHelper output) {
-            var cleanResult = RemoveNonDeterminism(result);
+            var cleanResult = RemoveNonDeterminism(result?.Trim());
             output.WriteLine(cleanResult ?? "<null>");
             Assert.Equal(_expected, cleanResult);
         }
