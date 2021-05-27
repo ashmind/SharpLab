@@ -14,12 +14,12 @@ namespace SharpLab.Container.Manager.Azure {
 
         private readonly DockerClientConfiguration _dockerClientConfiguration;
         private readonly TelemetryClient _telemetryClient;
-        private readonly Logger<ContainerCountMetricReporter> _logger;
+        private readonly ILogger<ContainerCountMetricReporter> _logger;
 
         public ContainerCountMetricReporter(
             DockerClientConfiguration dockerClientConfiguration,
             TelemetryClient telemetryClient,
-            Logger<ContainerCountMetricReporter> logger
+            ILogger<ContainerCountMetricReporter> logger
         ) {
             _dockerClientConfiguration = dockerClientConfiguration;
             _telemetryClient = telemetryClient;

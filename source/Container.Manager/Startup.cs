@@ -42,8 +42,10 @@ namespace SharpLab.Container.Manager {
 
         private void ConfigureAzureDependentServices(IServiceCollection services) {
             var instrumentationKey = Environment.GetEnvironmentVariable("SHARPLAB_TELEMETRY_KEY");
-            if (instrumentationKey == null)
+            if (instrumentationKey == null) {
+                Console.WriteLine("[WARN] AppInsights instrumentation key was not found.");
                 return;
+            }
 
             var configuration = new TelemetryConfiguration { InstrumentationKey = instrumentationKey };
             services.AddSingleton(new TelemetryClient(configuration));
