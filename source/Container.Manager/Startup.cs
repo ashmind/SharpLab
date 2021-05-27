@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SharpLab.Container.Manager.Azure;
 using SharpLab.Container.Manager.Internal;
 
 namespace SharpLab.Container.Manager {
@@ -36,16 +37,17 @@ namespace SharpLab.Container.Manager {
             services.AddSingleton<StdinWriter>();
             services.AddSingleton<StdoutReader>();
 
-            ConfigureAzureServices(services);
+            ConfigureAzureDependentServices(services);
         }
 
-        private void ConfigureAzureServices(IServiceCollection services) {
+        private void ConfigureAzureDependentServices(IServiceCollection services) {
             var instrumentationKey = Environment.GetEnvironmentVariable("SHARPLAB_TELEMETRY_KEY");
             if (instrumentationKey == null)
                 return;
 
             var configuration = new TelemetryConfiguration { InstrumentationKey = instrumentationKey };
             services.AddSingleton(new TelemetryClient(configuration));
+            services.AddHostedService<ContainerCountMetricReporter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
