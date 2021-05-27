@@ -1,6 +1,8 @@
 using System;
 using System.Text;
 using Docker.DotNet;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +35,17 @@ namespace SharpLab.Container.Manager {
             services.AddSingleton<ExecutionHandler>();
             services.AddSingleton<StdinWriter>();
             services.AddSingleton<StdoutReader>();
+
+            ConfigureAzureServices(services);
+        }
+
+        private void ConfigureAzureServices(IServiceCollection services) {
+            var instrumentationKey = Environment.GetEnvironmentVariable("SHARPLAB_TELEMETRY_KEY");
+            if (instrumentationKey == null)
+                return;
+
+            var configuration = new TelemetryConfiguration { InstrumentationKey = instrumentationKey };
+            services.AddSingleton(new TelemetryClient(configuration));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
