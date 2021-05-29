@@ -124,21 +124,12 @@ namespace SharpLab.Server.MirrorSharp {
                 return;
             }
 
-            var targetName = GetAndEnsureTargetName(session);
             if (result is string s) {
-                if (targetName == TargetNames.RunContainer) {
-                    writer.WriteStartObject();
-                    writer.WriteProperty("output", s);
-                    writer.WritePropertyStartArray("flow");
-                    writer.WriteEndArray();
-                    writer.WriteEndObject();
-                    return;
-                }
-
                 writer.WriteValue(s);
                 return;
             }
 
+            var targetName = GetAndEnsureTargetName(session);
             if (targetName == TargetNames.Ast) {
                 var astTarget = _astTargets[session.LanguageName];
                 astTarget.SerializeAst(result, writer, session);

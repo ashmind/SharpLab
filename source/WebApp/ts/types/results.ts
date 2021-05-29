@@ -129,5 +129,5 @@ export interface ErrorResult extends ResultBase {
     readonly value?: undefined;
 }
 
-export type NonErrorResult = CodeResult|AstResult|ExplainResult;
+export type NonErrorResult = CodeResult|AstResult|ExplainResult|RunResult;
 export type Result = NonErrorResult|ErrorResult;

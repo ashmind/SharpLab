@@ -2,8 +2,8 @@
     <small class="disclaimer">
       This is a new feature — might be unstable/too strict. Please <a href="https://github.com/ashmind/SharpLab/issues">report</a> any issues.
     </small>
-    <div class="output-empty" v-show="parsedOutput.length === 0">Completed — no output.</div>
-    <template v-for="item in parsedOutput">
+    <div class="output-empty" v-show="output.length === 0">Completed — no output.</div>
+    <template v-for="item in output">
       <pre v-if="typeof item === 'string'">{{item}}</pre>
       <sub-output-view-group v-else-if="item.type === 'inspection:group'" v-bind:group="item"></sub-output-view-group>
       <sub-output-view-simple v-else-if="item.type === 'inspection:simple'" v-bind:inspection="item"></sub-output-view-simple>

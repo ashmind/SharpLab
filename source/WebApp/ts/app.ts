@@ -4,7 +4,7 @@ import type { CodeRange } from './types/code-range';
 import type { AstItem, CodeResult, NonErrorResult, Result, DiagnosticError, DiagnosticWarning } from './types/results';
 import type { Gist } from './types/gist';
 import type { App, AppData, AppDefinition, AppStatus } from './types/app';
-import type { PartiallyMutable } from './helpers/partially-mutable';
+import { PartiallyMutable, partiallyMutable } from './helpers/partially-mutable';
 import type { ServerOptions } from './types/server-options';
 import './polyfills/index';
 import trackFeature from './helpers/track-feature';
@@ -17,6 +17,7 @@ import url from './state/handlers/url';
 import defaults from './state/handlers/defaults';
 import uiAsync from './ui/index';
 import { containerRunServerOptions } from './experiments/container-run';
+import parseOutput from './helpers/parse-output';
 
 function getResultType(target: TargetName|string) {
     switch (target) {
@@ -66,11 +67,14 @@ function applyUpdateResult(this: App, updateResult: MirrorSharpSlowUpdateResult<
         }
     }
     if (this.options.target === targets.il && result.value) {
-        const ilResult = result as PartiallyMutable<CodeResult & { value: NonNullable<string> }, 'ranges'|'value'>;
+        const ilResult = result as PartiallyMutable<CodeResult & { value: string }, 'ranges'|'value'>;
         const { code, ranges } = extractRangesFromIL(ilResult.value);
         ilResult.value = code;
         ilResult.ranges = ranges;
     }
+    if (result.type === 'run' && result.value)
+        partiallyMutable(result)<'value'>().value = parseOutput(result.value as string);
+
     this.result = result as NonErrorResult;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.lastResultOfType[result.type] = result as any;

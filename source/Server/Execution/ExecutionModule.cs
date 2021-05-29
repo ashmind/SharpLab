@@ -53,6 +53,10 @@ namespace SharpLab.Server.Execution {
             var containerAuthorizationToken = Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_ACCESS_TOKEN")
                 ?? throw new Exception("Required environment variable SHARPLAB_CONTAINER_HOST_URL was not provided.");
 
+            builder.RegisterType<ContainerFlowReportingRewriter>()
+                   .As<IContainerAssemblyRewriter>()
+                   .SingleInstance();
+
             builder.RegisterInstance(new ContainerClientSettings(new Uri(containerHostUrl), containerAuthorizationToken))
                    .AsSelf();
 

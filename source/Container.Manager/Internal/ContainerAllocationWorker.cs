@@ -62,6 +62,7 @@ namespace SharpLab.Container.Manager.Internal {
 
                     NetworkDisabled = true,
                     HostConfig = new HostConfig {
+                        Isolation = "process",
                         Mounts = new[] {
                             new Mount {
                                 Source = AppDomain.CurrentDomain.BaseDirectory,

@@ -36,7 +36,6 @@ namespace SharpLab.Container {
 
             var shouldExit = false;
             while (!shouldExit) {
-                Console.WriteLine("READ COMMAND");
                 var command = Serializer.DeserializeWithLengthPrefix<ExecuteCommand?>(input, PrefixStyle.Base128);
                 if (command == null)
                     break; // end-of-input
@@ -50,6 +49,7 @@ namespace SharpLab.Container {
             var valuePresenter = new ValuePresenter();
             RuntimeServices.ValuePresenter = new ValuePresenter();
             RuntimeServices.InspectionWriter = new InspectionWriter(output);
+            RuntimeServices.FlowWriter = new FlowWriter(output, RuntimeServices.ValuePresenter);
             RuntimeServices.MemoryBytesInspector = new MemoryBytesInspector(new Pool<ClrRuntime>(() => {
                 var dataTarget = DataTarget.AttachToProcess(Current.ProcessId, uint.MaxValue, AttachFlag.Passive);
                 return dataTarget.ClrVersions.Single(c => c.Flavor == ClrFlavor.Core).CreateRuntime();
@@ -58,12 +58,12 @@ namespace SharpLab.Container {
         }
 
         private static void HandleExecuteCommand(ExecuteCommand command, ref bool shouldExit) {
+            ((FlowWriter)RuntimeServices.FlowWriter).Reset();
             var stopwatch = Stopwatch.StartNew();
-            Console.WriteLine("EXECUTE");
             _executor.Execute(new MemoryStream(command.AssemblyBytes));
             Console.Out.Write($"PERFORMANCE:");
             Console.Out.Write($"\n  [VM] CONTAINER: {stopwatch.ElapsedMilliseconds,12}ms");
-            Console.Out.Write(command.OutputEndMarker);                
+            Console.Out.Write(command.OutputEndMarker);
             Console.Out.Flush();
             return;
         }
