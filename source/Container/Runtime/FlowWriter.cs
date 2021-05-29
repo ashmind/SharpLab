@@ -1,24 +1,16 @@
 using System;
-using System.Buffers.Text;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
+using System.Text.Json;
+using System.Threading;
+using SharpLab.Container.Protocol;
 using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Container.Runtime {
-    internal class FlowWriter : IFlowWriter {
-        private static class Strings {
-            public static readonly byte[] FlowPrefix = Encoding.UTF8.GetBytes("#fl:");
-            public static readonly byte[][] Integers = Enumerable.Range(0, 25)
-                .Select(n => Encoding.UTF8.GetBytes(n.ToString()))
-                .ToArray();
-        }
+    using static JsonStrings;
 
-        private static class ReportLimits {
-            public const int MaxStepCount = 50;
-            public const int MaxStepNotesPerLine = 3;
-            public const int MaxValuesPerStep = 3;
+    internal partial class FlowWriter : IFlowWriter {
+        private static class Limits {
+            public const int MaxRecords = 50;
+            public const int MaxValuesPerLine = 3;
 
             public static readonly ValuePresenterLimits ValueName = new(maxValueLength: 10);
             public static readonly ValuePresenterLimits ValueValue = new(
@@ -26,114 +18,134 @@ namespace SharpLab.Container.Runtime {
             );
         }
 
-        private readonly Stream _stream;
-        private readonly IValuePresenter _valuePresenter;
-        //private readonly FlowStep[] _steps = new FlowStep[50];
-        //private int _currentStepCount = 0;
+        private readonly StdoutJsonLineWriter _stdoutWriter;
+        private readonly ContainerUtf8ValuePresenter _valuePresenter;
+        private readonly FlowRecord[] _records = new FlowRecord[50];
+        private readonly int[] _valueCountsPerLine = new int[75];
+        private int _currentRecordIndex = -1;
 
-        private int _stepCount = 0;
-
-        public FlowWriter(Stream stream, IValuePresenter valuePresenter) {
-            _stream = stream;
+        public FlowWriter(StdoutJsonLineWriter stdoutWriter, ContainerUtf8ValuePresenter valuePresenter) {
+            _stdoutWriter = stdoutWriter;
             _valuePresenter = valuePresenter;
         }
 
+        // Must be thread safe
         public void WriteLineVisit(int lineNumber) {
-            _stepCount += 1;
-            if (_stepCount >= ReportLimits.MaxStepCount)
-                return;
-            //if (_currentStepCount >= ReportLimits.MaxStepCount)
-            //    return;
-
-            //_steps[_currentStepCount] = new FlowStep(lineNumber);
-
-            _stream.Write(Strings.FlowPrefix);
-            WriteLineNumber(lineNumber);
-            _stream.WriteByte((byte)'\n');
-            //_currentStepCount += 1;
+            TryAddRecord(new (lineNumber));
         }
 
+        // Must be thread safe
         public void WriteValue<T>(T value, string? name, int lineNumber) {
-            _stepCount += 1;
-            if (_stepCount >= ReportLimits.MaxStepCount)
+            if (_valueCountsPerLine[lineNumber] > Limits.MaxValuesPerLine)
                 return;
 
-            _stream.Write(Strings.FlowPrefix);
-            WriteLineNumber(lineNumber);
-            _stream.WriteByte((byte)':');            
-            if (name != null)
-                WriteUtf8String(name);
-            _stream.WriteByte((byte)':');
-            WriteUtf8String(_valuePresenter.ToStringBuilder(value, ReportLimits.ValueValue).ToString());
-            _stream.WriteByte((byte)'\n');
+            var valueCountPerLine = Interlocked.Increment(ref _valueCountsPerLine[lineNumber]);
+            if (valueCountPerLine > Limits.MaxValuesPerLine)
+                return;
+
+            if (valueCountPerLine == Limits.MaxValuesPerLine) {
+                TryAddRecord(new (lineNumber, name, VariantValue.From("…")));
+                return;
+            }
+
+            TryAddRecord(new (lineNumber, name, VariantValue.From(value)));
         }
 
+        // Must be thread safe
         public void WriteSpanValue<T>(ReadOnlySpan<T> value, string? name, int lineNumber) {
-            _stepCount += 1;
-            if (_stepCount >= ReportLimits.MaxStepCount)
-                return;
-
-            _stream.Write(Strings.FlowPrefix);
-            WriteLineNumber(lineNumber);
-            _stream.WriteByte((byte)':');
-            if (name != null)
-                WriteUtf8String(name);
-            _stream.WriteByte((byte)':');
-            WriteUtf8String(_valuePresenter.ToStringBuilder(value, ReportLimits.ValueValue).ToString());
-            _stream.WriteByte((byte)'\n');
+            // TODO (can't store this, have to actually write it)
         }
 
+        // Must be thread safe
         public void WriteException(object exception) {
-            _stepCount += 1;
-            if (_stepCount >= ReportLimits.MaxStepCount)
+            TryAddRecord(new (exception));
+        }
+
+        private bool TryAddRecord(FlowRecord record) {
+            var nextRecordIndex = Interlocked.Increment(ref _currentRecordIndex);
+            if (nextRecordIndex >= Limits.MaxRecords)
+                return false;
+
+            _records[nextRecordIndex] = record;
+            return true;
+        }
+
+        // Does NOT have to be thread-safe
+        public void FlushAndReset() {
+            var recordCount = _currentRecordIndex + 1;
+
+            _currentRecordIndex = -1;
+            Array.Clear(_valueCountsPerLine, 0, _valueCountsPerLine.Length);
+
+            if (recordCount == 0)
                 return;
 
-            _stream.Write(Strings.FlowPrefix);
-            _stream.WriteByte((byte)'e');
-            _stream.WriteByte((byte)':');
-            WriteUtf8String(exception.GetType().Name);
-            _stream.WriteByte((byte)'\n');
-        }
-
-        [SkipLocalsInit]
-        private void WriteUtf8String(string value) {
-            var byteSize = Encoding.UTF8.GetByteCount(value);
-            Span<byte> valueBytes = stackalloc byte[byteSize];
-            Encoding.UTF8.GetBytes(value, valueBytes);
-            _stream.Write(valueBytes);
-        }
-
-        [SkipLocalsInit]
-        private void WriteLineNumber(int lineNumber) {
-            if (lineNumber >= Strings.Integers.Length) {
-                Span<byte> lineNumberBytes = stackalloc byte[10];
-                if (!Utf8Formatter.TryFormat(lineNumber, lineNumberBytes, out var lineNumberBytesLength))
-                    throw new Exception($"Failed to format line number {lineNumber}.");
-                _stream.Write(lineNumberBytes.Slice(0, lineNumberBytesLength));
+            var writer = _stdoutWriter.StartJsonObjectLine();
+            writer.WriteStartArray(Flow);
+            for (var i = 0; i < recordCount; i++) {
+                WriteRecordToWriter(writer, _records[i]);
             }
-            else {
-                _stream.Write(Strings.Integers[lineNumber]);
+            writer.WriteEndArray();
+            _stdoutWriter.EndJsonObjectLine();
+        }
+
+        private void WriteRecordToWriter(Utf8JsonWriter writer, FlowRecord record) {
+            if (record.Value is {} value) {
+                WriteRecordWithValueToWriter(writer, record, value);
+                return;
             }
+
+            if (record.Exception is {} exception) {
+                writer.WriteStartObject();
+                writer.WriteNumber(Line, record.LineNumber);
+                writer.WriteString(Exception, record.Exception.GetType().Name);
+                writer.WriteEndObject();
+                return;
+            }
+
+            writer.WriteNumberValue(record.LineNumber);
         }
 
-        public void Reset() {
-            _stepCount = 0;
+        private void WriteRecordWithValueToWriter(Utf8JsonWriter writer, FlowRecord record, VariantValue value) {
+            writer.WriteStartObject();
+            writer.WriteNumber(Line, record.LineNumber);
+            if (record.Name != null)
+                writer.WriteString(Name, record.Name);
+            writer.WritePropertyName(Value);
+            switch (value.Kind) {
+                case VariantKind.Int32:
+                    writer.WriteNumberValue(value.AsInt32Unchecked());
+                    break;
+
+                default:
+                    var valueUtf8String = (Span<byte>)stackalloc byte[Limits.ValueValue.MaxValueLength];
+                    _valuePresenter.Present(valueUtf8String, value, Limits.ValueValue, out var valueByteCount);
+                    writer.WriteStringValue(valueUtf8String.Slice(0, valueByteCount));
+                    break;
+            }
+            writer.WriteEndObject();
         }
 
-        /*private readonly struct FlowStep {
-            public FlowStep(int lineNumber) {
+        private readonly struct FlowRecord {
+            public FlowRecord(int lineNumber) : this() {
                 LineNumber = lineNumber;
-                Notes = null;
-                Exception = null;
-                ValueCount = 0;
-                LineSkipped = false;
+            }
+
+            public FlowRecord(int lineNumber, string? name, VariantValue value) {
+                LineNumber = lineNumber;
+                Name = name;
+                Value = value;
+                Exception = default;
+            }
+
+            public FlowRecord(object exception) : this() {
+                Exception = exception;
             }
 
             public int LineNumber { get; }
+            public string? Name { get; }
+            public VariantValue? Value { get; }
             public object? Exception { get; }
-            public StringBuilder? Notes { get; }
-            public bool LineSkipped { get; }
-            internal int ValueCount { get; }
-        }*/
+        }
     }
 }

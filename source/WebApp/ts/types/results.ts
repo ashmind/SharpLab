@@ -71,6 +71,14 @@ export interface MemoryGraphInspection {
 
 export type OutputItem = string|SimpleInspection|MemoryInspection|MemoryGraphInspection;
 
+export type OutputJsonLineFlow = {
+    readonly flow: ReadonlyArray<
+        number
+            | { line: number; name?: string; value: string }
+            | { exception: string }
+    >;
+};
+
 export interface FlowStep {
     readonly line: number;
     readonly skipped?: true;

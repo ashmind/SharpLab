@@ -1,164 +1,128 @@
-using System.IO;
 using System.Text;
 using System.Text.Json;
+using SharpLab.Container.Protocol;
 using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Container.Runtime {
+    using static JsonStrings;
+
     internal class InspectionWriter : IInspectionWriter {
-        private static class Strings {
-            public static readonly JsonEncodedText Type = JsonEncodedText.Encode("type");
-            public static readonly JsonEncodedText InspectionSimple = JsonEncodedText.Encode("inspection:simple");
-            public static readonly JsonEncodedText InspectionMemory = JsonEncodedText.Encode("inspection:memory");
-            public static readonly JsonEncodedText InspectionMemoryGraph = JsonEncodedText.Encode("inspection:memory-graph");
-            public static readonly JsonEncodedText Title = JsonEncodedText.Encode("title");
-            public static readonly JsonEncodedText Value = JsonEncodedText.Encode("value");
-            public static readonly JsonEncodedText Labels = JsonEncodedText.Encode("labels");
-            public static readonly JsonEncodedText Data = JsonEncodedText.Encode("data");
-            public static readonly JsonEncodedText Name = JsonEncodedText.Encode("name");
-            public static readonly JsonEncodedText Offset = JsonEncodedText.Encode("offset");
-            public static readonly JsonEncodedText Length = JsonEncodedText.Encode("length");
-            public static readonly JsonEncodedText Nested = JsonEncodedText.Encode("nested");
-            public static readonly JsonEncodedText Stack = JsonEncodedText.Encode("stack");
-            public static readonly JsonEncodedText Heap = JsonEncodedText.Encode("heap");
-            public static readonly JsonEncodedText References = JsonEncodedText.Encode("references");
-            public static readonly JsonEncodedText Id = JsonEncodedText.Encode("id");
-            public static readonly JsonEncodedText Size = JsonEncodedText.Encode("size");
-            public static readonly JsonEncodedText NestedNodes = JsonEncodedText.Encode("nestedNodes");
-            public static readonly JsonEncodedText NestedNodesLimit = JsonEncodedText.Encode("nestedNodesLimit");
-            public static readonly JsonEncodedText From = JsonEncodedText.Encode("from");
-            public static readonly JsonEncodedText To = JsonEncodedText.Encode("to");
-        }
+        private readonly StdoutJsonLineWriter _stdoutWriter;
 
-        private readonly Stream _stream;
-        private readonly Utf8JsonWriter _writer;
-
-        public InspectionWriter(Stream stream) {
-            _stream = stream;
-            _writer = new Utf8JsonWriter(stream);
+        public InspectionWriter(StdoutJsonLineWriter stdoutWriter) {
+            _stdoutWriter = stdoutWriter;
         }
 
         public void WriteSimple(SimpleInspection simple) {
-            WriteStartLine();
-            _writer.WriteStartObject();
-            _writer.WriteString(Strings.Type, Strings.InspectionSimple);
-            _writer.WriteString(Strings.Title, simple.Title);
+            var writer = _stdoutWriter.StartJsonObjectLine();
+            writer.WriteStartObject();
+            writer.WriteString(Type, InspectionSimple);
+            writer.WriteString(Title, simple.Title);
             if (simple.HasValue) {
                 if (simple.Value is string s) {
-                    _writer.WriteString(Strings.Value, s);
+                    writer.WriteString(Value, s);
                 }
                 else {
-                    _writer.WriteString(Strings.Value, ((StringBuilder)simple.Value!).ToString());
+                    writer.WriteString(Value, ((StringBuilder)simple.Value!).ToString());
                 }
             }
-            _writer.WriteEndObject();
-            WriteEndLineAndFlush();
+            _stdoutWriter.EndJsonObjectLine();
         }
 
         public void WriteMemory(MemoryInspection memory) {
-            WriteStartLine();
-            _writer.WriteStartObject();
-            _writer.WriteString(Strings.Type, Strings.InspectionMemory);
-            _writer.WriteString(Strings.Title, memory.Title);
+            var writer = _stdoutWriter.StartJsonObjectLine();
+            writer.WriteStartObject();
+            writer.WriteString(Type, InspectionMemory);
+            writer.WriteString(Title, memory.Title);
 
-            _writer.WriteStartArray(Strings.Labels);
+            writer.WriteStartArray(Labels);
             foreach (var label in memory.Labels) {
-                WriteMemoryLabel(label);
+                WriteMemoryLabel(writer, label);
             }
-            _writer.WriteEndArray();
+            writer.WriteEndArray();
 
-            _writer.WriteStartArray(Strings.Data);
+            writer.WriteStartArray(Data);
             foreach (var @byte in memory.Data) {
-                _writer.WriteNumberValue(@byte);
+                writer.WriteNumberValue(@byte);
             }
-            _writer.WriteEndArray();
+            writer.WriteEndArray();
 
-            _writer.WriteEndObject();
-            WriteEndLineAndFlush();
+            writer.WriteEndObject();
+            _stdoutWriter.EndJsonObjectLine();
         }
 
-        private void WriteMemoryLabel(MemoryInspectionLabel label) {
-            _writer.WriteStartObject();
-            _writer.WriteString(Strings.Name, label.Name);
-            _writer.WriteNumber(Strings.Offset, label.Offset);
-            _writer.WriteNumber(Strings.Length, label.Length);
+        private void WriteMemoryLabel(Utf8JsonWriter writer, MemoryInspectionLabel label) {
+            writer.WriteStartObject();
+            writer.WriteString(Name, label.Name);
+            writer.WriteNumber(Offset, label.Offset);
+            writer.WriteNumber(Length, label.Length);
             if (label.Nested.Count > 0) {
-                _writer.WriteStartArray(Strings.Nested);
+                writer.WriteStartArray(Nested);
                 foreach (var nested in label.Nested) {
-                    WriteMemoryLabel(nested);
+                    WriteMemoryLabel(writer, nested);
                 }
-                _writer.WriteEndArray();
+                writer.WriteEndArray();
             }
-            _writer.WriteEndObject();
+            writer.WriteEndObject();
         }
 
         public void WriteMemoryGraph(MemoryGraphInspection graph) {
-            WriteStartLine();
+            var writer = _stdoutWriter.StartJsonObjectLine();
 
-            _writer.WriteStartObject();
-            _writer.WriteString(Strings.Type, Strings.InspectionMemoryGraph);
-            _writer.WriteStartArray(Strings.Stack);
+            writer.WriteStartObject();
+            writer.WriteString(Type, InspectionMemoryGraph);
+            writer.WriteStartArray(Stack);
             foreach (var node in graph.Stack) {
-                WriteMemoryGraphNode(node);
+                WriteMemoryGraphNode(writer, node);
             }
-            _writer.WriteEndArray();
-            _writer.WriteStartArray(Strings.Heap);
+            writer.WriteEndArray();
+            writer.WriteStartArray(Heap);
             foreach (var node in graph.Heap) {
-                WriteMemoryGraphNode(node);
+                WriteMemoryGraphNode(writer, node);
             }
-            _writer.WriteEndArray();
-            _writer.WriteStartArray(Strings.References);
+            writer.WriteEndArray();
+            writer.WriteStartArray(References);
             foreach (var reference in graph.References) {
-                WriteMemoryGraphReference(reference);
+                WriteMemoryGraphReference(writer, reference);
             }
-            _writer.WriteEndArray();
-            _writer.WriteEndObject();
+            writer.WriteEndArray();
+            writer.WriteEndObject();
 
-            WriteEndLineAndFlush();
+            _stdoutWriter.EndJsonObjectLine();
         }
 
-        private void WriteMemoryGraphNode(MemoryGraphNode node) {
-            _writer.WriteStartObject();
-            _writer.WriteNumber(Strings.Id, node.Id);
+        private void WriteMemoryGraphNode(Utf8JsonWriter writer, MemoryGraphNode node) {
+            writer.WriteStartObject();
+            writer.WriteNumber(Id, node.Id);
             if (node.StackOffset != null) {
-                _writer.WriteNumber(Strings.Offset, node.StackOffset.Value);
-                _writer.WriteNumber(Strings.Size, node.StackSize!.Value);
+                writer.WriteNumber(Offset, node.StackOffset.Value);
+                writer.WriteNumber(Size, node.StackSize!.Value);
             }
-            _writer.WriteString(Strings.Title, node.Title);
+            writer.WriteString(Title, node.Title);
             if (node.Value is string s) {
-                _writer.WriteString(Strings.Value, s);
+                writer.WriteString(Value, s);
             }
             else {
-                _writer.WriteString(Strings.Value, ((StringBuilder)node.Value!).ToString());
+                writer.WriteString(Value, ((StringBuilder)node.Value!).ToString());
             }
             if (node.NestedNodes.Count > 0) {
-                _writer.WriteStartArray(Strings.NestedNodes);
+                writer.WriteStartArray(NestedNodes);
                 foreach (var nested in node.NestedNodes) {
-                    WriteMemoryGraphNode(nested);
+                    WriteMemoryGraphNode(writer, nested);
                 }
-                _writer.WriteEndArray();
+                writer.WriteEndArray();
 
                 if (node.NestedNodesLimitReached)
-                    _writer.WriteBoolean(Strings.NestedNodesLimit, true);
+                    writer.WriteBoolean(NestedNodesLimit, true);
             }
-            _writer.WriteEndObject();
+            writer.WriteEndObject();
         }
 
-        private void WriteMemoryGraphReference(MemoryGraphReference reference) {
-            _writer.WriteStartObject();
-            _writer.WriteNumber(Strings.From, reference.From.Id);
-            _writer.WriteNumber(Strings.To, reference.To.Id);
-            _writer.WriteEndObject();
-        }
-
-        private void WriteStartLine() {
-            _stream.WriteByte((byte)'#');
-        }
-
-        private void WriteEndLineAndFlush() {
-            _writer.Flush();
-            _stream.WriteByte((byte)'\n');
-            _stream.Flush();
-            _writer.Reset();
+        private void WriteMemoryGraphReference(Utf8JsonWriter writer, MemoryGraphReference reference) {
+            writer.WriteStartObject();
+            writer.WriteNumber(From, reference.From.Id);
+            writer.WriteNumber(To, reference.To.Id);
+            writer.WriteEndObject();
         }
     }
 }

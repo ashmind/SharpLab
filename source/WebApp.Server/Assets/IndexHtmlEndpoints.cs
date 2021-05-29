@@ -67,7 +67,7 @@ namespace SharpLab.WebApp.Server.Assets {
                 return true;
             }
             catch (Exception ex) {
-                _logger.LogError(ex, "Failed to load initial index.html. Retrying...");
+                _logger.LogError(ex, "Failed to load initial index.html. Retrying..."); 
                 return false;
             }
         }

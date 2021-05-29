@@ -69,7 +69,7 @@ namespace SharpLab.Container.Runtime {
                     builder.Append(", ");
 
                 if (index > limits.MaxEnumerableItemCount) {
-                    builder.Append("…");
+                    builder.Append('…');
                     break;
                 }
 
@@ -87,7 +87,7 @@ namespace SharpLab.Container.Runtime {
                     builder.Append(", ");
 
                 if (index > limits.MaxEnumerableItemCount) {
-                    builder.Append("…");
+                    builder.Append('…');
                     break;
                 }
 
@@ -98,12 +98,12 @@ namespace SharpLab.Container.Runtime {
         }
 
         public void AppendStringTo(StringBuilder builder, string value, ValuePresenterLimits limits) {
-            if (limits.MaxValueLength == null || value.Length <= limits.MaxValueLength) {
+            if (value.Length <= limits.MaxValueLength) {
                 builder.Append(value);
             }
             else {
-                builder.Append(value, 0, limits.MaxValueLength.Value - 1);
-                builder.Append("…");
+                builder.Append(value, 0, limits.MaxValueLength - 1);
+                builder.Append('…');
             }
         }
     }
