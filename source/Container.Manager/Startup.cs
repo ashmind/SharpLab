@@ -33,9 +33,10 @@ namespace SharpLab.Container.Manager {
             services.AddSingleton<ContainerCleanupWorker>();
             services.AddHostedService(c => c.GetRequiredService<ContainerCleanupWorker>());
 
-            services.AddSingleton<ExecutionHandler>();
             services.AddSingleton<StdinWriter>();
             services.AddSingleton<StdoutReader>();
+            services.AddSingleton<ExecutionProcessor>();
+            services.AddSingleton<ExecutionManager>();
 
             ConfigureAzureDependentServices(services);
         }

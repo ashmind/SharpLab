@@ -46,6 +46,7 @@ namespace SharpLab.Container {
                 var command = Serializer.DeserializeWithLengthPrefix<ExecuteCommand?>(stdin, PrefixStyle.Base128);
                 if (command == null)
                     break; // end-of-input
+                Console.WriteLine("EXECUTE");
                 HandleExecuteCommand(command, ref shouldExit);
             }
 

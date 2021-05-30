@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.Http;
 namespace SharpLab.Container.Manager.Internal {
     // Not using controller for this to avoid per-request allocations on a hot path
     public class ExecutionEndpoint {
-        private readonly ExecutionHandler _handler;
+        private readonly ExecutionManager _handler;
         private readonly ExecutionEndpointSettings _settings;
 
-        public ExecutionEndpoint(ExecutionHandler handler, ExecutionEndpointSettings settings) {
+        public ExecutionEndpoint(ExecutionManager handler, ExecutionEndpointSettings settings) {
             _handler = handler;
             _settings = settings;
         }
@@ -31,7 +31,7 @@ namespace SharpLab.Container.Manager.Internal {
 
             context.Response.StatusCode = 200;
             using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted);
-            timeoutSource.CancelAfter(10000);
+            timeoutSource.CancelAfter(15000);
             try {
                 var result = await _handler.ExecuteAsync(sessionId, memoryStream.ToArray(), timeoutSource.Token);
 

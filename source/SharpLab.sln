@@ -41,7 +41,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp.Server", "WebApp.Ser
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Container", "Container\Container.csproj", "{7C89F0C0-2454-434B-A27A-6F85C7AFCBA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Container.Manager", "Container.Manager\Container.Manager.csproj", "{6ACA6D9A-05DC-4F4E-85E2-DDC291E51ECE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Container.Manager", "Container.Manager\Container.Manager.csproj", "{6ACA6D9A-05DC-4F4E-85E2-DDC291E51ECE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Container.Warmup", "Container.Warmup\Container.Warmup.csproj", "{6B539A68-E28C-47F9-AE60-758185B3589C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -308,6 +310,24 @@ Global
 		{6ACA6D9A-05DC-4F4E-85E2-DDC291E51ECE}.Release|x64.Build.0 = Release|Any CPU
 		{6ACA6D9A-05DC-4F4E-85E2-DDC291E51ECE}.Release|x86.ActiveCfg = Release|Any CPU
 		{6ACA6D9A-05DC-4F4E-85E2-DDC291E51ECE}.Release|x86.Build.0 = Release|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Debug|x64.Build.0 = Debug|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Debug|x86.Build.0 = Debug|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Debug-Vsix|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Debug-Vsix|Any CPU.Build.0 = Debug|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Debug-Vsix|x64.ActiveCfg = Debug|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Debug-Vsix|x64.Build.0 = Debug|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Debug-Vsix|x86.ActiveCfg = Debug|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Debug-Vsix|x86.Build.0 = Debug|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Release|x64.ActiveCfg = Release|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Release|x64.Build.0 = Release|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Release|x86.ActiveCfg = Release|Any CPU
+		{6B539A68-E28C-47F9-AE60-758185B3589C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

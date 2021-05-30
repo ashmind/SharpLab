@@ -15,7 +15,6 @@ namespace SharpLab.Container.Runtime {
 
         public void WriteSimple(SimpleInspection simple) {
             var writer = _stdoutWriter.StartJsonObjectLine();
-            writer.WriteStartObject();
             writer.WriteString(Type, InspectionSimple);
             writer.WriteString(Title, simple.Title);
             if (simple.HasValue) {
@@ -31,7 +30,6 @@ namespace SharpLab.Container.Runtime {
 
         public void WriteMemory(MemoryInspection memory) {
             var writer = _stdoutWriter.StartJsonObjectLine();
-            writer.WriteStartObject();
             writer.WriteString(Type, InspectionMemory);
             writer.WriteString(Title, memory.Title);
 
@@ -47,7 +45,6 @@ namespace SharpLab.Container.Runtime {
             }
             writer.WriteEndArray();
 
-            writer.WriteEndObject();
             _stdoutWriter.EndJsonObjectLine();
         }
 
@@ -69,7 +66,6 @@ namespace SharpLab.Container.Runtime {
         public void WriteMemoryGraph(MemoryGraphInspection graph) {
             var writer = _stdoutWriter.StartJsonObjectLine();
 
-            writer.WriteStartObject();
             writer.WriteString(Type, InspectionMemoryGraph);
             writer.WriteStartArray(Stack);
             foreach (var node in graph.Stack) {
@@ -86,7 +82,6 @@ namespace SharpLab.Container.Runtime {
                 WriteMemoryGraphReference(writer, reference);
             }
             writer.WriteEndArray();
-            writer.WriteEndObject();
 
             _stdoutWriter.EndJsonObjectLine();
         }

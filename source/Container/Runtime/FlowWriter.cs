@@ -66,6 +66,9 @@ namespace SharpLab.Container.Runtime {
 
         // Must be thread safe
         private bool TryAddRecord(FlowRecord record) {
+            if (_currentRecordIndex > Limits.MaxRecords)
+                return false;
+
             var nextRecordIndex = Interlocked.Increment(ref _currentRecordIndex);
             if (nextRecordIndex >= Limits.MaxRecords)
                 return false;
@@ -76,7 +79,7 @@ namespace SharpLab.Container.Runtime {
 
         // Does NOT have to be thread-safe
         public void FlushAndReset() {
-            var recordCount = _currentRecordIndex + 1;
+            var recordCount = Math.Min(_currentRecordIndex + 1, _records.Length);
 
             _currentRecordIndex = -1;
             Array.Clear(_valueCountsPerLine, 0, _valueCountsPerLine.Length);

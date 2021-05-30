@@ -23,7 +23,7 @@ export default async function loadGistAsync(hash: string) {
         gist = await getGistAsync(id);
     }
     catch (e) {
-        const message = `Failed to load gist '${id}': ${(e as { json?: { message?: string } })?.json?.message ?? '<unknown>'}.`;
+        const message = `Failed to load gist '${id}': ${(e as { json?: { message?: string } }).json?.message ?? '<unknown>'}.`;
         return {
             code: message.replace(/^/mg, '#error '),
             options: {}

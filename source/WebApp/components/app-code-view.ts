@@ -39,9 +39,7 @@ export default Vue.component('app-code-view', {
         delayedHover: (x: number, y: number) => void;
     }>(),
     methods: {
-        // https://github.com/microsoft/TypeScript/issues/37796
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
+        // @ts-expect-error https://github.com/microsoft/TypeScript/issues/38150
         hasRanges(): this is { ranges: Ranges } {
             return (!!this.ranges && this.ranges.length > 0);
         },
@@ -127,7 +125,7 @@ export default Vue.component('app-code-view', {
         this.$watch('language', (value: TargetLanguageName) => {
             cm.setOption('mode', modeMap[value]);
         });
-        this.$watch('value', (value: string) => {
+        this.$watch('value', (value: string|null) => {
             value = value != null ? value : '';
             if (cm.getValue() === value)
                 return;

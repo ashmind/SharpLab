@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Docker.DotNet;
@@ -11,21 +12,30 @@ namespace SharpLab.Container.Manager.Internal {
         private readonly ContainerPool _containerPool;
         private readonly DockerClientConfiguration _dockerClientConfiguration;
         private readonly ContainerNameFormat _containerNameFormat;
+        private readonly ExecutionProcessor _warmupExecutionProcessor;
         private readonly ContainerCleanupWorker _containerCleanup;
         private readonly ILogger<ContainerAllocationWorker> _logger;
+
+        private readonly byte[] _warmupAssemblyBytes;
 
         public ContainerAllocationWorker(
             ContainerPool containerPool,
             DockerClientConfiguration dockerClientConfiguration,
             ContainerNameFormat containerNameFormat,
+            ExecutionProcessor warmupExecutionProcessor,
             ContainerCleanupWorker containerCleanup,
             ILogger<ContainerAllocationWorker> logger
         ) {
             _containerPool = containerPool;
             _dockerClientConfiguration = dockerClientConfiguration;
             _containerNameFormat = containerNameFormat;
+            _warmupExecutionProcessor = warmupExecutionProcessor;
             _containerCleanup = containerCleanup;
             _logger = logger;
+
+            _warmupAssemblyBytes = File.ReadAllBytes(
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SharpLab.Container.Warmup.dll")
+            );
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken) {
@@ -84,6 +94,7 @@ namespace SharpLab.Container.Manager.Internal {
             }
 
             MultiplexedStream? stream = null;
+            ActiveContainer? container = null;
             try {
                 stream = await client.Containers.AttachContainerAsync(containerId, tty: false, new ContainerAttachParameters {
                     Stream = true,
@@ -98,13 +109,20 @@ namespace SharpLab.Container.Manager.Internal {
                     stream.Dispose();
                     throw;
                 }
+
+                container = new ActiveContainer(client, containerId, stream);
+                var (output, outputFailed) = await _warmupExecutionProcessor.ExecuteInContainerAsync(container, _warmupAssemblyBytes, cancellationToken);
+                if (outputFailed) 
+                    throw new Exception("Warmup output failed:\r\n" + output);
+
+                _logger.LogDebug($"Allocated container {containerName}");
             }
             catch {
                 _containerCleanup.QueueForCleanup(client, containerId, stream);
                 throw;
             }
 
-            return new(client, containerId, stream);
+            return container;
         }
     }
 }
