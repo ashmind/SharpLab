@@ -1,7 +1,7 @@
 import type { MirrorSharpSlowUpdateResult, MirrorSharpConnectionState } from 'mirrorsharp';
 import type { Branch } from './types/branch';
 import type { CodeRange } from './types/code-range';
-import type { AstItem, CodeResult, NonErrorResult, Result, DiagnosticError, DiagnosticWarning } from './types/results';
+import type { AstItem, CodeResult, NonErrorResult, Result, DiagnosticError, DiagnosticWarning, RunResult } from './types/results';
 import type { Gist } from './types/gist';
 import type { App, AppData, AppDefinition, AppStatus } from './types/app';
 import { PartiallyMutable, partiallyMutable } from './helpers/partially-mutable';
@@ -16,7 +16,7 @@ import state from './state/index';
 import url from './state/handlers/url';
 import defaults from './state/handlers/defaults';
 import uiAsync from './ui/index';
-import { containerRunServerOptions } from './experiments/container-run';
+import { containerRunServerOptions, updateContainerExperimentStateFromRunResult } from './experiments/container-run';
 import parseOutput from './helpers/parse-output';
 
 function getResultType(target: TargetName|string) {
@@ -71,8 +71,11 @@ function applyUpdateResult(this: App, updateResult: MirrorSharpSlowUpdateResult<
         ilResult.value = code;
         ilResult.ranges = ranges;
     }
-    if (result.type === 'run' && result.value)
-        partiallyMutable(result)<'value'>().value = parseOutput(result.value as string);
+    if (result.type === 'run') {
+        updateContainerExperimentStateFromRunResult(result as RunResult);
+        if (typeof result.value === 'string')
+            partiallyMutable(result)<'value'>().value = parseOutput(result.value);
+    }
 
     this.result = result as NonErrorResult;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -155,7 +155,7 @@ namespace SharpLab.Server.MirrorSharp {
             }
 
             if (targetName == TargetNames.Run) {
-                _executor.Serialize((ExecutionResult)result, writer);
+                _executor.Serialize((ExecutionResult)result, writer, session);
                 return;
             }
 

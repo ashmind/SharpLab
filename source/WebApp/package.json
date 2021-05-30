@@ -83,7 +83,7 @@
     "postcss-csso": "3.0.0",
     "puppeteer": "2.1.1",
     "regex-combiner": "github:am11/regex-combiner#1fd650aa8dcec8d71e0101558bc181eed8b9ed08",
-    "rollup": "2.9.1",
+    "rollup": "2.14.0",
     "rollup-plugin-babel": "4.4.0",
     "rollup-plugin-commonjs": "10.1.0",
     "rollup-plugin-node-resolve": "3.0.0",

@@ -1,4 +1,5 @@
 import type { MirrorSharpDiagnostic } from 'mirrorsharp';
+import type { ContainerExperimentFallbackRunValue } from '../experiments/container-run';
 import type { CodeRange } from './code-range';
 
 export type DiagnosticWarning = Pick<MirrorSharpDiagnostic, 'id'|'message'> & { severity: 'warning' };
@@ -118,7 +119,7 @@ export interface RunResult extends ResultBase {
     readonly value: {
         readonly output: ReadonlyArray<OutputItem>|string;
         readonly flow: ReadonlyArray<FlowStep>;
-    }|null;
+    } & ContainerExperimentFallbackRunValue | string | null;
 }
 
 export interface VerifyResult extends ResultBase {

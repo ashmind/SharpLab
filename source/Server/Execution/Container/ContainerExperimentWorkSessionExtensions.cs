@@ -23,5 +23,13 @@ namespace SharpLab.Server.Execution.Container {
         public static void SetContainerExperimentException(this IWorkSession session, Exception exception) {
             session.ExtensionData["ContainerExperimentException"] = exception;
         }
+
+        public static bool WasContainerExperimentExceptionReported(this IWorkSession session) {
+            return (bool?)session.ExtensionData.GetValueOrDefault("ContainerExperimentExceptionReported") ?? false;
+        }
+
+        public static void SetContainerExperimentExceptionReported(this IWorkSession session, bool value) {
+            session.ExtensionData["ContainerExperimentExceptionReported"] = true;
+        }
     }
 }
