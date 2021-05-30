@@ -111,10 +111,13 @@ namespace SharpLab.Server.MirrorSharp {
                                 // TODO: Prettify
                                 output += $"\n  COMPILATION: {compilationStopwatch.ElapsedMilliseconds,15}ms";
                             }
+                            streams.Dispose();
                             return output;
                         }
                         catch (Exception ex) {
                             session.SetContainerExperimentException(ex);
+                            assemblyStream.Seek(0, SeekOrigin.Begin);
+                            symbolStream?.Seek(0, SeekOrigin.Begin);
                         }
                     }
 

@@ -1,4 +1,6 @@
+using System;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -16,18 +18,21 @@ namespace SharpLab.Server.Execution.Container {
 
         public async Task<string> ExecuteAsync(string sessionId, Stream assemblyStream, bool includePerformance, CancellationToken cancellationToken) {
             var request = new HttpRequestMessage(HttpMethod.Post, _settings.RunnerUrl) {
-                Headers = { { "Sl-Session-Id", sessionId } },
+                Headers = { { "SL-Session-Id", sessionId } },
                 Content = new StreamContent(assemblyStream)
             };
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _settings.AuthorizationToken);
             if (includePerformance)
-                request.Headers.Add("Sl-Debug-Performance", "true");
+                request.Headers.Add("SL-Debug-Performance", "true");
 
             using var httpClient = _httpClientFactory.CreateClient();
             using var response = await httpClient.SendAsync(request, cancellationToken);
 
+            if (response.StatusCode == HttpStatusCode.InternalServerError && response.Content.Headers.ContentType?.MediaType == "text/vnd.sharplab.error+plain")
+                throw new Exception("Container host repoted an error:\n" + await response.Content.ReadAsStringAsync(cancellationToken));
+
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+            return await response.Content.ReadAsStringAsync(cancellationToken);
         }
     }
 }

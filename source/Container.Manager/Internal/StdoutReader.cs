@@ -9,6 +9,7 @@ namespace SharpLab.Container.Manager.Internal {
     public class StdoutReader {
         private static readonly byte[] ExecutionTimedOut = Encoding.UTF8.GetBytes("\n(Execution timed out)");
         private static readonly byte[] UnexpectedEndOfOutput = Encoding.UTF8.GetBytes("\n(Unexpected end of output)");
+        private static readonly byte[] UnexpectedEof = Encoding.UTF8.GetBytes("\n(Unexpected EOF)");
 
         public async Task<ExecutionOutputResult> ReadOutputAsync(
             MultiplexedStream stream,
@@ -21,6 +22,7 @@ namespace SharpLab.Container.Manager.Internal {
             var cancelled = false;
             var nextEndMarkerIndexToCompare = 0;
 
+            var eof = false;
             while (outputEndIndex < 0) {
                 var (read, readCancelled) = await ReadWithCancellationAsync(stream, outputBytes, byteIndex, outputBytes.Length - byteIndex, cancellationToken);
                 if (readCancelled) {
@@ -28,8 +30,10 @@ namespace SharpLab.Container.Manager.Internal {
                     break;
                 }
 
-                if (read.EOF)
+                if (read.EOF) {
+                    eof = true;
                     break;
+                }
 
                 var totalReadCount = byteIndex + read.Count;
                 for (var i = byteIndex; i < totalReadCount; i++) {
@@ -53,7 +57,7 @@ namespace SharpLab.Container.Manager.Internal {
             if (cancelled)
                 return new(outputBytes.AsMemory(0, byteIndex), ExecutionTimedOut);
             if (outputEndIndex < 0)
-                return new(outputBytes.AsMemory(0, byteIndex), UnexpectedEndOfOutput);
+                return new(outputBytes.AsMemory(0, byteIndex), eof ? UnexpectedEof : UnexpectedEndOfOutput);
 
             return new(outputBytes.AsMemory(0, outputEndIndex));
         }

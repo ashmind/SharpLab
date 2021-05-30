@@ -48,7 +48,6 @@ namespace SharpLab.Server.Execution {
                 SymbolReaderProvider = streams.SymbolStream != null ? _symbolReaderProvider : null
             };
 
-            using var _ = streams;
             using var definition = AssemblyDefinition.ReadAssembly(streams.AssemblyStream, readerParameters);
 
             foreach (var rewriter in _rewriters) {

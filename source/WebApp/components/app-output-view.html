@@ -1,9 +1,9 @@
 <div class="output result-content">
   <small v-if="containerRunExperimentActive.value" class="message-positive">
-    🧪 Welcome to the container run experiment! You should see way less limits on what you can run. Please <a href="https://github.com/ashmind/SharpLab/issues">report</a> any issues.
+    🧪 Welcome to the container run experiment! You should see way less limits in this mode. Please <a href="https://github.com/ashmind/SharpLab/issues">report</a> any issues.
   </small>
   <small v-else-if="containerRunExperimentException.value" class="disclaimer">
-    Container run experiment temporarily disabled for this session due to <a bind:title="containerRunExperimentException.value">an error</a>.
+    Container run experiment temporarily disabled for this session (due to <a v-bind:title="containerRunExperimentException.value">an error</a>). Normal run limits apply.
   </small>
   <div class="output-empty" v-show="output.length === 0">Completed — no output.</div>
   <template v-for="item in output">

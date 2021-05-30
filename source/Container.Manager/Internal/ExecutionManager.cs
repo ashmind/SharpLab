@@ -33,7 +33,7 @@ namespace SharpLab.Container.Manager.Internal {
                     container = await _containerPool.AllocateSessionContainerAsync(sessionId, _cleanupWorker.QueueForCleanup, allocationCancellation.Token);
                 }
                 catch (OperationCanceledException ex) {
-                    throw new Exception("Failed to allocate container within 5 seconds.", _containerPool.LastContainerPreallocationException ?? ex);
+                    throw new ContainerAllocationException("Failed to allocate container within 5 seconds.", _containerPool.LastContainerPreallocationException ?? ex);
                 }
             }
 

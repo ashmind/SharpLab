@@ -25,8 +25,8 @@ namespace SharpLab.Container.Manager.Endpoints {
                 return;
             }
 
-            var sessionId = context.Request.Headers["Sl-Session-Id"][0]!;
-            var includePerformance = context.Request.Headers["Sl-Debug-Performance"].Count > 0;
+            var sessionId = context.Request.Headers["SL-Session-Id"][0]!;
+            var includePerformance = context.Request.Headers["SL-Debug-Performance"].Count > 0;
             var contentLength = (int)context.Request.Headers.ContentLength!;
 
             var stopwatch = includePerformance ? Stopwatch.StartNew() : null;
@@ -40,11 +40,20 @@ namespace SharpLab.Container.Manager.Endpoints {
                 var memoryStream = new MemoryStream(bodyBytes);
                 await context.Request.Body.CopyToAsync(memoryStream);
 
-                context.Response.StatusCode = 200;
                 using var requestExecutionCancellation = CancellationFactory.RequestExecution(context);
+                ExecutionOutputResult result;
                 try {
-                    var result = await _executionManager.ExecuteAsync(sessionId, bodyBytes, outputBuffer, includePerformance, requestExecutionCancellation.Token);
+                    result = await _executionManager.ExecuteAsync(sessionId, bodyBytes, outputBuffer, includePerformance, requestExecutionCancellation.Token);
+                }
+                catch (Exception ex) {
+                    context.Response.StatusCode = 500;
+                    context.Response.ContentType = "text/vnd.sharplab.error+plain";
+                    await context.Response.WriteAsync(ex.ToString(), context.RequestAborted);
+                    return;
+                }
 
+                try {
+                    context.Response.StatusCode = 200;
                     await context.Response.BodyWriter.WriteAsync(result.Output, context.RequestAborted);
                     if (!result.IsOutputReadSuccess)
                         await context.Response.BodyWriter.WriteAsync(result.OutputReadFailureMessage, context.RequestAborted);

@@ -47,6 +47,7 @@ namespace SharpLab.Container.Manager.Internal {
                     await _containerPool.PreallocatedContainersWriter.WaitToWriteAsync(stoppingToken);
                     var container = await CreateAndStartContainerAsync(stoppingToken);
                     await _containerPool.PreallocatedContainersWriter.WriteAsync(container, stoppingToken);
+                    _containerPool.LastContainerPreallocationException = null;
                 }
                 catch (Exception ex) {
                     _containerPool.LastContainerPreallocationException = ex;
