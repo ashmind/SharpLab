@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using SharpLab.Container.Protocol;

@@ -21,6 +21,7 @@ namespace SharpLab.Tests.Of.Container {
         [InlineData("Values.Variable.MultipleDeclarationsOnTheSameLine.cs")]
         [InlineData("Values.Variable.LongName.cs")]
         [InlineData("Values.Variable.LongValue.cs")]
+        [InlineData("Values.Variable.LongValue.LongCharacterBreak.cs")]
         [InlineData("Values.Regression.ToStringNull.cs")] // https://github.com/ashmind/SharpLab/issues/380
         public async Task Flow_IncludesExpectedValues(string resourceName) {
             var code = LoadCodeFromResource(resourceName);
