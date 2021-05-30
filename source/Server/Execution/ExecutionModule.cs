@@ -61,7 +61,7 @@ namespace SharpLab.Server.Execution {
                    .AsSelf();
 
             builder.RegisterType<ContainerClient>()
-                   .AsSelf()
+                   .As<IContainerClient>()
                    .SingleInstance();
 
             builder.RegisterType<ContainerExecutor>()

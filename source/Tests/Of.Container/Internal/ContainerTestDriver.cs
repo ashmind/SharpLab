@@ -1,54 +1,108 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.Loader;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Autofac;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
+using Microsoft.CodeAnalysis.Text;
+using MirrorSharp.Advanced;
+using MirrorSharp.Advanced.Mocks;
 using ProtoBuf;
 using SharpLab.Container;
 using SharpLab.Container.Protocol.Stdin;
-using SharpLab.Runtime.Internal;
+using SharpLab.Server.Common;
 using SharpLab.Server.Common.Internal;
+using SharpLab.Server.Compilation;
+using SharpLab.Server.Execution;
+using SharpLab.Server.Execution.Container;
+using SharpLab.Tests.Internal;
 
 namespace SharpLab.Tests.Of.Container.Internal {
     public class ContainerTestDriver {
-        public static string CompileAndExecute(string code) {
-            var executeCommand = new ExecuteCommand(Compile(code), "OUTPUT-END");
+        public static async Task<string> CompileAndExecuteAsync(string code) {
+            var project = GetProject(code);
 
-            var stdin = new MemoryStream();
-            Serializer.SerializeWithLengthPrefix(stdin, executeCommand, PrefixStyle.Base128);
-            stdin.Seek(0, SeekOrigin.Begin);
+            var session = new WorkSessionMock();
+            session.Setup.LanguageName.Returns(LanguageNames.CSharp);
+            session.Setup.ExtensionData.Returns(new Dictionary<string, object>());
+            session.Setup.IsRoslyn.Returns(true);
 
-            var stdout = new MemoryStream();
+            var roslynSessionMock = new RoslynSessionMock();
+            roslynSessionMock.Setup.Project.Returns(project);
+            session.Setup.Roslyn.Returns(roslynSessionMock);
 
-            // Requied to ensure RuntimeServices from different tests do not interfere with each other
-            var containerContext = new AssemblyLoadContext(null, isCollectible: true);
-            containerContext.LoadFromAssemblyPath(typeof(ProtoWriter).Assembly.Location);
-            containerContext.LoadFromAssemblyPath(typeof(Serializer).Assembly.Location);
-            containerContext.LoadFromAssemblyPath(typeof(RuntimeServices).Assembly.Location);
-            containerContext.LoadFromAssemblyPath(typeof(Program).Assembly.Location)
-                .GetType(typeof(Program).FullName!, throwOnError: true)!
-                .GetMethod(nameof(Program.Run), BindingFlags.Static | BindingFlags.NonPublic)!
-                .Invoke(null, new[] { stdin, stdout });
-            containerContext.Unload();
+            session.SetContainerExperimentAccessAllowed(true);
 
-            return Encoding.UTF8.GetString(stdout.ToArray());
+            var executor = CreateContainerExecutor();
+            return await executor.ExecuteAsync(await CompileAsync(project), session, CancellationToken.None);
         }
 
-        private static byte[] Compile(string code) {
+        private static IContainerExecutor CreateContainerExecutor() {
+            using var containerScope = TestEnvironment.Container.BeginLifetimeScope(builder => {
+                builder.RegisterType<TestContainerClient>().As<IContainerClient>();
+
+                // Override as transient
+                builder.RegisterType<ContainerExecutor>()
+                       .As<IContainerExecutor>()
+                       .InstancePerDependency();
+            });
+            return containerScope.Resolve<IContainerExecutor>();
+        }
+
+        private static Project GetProject(string code) {
             var references = new AssemblyReferenceCollector().SlowGetAllReferencedAssembliesRecursive(
                 typeof(object).Assembly,
                 typeof(SharpLabObjectExtensions).Assembly
             ).Select(a => MetadataReference.CreateFromFile(a.Location));
-            var compilation = CSharpCompilation.Create("_", new[] { CSharpSyntaxTree.ParseText(code) }, references);
 
+            
+            var project = new AdhocWorkspace()
+                .AddProject("_", LanguageNames.CSharp)
+                .AddMetadataReferences(references)
+                .AddDocument("_", SourceText.From(code, Encoding.UTF8))
+                .Project;
+            project = project.WithCompilationOptions(
+                project.CompilationOptions!.WithOptimizationLevel(OptimizationLevel.Debug)
+            );
+
+            return project;
+        }
+
+        private static async Task<CompilationStreamPair> CompileAsync(Project project) {
             var assemblyStream = new MemoryStream();
-            var emitResult = compilation.Emit(assemblyStream);
+            var symbolStream = new MemoryStream();
+
+            var compilation = (await project.GetCompilationAsync())!;
+            var emitResult = compilation.Emit(assemblyStream, pdbStream: symbolStream, options: new(
+                debugInformationFormat: DebugInformationFormat.PortablePdb
+            ));
             if (!emitResult.Success)
                 throw new Exception("Compilation failed:\n" + string.Join('\n', emitResult.Diagnostics));
-            return assemblyStream.ToArray();
+
+            assemblyStream.Seek(0, SeekOrigin.Begin);
+            symbolStream.Seek(0, SeekOrigin.Begin);
+
+            return new CompilationStreamPair(assemblyStream, symbolStream);
+        }
+
+        private class TestContainerClient : IContainerClient {
+            public Task<string> ExecuteAsync(string sessionId, Stream assemblyStream, CancellationToken cancellationToken) {
+                var executeCommand = new ExecuteCommand(((MemoryStream)assemblyStream).ToArray(), "OUTPUT-END");
+
+                var stdin = new MemoryStream();
+                Serializer.SerializeWithLengthPrefix(stdin, executeCommand, PrefixStyle.Base128);
+                stdin.Seek(0, SeekOrigin.Begin);
+
+                var stdout = new MemoryStream();
+                Program.Run(stdin, stdout);
+
+                return Task.FromResult(Encoding.UTF8.GetString(stdout.ToArray()));
+            }
         }
     }
 }

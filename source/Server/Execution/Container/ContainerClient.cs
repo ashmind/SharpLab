@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace SharpLab.Server.Execution.Container {
-    public class ContainerClient {
+    public class ContainerClient : IContainerClient {
         private readonly ContainerClientSettings _settings;
         private readonly IHttpClientFactory _httpClientFactory;
 
@@ -16,7 +16,7 @@ namespace SharpLab.Server.Execution.Container {
 
         public async Task<string> ExecuteAsync(string sessionId, Stream assemblyStream, CancellationToken cancellationToken) {
             var request = new HttpRequestMessage(HttpMethod.Post, _settings.RunnerUrl) {
-                Headers = {{ "Sl-Session-Id", sessionId }},
+                Headers = { { "Sl-Session-Id", sessionId } },
                 Content = new StreamContent(assemblyStream)
             };
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _settings.AuthorizationToken);

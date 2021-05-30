@@ -20,7 +20,7 @@ namespace SharpLab.Container.Runtime {
                     return;
 
                 case VariantKind.Object:
-                    AppendValue(output, value.AsObjectUnchecked(), depth: 0, limits, out byteCount);
+                    AppendValue(output, value.AsObjectUnchecked(), depth: 1, limits, out byteCount);
                     return;
 
                 default:
@@ -28,14 +28,14 @@ namespace SharpLab.Container.Runtime {
             }
         }
 
-        private void AppendValue<T>(Span<byte> output, T value, ValuePresenterLimits limits, out int byteCount) {
+        private void AppendValue<T>(Span<byte> output, T value, int depth, ValuePresenterLimits limits, out int byteCount) {
             switch (value) {
                 case int i:
                     Utf8Formatter.TryFormat(i, output, out byteCount);
                     return;
 
                 default:
-                    AppendValue(output, value, depth: 0, limits, out byteCount);
+                    AppendValue(output, value, depth, limits, out byteCount);
                     return;
             }
         }
@@ -90,7 +90,7 @@ namespace SharpLab.Container.Runtime {
                     break;
                 }
 
-                AppendValue(output.Slice(byteCount), item, limits, out var itemByteCount);
+                AppendValue(output.Slice(byteCount), item, depth + 1, limits, out var itemByteCount);
                 byteCount += itemByteCount;
 
                 index += 1;
@@ -101,10 +101,8 @@ namespace SharpLab.Container.Runtime {
 
         private void AppendString(Span<byte> output, string value, ValuePresenterLimits limits, out int byteCount) {
             if (value.Length > limits.MaxValueLength) {
-                byteCount = Encoding.UTF8.GetBytes(
-                    value.AsSpan().Slice(0, limits.MaxValueLength - 1),
-                    output
-                );
+                byteCount = limits.MaxValueLength - 1;
+                CharBreakingUtf8Encoder.Encode(value.AsSpan().Slice(0, byteCount), output);
                 byteCount += AppendEllipsis(output, byteCount);
                 return;
             }
@@ -123,11 +121,8 @@ namespace SharpLab.Container.Runtime {
         }
 
         private static int AppendEllipsis(Span<byte> output, int offset) {
-            // …
-            output[offset] = 226;
-            output[offset + 1] = 128;
-            output[offset + 2] = 166;
-            return 3;
+            Utf8Ellipsis.CopyTo(output[offset..]);
+            return Utf8Ellipsis.Length;
         }
     }
 }

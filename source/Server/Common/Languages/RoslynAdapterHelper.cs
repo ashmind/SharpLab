@@ -4,8 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using MirrorSharp.Advanced;
 
-namespace SharpLab.Server.Common.Languages
-{
+namespace SharpLab.Server.Common.Languages {
     public static class RoslynAdapterHelper {
         [CanBeNull]
         public static SyntaxNode? FindSyntaxNodeInSession([NotNull] IWorkSession session, int line, int column) {

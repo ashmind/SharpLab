@@ -25,3 +25,6 @@ dotnet_style_readonly_field = true:warning
 
 # IDE0005: Using directive is unnecessary.
 dotnet_diagnostic.IDE0005.severity = warning
+
+# IDE0090: 'new' expression can be simplified.
+dotnet_diagnostic.IDE0090.severity = warning

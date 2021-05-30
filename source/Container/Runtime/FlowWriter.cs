@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using SharpLab.Container.Protocol;
@@ -11,20 +12,24 @@ namespace SharpLab.Container.Runtime {
         private static class Limits {
             public const int MaxRecords = 50;
             public const int MaxValuesPerLine = 3;
+            public const int MaxNameLength = 10;
 
-            public static readonly ValuePresenterLimits ValueName = new(maxValueLength: 10);
-            public static readonly ValuePresenterLimits ValueValue = new(
+            public static readonly ValuePresenterLimits Value = new(
                 maxDepth: 2, maxEnumerableItemCount: 3, maxValueLength: 10
             );
         }
 
         private readonly StdoutJsonLineWriter _stdoutWriter;
         private readonly ContainerUtf8ValuePresenter _valuePresenter;
+        private readonly byte[] _truncatedNameBytes = new byte[(Limits.MaxNameLength - 1) + Utf8Ellipsis.Length];
         private readonly FlowRecord[] _records = new FlowRecord[50];
         private readonly int[] _valueCountsPerLine = new int[75];
         private int _currentRecordIndex = -1;
 
-        public FlowWriter(StdoutJsonLineWriter stdoutWriter, ContainerUtf8ValuePresenter valuePresenter) {
+        public FlowWriter(
+            StdoutJsonLineWriter stdoutWriter,
+            ContainerUtf8ValuePresenter valuePresenter
+        ) {
             _stdoutWriter = stdoutWriter;
             _valuePresenter = valuePresenter;
         }
@@ -40,11 +45,9 @@ namespace SharpLab.Container.Runtime {
                 return;
 
             var valueCountPerLine = Interlocked.Increment(ref _valueCountsPerLine[lineNumber]);
-            if (valueCountPerLine > Limits.MaxValuesPerLine)
-                return;
-
-            if (valueCountPerLine == Limits.MaxValuesPerLine) {
-                TryAddRecord(new (lineNumber, name, VariantValue.From("…")));
+            if (valueCountPerLine > Limits.MaxValuesPerLine) {
+                if (valueCountPerLine == Limits.MaxValuesPerLine + 1)
+                    TryAddRecord(new(lineNumber, null, VariantValue.From("…")));
                 return;
             }
 
@@ -61,6 +64,7 @@ namespace SharpLab.Container.Runtime {
             TryAddRecord(new (exception));
         }
 
+        // Must be thread safe
         private bool TryAddRecord(FlowRecord record) {
             var nextRecordIndex = Interlocked.Increment(ref _currentRecordIndex);
             if (nextRecordIndex >= Limits.MaxRecords)
@@ -89,6 +93,7 @@ namespace SharpLab.Container.Runtime {
             _stdoutWriter.EndJsonObjectLine();
         }
 
+        // Does NOT have to be thread-safe
         private void WriteRecordToWriter(Utf8JsonWriter writer, FlowRecord record) {
             if (record.Value is {} value) {
                 WriteRecordWithValueToWriter(writer, record, value);
@@ -97,7 +102,6 @@ namespace SharpLab.Container.Runtime {
 
             if (record.Exception is {} exception) {
                 writer.WriteStartObject();
-                writer.WriteNumber(Line, record.LineNumber);
                 writer.WriteString(Exception, record.Exception.GetType().Name);
                 writer.WriteEndObject();
                 return;
@@ -106,24 +110,36 @@ namespace SharpLab.Container.Runtime {
             writer.WriteNumberValue(record.LineNumber);
         }
 
+        // Does NOT have to be thread-safe
         private void WriteRecordWithValueToWriter(Utf8JsonWriter writer, FlowRecord record, VariantValue value) {
-            writer.WriteStartObject();
-            writer.WriteNumber(Line, record.LineNumber);
-            if (record.Name != null)
-                writer.WriteString(Name, record.Name);
-            writer.WritePropertyName(Value);
+            writer.WriteStartArray();
+            writer.WriteNumberValue(record.LineNumber);
             switch (value.Kind) {
                 case VariantKind.Int32:
                     writer.WriteNumberValue(value.AsInt32Unchecked());
                     break;
 
                 default:
-                    var valueUtf8String = (Span<byte>)stackalloc byte[Limits.ValueValue.MaxValueLength];
-                    _valuePresenter.Present(valueUtf8String, value, Limits.ValueValue, out var valueByteCount);
+                    var valueUtf8String = (Span<byte>)stackalloc byte[Limits.Value.MaxValueLength + Utf8Ellipsis.Length - 1];
+                    _valuePresenter.Present(valueUtf8String, value, Limits.Value, out var valueByteCount);
                     writer.WriteStringValue(valueUtf8String.Slice(0, valueByteCount));
                     break;
             }
-            writer.WriteEndObject();
+            if (record.Name != null)
+                WriteNameToWriter(writer, record.Name);
+            writer.WriteEndArray();
+        }
+
+        // Does NOT have to be thread-safe
+        private void WriteNameToWriter(Utf8JsonWriter writer, string name) {
+            if (name.Length > Limits.MaxNameLength) {
+                CharBreakingUtf8Encoder.Encode(name, _truncatedNameBytes);
+                Utf8Ellipsis.CopyTo(_truncatedNameBytes.AsSpan().Slice(Limits.MaxNameLength - 1));
+                writer.WriteStringValue(_truncatedNameBytes);
+                return;
+            }
+
+            writer.WriteStringValue(name);
         }
 
         private readonly struct FlowRecord {

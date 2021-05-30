@@ -74,7 +74,7 @@ export type OutputItem = string|SimpleInspection|MemoryInspection|MemoryGraphIns
 export type OutputJsonLineFlow = {
     readonly flow: ReadonlyArray<
         number
-            | { line: number; name?: string; value: string }
+            | [line: number, value: string, name?: string]
             | { exception: string }
     >;
 };
