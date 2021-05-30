@@ -4,14 +4,17 @@ using ProtoBuf;
 namespace SharpLab.Container.Protocol.Stdin {
     [ProtoContract(SkipConstructor = true)]
     public class ExecuteCommand : StdinCommand {
-        public ExecuteCommand(byte[] assemblyBytes, Guid outputEndMarker) {
+        public ExecuteCommand(byte[] assemblyBytes, Guid outputEndMarker, bool reportPerformance = false) {
             AssemblyBytes = assemblyBytes;
             OutputEndMarker = outputEndMarker;
+            IncludePerformance = reportPerformance;
         }
 
         [ProtoMember(1, Options = MemberSerializationOptions.OverwriteList | MemberSerializationOptions.Packed)]
         public byte[] AssemblyBytes { get; }
         [ProtoMember(2)]
         public Guid OutputEndMarker { get; }
+        [ProtoMember(3)]
+        public bool IncludePerformance { get; }
     }
 }

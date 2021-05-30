@@ -1,7 +1,6 @@
 using System;
 using System.Buffers;
 using System.Buffers.Text;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using SharpLab.Container.Protocol.Stdin;
@@ -16,14 +15,17 @@ namespace SharpLab.Container.Manager.Internal {
             _stdoutReader = stdoutReader;
         }
 
-        public async Task<OutputResult> ExecuteInContainerAsync(
+        public async Task<ExecutionOutputResult> ExecuteInContainerAsync(
             ActiveContainer container,            
             byte[] assemblyBytes,
             byte[] outputBufferBytes,
+            bool includePerformance,
             CancellationToken cancellationToken
         ) {
             var outputEndMarker = Guid.NewGuid();
-            await _stdinWriter.WriteCommandAsync(container.Stream, new ExecuteCommand(assemblyBytes, outputEndMarker), cancellationToken);
+            await _stdinWriter.WriteCommandAsync(
+                container.Stream, new ExecuteCommand(assemblyBytes, outputEndMarker, includePerformance), cancellationToken
+            );
 
             const int OutputEndMarkerLength = 36; // length of guid
             var outputEndMarkerBytes = ArrayPool<byte>.Shared.Rent(OutputEndMarkerLength);

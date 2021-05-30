@@ -10,7 +10,7 @@ namespace SharpLab.Container.Manager.Internal {
         private static readonly byte[] ExecutionTimedOut = Encoding.UTF8.GetBytes("\n(Execution timed out)");
         private static readonly byte[] UnexpectedEndOfOutput = Encoding.UTF8.GetBytes("\n(Unexpected end of output)");
 
-        public async Task<OutputResult> ReadOutputAsync(
+        public async Task<ExecutionOutputResult> ReadOutputAsync(
             MultiplexedStream stream,
             ReadOnlyMemory<byte> outputEndMarker,
             byte[] outputBytes,

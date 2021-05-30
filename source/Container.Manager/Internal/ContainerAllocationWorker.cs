@@ -117,9 +117,11 @@ namespace SharpLab.Container.Manager.Internal {
 
                 var outputBuffer = ArrayPool<byte>.Shared.Rent(2048);
                 try {
-                    var result = await _warmupExecutionProcessor.ExecuteInContainerAsync(container, _warmupAssemblyBytes, outputBuffer, cancellationToken);
-                    if (!result.IsSuccess)
-                        throw new Exception("Warmup output failed:\r\n" + Encoding.UTF8.GetString(result.Output.Span) + Encoding.UTF8.GetString(result.FailureMessage.Span));
+                    var result = await _warmupExecutionProcessor.ExecuteInContainerAsync(
+                        container, _warmupAssemblyBytes, outputBuffer, includePerformance: false, cancellationToken
+                    );
+                    if (!result.IsOutputReadSuccess)
+                        throw new Exception("Warmup output failed:\r\n" + Encoding.UTF8.GetString(result.Output.Span) + Encoding.UTF8.GetString(result.OutputReadFailureMessage.Span));
                 }
                 finally {
                     ArrayPool<byte>.Shared.Return(outputBuffer);

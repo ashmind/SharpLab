@@ -19,7 +19,6 @@ namespace SharpLab.Container.Manager.Endpoints {
         }
 
         public async Task ExecuteAsync(HttpContext context) {
-            var stopwatch = Stopwatch.StartNew();
             var authorization = context.Request.Headers["Authorization"];
             if (authorization.Count != 1 || authorization[0] != _settings.RequiredAuthorization) {
                 context.Response.StatusCode = 401;
@@ -27,7 +26,10 @@ namespace SharpLab.Container.Manager.Endpoints {
             }
 
             var sessionId = context.Request.Headers["Sl-Session-Id"][0]!;
+            var includePerformance = context.Request.Headers["Sl-Debug-Performance"].Count > 0;
             var contentLength = (int)context.Request.Headers.ContentLength!;
+
+            var stopwatch = includePerformance ? Stopwatch.StartNew() : null;
 
             byte[]? bodyBytes = null;
             byte[]? outputBuffer = null;
@@ -41,12 +43,16 @@ namespace SharpLab.Container.Manager.Endpoints {
                 context.Response.StatusCode = 200;
                 using var requestExecutionCancellation = CancellationFactory.RequestExecution(context);
                 try {
-                    var result = await _executionManager.ExecuteAsync(sessionId, bodyBytes, outputBuffer, requestExecutionCancellation.Token);
+                    var result = await _executionManager.ExecuteAsync(sessionId, bodyBytes, outputBuffer, includePerformance, requestExecutionCancellation.Token);
 
                     await context.Response.BodyWriter.WriteAsync(result.Output, context.RequestAborted);
-                    if (!result.IsSuccess)
-                        await context.Response.BodyWriter.WriteAsync(result.FailureMessage, context.RequestAborted);
-                    await context.Response.BodyWriter.WriteAsync(Encoding.UTF8.GetBytes($"\n  [VM] CONTAINER MANAGER: {stopwatch.ElapsedMilliseconds,4}ms"), context.RequestAborted);
+                    if (!result.IsOutputReadSuccess)
+                        await context.Response.BodyWriter.WriteAsync(result.OutputReadFailureMessage, context.RequestAborted);
+
+                    if (stopwatch != null) {
+                        // TODO: Prettify. Put into header?
+                        await context.Response.BodyWriter.WriteAsync(Encoding.UTF8.GetBytes($"\n  [VM] CONTAINER MANAGER: {stopwatch.ElapsedMilliseconds,4}ms"), context.RequestAborted);
+                    }
                 }
                 catch (Exception ex) {
                     await context.Response.WriteAsync(ex.ToString(), context.RequestAborted);

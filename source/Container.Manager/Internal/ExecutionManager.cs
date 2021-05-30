@@ -18,7 +18,13 @@ namespace SharpLab.Container.Manager.Internal {
             _cleanupWorker = cleanupWorker;
         }
 
-        public async Task<OutputResult> ExecuteAsync(string sessionId, byte[] assemblyBytes, byte[] outputBufferBytes, CancellationToken cancellationToken) {
+        public async Task<ExecutionOutputResult> ExecuteAsync(
+            string sessionId,
+            byte[] assemblyBytes,
+            byte[] outputBufferBytes,
+            bool includePerformance,
+            CancellationToken cancellationToken
+        ) {
             // Note that _containers are never accessed through multiple threads for the same session id,
             // so atomicity is not required within same session id
             using var allocationCancellation = CancellationFactory.ContainerAllocation(cancellationToken);
@@ -32,8 +38,14 @@ namespace SharpLab.Container.Manager.Internal {
             }
 
             try {
-                var result = await _executionProcessor.ExecuteInContainerAsync(container, assemblyBytes, outputBufferBytes, cancellationToken);
-                if (!result.IsSuccess)
+                var result = await _executionProcessor.ExecuteInContainerAsync(
+                    container,
+                    assemblyBytes,
+                    outputBufferBytes,
+                    includePerformance,
+                    cancellationToken
+                );
+                if (!result.IsOutputReadSuccess)
                     _containerPool.RemoveSessionContainer(sessionId);
                 return result;
             }

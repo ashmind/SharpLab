@@ -39,7 +39,8 @@ namespace SharpLab.Server.Execution {
             if (!session.GetContainerExperimentAccessAllowed())
                 throw new UnauthorizedAccessException("Current session is not allowed access to container experiment.");
 
-            var rewriteStopwatch = Stopwatch.StartNew();
+            var includePerformance = session.GetDebugIncludePerformance();
+            var rewriteStopwatch = includePerformance ? Stopwatch.StartNew() : null;
             var readerParameters = new ReaderParameters {
                 ReadSymbols = streams.SymbolStream != null,
                 SymbolStream = streams.SymbolStream,
@@ -60,11 +61,15 @@ namespace SharpLab.Server.Execution {
             using var rewrittenStream = _memoryStreamManager.GetStream();
             definition.Write(rewrittenStream);
             rewrittenStream.Seek(0, SeekOrigin.Begin);
-            rewriteStopwatch.Stop();
+            rewriteStopwatch?.Stop();
 
-            var executeStopwatch = Stopwatch.StartNew();
-            var output = await _client.ExecuteAsync(session.GetSessionId(), rewrittenStream, cancellationToken);
-            return output + $"\n  REWRITERS: {rewriteStopwatch.ElapsedMilliseconds,17}ms\n  CONTAINER EXECUTOR: {executeStopwatch.ElapsedMilliseconds,8}ms";
+            var executeStopwatch = includePerformance ? Stopwatch.StartNew() : null;
+            var output = await _client.ExecuteAsync(session.GetSessionId(), rewrittenStream, includePerformance, cancellationToken);
+            if (rewriteStopwatch != null && executeStopwatch != null) {
+                // TODO: Prettify
+                output += $"\n  REWRITERS: {rewriteStopwatch.ElapsedMilliseconds,17}ms\n  CONTAINER EXECUTOR: {executeStopwatch.ElapsedMilliseconds,8}ms";
+            }
+            return output;
         }
     }
 }

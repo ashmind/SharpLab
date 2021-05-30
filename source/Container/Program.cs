@@ -44,7 +44,7 @@ namespace SharpLab.Container {
                 var command = Serializer.DeserializeWithLengthPrefix<ExecuteCommand?>(stdin, PrefixStyle.Base128);
                 if (command == null)
                     break; // end-of-input
-                HandleExecuteCommand(command, ref shouldExit);
+                HandleExecuteCommand(command);
             }
         }
 
@@ -59,12 +59,15 @@ namespace SharpLab.Container {
             RuntimeServices.MemoryGraphBuilderFactory = argumentNames => new MemoryGraphBuilder(argumentNames, RuntimeServices.ValuePresenter);
         }
 
-        private static void HandleExecuteCommand(ExecuteCommand command, ref bool shouldExit) {
-            var stopwatch = Stopwatch.StartNew();
+        private static void HandleExecuteCommand(ExecuteCommand command) {
+            var stopwatch = command.IncludePerformance ? Stopwatch.StartNew() : null;
             _executor.Execute(new MemoryStream(command.AssemblyBytes));
             ((FlowWriter)RuntimeServices.FlowWriter).FlushAndReset();
-            Console.Out.Write($"PERFORMANCE:");
-            Console.Out.Write($"\n  [VM] CONTAINER: {stopwatch.ElapsedMilliseconds,12}ms");
+            if (stopwatch != null) {
+                // TODO: Prettify
+                Console.Out.Write($"PERFORMANCE:");
+                Console.Out.Write($"\n  [VM] CONTAINER: {stopwatch.ElapsedMilliseconds,12}ms");
+            }
             Console.Out.Write(command.OutputEndMarker);
             Console.Out.Flush();
             return;

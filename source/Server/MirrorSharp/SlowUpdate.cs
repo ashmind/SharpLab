@@ -82,9 +82,9 @@ namespace SharpLab.Server.MirrorSharp {
                 if (targetName is TargetNames.Run or TargetNames.RunContainer or TargetNames.IL)
                     symbolStream = _memoryStreamManager.GetStream();
 
-                var compilationStopwatch = Stopwatch.StartNew();
+                var compilationStopwatch = session.GetDebugIncludePerformance() ? Stopwatch.StartNew() : null;
                 var compiled = await _compiler.TryCompileToStreamAsync(assemblyStream, symbolStream, session, diagnostics, cancellationToken).ConfigureAwait(false);
-                compilationStopwatch.Stop();
+                compilationStopwatch?.Stop();
                 if (!compiled.assembly) {
                     assemblyStream.Dispose();
                     symbolStream?.Dispose();
@@ -105,8 +105,14 @@ namespace SharpLab.Server.MirrorSharp {
                 if (targetName == TargetNames.Run)
                     return _executor.Execute(streams, session);
 
-                if (targetName == TargetNames.RunContainer)
-                    return (await _containerExecutor.ExecuteAsync(streams, session, cancellationToken)) + $"\n  COMPILATION: {compilationStopwatch.ElapsedMilliseconds,15}ms";
+                if (targetName == TargetNames.RunContainer) {
+                    var output = await _containerExecutor.ExecuteAsync(streams, session, cancellationToken);
+                    if (compilationStopwatch != null) {
+                        // TODO: Prettify
+                        output += $"\n  COMPILATION: {compilationStopwatch.ElapsedMilliseconds,15}ms";
+                    }
+                    return output;
+                }
 
                 // it's fine not to Dispose() here -- MirrorSharp will dispose it after calling WriteResult()
                 return streams;
