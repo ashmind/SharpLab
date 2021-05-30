@@ -30,7 +30,7 @@ namespace SharpLab.Server.MirrorSharp {
                     _languages[session.LanguageName].SetOptionsForTarget(session, value);
                     return true;
                 case ContainerExperimentKey:
-                    session.SetContainerExperimentAccessAllowed(value == _containerExperimentSettings.AccessKey);
+                    session.SetContainerExperimentAllowed(value == _containerExperimentSettings.AccessKey);
                     return true;
                 default:
                     return false;

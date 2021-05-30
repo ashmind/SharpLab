@@ -36,10 +36,10 @@ namespace SharpLab.Server.Execution {
         }
 
         public async Task<string> ExecuteAsync(CompilationStreamPair streams, IWorkSession session, CancellationToken cancellationToken) {
-            if (!session.GetContainerExperimentAccessAllowed())
+            if (!session.IsContainerExperimentAllowed())
                 throw new UnauthorizedAccessException("Current session is not allowed access to container experiment.");
 
-            var includePerformance = session.GetDebugIncludePerformance();
+            var includePerformance = session.ShouldReportPerformance();
             var rewriteStopwatch = includePerformance ? Stopwatch.StartNew() : null;
             var readerParameters = new ReaderParameters {
                 ReadSymbols = streams.SymbolStream != null,

@@ -1,14 +1,27 @@
+using System;
 using AshMind.Extensions;
 using MirrorSharp.Advanced;
 
 namespace SharpLab.Server.Execution.Container {
     public static class ContainerExperimentWorkSessionExtensions {
-        public static bool GetContainerExperimentAccessAllowed(this IWorkSession session) {
-            return (bool?)session.ExtensionData.GetValueOrDefault("ContainerExperimentAccessAllowed") ?? false;
+        public static bool IsContainerExperimentAllowed(this IWorkSession session) {
+            return (bool?)session.ExtensionData.GetValueOrDefault("ContainerExperimentAllowed") ?? false;
         }
 
-        public static void SetContainerExperimentAccessAllowed(this IWorkSession session, bool value) {
-            session.ExtensionData["ContainerExperimentAccessAllowed"] = value;
+        public static void SetContainerExperimentAllowed(this IWorkSession session, bool value) {
+            session.ExtensionData["ContainerExperimentAllowed"] = value;
+        }
+
+        public static bool HasContainerExperimentFailed(this IWorkSession session) {
+            return session.GetContainerExperimentException() != null;
+        }
+
+        public static Exception? GetContainerExperimentException(this IWorkSession session) {
+            return (Exception?)session.ExtensionData.GetValueOrDefault("ContainerExperimentException");
+        }
+
+        public static void SetContainerExperimentException(this IWorkSession session, Exception exception) {
+            session.ExtensionData["ContainerExperimentException"] = exception;
         }
     }
 }

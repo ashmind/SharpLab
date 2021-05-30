@@ -16,6 +16,7 @@ using SharpLab.Server.Compilation;
 using SharpLab.Server.Decompilation;
 using SharpLab.Server.Decompilation.AstOnly;
 using SharpLab.Server.Execution;
+using SharpLab.Server.Execution.Container;
 using SharpLab.Server.Explanation;
 
 namespace SharpLab.Server.MirrorSharp {
@@ -72,17 +73,17 @@ namespace SharpLab.Server.MirrorSharp {
             if (targetName == LanguageNames.VisualBasic)
                 return VisualBasicNotAvailable;
 
-            if (targetName is not (TargetNames.Run or TargetNames.RunContainer or TargetNames.Verify) && !_decompilers.ContainsKey(targetName))
+            if (targetName is not (TargetNames.Run or TargetNames.Verify) && !_decompilers.ContainsKey(targetName))
                 throw new NotSupportedException($"Target '{targetName}' is not (yet?) supported by this branch.");
 
             MemoryStream? assemblyStream = null;
             MemoryStream? symbolStream = null;
             try {
                 assemblyStream = _memoryStreamManager.GetStream();
-                if (targetName is TargetNames.Run or TargetNames.RunContainer or TargetNames.IL)
+                if (targetName is TargetNames.Run or TargetNames.IL)
                     symbolStream = _memoryStreamManager.GetStream();
 
-                var compilationStopwatch = session.GetDebugIncludePerformance() ? Stopwatch.StartNew() : null;
+                var compilationStopwatch = session.ShouldReportPerformance() ? Stopwatch.StartNew() : null;
                 var compiled = await _compiler.TryCompileToStreamAsync(assemblyStream, symbolStream, session, diagnostics, cancellationToken).ConfigureAwait(false);
                 compilationStopwatch?.Stop();
                 if (!compiled.assembly) {
@@ -102,16 +103,22 @@ namespace SharpLab.Server.MirrorSharp {
                 AssemblyLog.Log("1.Compiled", assemblyStream);
 
                 var streams = new CompilationStreamPair(assemblyStream, compiled.symbols ? symbolStream : null);
-                if (targetName == TargetNames.Run)
-                    return _executor.Execute(streams, session);
-
-                if (targetName == TargetNames.RunContainer) {
-                    var output = await _containerExecutor.ExecuteAsync(streams, session, cancellationToken);
-                    if (compilationStopwatch != null) {
-                        // TODO: Prettify
-                        output += $"\n  COMPILATION: {compilationStopwatch.ElapsedMilliseconds,15}ms";
+                if (targetName == TargetNames.Run) {
+                    if (session.IsContainerExperimentAllowed() && !session.HasContainerExperimentFailed()) {
+                        try {
+                            var output = await _containerExecutor.ExecuteAsync(streams, session, cancellationToken);
+                            if (compilationStopwatch != null) {
+                                // TODO: Prettify
+                                output += $"\n  COMPILATION: {compilationStopwatch.ElapsedMilliseconds,15}ms";
+                            }
+                            return output;
+                        }
+                        catch (Exception ex) {
+                            session.SetContainerExperimentException(ex);
+                        }
                     }
-                    return output;
+
+                    return _executor.Execute(streams, session);
                 }
 
                 // it's fine not to Dispose() here -- MirrorSharp will dispose it after calling WriteResult()

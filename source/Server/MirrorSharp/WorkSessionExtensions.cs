@@ -12,11 +12,11 @@ namespace SharpLab.Server.MirrorSharp {
             session.ExtensionData["TargetName"] = value;
         }
 
-        public static bool GetDebugIncludePerformance(this IWorkSession session) {
+        public static bool ShouldReportPerformance(this IWorkSession session) {
             return (bool?)session.ExtensionData.GetValueOrDefault("DebugIncludePerformance") ?? false;
         }
 
-        public static void SetDebugIncludePerformance(this IWorkSession session, bool value) {
+        public static void SetShouldReportPerformance(this IWorkSession session, bool value) {
             session.ExtensionData["DebugIncludePerformance"] = value;
         }
 
