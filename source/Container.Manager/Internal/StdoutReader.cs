@@ -29,7 +29,7 @@ namespace SharpLab.Container.Manager.Internal {
                 }
 
                 if (read.EOF) {
-                    await Task.Delay(10);
+                    await Task.Delay(10, cancellationToken);
                     continue;
                 }
 
