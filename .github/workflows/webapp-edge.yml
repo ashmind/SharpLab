@@ -30,6 +30,9 @@ jobs:
         SHARPLAB_WEBAPP_BUILD_VERSION: ${{ steps.version.outputs.version_number }}
     - run: npm test
 
+    - run: npm test rendering -- --updateSnapshot
+      if: failure()
+
     - uses: actions/upload-artifact@v2
       if: failure()
       with:
