@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+
 namespace SharpLab.Container.Manager.Internal {
     public class ExecutionManager {
         private readonly ContainerPool _containerPool;
@@ -17,7 +18,7 @@ namespace SharpLab.Container.Manager.Internal {
             _cleanupWorker = cleanupWorker;
         }
 
-        public async Task<ReadOnlyMemory<char>> ExecuteAsync(string sessionId, byte[] assemblyBytes, CancellationToken cancellationToken) {
+        public async Task<OutputResult> ExecuteAsync(string sessionId, byte[] assemblyBytes, byte[] outputBufferBytes, CancellationToken cancellationToken) {
             // Note that _containers are never accessed through multiple threads for the same session id,
             // so atomicity is not required within same session id
             using var allocationCancellation = CancellationFactory.ContainerAllocation(cancellationToken);
@@ -31,10 +32,10 @@ namespace SharpLab.Container.Manager.Internal {
             }
 
             try {
-                var (output, outputFailed) = await _executionProcessor.ExecuteInContainerAsync(container, assemblyBytes, cancellationToken);
-                if (outputFailed)
+                var result = await _executionProcessor.ExecuteInContainerAsync(container, assemblyBytes, outputBufferBytes, cancellationToken);
+                if (!result.IsSuccess)
                     _containerPool.RemoveSessionContainer(sessionId);
-                return output;
+                return result;
             }
             catch {
                 _containerPool.RemoveSessionContainer(sessionId);

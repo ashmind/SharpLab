@@ -1,5 +1,4 @@
 using System;
-using System.Buffers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,38 +7,22 @@ using static Docker.DotNet.MultiplexedStream;
 
 namespace SharpLab.Container.Manager.Internal {
     public class StdoutReader {
-        public async Task<(ReadOnlyMemory<char> output, bool failed)> ReadOutputAsync(MultiplexedStream stream, string outputEndMarker, CancellationToken cancellationToken) {
-            byte[]? byteBuffer = null;
-            char[]? charBuffer = null;
-            try {
-                byteBuffer = ArrayPool<byte>.Shared.Rent(10240);
-                charBuffer = ArrayPool<char>.Shared.Rent(10240);
+        private static readonly byte[] ExecutionTimedOut = Encoding.UTF8.GetBytes("\n(Execution timed out)");
+        private static readonly byte[] UnexpectedEndOfOutput = Encoding.UTF8.GetBytes("\n(Unexpected end of output)");
 
-                return await ReadOutputWithBuffersAsync(stream, outputEndMarker, byteBuffer, charBuffer, cancellationToken);
-            }
-            finally {
-                if (byteBuffer != null)
-                    ArrayPool<byte>.Shared.Return(byteBuffer);
-                if (charBuffer != null)
-                    ArrayPool<char>.Shared.Return(charBuffer);
-            }
-        }
-
-        private async Task<(ReadOnlyMemory<char> output, bool failed)> ReadOutputWithBuffersAsync(
+        public async Task<OutputResult> ReadOutputAsync(
             MultiplexedStream stream,
-            string outputEndMarker,
-            byte[] byteBuffer,
-            char[] charBuffer,
+            ReadOnlyMemory<byte> outputEndMarker,
+            byte[] outputBytes,
             CancellationToken cancellationToken
         ) {
-            var decoder = Encoding.UTF8.GetDecoder();
-
             var byteIndex = 0;
-            var charIndex = 0;
             var outputEndIndex = -1;
             var cancelled = false;
+            var nextEndMarkerIndexToCompare = 0;
+
             while (outputEndIndex < 0) {
-                var (read, readCancelled) = await ReadWithCancellationAsync(stream, byteBuffer, byteIndex, byteBuffer.Length - byteIndex, cancellationToken);
+                var (read, readCancelled) = await ReadWithCancellationAsync(stream, outputBytes, byteIndex, outputBytes.Length - byteIndex, cancellationToken);
                 if (readCancelled) {
                     cancelled = true;
                     break;
@@ -48,36 +31,31 @@ namespace SharpLab.Container.Manager.Internal {
                 if (read.EOF)
                     break;
 
-                decoder.Convert(
-                    byteBuffer, byteIndex, read.Count,
-                    charBuffer, charIndex, charBuffer.Length - charIndex,
-                    flush: false,
-                    out _, out var charCount, out _
-                );
-                var totalCharCount = charIndex + charCount;
-                if (totalCharCount >= outputEndMarker.Length) {
-                    var earliestOutputEndCheckIndex = Math.Min(charIndex, totalCharCount - outputEndMarker.Length);
-                    var relativeOutputEndIndex = ((ReadOnlySpan<char>)charBuffer.AsSpan())
-                        .Slice(earliestOutputEndCheckIndex, totalCharCount - earliestOutputEndCheckIndex)
-                        .IndexOf(outputEndMarker, StringComparison.Ordinal);
-                    if (relativeOutputEndIndex >= 0) {
-                        outputEndIndex = earliestOutputEndCheckIndex + relativeOutputEndIndex;
+                var totalReadCount = byteIndex + read.Count;
+                for (var i = byteIndex; i < totalReadCount; i++) {
+                    if (outputBytes[i] != outputEndMarker.Span[nextEndMarkerIndexToCompare]) {
+                        nextEndMarkerIndexToCompare = outputBytes[i] == outputEndMarker.Span[0] ? 1 : 0;
+                        continue;
+                    }
+
+                    nextEndMarkerIndexToCompare += 1;
+                    if (nextEndMarkerIndexToCompare >= outputEndMarker.Length) {
+                        outputEndIndex = i - outputEndMarker.Length;
                         break;
                     }
                 }
 
                 byteIndex += read.Count;
-                charIndex += charCount;
-                if (byteIndex >= byteBuffer.Length || charIndex >= charBuffer.Length)
+                if (byteIndex >= outputBytes.Length)
                     break;
             }
 
             if (cancelled)
-                return ((new string(charBuffer, 0, charIndex) + "\n(Execution timed out)").AsMemory(), failed: true);
+                return new(outputBytes.AsMemory(0, byteIndex), ExecutionTimedOut);
             if (outputEndIndex < 0)
-                return ((new string(charBuffer, 0, charIndex) + "\n(Unexpected end of output)").AsMemory(), failed: true);
+                return new(outputBytes.AsMemory(0, byteIndex), UnexpectedEndOfOutput);
 
-            return (charBuffer.AsMemory(0, outputEndIndex), failed: false);
+            return new(outputBytes.AsMemory(0, outputEndIndex));
         }
 
         // Underlying stream does not handle cancellation correctly by default, see

@@ -1,5 +1,7 @@
 using System;
+using System.Buffers;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Docker.DotNet;
@@ -95,7 +97,7 @@ namespace SharpLab.Container.Manager.Internal {
             }
 
             MultiplexedStream? stream = null;
-            ActiveContainer? container = null;
+            ActiveContainer container;
             try {
                 stream = await client.Containers.AttachContainerAsync(containerId, tty: false, new ContainerAttachParameters {
                     Stream = true,
@@ -112,9 +114,16 @@ namespace SharpLab.Container.Manager.Internal {
                 }
 
                 container = new ActiveContainer(client, containerId, stream);
-                var (output, outputFailed) = await _warmupExecutionProcessor.ExecuteInContainerAsync(container, _warmupAssemblyBytes, cancellationToken);
-                if (outputFailed) 
-                    throw new Exception("Warmup output failed:\r\n" + output);
+
+                var outputBuffer = ArrayPool<byte>.Shared.Rent(2048);
+                try {
+                    var result = await _warmupExecutionProcessor.ExecuteInContainerAsync(container, _warmupAssemblyBytes, outputBuffer, cancellationToken);
+                    if (!result.IsSuccess)
+                        throw new Exception("Warmup output failed:\r\n" + Encoding.UTF8.GetString(result.Output.Span) + Encoding.UTF8.GetString(result.FailureMessage.Span));
+                }
+                finally {
+                    ArrayPool<byte>.Shared.Return(outputBuffer);
+                }
 
                 _logger.LogDebug($"Allocated container {containerName}");
             }
