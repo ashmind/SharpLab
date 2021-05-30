@@ -18,6 +18,7 @@ using SharpLab.Server.Decompilation.AstOnly;
 using SharpLab.Server.Execution;
 using SharpLab.Server.Execution.Container;
 using SharpLab.Server.Explanation;
+using SharpLab.Server.Monitoring;
 
 namespace SharpLab.Server.MirrorSharp {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
@@ -30,6 +31,7 @@ namespace SharpLab.Server.MirrorSharp {
         private readonly IContainerExecutor _containerExecutor;
         private readonly IExplainer _explainer;
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;
+        private readonly IMonitor _monitor;
 
         public SlowUpdate(
             ICSharpTopLevelProgramSupport topLevelProgramSupport,
@@ -39,7 +41,8 @@ namespace SharpLab.Server.MirrorSharp {
             IExecutor executor,
             IContainerExecutor containerExecutor,
             IExplainer explainer,
-            RecyclableMemoryStreamManager memoryStreamManager
+            RecyclableMemoryStreamManager memoryStreamManager,
+            IMonitor monitor
         ) {
             _topLevelProgramSupport = topLevelProgramSupport;
             _compiler = compiler;
@@ -50,6 +53,7 @@ namespace SharpLab.Server.MirrorSharp {
             _executor = executor;
             _containerExecutor = containerExecutor;
             _memoryStreamManager = memoryStreamManager;
+            _monitor = monitor;
             _explainer = explainer;
         }
 
@@ -115,6 +119,7 @@ namespace SharpLab.Server.MirrorSharp {
                             return output;
                         }
                         catch (Exception ex) {
+                            _monitor.Exception(ex, session);
                             session.SetContainerExperimentException(ex);
                             assemblyStream.Seek(0, SeekOrigin.Begin);
                             symbolStream?.Seek(0, SeekOrigin.Begin);
