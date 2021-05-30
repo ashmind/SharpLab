@@ -9,7 +9,7 @@ using SharpLab.Tests.Of.Container.Internal;
 using Xunit;
 
 namespace SharpLab.Tests.Of.Container {
-    [Collection(TestCollectionNames.Sequential)]
+    [Collection(TestCollectionNames.Execution)]
     public class FlowTests {
         [Theory]
         [InlineData("Values.Variable.AssignCall.cs")]

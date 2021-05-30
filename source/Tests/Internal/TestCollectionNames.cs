@@ -1,5 +1,6 @@
 namespace SharpLab.Tests.Internal {
     public class TestCollectionNames {
-        public const string Sequential = "Sequential";
+        // Sqquential fo now, due to conflicts in RuntimeServices
+        public const string Execution = "Execution";
     }
 }

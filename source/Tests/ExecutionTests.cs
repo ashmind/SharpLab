@@ -16,6 +16,7 @@ using SharpLab.Server.Common;
 using SharpLab.Tests.Internal;
 
 namespace SharpLab.Tests {
+    [Collection(TestCollectionNames.Execution)]
     public class ExecutionTests {
         private readonly ITestOutputHelper _output;
 

@@ -6,7 +6,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace SharpLab.Tests.Of.Container {
-    [Collection(TestCollectionNames.Sequential)]
+    [Collection(TestCollectionNames.Execution)]
     public class InspectTests {
         private readonly ITestOutputHelper _testOutputHelper;
 
