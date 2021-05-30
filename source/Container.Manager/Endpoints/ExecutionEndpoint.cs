@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using SharpLab.Container.Manager.Internal;
 
-namespace SharpLab.Container.Manager.Internal {
+namespace SharpLab.Container.Manager.Endpoints {
     // Not using controller for this to avoid per-request allocations on a hot path
     public class ExecutionEndpoint {
         private readonly ExecutionManager _handler;
@@ -30,10 +31,9 @@ namespace SharpLab.Container.Manager.Internal {
             await context.Request.Body.CopyToAsync(memoryStream);
 
             context.Response.StatusCode = 200;
-            using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted);
-            timeoutSource.CancelAfter(15000);
+            using var requestExecutionCancellation = CancellationFactory.RequestExecution(context);
             try {
-                var result = await _handler.ExecuteAsync(sessionId, memoryStream.ToArray(), timeoutSource.Token);
+                var result = await _handler.ExecuteAsync(sessionId, memoryStream.ToArray(), requestExecutionCancellation.Token);
 
                 var bytes = new byte[Encoding.UTF8.GetByteCount(result.Span)];
                 Encoding.UTF8.GetBytes(result.Span, bytes);

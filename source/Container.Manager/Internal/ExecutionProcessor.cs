@@ -21,9 +21,8 @@ namespace SharpLab.Container.Manager.Internal {
 
             await _stdinWriter.WriteCommandAsync(container.Stream, new ExecuteCommand(assemblyBytes, outputEndMarker), cancellationToken);
 
-            using var executeCancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            executeCancellationSource.CancelAfter(5000);
-            return await _stdoutReader.ReadOutputAsync(container.Stream, outputEndMarker, executeCancellationSource.Token);
+            using var executionCancellation = CancellationFactory.ContainerExecution(cancellationToken);
+            return await _stdoutReader.ReadOutputAsync(container.Stream, outputEndMarker, executionCancellation.Token);
         }
     }
 }

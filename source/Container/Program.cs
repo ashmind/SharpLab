@@ -34,8 +34,6 @@ namespace SharpLab.Container {
 
         // TODO: Change test structure so that this can be inlined
         internal static void Run(Stream stdin, Stream stdout) {
-            Console.WriteLine("START");
-
             var stdoutWriter = new StdoutJsonLineWriter(stdout, new Utf8JsonWriter(stdout, new() {
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             }));
@@ -46,11 +44,8 @@ namespace SharpLab.Container {
                 var command = Serializer.DeserializeWithLengthPrefix<ExecuteCommand?>(stdin, PrefixStyle.Base128);
                 if (command == null)
                     break; // end-of-input
-                Console.WriteLine("EXECUTE");
                 HandleExecuteCommand(command, ref shouldExit);
             }
-
-            Console.WriteLine("END");
         }
 
         private static void SetupRuntimeServices(StdoutJsonLineWriter writer) {

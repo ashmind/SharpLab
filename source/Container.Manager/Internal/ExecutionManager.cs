@@ -20,14 +20,13 @@ namespace SharpLab.Container.Manager.Internal {
         public async Task<ReadOnlyMemory<char>> ExecuteAsync(string sessionId, byte[] assemblyBytes, CancellationToken cancellationToken) {
             // Note that _containers are never accessed through multiple threads for the same session id,
             // so atomicity is not required within same session id
-            using var allocationCancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            allocationCancellationSource.CancelAfter(5000);
+            using var allocationCancellation = CancellationFactory.ContainerAllocation(cancellationToken);
             if (_containerPool.GetSessionContainer(sessionId) is not {} container) {
                 try {
-                    container = await _containerPool.AllocateSessionContainerAsync(sessionId, _cleanupWorker.QueueForCleanup, allocationCancellationSource.Token);
+                    container = await _containerPool.AllocateSessionContainerAsync(sessionId, _cleanupWorker.QueueForCleanup, allocationCancellation.Token);
                 }
-                catch (Exception ex) {
-                    throw new Exception("Failed to allocate container", ex);
+                catch (OperationCanceledException ex) {
+                    throw new Exception("Failed to allocate container within 5 seconds.", ex);
                 }
             }
 

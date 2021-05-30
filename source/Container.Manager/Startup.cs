@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SharpLab.Container.Manager.Azure;
+using SharpLab.Container.Manager.Endpoints;
 using SharpLab.Container.Manager.Internal;
 
 namespace SharpLab.Container.Manager {
