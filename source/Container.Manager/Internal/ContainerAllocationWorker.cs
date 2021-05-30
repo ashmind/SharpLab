@@ -47,6 +47,7 @@ namespace SharpLab.Container.Manager.Internal {
                     await _containerPool.PreallocatedContainersWriter.WriteAsync(container, stoppingToken);
                 }
                 catch (Exception ex) {
+                    _containerPool.LastContainerPreallocationException = ex;
                     _logger.LogError(ex, "Failed to pre-allocate next container, retryng in 1 minute.");
                     await Task.Delay(TimeSpan.FromMinutes(1));
                 }

@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,9 +9,29 @@ using static Docker.DotNet.MultiplexedStream;
 namespace SharpLab.Container.Manager.Internal {
     public class StdoutReader {
         public async Task<(ReadOnlyMemory<char> output, bool failed)> ReadOutputAsync(MultiplexedStream stream, string outputEndMarker, CancellationToken cancellationToken) {
-            var byteBuffer = new byte[2048];
-            var charBuffer = new char[2048];
+            byte[]? byteBuffer = null;
+            char[]? charBuffer = null;
+            try {
+                byteBuffer = ArrayPool<byte>.Shared.Rent(10240);
+                charBuffer = ArrayPool<char>.Shared.Rent(10240);
 
+                return await ReadOutputWithBuffersAsync(stream, outputEndMarker, byteBuffer, charBuffer, cancellationToken);
+            }
+            finally {
+                if (byteBuffer != null)
+                    ArrayPool<byte>.Shared.Return(byteBuffer);
+                if (charBuffer != null)
+                    ArrayPool<char>.Shared.Return(charBuffer);
+            }
+        }
+
+        private async Task<(ReadOnlyMemory<char> output, bool failed)> ReadOutputWithBuffersAsync(
+            MultiplexedStream stream,
+            string outputEndMarker,
+            byte[] byteBuffer,
+            char[] charBuffer,
+            CancellationToken cancellationToken
+        ) {
             var decoder = Encoding.UTF8.GetDecoder();
 
             var byteIndex = 0;
@@ -27,18 +48,28 @@ namespace SharpLab.Container.Manager.Internal {
                 if (read.EOF)
                     break;
 
-                var charCount = decoder.GetChars(byteBuffer, byteIndex, read.Count, charBuffer, charIndex);
-                var earliestOutputEndCheckIndex = Math.Min(charIndex, charBuffer.Length - outputEndMarker.Length);
-                var relativeOutputEndIndex = ((ReadOnlySpan<char>)charBuffer.AsSpan())
-                    .Slice(earliestOutputEndCheckIndex)
-                    .IndexOf(outputEndMarker, StringComparison.Ordinal);
-                if (relativeOutputEndIndex >= 0)
-                    outputEndIndex = earliestOutputEndCheckIndex + relativeOutputEndIndex;
+                decoder.Convert(
+                    byteBuffer, byteIndex, read.Count,
+                    charBuffer, charIndex, charBuffer.Length - charIndex,
+                    flush: false,
+                    out _, out var charCount, out _
+                );
+                var totalCharCount = charIndex + charCount;
+                if (totalCharCount >= outputEndMarker.Length) {
+                    var earliestOutputEndCheckIndex = Math.Min(charIndex, totalCharCount - outputEndMarker.Length);
+                    var relativeOutputEndIndex = ((ReadOnlySpan<char>)charBuffer.AsSpan())
+                        .Slice(earliestOutputEndCheckIndex, totalCharCount - earliestOutputEndCheckIndex)
+                        .IndexOf(outputEndMarker, StringComparison.Ordinal);
+                    if (relativeOutputEndIndex >= 0) {
+                        outputEndIndex = earliestOutputEndCheckIndex + relativeOutputEndIndex;
+                        break;
+                    }
+                }
 
                 byteIndex += read.Count;
                 charIndex += charCount;
-                if (byteIndex >= byteBuffer.Length)
-                    break;                
+                if (byteIndex >= byteBuffer.Length || charIndex >= charBuffer.Length)
+                    break;
             }
 
             if (cancelled)

@@ -13,6 +13,7 @@ namespace SharpLab.Container.Manager.Internal {
         private readonly MemoryCache _sessionCache = new("_");
 
         public ChannelWriter<ActiveContainer> PreallocatedContainersWriter => _preallocated.Writer;
+        public Exception? LastContainerPreallocationException { get; set; }
 
         public async ValueTask<ActiveContainer> AllocateSessionContainerAsync(
             string sessionId, Action<ActiveContainer> scheduleCleanup, CancellationToken cancellationToken
