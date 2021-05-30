@@ -7,17 +7,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
-using MirrorSharp.Advanced;
 using MirrorSharp.Advanced.Mocks;
 using ProtoBuf;
 using SharpLab.Container;
 using SharpLab.Container.Protocol.Stdin;
 using SharpLab.Server.Common;
 using SharpLab.Server.Common.Internal;
-using SharpLab.Server.Compilation;
 using SharpLab.Server.Execution;
 using SharpLab.Server.Execution.Container;
 using SharpLab.Tests.Internal;
@@ -36,7 +33,7 @@ namespace SharpLab.Tests.Of.Container.Internal {
             roslynSessionMock.Setup.Project.Returns(project);
             session.Setup.Roslyn.Returns(roslynSessionMock);
 
-            session.SetContainerExperimentAccessAllowed(true);
+            session.SetContainerExperimentAllowed(true);
 
             var executor = CreateContainerExecutor();
             return await executor.ExecuteAsync(await CompileAsync(project), session, CancellationToken.None);
@@ -91,8 +88,8 @@ namespace SharpLab.Tests.Of.Container.Internal {
         }
 
         private class TestContainerClient : IContainerClient {
-            public Task<string> ExecuteAsync(string sessionId, Stream assemblyStream, CancellationToken cancellationToken) {
-                var executeCommand = new ExecuteCommand(((MemoryStream)assemblyStream).ToArray(), "OUTPUT-END");
+            public Task<string> ExecuteAsync(string sessionId, Stream assemblyStream, bool includePerformance, CancellationToken cancellationToken) {
+                var executeCommand = new ExecuteCommand(((MemoryStream)assemblyStream).ToArray(), Guid.NewGuid(), includePerformance);
 
                 var stdin = new MemoryStream();
                 Serializer.SerializeWithLengthPrefix(stdin, executeCommand, PrefixStyle.Base128);

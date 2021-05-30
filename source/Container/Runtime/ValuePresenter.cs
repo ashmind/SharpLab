@@ -8,27 +8,27 @@ using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Container.Runtime {
     internal class ValuePresenter : IValuePresenter {
-        public StringBuilder ToStringBuilder<T>(T value, ValuePresenterLimits limits = default) {
+        public StringBuilder ToStringBuilder<T>(T value, ValuePresenterLimits limits) {
             var builder = new StringBuilder();
             AppendTo(builder, value, limits);
             return builder;
         }
 
-        public StringBuilder ToStringBuilder<T>(ReadOnlySpan<T> value, ValuePresenterLimits limits = default) {
+        public StringBuilder ToStringBuilder<T>(ReadOnlySpan<T> value, ValuePresenterLimits limits) {
             var builder = new StringBuilder();
             AppendTo(builder, value, limits);
             return builder;
         }
 
-        public void AppendTo<T>(StringBuilder builder, T value, ValuePresenterLimits limits = default) {
+        public void AppendTo<T>(StringBuilder builder, T value, ValuePresenterLimits limits) {
             AppendTo(builder, value, depth: 1, limits);
         }
 
-        public void AppendTo<T>(StringBuilder builder, ReadOnlySpan<T> value, ValuePresenterLimits limits = default) {
+        public void AppendTo<T>(StringBuilder builder, ReadOnlySpan<T> value, ValuePresenterLimits limits) {
             AppendSpanTo(builder, value, depth: 1, limits);
         }
 
-        private void AppendTo<T>(StringBuilder builder, T value, int depth, ValuePresenterLimits limits = default) {
+        private void AppendTo<T>(StringBuilder builder, T value, int depth, ValuePresenterLimits limits) {
             if (value == null) {
                 builder.Append("null");
                 return;

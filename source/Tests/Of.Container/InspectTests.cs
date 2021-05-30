@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using SharpLab.Tests.Internal;
 using SharpLab.Tests.Of.Container.Internal;
@@ -21,7 +22,7 @@ namespace SharpLab.Tests.Of.Container {
         public async Task Inspect_ProducesExpectedOutput(string code, string expectedOutput) {
             var output = await ContainerTestDriver.CompileAndExecuteAsync(code);
 
-            Assert.Equal(expectedOutput, output);
+            Assert.Equal(expectedOutput, RemoveFlowJson(output));
         }
 
         [Theory]
@@ -35,13 +36,13 @@ namespace SharpLab.Tests.Of.Container {
 
             var output = await ContainerTestDriver.CompileAndExecuteAsync(code.Original);
 
-            code.AssertIsExpected(output, _testOutputHelper);
+            code.AssertIsExpected(RemoveFlowJson(output), _testOutputHelper);
         }
 
         [Theory]
         [InlineData("Container.Inspect.MemoryGraph.Int32.cs2output")]
         [InlineData("Container.Inspect.MemoryGraph.String.cs2output")]
-        [InlineData("Container.Inspect.MemoryGraph.Arrays.cs2output")]
+        [InlineData("Container.Inspect.MemoryGraph.Arrays.cs")]
         [InlineData("Container.Inspect.MemoryGraph.Variables.cs2output")]
         [InlineData("Container.Inspect.MemoryGraph.DateTime.cs2output")] // https://github.com/ashmind/SharpLab/issues/379
         [InlineData("Container.Inspect.MemoryGraph.Null.cs2output")]
@@ -50,7 +51,11 @@ namespace SharpLab.Tests.Of.Container {
 
             var output = await ContainerTestDriver.CompileAndExecuteAsync(code.Original);
 
-            code.AssertIsExpected(output, _testOutputHelper);
+            code.AssertIsExpected(RemoveFlowJson(output), _testOutputHelper);
+        }
+
+        private string RemoveFlowJson(string output) {
+            return Regex.Replace(output, "#\\{\"flow\".+$", "", RegexOptions.Singleline);
         }
     }
 }

@@ -1,10 +1,10 @@
-import type { OutputItem } from '../../../types/results';
+import type { RunResult } from '../../../types/results';
 
-export default function renderOutputToText(output: ReadonlyArray<OutputItem>|string) {
-    if (typeof output === 'string')
-        return output;
+export default function renderOutputToText(value: RunResult['value']) {
+    if (typeof value === 'string')
+        return value;
 
-    return output.map(item => {
+    return value?.output.map(item => {
         if (typeof item === 'string')
             return item;
 
@@ -15,5 +15,5 @@ export default function renderOutputToText(output: ReadonlyArray<OutputItem>|str
                 // TODO: nicer presentation
                 return JSON.stringify(item, null, 4) + '\r\n';
         }
-    }).join('');
+    }).join('') ?? '';
 }

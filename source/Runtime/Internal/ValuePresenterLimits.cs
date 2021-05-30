@@ -4,7 +4,7 @@ namespace SharpLab.Runtime.Internal
     {
         public static ValuePresenterLimits InspectValue { get; } = new(maxValueLength: 100);
 
-        public ValuePresenterLimits(int maxValueLength, int maxEnumerableItemCount = 5, int maxDepth = 1)
+        public ValuePresenterLimits(int maxValueLength, int maxEnumerableItemCount = 5, int maxDepth = 3)
         {
             MaxValueLength = maxValueLength;
             MaxEnumerableItemCount = maxEnumerableItemCount;

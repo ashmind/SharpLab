@@ -4,10 +4,10 @@ using ProtoBuf;
 namespace SharpLab.Container.Protocol.Stdin {
     [ProtoContract(SkipConstructor = true)]
     public class ExecuteCommand : StdinCommand {
-        public ExecuteCommand(byte[] assemblyBytes, Guid outputEndMarker, bool reportPerformance = false) {
+        public ExecuteCommand(byte[] assemblyBytes, Guid outputEndMarker, bool includePerformance = false) {
             AssemblyBytes = assemblyBytes;
             OutputEndMarker = outputEndMarker;
-            IncludePerformance = reportPerformance;
+            IncludePerformance = includePerformance;
         }
 
         [ProtoMember(1, Options = MemberSerializationOptions.OverwriteList | MemberSerializationOptions.Packed)]

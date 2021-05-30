@@ -40,8 +40,8 @@ namespace SharpLab.Tests.Internal {
             if (extension.Contains("2"))
                 return FromResourceFormatV1(content, extension);
 
-            var split = Regex.Matches(content, @"/\* (?<to>.+)").Last();
-            var from = LanguageAndTargetMap[extension];
+            var split = Regex.Matches(content, @"/\* (?<to>\S+)").Last();
+            var from = LanguageAndTargetMap[extension.TrimStart('.')];
             var to = LanguageAndTargetMap[split.Groups["to"].Value];
 
             var code = content.Substring(0, split.Index).Trim();

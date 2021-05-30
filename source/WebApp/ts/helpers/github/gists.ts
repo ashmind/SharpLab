@@ -70,7 +70,7 @@ function prepareResultForGist(target: string, result: Result) {
         case targets.ast:
             return { suffix: '.ast.json', content: readableJson(result.value) };
         case targets.run:
-            return { suffix: '.output.txt', content: renderOutputToText((result as unknown as RunResult).value?.output ?? []) };
+            return { suffix: '.output.txt', content: renderOutputToText((result as unknown as RunResult).value) };
         case targets.verify:
             return { suffix: '.verify.txt', content: result.value };
         case targets.explain:

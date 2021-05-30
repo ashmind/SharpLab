@@ -117,7 +117,7 @@ export interface AstResult extends ResultBase {
 export interface RunResult extends ResultBase {
     readonly type: 'run';
     readonly value: {
-        readonly output: ReadonlyArray<OutputItem>|string;
+        readonly output: ReadonlyArray<OutputItem>;
         readonly flow: ReadonlyArray<FlowStep>;
     } & ContainerExperimentFallbackRunValue | string | null;
 }

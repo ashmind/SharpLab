@@ -33,8 +33,8 @@ jobs:
     - uses: actions/upload-artifact@v2
       if: failure()
       with:
-        name: __diff_output__
-        path: source/WebApp/tests/rendering/__image_snapshots__/__diff_output__
+        name: __image_snapshots__
+        path: source/WebApp/tests/rendering/__image_snapshots__
         if-no-files-found: ignore
 
     - uses: actions/upload-artifact@v2
