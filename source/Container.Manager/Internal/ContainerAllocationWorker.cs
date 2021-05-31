@@ -85,7 +85,7 @@ namespace SharpLab.Container.Manager.Internal {
                                 ReadOnly = true
                             }
                         },
-                        Memory = 50 * 1024 * 1024,
+                        Memory = 100 * 1024 * 1024,
                         CPUQuota = 50000,
 
                         AutoRemove = true

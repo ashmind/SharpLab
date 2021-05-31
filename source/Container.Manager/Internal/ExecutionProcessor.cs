@@ -22,25 +22,39 @@ namespace SharpLab.Container.Manager.Internal {
             bool includePerformance,
             CancellationToken cancellationToken
         ) {
+            var outputStartMarker = Guid.NewGuid();
             var outputEndMarker = Guid.NewGuid();
-            await _stdinWriter.WriteCommandAsync(
-                container.Stream, new ExecuteCommand(assemblyBytes, outputEndMarker, includePerformance), cancellationToken
-            );
+            await _stdinWriter.WriteCommandAsync(container.Stream, new ExecuteCommand(
+                assemblyBytes,
+                outputStartMarker,
+                outputEndMarker,
+                includePerformance
+            ), cancellationToken);
 
-            const int OutputEndMarkerLength = 36; // length of guid
-            var outputEndMarkerBytes = ArrayPool<byte>.Shared.Rent(OutputEndMarkerLength);
+            const int OutputMarkerLength = 36; // length of guid
+            byte[]? outputStartMarkerBytes = null;
+            byte[]? outputEndMarkerBytes = null;
             try {
+                outputStartMarkerBytes = ArrayPool<byte>.Shared.Rent(OutputMarkerLength);
+                outputEndMarkerBytes = ArrayPool<byte>.Shared.Rent(OutputMarkerLength);
+
+                Utf8Formatter.TryFormat(outputStartMarker, outputStartMarkerBytes, out _);
                 Utf8Formatter.TryFormat(outputEndMarker, outputEndMarkerBytes, out _);
+
                 using var executionCancellation = CancellationFactory.ContainerExecution(cancellationToken);
                 return await _stdoutReader.ReadOutputAsync(
                     container.Stream,
-                    outputEndMarkerBytes.AsMemory(0, OutputEndMarkerLength),
                     outputBufferBytes,
+                    outputStartMarkerBytes.AsMemory(0, OutputMarkerLength),
+                    outputEndMarkerBytes.AsMemory(0, OutputMarkerLength),
                     executionCancellation.Token
                 );
             }
             finally {
-                ArrayPool<byte>.Shared.Return(outputEndMarkerBytes);
+                if (outputStartMarkerBytes != null)
+                    ArrayPool<byte>.Shared.Return(outputStartMarkerBytes);
+                if (outputEndMarkerBytes != null)
+                    ArrayPool<byte>.Shared.Return(outputEndMarkerBytes);
             }
         }
     }

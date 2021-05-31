@@ -6,12 +6,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using Docker.DotNet;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
 using MirrorSharp.Advanced.Mocks;
 using ProtoBuf;
 using SharpLab.Container;
+using SharpLab.Container.Manager.Internal;
 using SharpLab.Container.Protocol.Stdin;
 using SharpLab.Server.Common;
 using SharpLab.Server.Common.Internal;
@@ -88,8 +90,14 @@ namespace SharpLab.Tests.Of.Container.Internal {
         }
 
         private class TestContainerClient : IContainerClient {
-            public Task<string> ExecuteAsync(string sessionId, Stream assemblyStream, bool includePerformance, CancellationToken cancellationToken) {
-                var executeCommand = new ExecuteCommand(((MemoryStream)assemblyStream).ToArray(), Guid.NewGuid(), includePerformance);
+            public async Task<string> ExecuteAsync(string sessionId, Stream assemblyStream, bool includePerformance, CancellationToken cancellationToken) {
+                var startMarker = Guid.NewGuid();
+                var endMarker = Guid.NewGuid();
+                var executeCommand = new ExecuteCommand(
+                    ((MemoryStream)assemblyStream).ToArray(),
+                    startMarker, endMarker,
+                    includePerformance
+                );
 
                 var stdin = new MemoryStream();
                 Serializer.SerializeWithLengthPrefix(stdin, executeCommand, PrefixStyle.Base128);
@@ -98,7 +106,17 @@ namespace SharpLab.Tests.Of.Container.Internal {
                 var stdout = new MemoryStream();
                 Program.Run(stdin, stdout);
 
-                return Task.FromResult(Encoding.UTF8.GetString(stdout.ToArray()));
+                stdout.Seek(0, SeekOrigin.Begin);
+                var stdoutReader = new StdoutReader();
+                var outputResult = await stdoutReader.ReadOutputAsync(
+                    new MultiplexedStream(stdout, multiplexed: false),
+                    new byte[stdout.Length],
+                    Encoding.UTF8.GetBytes(startMarker.ToString()),
+                    Encoding.UTF8.GetBytes(endMarker.ToString()),
+                    cancellationToken
+                );
+
+                return Encoding.UTF8.GetString(outputResult.Output.Span);
             }
         }
     }

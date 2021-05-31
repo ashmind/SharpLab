@@ -8,21 +8,25 @@ using static Docker.DotNet.MultiplexedStream;
 namespace SharpLab.Container.Manager.Internal {
     public class StdoutReader {
         private static readonly byte[] ExecutionTimedOut = Encoding.UTF8.GetBytes("\n(Execution timed out)");
+        private static readonly byte[] StartOfOutputNotFound = Encoding.UTF8.GetBytes("\n(Could not find start of output)");
         private static readonly byte[] UnexpectedEndOfOutput = Encoding.UTF8.GetBytes("\n(Unexpected end of output)");
 
         public async Task<ExecutionOutputResult> ReadOutputAsync(
             MultiplexedStream stream,
+            byte[] outputBuffer,
+            ReadOnlyMemory<byte> outputStartMarker,
             ReadOnlyMemory<byte> outputEndMarker,
-            byte[] outputBytes,
             CancellationToken cancellationToken
         ) {
-            var byteIndex = 0;
+            var currentIndex = 0;
+            var outputStartIndex = -1;
             var outputEndIndex = -1;
-            var cancelled = false;
+            var nextStartMarkerIndexToCompare = 0;
             var nextEndMarkerIndexToCompare = 0;
+            var cancelled = false;
 
             while (outputEndIndex < 0) {
-                var (read, readCancelled) = await ReadWithCancellationAsync(stream, outputBytes, byteIndex, outputBytes.Length - byteIndex, cancellationToken);
+                var (read, readCancelled) = await ReadWithCancellationAsync(stream, outputBuffer, currentIndex, outputBuffer.Length - currentIndex, cancellationToken);
                 if (readCancelled) {
                     cancelled = true;
                     break;
@@ -33,31 +37,38 @@ namespace SharpLab.Container.Manager.Internal {
                     continue;
                 }
 
-                var totalReadCount = byteIndex + read.Count;
-                for (var i = byteIndex; i < totalReadCount; i++) {
-                    if (outputBytes[i] != outputEndMarker.Span[nextEndMarkerIndexToCompare]) {
-                        nextEndMarkerIndexToCompare = outputBytes[i] == outputEndMarker.Span[0] ? 1 : 0;
-                        continue;
-                    }
-
-                    nextEndMarkerIndexToCompare += 1;
-                    if (nextEndMarkerIndexToCompare >= outputEndMarker.Length) {
-                        outputEndIndex = i - outputEndMarker.Length;
-                        break;
-                    }
+                if (outputStartIndex == -1) {
+                    var startMarkerEndIndex = GetMarkerEndIndex(
+                        outputBuffer, currentIndex, read.Count,
+                        outputStartMarker, ref nextStartMarkerIndexToCompare
+                    );
+                    if (startMarkerEndIndex != -1)
+                        outputStartIndex = startMarkerEndIndex;
                 }
 
-                byteIndex += read.Count;
-                if (byteIndex >= outputBytes.Length)
+                // cannot be else if -- it might have changed inside previous if
+                if (outputStartIndex != -1) {
+                    var endMarkerEndIndex = GetMarkerEndIndex(
+                        outputBuffer, currentIndex, read.Count,
+                        outputEndMarker, ref nextEndMarkerIndexToCompare
+                    );
+                    if (endMarkerEndIndex != -1)
+                        outputEndIndex = endMarkerEndIndex - outputEndMarker.Length;
+                }
+
+                currentIndex += read.Count;
+                if (currentIndex >= outputBuffer.Length)
                     break;
             }
 
+            if (outputStartIndex < 0)
+                return new(outputBuffer.AsMemory(0, currentIndex), StartOfOutputNotFound);
             if (cancelled)
-                return new(outputBytes.AsMemory(0, byteIndex), ExecutionTimedOut);
+                return new(outputBuffer.AsMemory(outputStartIndex, currentIndex - outputStartIndex), ExecutionTimedOut);
             if (outputEndIndex < 0)
-                return new(outputBytes.AsMemory(0, byteIndex), UnexpectedEndOfOutput);
+                return new(outputBuffer.AsMemory(outputStartIndex, currentIndex - outputStartIndex), UnexpectedEndOfOutput);
 
-            return new(outputBytes.AsMemory(0, outputEndIndex));
+            return new(outputBuffer.AsMemory(outputStartIndex, outputEndIndex - outputStartIndex));
         }
 
         // Underlying stream does not handle cancellation correctly by default, see
@@ -74,6 +85,24 @@ namespace SharpLab.Container.Manager.Internal {
                 return (default, true);
 
             return (await (Task<ReadResult>)result, false);
+        }
+
+        private static int GetMarkerEndIndex(byte[] outputBuffer, int currentIndex, int length, ReadOnlyMemory<byte> marker, ref int nextMarkerIndexToCompare) {
+            var markerEndIndex = -1;
+            var searchEndIndex = currentIndex + length;
+            for (var i = currentIndex; i < searchEndIndex; i++) {
+                if (outputBuffer[i] != marker.Span[nextMarkerIndexToCompare]) {
+                    nextMarkerIndexToCompare = outputBuffer[i] == marker.Span[0] ? 1 : 0;
+                    continue;
+                }
+
+                nextMarkerIndexToCompare += 1;
+                if (nextMarkerIndexToCompare == marker.Length) {
+                    markerEndIndex = i + 1;
+                    break;
+                }
+            }
+            return markerEndIndex;
         }
     }
 }

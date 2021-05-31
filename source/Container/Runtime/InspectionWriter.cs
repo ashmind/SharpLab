@@ -7,9 +7,9 @@ namespace SharpLab.Container.Runtime {
     using static JsonStrings;
 
     internal class InspectionWriter : IInspectionWriter {
-        private readonly StdoutJsonLineWriter _stdoutWriter;
+        private readonly StdoutWriter _stdoutWriter;
 
-        public InspectionWriter(StdoutJsonLineWriter stdoutWriter) {
+        public InspectionWriter(StdoutWriter stdoutWriter) {
             _stdoutWriter = stdoutWriter;
         }
 

@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Http;
 namespace SharpLab.Container.Manager.Internal {
     public static class CancellationFactory {
         public static CancellationTokenSource RequestExecution(HttpContext context)
-            => CancelTokenAfter(context.RequestAborted, 15000);
+            => CancelTokenAfter(context.RequestAborted, 25000);
 
         public static CancellationTokenSource ContainerAllocation(CancellationToken linkedToken)
             => CancelTokenAfter(linkedToken, 5000);
 
         public static CancellationTokenSource ContainerExecution(CancellationToken linkedToken)
-            => CancelTokenAfter(linkedToken, 5000);
+            => CancelTokenAfter(linkedToken, 10000);
 
         private static CancellationTokenSource CancelTokenAfter(CancellationToken linkedToken, int cancelDelayMilliseconds) {
             var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(linkedToken);

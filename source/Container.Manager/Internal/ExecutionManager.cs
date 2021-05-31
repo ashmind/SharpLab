@@ -37,22 +37,13 @@ namespace SharpLab.Container.Manager.Internal {
                 }
             }
 
-            try {
-                var result = await _executionProcessor.ExecuteInContainerAsync(
-                    container,
-                    assemblyBytes,
-                    outputBufferBytes,
-                    includePerformance,
-                    cancellationToken
-                );
-                if (!result.IsOutputReadSuccess)
-                    _containerPool.RemoveSessionContainer(sessionId);
-                return result;
-            }
-            catch {
-                _containerPool.RemoveSessionContainer(sessionId);
-                throw;
-            }
+            return await _executionProcessor.ExecuteInContainerAsync(
+                container,
+                assemblyBytes,
+                outputBufferBytes,
+                includePerformance,
+                cancellationToken
+            );
         }
     }
 }
