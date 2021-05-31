@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace SharpLab.Container.Manager.Internal {
     public class ContainerAllocationWorker : BackgroundService {
         private readonly ContainerPool _containerPool;
-        private readonly DockerClientConfiguration _dockerClientConfiguration;
+        private readonly DockerClient _dockerClient;
         private readonly ContainerNameFormat _containerNameFormat;
         private readonly ExecutionProcessor _warmupExecutionProcessor;
         private readonly ContainerCleanupWorker _containerCleanup;
@@ -22,14 +22,14 @@ namespace SharpLab.Container.Manager.Internal {
 
         public ContainerAllocationWorker(
             ContainerPool containerPool,
-            DockerClientConfiguration dockerClientConfiguration,
+            DockerClient dockerClient,
             ContainerNameFormat containerNameFormat,
             ExecutionProcessor warmupExecutionProcessor,
             ContainerCleanupWorker containerCleanup,
             ILogger<ContainerAllocationWorker> logger
         ) {
             _containerPool = containerPool;
-            _dockerClientConfiguration = dockerClientConfiguration;
+            _dockerClient = dockerClient;
             _containerNameFormat = containerNameFormat;
             _warmupExecutionProcessor = warmupExecutionProcessor;
             _containerCleanup = containerCleanup;
@@ -59,62 +59,47 @@ namespace SharpLab.Container.Manager.Internal {
         }
 
         private async Task<ActiveContainer> CreateAndStartContainerAsync(CancellationToken cancellationToken) {
-            var containerName = _containerNameFormat.GenerateName();
+            var containerName = _containerNameFormat.GeneratePreallocatedName();
             _logger.LogDebug($"Allocating container {containerName}");
-            var client = _dockerClientConfiguration.CreateClient();
-            string containerId;
-            try {
-                containerId = (await client.Containers.CreateContainerAsync(new CreateContainerParameters {
-                    Name = containerName,
-                    Image = "mcr.microsoft.com/dotnet/runtime:5.0",
-                    Cmd = new[] { @"c:\\app\SharpLab.Container.exe" },
+            var containerId = (await _dockerClient.Containers.CreateContainerAsync(new CreateContainerParameters {
+                Name = containerName,
+                Image = "mcr.microsoft.com/dotnet/runtime:5.0",
+                Cmd = new[] { @"c:\\app\SharpLab.Container.exe" },
 
-                    AttachStdout = true,
-                    AttachStdin = true,
-                    OpenStdin = true,
-                    StdinOnce = true,
+                AttachStdout = true,
+                AttachStdin = true,
+                OpenStdin = true,
+                StdinOnce = true,
 
-                    NetworkDisabled = true,
-                    HostConfig = new HostConfig {
-                        Isolation = "process",
-                        Mounts = new[] {
-                            new Mount {
-                                Source = AppDomain.CurrentDomain.BaseDirectory,
-                                Target = @"c:\app",
-                                Type = "bind",
-                                ReadOnly = true
-                            }
-                        },
-                        Memory = 100 * 1024 * 1024,
-                        CPUQuota = 50000,
+                NetworkDisabled = true,
+                HostConfig = new HostConfig {
+                    Isolation = "process",
+                    Mounts = new[] {
+                        new Mount {
+                            Source = AppDomain.CurrentDomain.BaseDirectory,
+                            Target = @"c:\app",
+                            Type = "bind",
+                            ReadOnly = true
+                        }
+                    },
+                    Memory = 100 * 1024 * 1024,
+                    CPUQuota = 50000,
 
-                        AutoRemove = true
-                    }
-                }, cancellationToken)).ID;
-            }
-            catch {
-                client.Dispose();
-                throw;
-            }
+                    AutoRemove = true
+                }
+            }, cancellationToken)).ID;
 
             MultiplexedStream? stream = null;
             ActiveContainer container;
             try {
-                stream = await client.Containers.AttachContainerAsync(containerId, tty: false, new ContainerAttachParameters {
+                stream = await _dockerClient.Containers.AttachContainerAsync(containerId, tty: false, new ContainerAttachParameters {
                     Stream = true,
                     Stdin = true,
                     Stdout = true
                 }, cancellationToken);
 
-                try {
-                    await client.Containers.StartContainerAsync(containerId, new ContainerStartParameters(), cancellationToken);
-                }
-                catch {
-                    stream.Dispose();
-                    throw;
-                }
-
-                container = new ActiveContainer(client, containerId, stream);
+                await _dockerClient.Containers.StartContainerAsync(containerId, new ContainerStartParameters(), cancellationToken);
+                container = new ActiveContainer(containerId, stream);
 
                 var outputBuffer = ArrayPool<byte>.Shared.Rent(2048);
                 try {
@@ -122,7 +107,7 @@ namespace SharpLab.Container.Manager.Internal {
                         container, _warmupAssemblyBytes, outputBuffer, includePerformance: false, cancellationToken
                     );
                     if (!result.IsOutputReadSuccess)
-                        throw new Exception("Warmup output failed:\r\n" + Encoding.UTF8.GetString(result.Output.Span) + Encoding.UTF8.GetString(result.OutputReadFailureMessage.Span));
+                        throw new Exception($"Warmup output failed for container {containerName}:\r\n" + Encoding.UTF8.GetString(result.Output.Span) + Encoding.UTF8.GetString(result.OutputReadFailureMessage.Span));
                 }
                 finally {
                     ArrayPool<byte>.Shared.Return(outputBuffer);
@@ -131,7 +116,7 @@ namespace SharpLab.Container.Manager.Internal {
                 _logger.LogDebug($"Allocated container {containerName}");
             }
             catch {
-                _containerCleanup.QueueForCleanup(client, containerId, stream);
+                _containerCleanup.QueueForCleanup(containerId, stream);
                 throw;
             }
 

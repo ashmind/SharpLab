@@ -20,7 +20,7 @@ namespace SharpLab.Container.Runtime {
                     return;
 
                 case VariantKind.Object:
-                    AppendValue(output, value.AsObjectUnchecked(), depth: 1, limits, out byteCount);
+                    AppendObject(output, value.AsObjectUnchecked(), depth: 1, limits, out byteCount);
                     return;
 
                 default:
@@ -35,12 +35,12 @@ namespace SharpLab.Container.Runtime {
                     return;
 
                 default:
-                    AppendValue(output, value, depth, limits, out byteCount);
+                    AppendObject(output, value, depth, limits, out byteCount);
                     return;
             }
         }
 
-        private void AppendValue(Span<byte> output, object? value, int depth, ValuePresenterLimits limits, out int byteCount) {
+        private void AppendObject(Span<byte> output, object? value, int depth, ValuePresenterLimits limits, out int byteCount) {
             if (value == null) {
                 output[0] = (byte)'n';
                 output[1] = (byte)'u';

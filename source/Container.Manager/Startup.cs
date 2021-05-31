@@ -25,7 +25,7 @@ namespace SharpLab.Container.Manager {
             services.AddSingleton(new ExecutionEndpointSettings(executionAuthorization));
             services.AddSingleton<ExecutionEndpoint>();
 
-            services.AddSingleton<DockerClientConfiguration>();
+            services.AddSingleton(new DockerClientConfiguration().CreateClient());
 
             services.AddSingleton<ContainerNameFormat>();
             services.AddSingleton<ContainerPool>();
@@ -37,6 +37,7 @@ namespace SharpLab.Container.Manager {
             services.AddSingleton<StdinWriter>();
             services.AddSingleton<StdoutReader>();
             services.AddSingleton<ExecutionProcessor>();
+            services.AddSingleton<CrashSuspensionManager>();
             services.AddSingleton<ExecutionManager>();
 
             ConfigureAzureDependentServices(services);
