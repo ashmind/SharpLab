@@ -12,16 +12,16 @@ namespace SharpLab.Container.Manager.Azure {
     public class ContainerCountMetricReporter : BackgroundService {
         private static readonly MetricIdentifier ContainerCountMetric = new("Custom Metrics", "Container Count");
 
-        private readonly DockerClientConfiguration _dockerClientConfiguration;
+        private readonly DockerClient _dockerClient;
         private readonly TelemetryClient _telemetryClient;
         private readonly ILogger<ContainerCountMetricReporter> _logger;
 
         public ContainerCountMetricReporter(
-            DockerClientConfiguration dockerClientConfiguration,
+            DockerClient dockerClient,
             TelemetryClient telemetryClient,
             ILogger<ContainerCountMetricReporter> logger
         ) {
-            _dockerClientConfiguration = dockerClientConfiguration;
+            _dockerClient = dockerClient;
             _telemetryClient = telemetryClient;
             _logger = logger;
         }
@@ -29,8 +29,7 @@ namespace SharpLab.Container.Manager.Azure {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken) {
             while (!stoppingToken.IsCancellationRequested) {
                 try {
-                    using var client = _dockerClientConfiguration.CreateClient();
-                    var containers = await client.Containers.ListContainersAsync(new ContainersListParameters { All = true });
+                    var containers = await _dockerClient.Containers.ListContainersAsync(new ContainersListParameters { All = true });
 
                     _telemetryClient.GetMetric(ContainerCountMetric).TrackValue(containers.Count);
                 }
