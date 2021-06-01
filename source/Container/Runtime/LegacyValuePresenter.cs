@@ -7,7 +7,8 @@ using System.Text;
 using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Container.Runtime {
-    internal class ValuePresenter : IValuePresenter {
+    [Obsolete("This will be replaced with Utf8ValuePresenter")]
+    internal class LegacyValuePresenter : IValuePresenter {
         public StringBuilder ToStringBuilder<T>(T value, ValuePresenterLimits limits) {
             var builder = new StringBuilder();
             AppendTo(builder, value, limits);

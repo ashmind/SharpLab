@@ -35,7 +35,7 @@ namespace SharpLab.Container {
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             }));
 
-            var flowWriter = new FlowWriter(stdoutWriter, new ContainerUtf8ValuePresenter());
+            var flowWriter = new FlowWriter(stdoutWriter, new Utf8ValuePresenter());
             SetupRuntimeServices(flowWriter, stdoutWriter);
 
             var executeCommandHandler = new ExecuteCommandHandler(flowWriter, stdoutWriter);
@@ -49,7 +49,9 @@ namespace SharpLab.Container {
         }
 
         private static void SetupRuntimeServices(FlowWriter flowWriter, StdoutWriter stdoutWriter) {
-            RuntimeServices.ValuePresenter = new ValuePresenter();
+            #pragma warning disable CS0618 // Type or member is obsolete
+            RuntimeServices.ValuePresenter = new LegacyValuePresenter();
+            #pragma warning restore CS0618 // Type or member is obsolete
             RuntimeServices.InspectionWriter = new InspectionWriter(stdoutWriter);
             RuntimeServices.FlowWriter = flowWriter;
             RuntimeServices.MemoryBytesInspector = new MemoryBytesInspector(new Pool<ClrRuntime>(() => {

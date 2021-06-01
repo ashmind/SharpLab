@@ -6,7 +6,7 @@ using SharpLab.Runtime.Internal;
 using Xunit;
 
 namespace SharpLab.Tests.Of.Container.Unit {
-    public class ContainerUtf8ValuePresenterTests {
+    public class Utf8ValuePresenterTests {
         [Theory]
         [InlineData("1234", "1234")]
         [InlineData("12345", "12345")]
@@ -47,7 +47,7 @@ namespace SharpLab.Tests.Of.Container.Unit {
                 limits
             );
 
-            var calculatedLength = new ContainerUtf8ValuePresenter()
+            var calculatedLength = new Utf8ValuePresenter()
                 .GetMaxOutputByteCount(limits);
 
             Assert.Equal(Encoding.UTF8.GetByteCount(presented), calculatedLength);
@@ -60,7 +60,7 @@ namespace SharpLab.Tests.Of.Container.Unit {
 
         private string Present<T>(T value, ValuePresenterLimits limits) {
             var bytes = (Span<byte>)stackalloc byte[256];
-            new ContainerUtf8ValuePresenter()
+            new Utf8ValuePresenter()
                 .Present(bytes, VariantValue.From(value), limits, out var byteCount);
             return Encoding.UTF8.GetString(bytes.Slice(0, byteCount));
         }

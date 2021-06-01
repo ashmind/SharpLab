@@ -8,7 +8,7 @@ using System.Text;
 using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Container.Runtime {
-    internal class ContainerUtf8ValuePresenter {
+    internal class Utf8ValuePresenter {
         public void Present(Span<byte> output, VariantValue value, ValuePresenterLimits limits, out int byteCount) {
             switch (value.Kind) {
                 case VariantKind.Int32:

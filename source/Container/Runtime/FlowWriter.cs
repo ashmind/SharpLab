@@ -17,7 +17,7 @@ namespace SharpLab.Container.Runtime {
         }
 
         private readonly StdoutWriter _stdoutWriter;
-        private readonly ContainerUtf8ValuePresenter _valuePresenter;
+        private readonly Utf8ValuePresenter _valuePresenter;
         private readonly byte[] _truncatedNameBytes = new byte[(Limits.MaxNameLength - 1) + Utf8Ellipsis.Length];
         private readonly FlowRecord[] _records = new FlowRecord[50];
         private readonly int[] _valueCountsPerLine = new int[75];
@@ -25,7 +25,7 @@ namespace SharpLab.Container.Runtime {
 
         public FlowWriter(
             StdoutWriter stdoutWriter,
-            ContainerUtf8ValuePresenter valuePresenter
+            Utf8ValuePresenter valuePresenter
         ) {
             _stdoutWriter = stdoutWriter;
             _valuePresenter = valuePresenter;
