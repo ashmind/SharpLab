@@ -10,14 +10,14 @@ namespace SharpLab.Runtime.Internal {
             public const int MaxStepNotesPerLine = 3;
             public const int MaxValuesPerStep = 3;
 
-            public static readonly ValuePresenterLimits ValueName = new ValuePresenterLimits(maxValueLength: 10);
-            public static readonly ValuePresenterLimits ValueValue = new ValuePresenterLimits(
-                maxDepth: 2, maxEnumerableItemCount: 3, maxValueLength: 10
+            public static readonly ValuePresenterLimits ValueName = new(maxValueLength: 10);
+            public static readonly ValuePresenterLimits ValueValue = new(
+                maxValueLength: 10, maxEnumerableItemCount: 3
             );
         }
 
-        private static readonly LazyAsyncLocal<IList<Step>> _steps = new LazyAsyncLocal<IList<Step>>(() => new List<Step>());
-        private static readonly LazyAsyncLocal<IDictionary<int, int>> _stepNotesCountPerLine = new LazyAsyncLocal<IDictionary<int, int>>(() => new Dictionary<int, int>());
+        private static readonly LazyAsyncLocal<IList<Step>> _steps = new(() => new List<Step>());
+        private static readonly LazyAsyncLocal<IDictionary<int, int>> _stepNotesCountPerLine = new(() => new Dictionary<int, int>());
 
         public static IReadOnlyList<Step> Steps => (IReadOnlyList<Step>?)_steps.ValueIfCreated ?? Array.Empty<Step>();
 

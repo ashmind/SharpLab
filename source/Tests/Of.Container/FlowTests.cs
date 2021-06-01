@@ -23,6 +23,7 @@ namespace SharpLab.Tests.Of.Container {
         [InlineData("Values.Variable.LongValue.cs")]
         [InlineData("Values.Variable.LongValue.UnicodeCharBreak.cs")]
         [InlineData("Values.Regression.ToStringNull.cs")] // https://github.com/ashmind/SharpLab/issues/380
+        [InlineData("Values.Variable.Array.cs")]
         public async Task Flow_IncludesExpectedValues(string resourceName) {
             var code = LoadCodeFromResource(resourceName);
             var cleanCodeLines = code.Split("\r\n")

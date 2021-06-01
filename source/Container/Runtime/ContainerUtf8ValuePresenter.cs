@@ -12,7 +12,7 @@ namespace SharpLab.Container.Runtime {
         public void Present(Span<byte> output, VariantValue value, ValuePresenterLimits limits, out int byteCount) {
             switch (value.Kind) {
                 case VariantKind.Int32:
-                    Utf8Formatter.TryFormat(value.AsInt32Unchecked(), output, out byteCount);
+                    AppendNumber(output, value.AsInt32Unchecked(), out byteCount);
                     return;
 
                 case VariantKind.Int64:
@@ -20,7 +20,7 @@ namespace SharpLab.Container.Runtime {
                     return;
 
                 case VariantKind.Object:
-                    AppendObject(output, value.AsObjectUnchecked(), depth: 1, limits, out byteCount);
+                    AppendValue(output, value.AsObjectUnchecked(), depth: 1, limits, out byteCount);
                     return;
 
                 default:
@@ -28,19 +28,29 @@ namespace SharpLab.Container.Runtime {
             }
         }
 
-        private void AppendValue<T>(Span<byte> output, T value, int depth, ValuePresenterLimits limits, out int byteCount) {
-            switch (value) {
-                case int i:
-                    Utf8Formatter.TryFormat(i, output, out byteCount);
-                    return;
+        public int GetMaxOutputByteCount(ValuePresenterLimits limits) {
+            if (limits.MaxDepth > 2)
+                throw new NotSupportedException("Output length calculation can only be done for depth <= 2.");
 
-                default:
-                    AppendObject(output, value, depth, limits, out byteCount);
-                    return;
-            }
+            // maximum length is this (depending on item and sequence limits):
+            // { { longestitem…, … }, { longestitem…, … }, … }
+
+            const int ellipsis = Utf8Ellipsis.Length;
+            const int bracesAndEllipsis = 2 // {␣
+                 + ellipsis
+                 + 2; // ␣}
+
+            return (
+                bracesAndEllipsis +
+                + (limits.MaxValueLength - 1)
+                + ellipsis
+                + 2 // ,␣ (before last … inside)
+                + 2 // ,␣ (before next item outside)
+            ) * limits.MaxEnumerableItemCount
+              + bracesAndEllipsis;
         }
 
-        private void AppendObject(Span<byte> output, object? value, int depth, ValuePresenterLimits limits, out int byteCount) {
+        private void AppendValue<T>(Span<byte> output, T value, int depth, ValuePresenterLimits limits, out int byteCount) {
             if (value == null) {
                 output[0] = (byte)'n';
                 output[1] = (byte)'u';
@@ -50,12 +60,10 @@ namespace SharpLab.Container.Runtime {
                 return;
             }
 
-            if (depth > limits.MaxDepth) {
-                byteCount = AppendEllipsis(output, 0);
-                return;
-            }
-
             switch (value) {
+                case int i:
+                    AppendNumber(output, i, out byteCount);
+                    break;
                 case ICollection<int> c:
                     AppendEnumerable(output, c, depth, limits, out byteCount);
                     break;
@@ -77,7 +85,25 @@ namespace SharpLab.Container.Runtime {
             }
         }
 
-        private void AppendEnumerable<T>(Span<byte> output, IEnumerable<T> enumerable, int depth, ValuePresenterLimits limits, out int byteCount) {
+        private void AppendNumber(Span<byte> output, int number, out int byteCount) {
+            Utf8Formatter.TryFormat(number, output, out byteCount);
+        }
+
+        private void AppendEnumerable<T>(
+            Span<byte> output,
+            IEnumerable<T> enumerable,
+            int depth,
+            ValuePresenterLimits limits,
+            out int byteCount
+        ) {
+            if (depth > limits.MaxDepth) {
+                output[0] = (byte)'{';
+                byteCount = 1 + AppendEllipsis(output, 1);
+                output[byteCount] = (byte)'}';
+                byteCount += 1;
+                return;
+            }
+
             byteCount = Append(output, '{', ' ', 0);
 
             var index = 0;
@@ -85,12 +111,17 @@ namespace SharpLab.Container.Runtime {
                 if (index > 0)
                     byteCount += Append(output, ',', ' ', byteCount);
 
-                if (index > limits.MaxEnumerableItemCount) {
+                if (index > limits.MaxEnumerableItemCount - 1) {
                     byteCount += AppendEllipsis(output, byteCount);
                     break;
                 }
 
-                AppendValue(output.Slice(byteCount), item, depth + 1, limits, out var itemByteCount);
+                AppendValue(
+                    output.Slice(byteCount),
+                    item, depth + 1,
+                    limits.WithMaxEnumerableItemCount(1),
+                    out var itemByteCount
+                );
                 byteCount += itemByteCount;
 
                 index += 1;

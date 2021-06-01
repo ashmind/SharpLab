@@ -13,9 +13,7 @@ namespace SharpLab.Container.Runtime {
             public const int MaxValuesPerLine = 3;
             public const int MaxNameLength = 10;
 
-            public static readonly ValuePresenterLimits Value = new(
-                maxDepth: 2, maxEnumerableItemCount: 3, maxValueLength: 10
-            );
+            public static readonly ValuePresenterLimits Value = new(maxValueLength: 10, maxEnumerableItemCount: 3);
         }
 
         private readonly StdoutWriter _stdoutWriter;
@@ -122,14 +120,24 @@ namespace SharpLab.Container.Runtime {
                     break;
 
                 default:
-                    var valueUtf8String = (Span<byte>)stackalloc byte[Limits.Value.MaxValueLength + Utf8Ellipsis.Length - 1];
-                    _valuePresenter.Present(valueUtf8String, value, Limits.Value, out var valueByteCount);
-                    writer.WriteStringValue(valueUtf8String.Slice(0, valueByteCount));
+                    WriteOtherValueToWriter(writer, record, value);
                     break;
             }
             if (record.Name != null)
                 WriteNameToWriter(writer, record.Name);
             writer.WriteEndArray();
+        }
+
+        private void WriteOtherValueToWriter(Utf8JsonWriter writer, FlowRecord record, VariantValue value) {
+            var utf8Length = _valuePresenter.GetMaxOutputByteCount(Limits.Value);
+            if (utf8Length > 100) { // just in case, don't want a StackOverflow if here is a bug somewhere
+                writer.WriteStringValue("(#error#)");
+                return;
+            }
+
+            var utf8Bytes = (Span<byte>)stackalloc byte[utf8Length];
+            _valuePresenter.Present(utf8Bytes, value, Limits.Value, out var byteCount);
+            writer.WriteStringValue(utf8Bytes.Slice(0, byteCount));
         }
 
         // Does NOT have to be thread-safe
@@ -164,6 +172,17 @@ namespace SharpLab.Container.Runtime {
             public string? Name { get; }
             public VariantValue? Value { get; }
             public object? Exception { get; }
+
+            // allocates -- debug only
+            public override string ToString() {
+                if (Exception != null)
+                    return "{exception: " + Exception.GetType().Name + "}";
+
+                if (Value != null)
+                    return "{value}";
+
+                return "{line: " + LineNumber + "}";
+            }
         }
     }
 }
