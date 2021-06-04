@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
@@ -26,6 +26,8 @@
     <PackageReference Include="Autofac" Version="4.9.2" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="5.0.0" />
     <PackageReference Include="Autofac.Extras.FileSystemRegistration" Version="1.0.0-pre-03" />
+    <PackageReference Include="Azure.Identity" Version="1.4.0" />
+    <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.1.0" />
     <PackageReference Include="ICSharpCode.Decompiler" Version="6.2.1.6137" />
     <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.4.0" />
@@ -65,13 +67,7 @@
   </ItemGroup>
 
   <Target Name="_UpdatePolicyReport" AfterTargets="Build" Inputs="Execution\Unbreakable\ApiPolicySetup.cs" Outputs="Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt" Condition="'$(Configuration)' == 'Debug'">
-    <Exec WorkingDirectory="$(OutputPath)" Command="
-        dotnet unbreakable-policy-report ^
-            --assembly &quot;$(TargetPath)&quot; ^
-            --factory SharpLab.Server.Execution.Unbreakable.ApiPolicySetup ^
-            --method CreatePolicy ^
-            --output &quot;$(MSBuildThisFileDirectory)Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt&quot;
-    " />
+    <Exec WorkingDirectory="$(OutputPath)" Command="&#xD;&#xA;        dotnet unbreakable-policy-report ^&#xD;&#xA;            --assembly &quot;$(TargetPath)&quot; ^&#xD;&#xA;            --factory SharpLab.Server.Execution.Unbreakable.ApiPolicySetup ^&#xD;&#xA;            --method CreatePolicy ^&#xD;&#xA;            --output &quot;$(MSBuildThisFileDirectory)Execution\Unbreakable\ApiPolicySetup.PolicyReport.txt&quot;&#xD;&#xA;    " />
   </Target>
 
   <Target Name="CopyFrameworkXmlDocumentation" AfterTargets="ResolveReferences">

@@ -57,8 +57,12 @@ namespace SharpLab.Server.Execution {
                    .As<IContainerAssemblyRewriter>()
                    .SingleInstance();
 
-            builder.RegisterInstance(new ContainerClientSettings(new Uri(containerHostUrl), containerAuthorizationToken))
-                   .AsSelf();
+            builder.Register(c => {
+                var secretsClient = c.Resolve<ISecretsClient>();
+                var containerAuthorizationToken = secretsClient.GetSecret("ContainerHostAuthorizationToken");
+                return new ContainerClientSettings(new Uri(containerHostUrl), containerAuthorizationToken)
+            }).SingleInstance()
+              .AsSelf();
 
             builder.RegisterType<ContainerClient>()
                    .As<IContainerClient>()

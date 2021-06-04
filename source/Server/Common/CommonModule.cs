@@ -42,6 +42,15 @@ namespace SharpLab.Server.Common {
             builder.RegisterType<FSharpAdapter>()
                    .As<ILanguageAdapter>()
                    .SingleInstance();
+
+            RegisterConfiguration(builder);
+        }
+
+        private void RegisterConfiguration(ContainerBuilder builder) {
+            builder.RegisterType<LocalSecretsClient>()
+                   .As<ISecretsClient>()
+                   .SingleInstance()
+                   .PreserveExistingDefaults();
         }
 
         private void RegisterExternals(ContainerBuilder builder) {

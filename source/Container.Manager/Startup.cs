@@ -19,8 +19,8 @@ namespace SharpLab.Container.Manager {
         {
             // TODO: proper DI, e.g. Autofac
             var executionAuthorization = "Bearer " + (
-                Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_ACCESS_TOKEN")
-                ?? throw new Exception("Required environment variable SHARPLAB_CONTAINER_HOST_ACCESS_TOKEN was not provided.")
+                Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_AUTHORIZATION_TOKEN")
+                ?? throw new Exception("Required environment variable SHARPLAB_CONTAINER_HOST_AUTHORIZATION_TOKEN was not provided.")
             );
             services.AddSingleton(new ExecutionEndpointSettings(executionAuthorization));
             services.AddSingleton<ExecutionEndpoint>();

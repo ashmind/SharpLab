@@ -17,7 +17,7 @@ namespace SharpLab.Server.Execution.Container {
         }
 
         public async Task<string> ExecuteAsync(string sessionId, Stream assemblyStream, bool includePerformance, CancellationToken cancellationToken) {
-            var request = new HttpRequestMessage(HttpMethod.Post, _settings.RunnerUrl) {
+            var request = new HttpRequestMessage(HttpMethod.Post, _settings.ContainerHostUrl) {
                 Headers = { { "SL-Session-Id", sessionId } },
                 Content = new StreamContent(assemblyStream)
             };

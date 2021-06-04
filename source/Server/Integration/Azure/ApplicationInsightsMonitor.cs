@@ -17,12 +17,6 @@ namespace SharpLab.Server.Azure {
             _webAppName = Argument.NotNullOrEmpty(nameof(webAppName), webAppName);
         }
 
-        public void Event(string name, IWorkSession? session, IDictionary<string, string>? extras = null) {
-            var telemetry = new EventTelemetry(name);
-            AddDefaultDetails(telemetry, session, extras);
-            _client.TrackEvent(telemetry);
-        }
-
         public void Exception(Exception exception, IWorkSession? session, IDictionary<string, string>? extras = null) {
             var telemetry = new ExceptionTelemetry(exception) {
                 Properties = {
