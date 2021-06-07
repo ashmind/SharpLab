@@ -108,7 +108,7 @@ namespace SharpLab.Server.MirrorSharp {
 
                 var streams = new CompilationStreamPair(assemblyStream, compiled.symbols ? symbolStream : null);
                 if (targetName == TargetNames.Run) {
-                    if (session.IsContainerExperimentAllowed() && !session.HasContainerExperimentFailed()) {
+                    if (session.InContainerExperiment() && !session.HasContainerExperimentFailed()) {
                         try {
                             var output = await _containerExecutor.ExecuteAsync(streams, session, cancellationToken);
                             if (compilationStopwatch != null) {

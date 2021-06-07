@@ -7,17 +7,20 @@ using SharpLab.Server.Execution.Container;
 
 namespace SharpLab.Server.MirrorSharp {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-    public class SetOptionsFromClient : ISetOptionsFromClientExtension {        
+    public class SetOptionsFromClient : ISetOptionsFromClientExtension {
         private const string Optimize = "x-optimize";
         private const string Target = "x-target";
-        private const string ContainerExperimentKey = "x-container-experiment";
+        private const string ContainerExperimentSeedKey = "x-container-experiment-seed";
 
         private readonly IDictionary<string, ILanguageAdapter> _languages;
-        private readonly ContainerExperimentSettings _containerExperimentSettings;
+        private readonly IFeatureFlagClient _featureFlagClient;
 
-        public SetOptionsFromClient(IReadOnlyList<ILanguageAdapter> languages, ContainerExperimentSettings containerExperimentSettings) {
+        public SetOptionsFromClient(
+            IReadOnlyList<ILanguageAdapter> languages,
+            IFeatureFlagClient featureFlagClient
+        ) {
             _languages = languages.ToDictionary(l => l.LanguageName);
-            _containerExperimentSettings = containerExperimentSettings;
+            _featureFlagClient = featureFlagClient;
         }
 
         public bool TrySetOption(IWorkSession session, string name, string value) {
@@ -29,8 +32,10 @@ namespace SharpLab.Server.MirrorSharp {
                     session.SetTargetName(value);
                     _languages[session.LanguageName].SetOptionsForTarget(session, value);
                     return true;
-                case ContainerExperimentKey:
-                    session.SetContainerExperimentAllowed(value == _containerExperimentSettings.AccessKey);
+                case ContainerExperimentSeedKey:
+                    session.SetInContainerExperiment(
+                        int.Parse(value) <= (_featureFlagClient.GetInt32Flag("ContainerExperimentRollout") ?? 0)
+                    );
                     return true;
                 default:
                     return false;
