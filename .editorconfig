@@ -20,8 +20,10 @@ csharp_style_var_for_built_in_types = true:warning
 csharp_style_var_when_type_is_apparent = true:warning
 csharp_style_var_elsewhere = true:warning
 
-# IDE0044: Add readonly modifier
 dotnet_style_readonly_field = true:warning
+
+# CA1822: Mark members as static
+dotnet_diagnostic.CA1822.severity = none
 
 # IDE0005: Using directive is unnecessary.
 dotnet_diagnostic.IDE0005.severity = warning

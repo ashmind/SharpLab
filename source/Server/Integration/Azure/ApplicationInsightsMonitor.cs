@@ -7,7 +7,7 @@ using MirrorSharp.Advanced;
 using SharpLab.Server.MirrorSharp;
 using SharpLab.Server.Monitoring;
 
-namespace SharpLab.Server.Azure {
+namespace SharpLab.Server.Integration.Azure {
     public class ApplicationInsightsMonitor : IMonitor {
         private readonly TelemetryClient _client;
         private readonly string _webAppName;

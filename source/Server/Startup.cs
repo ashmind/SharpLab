@@ -14,8 +14,9 @@ using MirrorSharp;
 using MirrorSharp.AspNetCore;
 using SharpLab.Server.Common;
 using SharpLab.Server.Common.Diagnostics;
+using Microsoft.AspNetCore.Http;
 
-namespace SharpLab.Server {    
+namespace SharpLab.Server {
     public class Startup {
         // Chrome would limit to 10 mins I believe
         private static readonly TimeSpan CorsPreflightMaxAge = TimeSpan.FromHours(1);
@@ -60,16 +61,33 @@ namespace SharpLab.Server {
             app.MapMirrorSharp("/mirrorsharp", CreateMirrorSharpOptions(app.ApplicationServices.GetAutofacRoot()));
 
             app.UseEndpoints(e => {
-                var okBytes = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes("OK"));
-                e.MapGet("/status", context => {
-                    context.Response.ContentType = MediaTypeNames.Text.Plain;
-                    return context.Response.BodyWriter.WriteAsync(okBytes).AsTask();
-                });
-
+                MapStatus(e);
                 MapBranchVersion(e, env);
+                if (env.IsDevelopment())
+                    MapFeatureFlags(e);
                 MapOtherEndpoints(e);
 
                 e.MapControllers();
+            });
+        }
+
+        private void MapStatus(IEndpointRouteBuilder e) {
+            var okBytes = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes("OK"));
+            e.MapGet("/status", context => {
+                context.Response.ContentType = MediaTypeNames.Text.Plain;
+                return context.Response.BodyWriter.WriteAsync(okBytes, context.RequestAborted).AsTask();
+            });
+        }
+
+        private void MapFeatureFlags(IEndpointRouteBuilder e) {
+            e.MapGet("/featureflags/{key:alpha}", static context => {
+                var key = (string)context.GetRouteValue("key")!;
+                var featureFlagClient = context.RequestServices.GetRequiredService<IFeatureFlagClient>();
+
+                return context.Response.WriteAsync(
+                    featureFlagClient.GetInt32Flag(key)?.ToString() ?? "<null>",
+                    context.RequestAborted
+                );
             });
         }
 
@@ -84,7 +102,7 @@ namespace SharpLab.Server {
             stream.Read(bytes, 0, bytes.Length);
             endpoints.MapGet("/branch-version.json", context => {
                 context.Response.ContentType = MediaTypeNames.Application.Json;
-                return context.Response.BodyWriter.WriteAsync(bytes).AsTask();
+                return context.Response.BodyWriter.WriteAsync(bytes, context.RequestAborted).AsTask();
             });
         }
 

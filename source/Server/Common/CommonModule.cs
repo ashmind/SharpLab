@@ -51,6 +51,11 @@ namespace SharpLab.Server.Common {
                    .As<ISecretsClient>()
                    .SingleInstance()
                    .PreserveExistingDefaults();
+
+            builder.RegisterType<LocalFeatureFlagClient>()
+                   .As<IFeatureFlagClient>()
+                   .SingleInstance()
+                   .PreserveExistingDefaults();
         }
 
         private void RegisterExternals(ContainerBuilder builder) {

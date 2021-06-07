@@ -1,7 +1,7 @@
 using Azure.Security.KeyVault.Secrets;
 using SharpLab.Server.Common;
 
-namespace SharpLab.Server.Azure {
+namespace SharpLab.Server.Integration.Azure {
     public class KeyVaultSecretsClient : ISecretsClient {
         private readonly SecretClient _secretClient;
 
