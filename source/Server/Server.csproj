@@ -18,7 +18,7 @@
     <None Include="..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.pdb" Link="SharpLab.Native.Profiler.pdb" Condition="Exists('..\Native.Profiler\x64\$(Configuration)\SharpLab.Native.Profiler.pdb')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\WebApp.Server\.env" Link=".env">
+    <None Include="..\WebApp.Server\.env" Link=".env" Condition="Exists('..\WebApp.Server\.env')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\WebApp.Server\.env.template" Link=".env.template" />
