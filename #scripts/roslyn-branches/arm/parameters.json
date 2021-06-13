@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sites_container_host_url": {
+            "value": "http://sharplab-container-host.eastus.cloudapp.azure.com"
+        },
+        "serverfarms_main_name": {
+            "value": "SharpLab-Main"
+        },
+        "vaults_name": {
+            "value": "sharplab"
+        },
+        "components_insights_name": {
+            "value": "sharplab-insights"
+        }
+    }
+}

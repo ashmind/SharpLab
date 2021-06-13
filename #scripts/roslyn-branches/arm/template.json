@@ -1,0 +1,95 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sites_name": {
+            "type": "String"
+        },
+        "sites_container_host_url": {
+            "type": "String"
+        },
+        "vaults_name": {
+            "type": "String"
+        },
+        "serverfarms_main_name": {
+            "type": "String"
+        },
+        "components_insights_name": {
+            "type": "String"
+        }
+    },
+    "variables": {
+        "serverfarms_main_id": "[resourceId('Microsoft.Web/serverFarms', parameters('serverfarms_main_name'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('sites_name')]",
+            "location": "East US",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "dependsOn": [],
+            "kind": "app",
+            "properties": {
+                "enabled": true,
+                "serverFarmId": "[variables('serverfarms_main_id')]",
+                "clientAffinityEnabled": false,
+                "siteConfig": {
+                    "netFrameworkVersion": "v5.0",
+                    "publishingUsername": "[concat('$', parameters('sites_name'))]",
+                    "use32BitWorkerProcess": true,
+                    "webSocketsEnabled": true,
+                    "alwaysOn": false,
+                    "managedPipelineMode": "Integrated",
+                    "http20Enabled": true,
+                    "appSettings": [
+                        {
+                            "name": "SHARPLAB_WEBAPP_NAME",
+                            "value": "[parameters('sites_name')]"
+                        },
+                        {
+                            "name": "SHARPLAB_TELEMETRY_KEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('components_insights_name')), '2015-05-01', 'Full').properties.InstrumentationKey]"
+                        },
+                        {
+                            "name": "SHARPLAB_CONTAINER_HOST_URL",
+                            "value": "[parameters('sites_container_host_url')]"
+                        },
+                        {
+                            "name": "SHARPLAB_KEY_VAULT_URL",
+                            "value": "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('vaults_name')), '2019-09-01').vaultUri]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_name'), '/', parameters('sites_name'), '.azurewebsites.net')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_name'))]"
+            ],
+            "properties": {
+                "siteName": "[parameters('sites_name')]",
+                "hostNameType": "Verified"
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "2018-09-01-preview",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_name'))]"
+            ],
+            "name": "[guid(resourceGroup().id, resourceId('Microsoft.Web/sites', parameters('sites_name')))]",
+            "properties": {
+                // Key Vault Secrets User
+                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/4633458b-17de-408a-b874-0445c86b69e6')]",
+                "principalId": "[reference(resourceId('Microsoft.Web/sites', parameters('sites_name')), '2019-08-01', 'Full').identity.principalId]"
+            }
+        }
+    ]
+}

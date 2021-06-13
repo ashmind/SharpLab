@@ -1,23 +1,18 @@
-import stream from 'stream';
-import { promisify } from 'util';
 import path from 'path';
 import fs from 'fs-extra';
-import got from 'got';
+import stripJsonComments from 'strip-json-comments';
 import delay from 'delay';
 import { ResourceManagementClient } from '@azure/arm-resources';
 import { WebSiteManagementClient } from '@azure/arm-appservice';
 import AdmZip from 'adm-zip';
 import dateFormat from 'dateformat';
-import useAzure from './useAzure';
-import getEnvForAzure from './getEnvForAzure';
+import safeFetch, { Response, SafeFetchError } from '../helpers/safeFetch';
+import useAzure from '../helpers/useAzure';
 import { getAzureCredentials } from './getAzureCredentials';
 
-const pipeline = promisify(stream.pipeline);
-
 const resourceGroupName = 'SharpLab';
-const appServicePlanName = 'SharpLab-Main';
 
-export default async function publishBranch({ webAppName, iisSiteName, webAppUrl, branchArtifactsRoot, branchSiteRoot }: {
+export default async function publishBranch({ webAppName, webAppUrl, branchArtifactsRoot, branchSiteRoot }: {
     webAppName: string;
     iisSiteName: string;
     webAppUrl: string;
@@ -30,12 +25,12 @@ export default async function publishBranch({ webAppName, iisSiteName, webAppUrl
         let tryPermanent = 1;
         let tryTemporary = 1;
 
-        const formatStatus = ({ statusCode, statusMessage }: { statusCode: number; statusMessage?: string }) =>
-            `  ${statusCode} ${statusMessage ?? ''}`;
+        const formatStatus = ({ status, statusText }: Pick<Response, 'status'|'statusText'>) =>
+            `  ${status} ${statusText}`;
 
         while (tryPermanent < 3 && tryTemporary < 30) {
             try {
-                const response = await got(`${webAppUrl}/status`, { retry: 0 });
+                const response = await safeFetch(`${webAppUrl}/status`);
                 ok = true;
                 console.log(formatStatus(response));
                 break;
@@ -47,7 +42,7 @@ export default async function publishBranch({ webAppName, iisSiteName, webAppUrl
                     console.warn(formatStatus(e.response));
                 }
 
-                const temporary = (e instanceof got.HTTPError) && e.response.statusCode === 503;
+                const temporary = (e as Partial<SafeFetchError>).response?.status === 503;
                 if (temporary) {
                     tryTemporary += 1;
                 }
@@ -64,7 +59,13 @@ export default async function publishBranch({ webAppName, iisSiteName, webAppUrl
     }
 
     async function publishToAzure() {
-        const telemetryKey = getEnvForAzure('SHARPLAB_TELEMETRY_KEY');
+        const armTemplate = JSON.parse(stripJsonComments(
+            await fs.readFile(path.join(__dirname, '../arm/template.json'), 'utf-8')
+        ));
+        const armParameters = (JSON.parse(await fs.readFile(path.join(__dirname, '../arm/parameters.json'), 'utf-8')) as {
+            parameters: Record<string, { value: string }>;
+        }).parameters;
+
         console.log(`Deploying to Azure, ${webAppName}...`);
 
         const { credentials, subscriptionId } = await getAzureCredentials();
@@ -72,22 +73,24 @@ export default async function publishBranch({ webAppName, iisSiteName, webAppUrl
         const azureResourceClient = new ResourceManagementClient(credentials, subscriptionId);
         const azureWebAppClient = new WebSiteManagementClient(credentials, subscriptionId);
 
-        const resourceGroup = await azureResourceClient.resourceGroups.get(resourceGroupName);
-        const appServicePlan = await azureWebAppClient.appServicePlans.get(resourceGroupName, appServicePlanName);
-
-        console.log(`  Creating or updating web app...`);
-        const result = await azureWebAppClient.webApps.createOrUpdate(resourceGroupName, webAppName, {
-            location: resourceGroup.location,
-            serverFarmId: appServicePlan.id!,
-            siteConfig: {
-                webSocketsEnabled: true,
-                appSettings: Object.entries({
-                    SHARPLAB_WEBAPP_NAME: webAppName,
-                    SHARPLAB_TELEMETRY_KEY: telemetryKey
-                }).map(([name, value]) => ({ name, value }))
+        console.log(`  Deploying web app...`);
+        const result = await azureResourceClient.deployments.createOrUpdate(
+            resourceGroupName,
+            webAppName.replace(/^sl-b-/, 'sharplab-branch-'),
+            {
+                properties: {
+                    mode: 'Incremental',
+                    template: armTemplate,
+                    parameters: {
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        sites_name: { value: webAppName },
+                        ...armParameters
+                    }
+                }
             }
-        });
-        console.log(`    Status: ${result._response.status}`);
+        );
+        console.log(`    Response:     ${result._response.status}`);
+        console.log(`    Provisioning: ${result.properties?.provisioningState ?? '<null>'}`);
 
         console.log(`  Zipping...`);
         const zipPath = path.join(branchArtifactsRoot, 'Site.zip');
@@ -101,15 +104,52 @@ export default async function publishBranch({ webAppName, iisSiteName, webAppUrl
             publishingUserName,
             publishingPassword
         } = await azureWebAppClient.webApps.listPublishingCredentials(resourceGroupName, webAppName);
+        const authHeader = {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            'Authorization': `Basic ${Buffer.from(`${publishingUserName}:${publishingPassword!}`).toString('base64')}`
+        } as const;
 
         console.log(`    ⏱️ ${dateFormat(new Date(), 'HH:MM:ss')}`);
-        await pipeline(
-            fs.createReadStream(zipPath),
-            got.stream.post(`https://${webAppName}.scm.azurewebsites.net/api/zipdeploy`, {
-                username: publishingUserName,
-                password: publishingPassword
-            })
-        );
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const deploymentUrl = (await safeFetch(`https://${webAppName}.scm.azurewebsites.net/api/zipdeploy?isAsync=true`, {
+            method: 'POST',
+            body: fs.createReadStream(zipPath),
+            headers: {
+                ...authHeader,
+                'Content-Length': (await fs.stat(zipPath)).size.toString()
+            },
+            redirect: 'manual'
+        })).headers.get('Location')!;
+
+        let deployment: {
+            id: string;
+            complete: boolean;
+            provisioningState: 'Succeeded'|'Failed';
+            log_url: string;
+        };
+        process.stdout.write('    ');
+        try {
+            do {
+                process.stdout.write('░');
+                await delay(500);
+                deployment = await (await safeFetch(deploymentUrl, {
+                    headers: {
+                        ...authHeader
+                    }
+                })).json() as typeof deployment;
+            } while (!deployment.complete);
+
+            // https://github.com/projectkudu/kudu/issues/2906
+            const logUrl = deployment.log_url.replace('/latest/', `/${deployment.id}/`);
+            if (deployment.provisioningState !== 'Succeeded')
+                throw new Error(`Deployment state: ${deployment.provisioningState}, logs at ${logUrl}`);
+        }
+        catch (e) {
+            console.log('');
+            throw e;
+        }
+
+        console.log('');
         console.log(`    ✔️ ${dateFormat(new Date(), 'HH:MM:ss')}`);
 
         console.log(`  Done.`);
@@ -121,13 +161,6 @@ export default async function publishBranch({ webAppName, iisSiteName, webAppUrl
     else {
         // TODO: migrate to TypeScript
         throw new Error('Not migrated to TypeScript yet.');
-        /*await execa('powershell', [`${__dirname}/Publish-BranchToIIS.ps1`,
-            '-SiteName', iisSiteName,
-            '-SourcePath', branchSiteRoot
-        ], {
-            stdout: 'inherit',
-            stderr: 'inherit'
-        });*/
     }
 
     await testBranchWebApp();
