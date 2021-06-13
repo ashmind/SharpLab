@@ -24,7 +24,7 @@ namespace SharpLab.WebApp.Server {
             indexHtmlEndpoints.StartAsync().GetAwaiter().GetResult();
             var reloadToken = Environment.GetEnvironmentVariable("SHARPLAB_ASSETS_RELOAD_TOKEN");
 
-            endpoints.MapGet("/", indexHtmlEndpoints.GetRootAsync);
+            endpoints.MapGet("/", c => indexHtmlEndpoints.GetRootAsync(c).AsTask());
             endpoints.MapPost("/assets/reload", indexHtmlEndpoints.PostReloadAsync);
         }
     }

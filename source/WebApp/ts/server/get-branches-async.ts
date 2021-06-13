@@ -33,8 +33,7 @@ export default async function getBranchesAsync(): Promise<ReadonlyArray<Branch>>
                 (commit as unknown as PartiallyMutable<BranchCommit, 'date'>).date = new Date(commit.date);
             }
         }
-
-        return branches;
+        return branches as ReadonlyArray<Branch>;
     }
     catch (e) {
         return [];

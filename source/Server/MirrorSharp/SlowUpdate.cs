@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -15,7 +16,9 @@ using SharpLab.Server.Compilation;
 using SharpLab.Server.Decompilation;
 using SharpLab.Server.Decompilation.AstOnly;
 using SharpLab.Server.Execution;
+using SharpLab.Server.Execution.Container;
 using SharpLab.Server.Explanation;
+using SharpLab.Server.Monitoring;
 
 namespace SharpLab.Server.MirrorSharp {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
@@ -25,8 +28,10 @@ namespace SharpLab.Server.MirrorSharp {
         private readonly IReadOnlyDictionary<string, IDecompiler> _decompilers;
         private readonly IReadOnlyDictionary<string, IAstTarget> _astTargets;
         private readonly IExecutor _executor;
+        private readonly IContainerExecutor _containerExecutor;
         private readonly IExplainer _explainer;
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;
+        private readonly IMonitor _monitor;
 
         public SlowUpdate(
             ICSharpTopLevelProgramSupport topLevelProgramSupport,
@@ -34,8 +39,10 @@ namespace SharpLab.Server.MirrorSharp {
             IReadOnlyCollection<IDecompiler> decompilers,
             IReadOnlyCollection<IAstTarget> astTargets,
             IExecutor executor,
+            IContainerExecutor containerExecutor,
             IExplainer explainer,
-            RecyclableMemoryStreamManager memoryStreamManager
+            RecyclableMemoryStreamManager memoryStreamManager,
+            IMonitor monitor
         ) {
             _topLevelProgramSupport = topLevelProgramSupport;
             _compiler = compiler;
@@ -44,7 +51,9 @@ namespace SharpLab.Server.MirrorSharp {
                 .SelectMany(t => t.SupportedLanguageNames.Select(n => (target: t, languageName: n)))
                 .ToDictionary(x => x.languageName, x => x.target);
             _executor = executor;
+            _containerExecutor = containerExecutor;
             _memoryStreamManager = memoryStreamManager;
+            _monitor = monitor;
             _explainer = explainer;
         }
 
@@ -54,7 +63,7 @@ namespace SharpLab.Server.MirrorSharp {
 
             _topLevelProgramSupport.UpdateOutputKind(session, diagnostics);
 
-            if (targetName == TargetNames.Ast || targetName == TargetNames.Explain) {
+            if (targetName is TargetNames.Ast or TargetNames.Explain) {
                 var astTarget = _astTargets[session.LanguageName];
                 var ast = await astTarget.GetAstAsync(session, cancellationToken).ConfigureAwait(false);
                 if (targetName == TargetNames.Explain)
@@ -68,17 +77,19 @@ namespace SharpLab.Server.MirrorSharp {
             if (targetName == LanguageNames.VisualBasic)
                 return VisualBasicNotAvailable;
 
-            if (targetName != TargetNames.Run && targetName != TargetNames.Verify && !_decompilers.ContainsKey(targetName))
+            if (targetName is not (TargetNames.Run or TargetNames.Verify) && !_decompilers.ContainsKey(targetName))
                 throw new NotSupportedException($"Target '{targetName}' is not (yet?) supported by this branch.");
 
             MemoryStream? assemblyStream = null;
             MemoryStream? symbolStream = null;
             try {
                 assemblyStream = _memoryStreamManager.GetStream();
-                if (targetName == TargetNames.Run || targetName == TargetNames.IL)
+                if (targetName is TargetNames.Run or TargetNames.IL)
                     symbolStream = _memoryStreamManager.GetStream();
 
+                var compilationStopwatch = session.ShouldReportPerformance() ? Stopwatch.StartNew() : null;
                 var compiled = await _compiler.TryCompileToStreamAsync(assemblyStream, symbolStream, session, diagnostics, cancellationToken).ConfigureAwait(false);
+                compilationStopwatch?.Stop();
                 if (!compiled.assembly) {
                     assemblyStream.Dispose();
                     symbolStream?.Dispose();
@@ -96,8 +107,27 @@ namespace SharpLab.Server.MirrorSharp {
                 AssemblyLog.Log("1.Compiled", assemblyStream);
 
                 var streams = new CompilationStreamPair(assemblyStream, compiled.symbols ? symbolStream : null);
-                if (targetName == TargetNames.Run)
+                if (targetName == TargetNames.Run) {
+                    if (session.InContainerExperiment() && !session.HasContainerExperimentFailed()) {
+                        try {
+                            var output = await _containerExecutor.ExecuteAsync(streams, session, cancellationToken);
+                            if (compilationStopwatch != null) {
+                                // TODO: Prettify
+                                output += $"\n  COMPILATION: {compilationStopwatch.ElapsedMilliseconds,15}ms";
+                            }
+                            streams.Dispose();
+                            return output;
+                        }
+                        catch (Exception ex) {
+                            _monitor.Exception(ex, session);
+                            session.SetContainerExperimentException(ex);
+                            assemblyStream.Seek(0, SeekOrigin.Begin);
+                            symbolStream?.Seek(0, SeekOrigin.Begin);
+                        }
+                    }
+
                     return _executor.Execute(streams, session);
+                }
 
                 // it's fine not to Dispose() here -- MirrorSharp will dispose it after calling WriteResult()
                 return streams;
@@ -133,7 +163,7 @@ namespace SharpLab.Server.MirrorSharp {
             }
 
             if (targetName == TargetNames.Run) {
-                _executor.Serialize((ExecutionResult)result, writer);
+                _executor.Serialize((ExecutionResult)result, writer, session);
                 return;
             }
 

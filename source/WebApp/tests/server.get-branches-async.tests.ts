@@ -16,7 +16,7 @@ describe('get-branches-async', () => {
         ['sharplab.local', 'edge', 'https://slbs.azureedge.net/public/branches-edge.json']
     ] as const)("fetches expected url for domain '%s' and query string '%s'", async (host, query, expected) => {
         window.fetch = jest.fn();
-        delete window.location;
+        delete (window as { location?: Window['location'] }).location;
 
         window.location = fromPartial({
             host,
@@ -41,7 +41,7 @@ describe('get-branches-async', () => {
     });
 
     afterEach(() => {
-        delete window.fetch;
+        delete (window as { fetch?: Window['fetch'] }).fetch;
         window.location = location;
     });
 })();

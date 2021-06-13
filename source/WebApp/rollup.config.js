@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
 /* eslint-disable no-process-env */
 
 import path from 'path';
-// @ts-ignore
+// @ts-expect-error (no typings)
 import pluginBabel from 'rollup-plugin-babel';
 import pluginNodeResolve from '@rollup/plugin-node-resolve';
 import pluginCommonJS from 'rollup-plugin-commonjs';
 import pluginTypeScript from '@rollup/plugin-typescript';
-// @ts-ignore
 import { terser } from 'rollup-plugin-terser';
 
 export default {
@@ -16,7 +14,7 @@ export default {
     plugins: [
         {
             name: 'rollup-plugin-adhoc-resolve-vue',
-            // @ts-ignore
+            /** @param id {string} */
             resolveId: id => (id === 'vue')
                 ? path.resolve(`./node_modules/vue/dist/vue${process.env.NODE_ENV === 'ci' ? '.min' : ''}.js`)
                 : null

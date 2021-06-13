@@ -55,6 +55,7 @@ function setAttributes<TElement extends Element>(
         height?: string|number;
     } & (
         TElement extends SVGPathElement ? { d?: string } :
+        // eslint-disable-next-line @typescript-eslint/ban-types
         TElement extends SVGCircleElement ? { cx: string|number; cy: string|number; r: string|number } : {}
     )
 ) {

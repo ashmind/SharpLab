@@ -20,7 +20,7 @@ interface UI {
     watch<TKey extends keyof WatchMap>(name: TKey, callback: (newValue: WatchMap[TKey], oldValue: WatchMap[TKey]) => void, options?: WatchParameters[2]): void;
 }
 
-const documentReadyPromise = new Promise(resolve => {
+const documentReadyPromise = new Promise<void>(resolve => {
     document.addEventListener('DOMContentLoaded', () => resolve());
 });
 

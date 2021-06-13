@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace SharpLab.Tests.Internal {
     public class TestCode {
-        private static readonly IReadOnlyDictionary<string, string> LanguageAndTargetMap = new Dictionary<string, string> {
+        private static readonly IReadOnlyDictionary<string, string> LanguageAndTargetMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) {
             { "cs",     LanguageNames.CSharp },
             { "vb",     LanguageNames.VisualBasic },
             { "fs",     LanguageNames.FSharp },
@@ -36,19 +36,38 @@ namespace SharpLab.Tests.Internal {
 
         public static TestCode FromResource(string name) {
             var content = EmbeddedResource.ReadAllText(typeof(DecompilationTests), "TestCode." + name);
+            var extension = Path.GetExtension(name);
+            if (extension.Contains("2"))
+                return FromResourceFormatV1(content, extension);
+
+            var split = Regex.Matches(content, @"/\* (?<to>\S+)").Last();
+            var from = LanguageAndTargetMap[extension.TrimStart('.')];
+            var to = LanguageAndTargetMap[split.Groups["to"].Value];
+
+            var code = content.Substring(0, split.Index).Trim();
+            var expected = Regex.Replace(
+                content.Substring(split.Index + split.Value.Length),
+                @"^\s+|\s*\*/\s*$", ""
+            );
+
+            return new TestCode(code, expected, from, to);
+        }
+
+        private static TestCode FromResourceFormatV1(string content, string extension) {
             var parts = content.Split("#=>");
             var code = parts[0].Trim();
             var expected = parts[1].Trim();
             // ReSharper disable once PossibleNullReferenceException
-            var fromTo = Path.GetExtension(name)!.TrimStart('.').Split('2').Select(x => LanguageAndTargetMap[x]).ToList();
+            var fromTo = extension.TrimStart('.').Split('2').Select(x => LanguageAndTargetMap[x]).ToList();
 
             return new TestCode(code, expected, fromTo[0], fromTo[1]);
+
         }
 
         public void AssertIsExpected(string? result, ITestOutputHelper output) {
-            var cleanResult = RemoveNonDeterminism(result);
+            var cleanResult = RemoveNonDeterminism(result?.Trim());
             output.WriteLine(cleanResult ?? "<null>");
-            Assert.Equal(_expected, cleanResult);
+            Assert.Equal(NormalizeNewLines(_expected), NormalizeNewLines(cleanResult));
         }
 
         private string? RemoveNonDeterminism(string? result) {
@@ -78,6 +97,9 @@ namespace SharpLab.Tests.Internal {
 
             return result;
         }
-    }
 
+        private string? NormalizeNewLines(string? value) {
+            return value?.Replace("\r\n", "\n");
+        }
+    }
 }

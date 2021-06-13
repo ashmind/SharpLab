@@ -5,11 +5,11 @@ import { promisify } from 'util';
 import fs from 'fs-extra';
 import globby from 'globby';
 import git from 'simple-git/promise';
-import got from 'got';
 import extract from 'extract-zip';
 import execa from 'execa';
 import chalk from 'chalk';
-import useAzure from './steps/useAzure';
+import safeFetch from './helpers/safeFetch';
+import useAzure from './helpers/useAzure';
 import publishBranch from './steps/publishBranch';
 import updateInBranchesJson from './steps/updateInBranchesJson';
 
@@ -55,7 +55,7 @@ console.log('');
 
 async function updateRoslynBuildPackages(currentBuildId: string|null) {
     const roslynBuildsUrl = `https://dev.azure.com/dnceng/public/_apis/build/builds?api-version=5.0&definitions=15&reasonfilter=individualCI&resultFilter=succeeded&$top=1&branchName=refs/heads/${branchName}`;
-    const builds = (await got(roslynBuildsUrl).json<{
+    const builds = await (await safeFetch(roslynBuildsUrl)).json() as {
         count: number;
         value: ReadonlyArray<{
             id: string;
@@ -64,7 +64,7 @@ async function updateRoslynBuildPackages(currentBuildId: string|null) {
                 self: { href: string };
             };
         }>;
-    }>());
+    };
     if (builds.count === 0)
         throw 'No successful Roslyn Azure builds found.';
 
@@ -86,14 +86,14 @@ async function updateRoslynBuildPackages(currentBuildId: string|null) {
     const roslynArtifactsUrl = `${build._links.self.href}/artifacts`;
     console.log(`GET ${roslynArtifactsUrl}`);
 
-    const roslynArtifacts = await got(roslynArtifactsUrl).json<{
+    const roslynArtifacts = await (await safeFetch(roslynArtifactsUrl)).json() as {
         value: ReadonlyArray<{
             name: string;
             resource: {
                 downloadUrl: string;
             };
         }>;
-    }>();
+    };
     const roslynPackages = roslynArtifacts.value.find(a => a.name === 'Packages - PreRelease');
     if (!roslynPackages)
         throw 'Packages were not found in Roslyn Azure build artifacts.';
@@ -103,10 +103,8 @@ async function updateRoslynBuildPackages(currentBuildId: string|null) {
 
     if (!(await fs.pathExists(zipPath))) { // Optimization for local only
         console.log(`GET ${downloadUrl} => ${zipPath}`);
-        await pipeline(
-            got.stream(downloadUrl),
-            fs.createWriteStream(zipPath)
-        );
+        const response = await safeFetch(downloadUrl);
+        await pipeline(response.body, fs.createWriteStream(zipPath));
     }
     else {
         console.log(`Found cached ${zipPath}, no need to download`);
@@ -140,8 +138,6 @@ async function getSharpLabCommitHash() {
 }
 
 async function buildSharpLab(roslynPackagesRoot: string) {
-    const runtime = 'win-x86';
-
     const branchSharpLabRoot = path.join(branchRoot, 'sharplab');
     const branchSourceRoot = path.join(branchSharpLabRoot, 'source');
 
@@ -203,7 +199,6 @@ async function buildSharpLab(roslynPackagesRoot: string) {
     console.log(`Restoring ${roslynPackagesRoot} => ${restoredPackagesRoot}`);
     await execa('dotnet', [
         'restore', branchSourceRoot,
-        '--runtime', runtime,
         '--packages', restoredPackagesRoot,
         '--source', 'https://api.nuget.org/v3/index.json',
         '--source', 'https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet5/nuget/v3/index.json',
@@ -219,9 +214,6 @@ async function buildSharpLab(roslynPackagesRoot: string) {
         'msbuild', `${branchSourceRoot}/Server/Server.csproj`,
         '/m', '/nodeReuse:false',
         '/t:Publish',
-        '/p:SelfContained=True',
-        '/p:AspNetCoreHostingModel=OutOfProcess',
-        `/p:RuntimeIdentifier=${runtime}`,
         '/p:Configuration=Release',
         '/p:UnbreakablePolicyReportEnabled=false',
         '/p:TreatWarningsAsErrors=false'
@@ -231,16 +223,16 @@ async function buildSharpLab(roslynPackagesRoot: string) {
     });
 
     return {
-        publishRoot: `${branchSourceRoot}/Server/bin/Release/net5.0/${runtime}/publish`
+        publishRoot: `${branchSourceRoot}/Server/bin/Release/net5.0/publish`
     };
 }
 
 async function getBranchVersionFromWebApp() {
     try {
-        const currentVersion = await got(`${webAppUrl}/${branchVersionFileName}`).json<{
+        const currentVersion = await (await safeFetch(`${webAppUrl}/${branchVersionFileName}`)).json() as {
             roslyn: { buildId: string };
             sharplab: { commitHash: string };
-        }>();
+        };
         console.log(JSON.stringify(currentVersion));
         return currentVersion;
     }
@@ -273,7 +265,7 @@ async function updateBranchVersionArtifact(roslynBuild: { buildId: string; commi
 }
 
 async function getBranchInfo(commitHash: string) {
-    const { commit } = await got(`https://api.github.com/repos/dotnet/roslyn/commits/${commitHash}`).json<{
+    const { commit } = await (await safeFetch(`https://api.github.com/repos/dotnet/roslyn/commits/${commitHash}`)).json() as {
         commit: {
             author: {
                 name: string;
@@ -281,7 +273,7 @@ async function getBranchInfo(commitHash: string) {
             };
             message: string;
         };
-    }>();
+    };
     return {
         id: branchFSName.replace(/^dotnet-/, ''),
         name: branchName,
@@ -363,7 +355,33 @@ async function run() {
     });
 }
 
-run().catch(e => {
-    console.error("::error::" + e);
+function nodeSafeTopLevelAwait(
+    call: () => Promise<unknown>,
+    handleError: (e: unknown) => void,
+    { timeoutMinutes }: { timeoutMinutes: number }
+) {
+    let keepaliveTimer: ReturnType<typeof setTimeout>;
+    // https://github.com/nodejs/node/issues/22088
+    const keepalive = () => new Promise<void>((_, reject) => keepaliveTimer = setTimeout(
+        () => reject(new Error(`Top-level async timed out within ${timeoutMinutes} minutes.`)), timeoutMinutes * 60 * 1000
+    ));
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    (async () => {
+        try {
+            await Promise.race([call(), keepalive()]);
+        }
+        catch (e) {
+            handleError(e);
+        }
+        finally {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            clearTimeout(keepaliveTimer!);
+        }
+    })();
+}
+
+nodeSafeTopLevelAwait(run, e => {
+    console.error('::error::' + e);
     process.exit(1);
-});
+}, { timeoutMinutes: 10 });

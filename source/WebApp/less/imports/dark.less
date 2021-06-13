@@ -8,6 +8,7 @@
     @dark-border-color: #3f3f46;
     @dark-cm-hint-active-color: #3875b2;
     @dark-cm-elevated-background-color: #333333;
+    @dark-message-positive-color: #43a64a;
 
     --background-color: @dark-background-color;
 
@@ -132,7 +133,13 @@
         color: @disclaimer-color;
     }
 
-    .modal .disclaimer {
+    .message-positive {
+        background-color: transparent;
+        color: @dark-message-positive-color;
+    }
+
+    .modal .disclaimer,
+    .model .message-positive {
         padding-top: 10px;
     }
 

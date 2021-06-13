@@ -26,6 +26,7 @@ jobs:
       name: generate run matrix
       run: |
         npm run generate-run-matrix
+
   build-branch:
     needs: generate-matrix
     runs-on: windows-latest

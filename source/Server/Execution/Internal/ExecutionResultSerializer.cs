@@ -3,11 +3,13 @@ using System.IO;
 using System.Text;
 using MirrorSharp.Advanced;
 using SharpLab.Runtime.Internal;
+using SharpLab.Server.Execution.Container;
 
 namespace SharpLab.Server.Execution.Internal {
     public class ExecutionResultSerializer {
-        public void Serialize(ExecutionResult result, IFastJsonWriter writer) {
+        public void Serialize(ExecutionResult result, IFastJsonWriter writer, IWorkSession session) {
             writer.WriteStartObject();
+
             writer.WritePropertyStartArray("output");
             SerializeOutput(result.Output, writer);
             writer.WriteEndArray();
@@ -17,6 +19,12 @@ namespace SharpLab.Server.Execution.Internal {
                 SerializeFlowStep(step, writer);
             }
             writer.WriteEndArray();
+
+            if (session.GetContainerExperimentException() is {} exception && !session.WasContainerExperimentExceptionReported()) {
+                writer.WriteProperty("containerExperimentException", exception.ToString());
+                session.SetContainerExperimentExceptionReported(true);
+            }
+
             writer.WriteEndObject();
         }
 

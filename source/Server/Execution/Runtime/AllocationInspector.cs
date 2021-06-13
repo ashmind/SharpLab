@@ -119,7 +119,7 @@ namespace SharpLab.Server.Execution.Runtime {
             _valuePresenter.AppendEnumerableTo(
                 builder, ArrayAsEnumerable(type, address, length),
                 depth: 1,
-                new ValuePresenterLimits(maxDepth: 2, maxEnumerableItemCount: 10, maxValueLength: 10)
+                new ValuePresenterLimits(maxEnumerableItemCount: 10, maxValueLength: 10)
             );
 
             var title = componentType.Name.Replace("System.", "") + "[" + length + "]";

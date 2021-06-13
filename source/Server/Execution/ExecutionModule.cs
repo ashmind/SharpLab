@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using Microsoft.Diagnostics.Runtime;
 using SharpLab.Runtime.Internal;
 using SharpLab.Server.Common;
+using SharpLab.Server.Execution.Container;
 using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.Execution.Runtime;
 using SharpLab.Server.Execution.Unbreakable;
@@ -45,6 +46,28 @@ namespace SharpLab.Server.Execution {
 
             builder.RegisterType<Executor>()
                    .As<IExecutor>()
+                   .SingleInstance();
+
+            var containerHostUrl = Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_URL")
+                ?? throw new Exception("Required environment variable SHARPLAB_CONTAINER_HOST_URL was not provided.");
+
+            builder.RegisterType<ContainerFlowReportingRewriter>()
+                   .As<IContainerAssemblyRewriter>()
+                   .SingleInstance();
+
+            builder.Register(c => {
+                var secretsClient = c.Resolve<ISecretsClient>();
+                var containerAuthorizationToken = secretsClient.GetSecret("ContainerHostAuthorizationToken");
+                return new ContainerClientSettings(new Uri(containerHostUrl), containerAuthorizationToken);
+            }).SingleInstance()
+              .AsSelf();
+
+            builder.RegisterType<ContainerClient>()
+                   .As<IContainerClient>()
+                   .SingleInstance();
+
+            builder.RegisterType<ContainerExecutor>()
+                   .As<IContainerExecutor>()
                    .SingleInstance();
 
             RegisterRuntime(builder);

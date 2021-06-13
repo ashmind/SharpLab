@@ -4,6 +4,8 @@
     },
     "typescript.tsdk": "node_modules\\typescript\\lib",
     "cSpell.words": [
+        "appservice",
+        "camelcase",
         "etag",
         "execa",
         "globby",

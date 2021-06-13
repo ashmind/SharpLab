@@ -1,7 +1,7 @@
 Set-StrictMode -Version 2
 $ErrorActionPreference = 'Stop'
 
-$webappServerUrl = 'http://localhost:54100'
+$webappServerUrl = 'http://localhost:44100'
 
 Write-Host "Waiting for all services to start" -ForegroundColor White
 Write-Host "(This might take several minutes)"

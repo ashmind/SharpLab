@@ -5,14 +5,12 @@ import jetpack from 'fs-jetpack';
 import lessRender from 'less';
 import postcss from 'postcss';
 import autoprefixer from 'autoprefixer';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore (no typings)
+// @ts-expect-error (no typings)
 import csso from 'postcss-csso';
 import sharp from 'sharp';
 import htmlMinifier from 'html-minifier';
 import AdmZip from 'adm-zip';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore (no typings)
+// @ts-expect-error (no typings)
 import regexCombiner from 'regex-combiner';
 
 const dirname = __dirname;
@@ -45,8 +43,7 @@ const less = task('less', async () => {
             outputSourceFiles: true
         }
     });
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore (need to sort out 'map' type here)
+    // @ts-expect-error (TODO: need to sort out 'map' type here)
     ({ css, map } = await postcss([
         autoprefixer,
         // no typings for csso
@@ -116,7 +113,7 @@ const icons = task('icons', async () => {
         ...pngGeneration
     ]);
 }, {
-    timeout: 10000,
+    timeout: 30000,
     watch: [iconSvgSourcePath]
 });
 
@@ -180,7 +177,7 @@ const build = task('build', async () => {
 });
 
 task('start', () => build(), {
-    watch: async () => exec2('http-server', [outputSharedRoot, '-p', '54200', '--cors'])
+    watch: () => exec2('http-server', [outputSharedRoot, '-p', '44200', '--cors'])
 });
 
 // Assumes we already ran the build

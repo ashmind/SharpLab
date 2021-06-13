@@ -5,7 +5,7 @@ import type { LanguageName } from '../helpers/languages';
 import type { Branch } from './branch';
 import type { ServerOptions } from './server-options';
 import type { HighlightedRange } from './highlighted-range';
-import type { Result, CodeResult, AstResult, ExplainResult, AstItem } from './results';
+import type { Result, CodeResult, AstResult, ExplainResult, AstItem, RunResult } from './results';
 import type { AstViewRef } from './component-ref-interfaces/ast-view-ref';
 import type { Gist } from './gist';
 import type { CodeRange } from './code-range';
@@ -38,6 +38,7 @@ export interface AppData {
         code: CodeResult|null;
         ast: AstResult|null;
         explain?: ExplainResult|null;
+        run: RunResult|null;
     };
 
     highlightedCodeRange: HighlightedRange|null;

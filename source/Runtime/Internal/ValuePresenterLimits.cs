@@ -1,23 +1,21 @@
-﻿namespace SharpLab.Runtime.Internal
+namespace SharpLab.Runtime.Internal
 {
     public readonly struct ValuePresenterLimits
     {
-        private readonly bool _maxDepthSet;
-        private readonly int? _maxDepth;
+        public static ValuePresenterLimits InspectValue { get; } = new(maxValueLength: 100);
 
-        public ValuePresenterLimits(int? maxDepth = 5, int? maxEnumerableItemCount = null, int? maxValueLength = null)
+        public ValuePresenterLimits(int maxValueLength, int maxEnumerableItemCount = 5)
         {
-            _maxDepth = maxDepth;
-            _maxDepthSet = true;
-            MaxEnumerableItemCount = maxEnumerableItemCount;
             MaxValueLength = maxValueLength;
+            MaxEnumerableItemCount = maxEnumerableItemCount;
+            MaxDepth = 2; // Might be dropped/hardcoded later
         }
 
-        public int? MaxDepth
-        {
-            get { return _maxDepthSet ? _maxDepth : 5; }
-        }
-        public int? MaxValueLength { get; }
-        public int? MaxEnumerableItemCount { get; }
+        public int MaxValueLength { get; }
+        public int MaxEnumerableItemCount { get; }
+        public int MaxDepth { get; }
+
+        internal ValuePresenterLimits WithMaxEnumerableItemCount(int maxEnumerableItemCount)
+            => new(MaxValueLength, maxEnumerableItemCount);
     }
 }

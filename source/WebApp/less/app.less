@@ -252,10 +252,10 @@ section.details-only {
     padding: var(--result-container-padding);
 }
 
-.disclaimer {
+.disclaimer,
+.message-positive {
     display: block;
     width: 100%;
-    background-color: @disclaimer-color;
     padding: 2px 4px;
 
     a {
@@ -266,6 +266,14 @@ section.details-only {
     p + p {
         margin-top: 4px;
     }
+}
+
+.disclaimer {
+    background-color: @disclaimer-color;
+}
+
+.message-positive {
+    color: @message-positive-color;
 }
 
 .fragment {

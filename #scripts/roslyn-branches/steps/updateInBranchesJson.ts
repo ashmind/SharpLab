@@ -1,16 +1,16 @@
 import path from 'path';
 import fs from 'fs-extra';
 import getStream from 'get-stream';
-import got from 'got';
-import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
-import useAzure from './useAzure';
+import { BlobServiceClient } from '@azure/storage-blob';
+import useAzure from '../helpers/useAzure';
+import safeFetch from '../helpers/safeFetch';
 import { getAzureCredentialsForAudience } from './getAzureCredentials';
 
 const languageFeatureMapUrl = 'https://raw.githubusercontent.com/dotnet/roslyn/main/docs/Language%20Feature%20Status.md';
 const branchesJsonFileName = 'branches.json';
 
 async function getRoslynBranchFeatureMap(buildRoot: string) {
-    const markdown = await got(languageFeatureMapUrl).text();
+    const markdown = await (await safeFetch(languageFeatureMapUrl)).text();
     const languageVersions = markdown.matchAll(/#\s*(?<language>.+)\s*$\s*(?<table>(?:^\|.+$\s*)+)/gm);
 
     const mapPath = `${buildRoot}/RoslynFeatureMap.json`;
@@ -142,15 +142,5 @@ export default async function updateInBranchesJson(
     else {
         // TODO: migrate to TypeScript
         throw new Error('Not migrated to TypeScript yet.');
-        /*
-        const localRoot = "$sourceRoot\WebApp\wwwroot"
-        const localBranchesJsonPath = "$localRoot\!$BranchesJsonFileName"
-        const branchesJson = ConvertFrom-Json ([IO.File]::ReadAllText($localBranchesJsonPath))
-
-        const branchesJson = @($branchesJson | ? { $_.id -ne $branch.id }) + $branchJson
-        Set-Content $branchesJsonPath $(ConvertTo-Json $branchesJson.data -Depth 100) -Encoding UTF8
-
-        Copy-Item $branchesJsonPath "$localRoot\!$BranchesJsonFileName" -Force
-        */
     }
 }

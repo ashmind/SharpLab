@@ -1,7 +1,13 @@
 import * as msRestNodeAuth from '@azure/ms-rest-nodeauth';
-import getEnvForAzure from './getEnvForAzure';
 
 const noAudience = Symbol('no-audience') as unknown as 'symbol:no-audience';
+
+function getEnvForAzure(name: string) {
+    const value = process.env[name];
+    if (!value)
+        throw `Environment variable ${name} is required for Azure deployment.`;
+    return value;
+}
 
 async function loginToAzure(tokenAudience?: string) {
     const appId = getEnvForAzure('SL_BUILD_AZURE_APP_ID');

@@ -1,4 +1,5 @@
 import type { MirrorSharpDiagnostic } from 'mirrorsharp';
+import type { ContainerExperimentFallbackRunValue } from '../experiments/container-run';
 import type { CodeRange } from './code-range';
 
 export type DiagnosticWarning = Pick<MirrorSharpDiagnostic, 'id'|'message'> & { severity: 'warning' };
@@ -71,6 +72,14 @@ export interface MemoryGraphInspection {
 
 export type OutputItem = string|SimpleInspection|MemoryInspection|MemoryGraphInspection;
 
+export type OutputJsonLineFlow = {
+    readonly flow: ReadonlyArray<
+        number
+            | [line: number, value: string, name?: string]
+            | { exception: string }
+    >;
+};
+
 export interface FlowStep {
     readonly line: number;
     readonly skipped?: true;
@@ -110,7 +119,7 @@ export interface RunResult extends ResultBase {
     readonly value: {
         readonly output: ReadonlyArray<OutputItem>;
         readonly flow: ReadonlyArray<FlowStep>;
-    }|null;
+    } & ContainerExperimentFallbackRunValue | string | null;
 }
 
 export interface VerifyResult extends ResultBase {
@@ -129,5 +138,5 @@ export interface ErrorResult extends ResultBase {
     readonly value?: undefined;
 }
 
-export type NonErrorResult = CodeResult|AstResult|ExplainResult;
+export type NonErrorResult = CodeResult|AstResult|ExplainResult|RunResult;
 export type Result = NonErrorResult|ErrorResult;

@@ -138,8 +138,8 @@ namespace SharpLab.Server.Execution {
                 || exception is InvalidProgramException;
         }
 
-        public void Serialize(ExecutionResult result, IFastJsonWriter writer) {
-            _serializer.Serialize(result, writer);
+        public void Serialize(ExecutionResult result, IFastJsonWriter writer, IWorkSession session) {
+            _serializer.Serialize(result, writer, session);
         }
 
         private static AssemblyGuardSettings CreateGuardSettings(ApiPolicy apiPolicy) {

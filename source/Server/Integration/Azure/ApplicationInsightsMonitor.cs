@@ -7,7 +7,7 @@ using MirrorSharp.Advanced;
 using SharpLab.Server.MirrorSharp;
 using SharpLab.Server.Monitoring;
 
-namespace SharpLab.Server.Azure {
+namespace SharpLab.Server.Integration.Azure {
     public class ApplicationInsightsMonitor : IMonitor {
         private readonly TelemetryClient _client;
         private readonly string _webAppName;
@@ -15,12 +15,6 @@ namespace SharpLab.Server.Azure {
         public ApplicationInsightsMonitor(TelemetryClient client, string webAppName) {
             _client = Argument.NotNull(nameof(client), client);
             _webAppName = Argument.NotNullOrEmpty(nameof(webAppName), webAppName);
-        }
-
-        public void Event(string name, IWorkSession? session, IDictionary<string, string>? extras = null) {
-            var telemetry = new EventTelemetry(name);
-            AddDefaultDetails(telemetry, session, extras);
-            _client.TrackEvent(telemetry);
         }
 
         public void Exception(Exception exception, IWorkSession? session, IDictionary<string, string>? extras = null) {

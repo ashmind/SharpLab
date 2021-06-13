@@ -16,7 +16,7 @@ export default async () => {
         '--rm',
         '--security-opt',
         `seccomp=${__dirname}/chrome.seccomp.json`,
-        'gcr.io/zenika-hub/alpine-chrome',
+        'gcr.io/zenika-hub/alpine-chrome:89',
         '--remote-debugging-address=0.0.0.0',
         `--remote-debugging-port=9222`,
         'about:blank'
