@@ -43,7 +43,7 @@ jobs:
     name: 'Deploy (Edge)'
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/features/container-run'
+    if: github.ref == 'refs/heads/main'
     environment: edge-container-host
     steps:
       - uses: actions/checkout@v2
