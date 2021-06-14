@@ -11,7 +11,7 @@ jobs:
            package: WebApp.Server.zip
            app: sharplab
            stop-app: true
-           url: https://edge.sharplab.io
+           url: https://sharplab.io
 
          - name: x64
            package: Server.zip
