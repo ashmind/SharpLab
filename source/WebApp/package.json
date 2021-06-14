@@ -80,7 +80,7 @@
     "less": "3.8.1",
     "node-fetch": "2.6.1",
     "oldowan": "1.0.0",
-    "postcss": "7.0.2",
+    "postcss": "8.2.10",
     "postcss-csso": "3.0.0",
     "puppeteer": "2.1.1",
     "regex-combiner": "github:am11/regex-combiner#1fd650aa8dcec8d71e0101558bc181eed8b9ed08",
