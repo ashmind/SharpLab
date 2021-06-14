@@ -10,6 +10,7 @@
     "build-ci": "ts-node-script ./scripts.ts build-ci"
   },
   "jest": {
+    "testEnvironment": "jsdom",
     "maxConcurrency": 10,
     "globals": {
       "ts-jest": {
