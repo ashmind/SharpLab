@@ -6,8 +6,8 @@ using SharpLab.Server.MirrorSharp;
 
 namespace SharpLab.Server.Monitoring {
     public class DefaultTraceMonitor : IMonitor {
-        public void Event(string name, IWorkSession? session, IDictionary<string, string>? extras = null) {
-            Trace.TraceInformation("[{0}] Event '{0}'.", session?.GetSessionId(), name);
+        public void Metric(MonitorMetric metric, double value) {
+            Trace.TraceInformation("Metric {0} {1}: {2}.", metric.Namespace, metric.Name, value);
         }
 
         public void Exception(Exception exception, IWorkSession? session, IDictionary<string, string>? extras = null) {

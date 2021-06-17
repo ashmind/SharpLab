@@ -108,7 +108,7 @@ namespace SharpLab.Server.MirrorSharp {
 
                 var streams = new CompilationStreamPair(assemblyStream, compiled.symbols ? symbolStream : null);
                 if (targetName == TargetNames.Run) {
-                    if (session.InContainerExperiment() && !session.HasContainerExperimentFailed()) {
+                    if (session.InContainerExperiment() && !session.HasContainerExperimentFailed()) {                        
                         try {
                             var output = await _containerExecutor.ExecuteAsync(streams, session, cancellationToken);
                             if (compilationStopwatch != null) {
@@ -116,9 +116,11 @@ namespace SharpLab.Server.MirrorSharp {
                                 output += $"\n  COMPILATION: {compilationStopwatch.ElapsedMilliseconds,15}ms";
                             }
                             streams.Dispose();
+                            _monitor.Metric(ContainerExperimentMetrics.ContainerRunCount, 1);
                             return output;
                         }
                         catch (Exception ex) {
+                            _monitor.Metric(ContainerExperimentMetrics.ContainerFailureCount, 1);
                             _monitor.Exception(ex, session);
                             session.SetContainerExperimentException(ex);
                             assemblyStream.Seek(0, SeekOrigin.Begin);
@@ -126,6 +128,7 @@ namespace SharpLab.Server.MirrorSharp {
                         }
                     }
 
+                    _monitor.Metric(ContainerExperimentMetrics.LegacyRunCount, 1);
                     return _executor.Execute(streams, session);
                 }
 
