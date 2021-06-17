@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Net.WebSockets;
 using MirrorSharp.Advanced;
+using SharpLab.Server.Monitoring;
 
-namespace SharpLab.Server.Monitoring {
+namespace SharpLab.Server.MirrorSharp {
     public class MonitorExceptionLogger : IExceptionLogger {
         private readonly IMonitor _monitor;
 
@@ -11,7 +12,9 @@ namespace SharpLab.Server.Monitoring {
         }
 
         public void LogException(Exception exception, IWorkSession session) {
-            if (exception is WebSocketException)
+            // Note/TODO: need to see if OperationCanceledException can be avoided
+            // https://github.com/ashmind/SharpLab/issues/617
+            if (exception is WebSocketException || exception is OperationCanceledException)
                 return;
             _monitor.Exception(exception, session);
         }

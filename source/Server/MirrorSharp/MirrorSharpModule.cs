@@ -10,6 +10,10 @@ namespace SharpLab.Server.MirrorSharp {
     [UsedImplicitly]
     public class MirrorSharpModule : Module {
         protected override void Load(ContainerBuilder builder) {
+            builder.RegisterType<MonitorExceptionLogger>()
+                   .As<IExceptionLogger>()
+                   .SingleInstance();
+
             builder.RegisterType<SlowUpdate>()
                    .As<ISlowUpdateExtension>()
                    .SingleInstance();

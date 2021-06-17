@@ -1,6 +1,5 @@
 using Autofac;
 using JetBrains.Annotations;
-using MirrorSharp.Advanced;
 
 namespace SharpLab.Server.Monitoring {
     [UsedImplicitly]
@@ -10,10 +9,6 @@ namespace SharpLab.Server.Monitoring {
                    .As<IMonitor>()
                    .SingleInstance()
                    .PreserveExistingDefaults();
-
-            builder.RegisterType<MonitorExceptionLogger>()
-                   .As<IExceptionLogger>()
-                   .SingleInstance();
         }
     }
 }
