@@ -30,7 +30,9 @@ export default {
         const language = loadedOptions.language ?? defaultOptions.language;
         const target = loadedOptions.target ?? defaultOptions.target;
         const release = loadedOptions.release ?? defaultOptions.release;
-        const branchId = loadedOptions.branchId ?? null;
+        let branchId = loadedOptions.branchId ?? null;
+        if (branchId === 'master')
+            branchId = 'main';
 
         const branch = branchId ? (await resolveBranch(branchId)) : null;
         const options = { language, target, release, branch };
