@@ -39,35 +39,47 @@ $exceptions = (Invoke-JsonCommand {
 
 Write-Host 'Getting current issues from GitHub'
 $issues = @(Invoke-JsonCommand {
-  gh issue list --label $ExceptionLabel --json title,url --limit 500
+  gh issue list --label $ExceptionLabel --json title,url,number --limit 500
 })
 
 Write-Host 'Processing exceptions'
 $exceptions | % {
     $exceptionType = $_[0]
     $atMethod = $_[1]
+    $count = $_[2]
 
     $title = "$exceptionType at $atMethod"
     Write-Host "  $title"
-    $existing = $($issues | ? { $_.title -eq $title })
-    if ($existing) {
-        Write-Host "    - already exists at $($existing.url)"
-        return
+    $existing = $issues | ? { $_.title -eq $title }
+    if (!$existing) {
+        $body = ("
+          AppInsights query:
+          ``````Kusto
+          exceptions
+            | where type == '$exceptionType'
+            | where method == '$atMethod'
+          ``````
+        " -replace '^\s+','').Trim()
+
+        Write-Host "    - creating"
+        $url = $(gh issue create --title $title --body $body --label $ExceptionLabel)
+        if ($LastExitCode -ne 0) {
+            Write-Error "Command exited with code $LastExitCode"
+        }
+        Write-Host "    - $url"
+        $issueNumber = $(Invoke-JsonCommand {
+            gh issue view $url --json number
+        }).number
+    }
+    else {
+        Write-Host "    - found at $($existing.url)"
+        $issueNumber = $existing.number
     }
 
-    $body = "
-      AppInsights query:
-      ``````Kusto
-      exceptions
-        | where type == '$exceptionType'
-        | where method == '$atMethod'
-      ``````
-    " -replace '      ',''
-
-    Write-Host "    - creating"
-    $url = $(gh issue create --title $title --body $body --label $ExceptionLabel)
+    Write-Host "    - commenting"
+    $commentUrl = (gh issue comment $issueNumber --body "Count (last 24h): $count")
     if ($LastExitCode -ne 0) {
         Write-Error "Command exited with code $LastExitCode"
     }
-    Write-Host "    - $url"
+    Write-Host "    - $commentUrl"
 }
