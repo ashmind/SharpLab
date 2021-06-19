@@ -15,62 +15,62 @@ jobs:
       run:
         working-directory: source/WebApp
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '12.16.1'
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.16.1'
 
-    - run: 'git show ${{ github.sha }} --format="::set-output name=version_number::%cd" --date=format:%Y-%m-%d-%H%M --no-patch'
-      id: version
+      - run: 'git show ${{ github.sha }} --format="::set-output name=version_number::%cd" --date=format:%Y-%m-%d-%H%M --no-patch'
+        id: version
 
-    - run: npm ci
-    - run: npm run build-ci
-      env:
-        NODE_ENV: ci
-        SHARPLAB_WEBAPP_BUILD_VERSION: ${{ steps.version.outputs.version_number }}
+      - run: npm ci
+      - run: npm run build-ci
+        env:
+          NODE_ENV: ci
+          SHARPLAB_WEBAPP_BUILD_VERSION: ${{ steps.version.outputs.version_number }}
 
-    - run: npm test
+      - run: npm test
 
-    - uses: actions/upload-artifact@v2
-      if: failure()
-      with:
-        name: __diff_output__
-        path: source/WebApp/tests/rendering/__image_snapshots__/__diff_output__
-        if-no-files-found: ignore
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: __diff_output__
+          path: source/WebApp/tests/rendering/__image_snapshots__/__diff_output__
+          if-no-files-found: ignore
 
-    - run: npm test rendering -- --updateSnapshot
-      if: failure()
+      - run: npm test rendering -- --updateSnapshot
+        if: failure()
 
-    - uses: actions/upload-artifact@v2
-      if: failure()
-      with:
-        name: '__image_snapshots__ (updated)'
-        path: source/WebApp/tests/rendering/__image_snapshots__
-        if-no-files-found: ignore
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: '__image_snapshots__ (updated)'
+          path: source/WebApp/tests/rendering/__image_snapshots__
+          if-no-files-found: ignore
 
-    - uses: actions/upload-artifact@v2
-      with:
-        name: WebApp
-        path: source/WebApp/WebApp.zip
-        if-no-files-found: error
+      - uses: actions/upload-artifact@v2
+        with:
+          name: WebApp
+          path: source/WebApp/WebApp.zip
+          if-no-files-found: error
 
-    - uses: actions/create-release@v1
-      if: github.ref == 'refs/heads/main'
-      id: create_release
-      with:
-        tag_name: webapp-release-${{ steps.version.outputs.version_number }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/create-release@v1
+        if: github.ref == 'refs/heads/main'
+        id: create_release
+        with:
+          tag_name: webapp-release-${{ steps.version.outputs.version_number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - uses: actions/upload-release-asset@v1
-      if: github.ref == 'refs/heads/main'
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./source/WebApp/WebApp.zip
-        asset_name: WebApp.zip
-        asset_content_type: application/zip
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-release-asset@v1
+        if: github.ref == 'refs/heads/main'
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./source/WebApp/WebApp.zip
+          asset_name: WebApp.zip
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-to-edge:
     name: Deploy (Edge)

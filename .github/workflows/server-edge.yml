@@ -15,37 +15,37 @@ jobs:
     name: 'Build (.NET 5)'
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: 'true'
-    - uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
-    - uses: microsoft/setup-msbuild@v1.0.2
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+      - uses: microsoft/setup-msbuild@v1.0.2
 
-    # https://github.com/actions/setup-dotnet/issues/155
-    - run: dotnet nuget locals all --clear
+      # https://github.com/actions/setup-dotnet/issues/155
+      - run: dotnet nuget locals all --clear
 
-    - run: msbuild source/Native.Profiler/Native.Profiler.vcxproj /p:SolutionName=SharpLab /p:Configuration=Release /p:Platform=x64
-    - run: dotnet build source/Tests --configuration Release
-    # Tests do not reference that one yet
-    - run: dotnet build source/WebApp.Server --configuration Release
-    - run: dotnet test source/Tests --no-build --configuration Release
-    - run: dotnet publish source/Server --no-build --configuration Release
-    - run: dotnet publish source/WebApp.Server --no-build --configuration Release
-    - run: Compress-Archive -Path 'source/Server/bin/Release/net5.0/publish/*' -DestinationPath 'Server.zip'
-      shell: pwsh
-    - run: Compress-Archive -Path 'source/WebApp.Server/bin/Release/net5.0/publish/*' -DestinationPath 'WebApp.Server.zip'
-      shell: pwsh
+      - run: msbuild source/Native.Profiler/Native.Profiler.vcxproj /p:SolutionName=SharpLab /p:Configuration=Release /p:Platform=x64
+      - run: dotnet build source/Tests --configuration Release
+      # Tests do not reference that one yet
+      - run: dotnet build source/WebApp.Server --configuration Release
+      - run: dotnet test source/Tests --no-build --configuration Release
+      - run: dotnet publish source/Server --no-build --configuration Release
+      - run: dotnet publish source/WebApp.Server --no-build --configuration Release
+      - run: Compress-Archive -Path 'source/Server/bin/Release/net5.0/publish/*' -DestinationPath 'Server.zip'
+        shell: pwsh
+      - run: Compress-Archive -Path 'source/WebApp.Server/bin/Release/net5.0/publish/*' -DestinationPath 'WebApp.Server.zip'
+        shell: pwsh
 
-    - uses: actions/upload-artifact@v2
-      with:
-        name: Server
-        path: Server.zip
-    - uses: actions/upload-artifact@v2
-      with:
-        name: WebApp.Server
-        path: WebApp.Server.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Server
+          path: Server.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: WebApp.Server
+          path: WebApp.Server.zip
 
   deploy-core:
     strategy:
@@ -100,26 +100,26 @@ jobs:
     name: 'Build (.NET Framework)'
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: 'true'
-    - uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
 
-    # https://github.com/actions/setup-dotnet/issues/155
-    - run: dotnet nuget locals all --clear
+      # https://github.com/actions/setup-dotnet/issues/155
+      - run: dotnet nuget locals all --clear
 
-    - run: dotnet build source/NetFramework/Tests --configuration Release
-    - run: dotnet test source/NetFramework/Tests --no-build --configuration Release
-    - run: dotnet publish source/NetFramework/Server --no-build --configuration Release
-    - run: Compress-Archive -Path 'source/NetFramework/Server/bin/publish/*' -DestinationPath 'Server.NetFramework.zip'
-      shell: pwsh
+      - run: dotnet build source/NetFramework/Tests --configuration Release
+      - run: dotnet test source/NetFramework/Tests --no-build --configuration Release
+      - run: dotnet publish source/NetFramework/Server --no-build --configuration Release
+      - run: Compress-Archive -Path 'source/NetFramework/Server/bin/publish/*' -DestinationPath 'Server.NetFramework.zip'
+        shell: pwsh
 
-    - uses: actions/upload-artifact@v2
-      with:
-        name: Server.NetFramework
-        path: Server.NetFramework.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Server.NetFramework
+          path: Server.NetFramework.zip
 
   deploy-netfx:
     strategy:
