@@ -152,7 +152,7 @@ namespace SharpLab.Tests {
             var decompiledText = result.ExtensionResult?.Trim();
             Assert.True(string.IsNullOrEmpty(errors), errors);
             data.AssertIsExpected(decompiledText, _output);
-        }      
+        }
 
         [Theory]
         [InlineData("class C { static int F = 1; }")]
@@ -215,6 +215,16 @@ namespace SharpLab.Tests {
             var driver = TestEnvironment.NewDriver().SetText(code);
 
             await Assert.ThrowsAsync<RoslynSourceTextGuardException>(() => driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.IL));
+        }
+
+        [Theory]
+        [InlineData("Append(Append(Append(Append(hash, (byte)value), value>>8), value>>16), value>>24)")]
+        public async Task SetOptions_ProcessesTokenEdgeCases_WithoutTokenValidationErrors(string code) {
+            var driver = TestEnvironment.NewDriver().SetText(code);
+
+            var exception = await Record.ExceptionAsync(() => driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.IL));
+
+            Assert.Null(exception);
         }
 
         private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestCode code, string optimize = Optimize.Release) {
