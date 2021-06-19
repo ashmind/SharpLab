@@ -39,7 +39,7 @@ $exceptions = (Invoke-JsonCommand {
 
 Write-Host 'Getting current issues from GitHub'
 $issues = @(Invoke-JsonCommand {
-  gh issue list --label $ExceptionLabel --json title,url,number --limit 500
+  gh issue list --label $ExceptionLabel --json title,url,number --state all --limit 500
 })
 
 Write-Host 'Processing exceptions'
