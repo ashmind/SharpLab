@@ -15,5 +15,8 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      # required for `az monitor app-insights` commands
+      - run: az config set extension.use_dynamic_install=yes_without_prompt
+
       - run: ./#scripts/github-actions/New-IssuesFromAppInsightsExceptions.ps1
         shell: pwsh

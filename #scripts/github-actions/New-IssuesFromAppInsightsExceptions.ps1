@@ -6,7 +6,7 @@ function Invoke-JsonCommand($command) {
     if ($LastExitCode -ne 0) {
         Write-Error "Command exited with code $LastExitCode"
     }
-    
+
     if ($json.Trim() -eq '') {
         return
     }
@@ -26,6 +26,8 @@ $query = "
     | take 50
 " -replace '\s+',' '
 
+# Cannot use AZ PowerShell due to login performance issue
+# https://github.com/Azure/login/issues/20
 Write-Host 'Getting exceptions from App Insights'
 $exceptions = (Invoke-JsonCommand {
   az monitor app-insights query `
