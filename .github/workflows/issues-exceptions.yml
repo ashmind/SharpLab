@@ -18,4 +18,6 @@ jobs:
       - run: az extension add --name application-insights
 
       - run: ./#scripts/github-actions/New-IssuesFromAppInsightsExceptions.ps1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
