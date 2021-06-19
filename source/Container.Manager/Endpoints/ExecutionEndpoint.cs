@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -11,17 +12,19 @@ namespace SharpLab.Container.Manager.Endpoints {
     // Not using controller for this to avoid per-request allocations on a hot path
     public class ExecutionEndpoint {
         private readonly ExecutionManager _executionManager;
-        private readonly ExecutionEndpointSettings _settings;
+        private readonly string _requiredBearerAuthorization;
+        private readonly ConcurrentDictionary<string, byte> _activeSessionRequests = new();
 
         public ExecutionEndpoint(ExecutionManager executionManager, ExecutionEndpointSettings settings) {
             _executionManager = executionManager;
-            _settings = settings;
+            _requiredBearerAuthorization = "Bearer " + settings.RequiredAuthorizationToken;
         }
 
         public async Task ExecuteAsync(HttpContext context) {
             var authorization = context.Request.Headers["Authorization"];
-            if (authorization.Count != 1 || authorization[0] != _settings.RequiredAuthorization) {
+            if (authorization.Count != 1 || authorization[0] != _requiredBearerAuthorization) {
                 context.Response.StatusCode = 401;
+                context.Response.Headers["WWW-Authenticate"] = "Bearer";
                 return;
             }
 
@@ -34,6 +37,9 @@ namespace SharpLab.Container.Manager.Endpoints {
             byte[]? bodyBytes = null;
             byte[]? outputBuffer = null;
             try {
+                if (!_activeSessionRequests.TryAdd(sessionId, 0))
+                    await WriteErrorResponseAsync(context, new Exception($"Attempted parallel access to session {sessionId}."));
+
                 bodyBytes = ArrayPool<byte>.Shared.Rent(contentLength);
                 outputBuffer = ArrayPool<byte>.Shared.Rent(10240);
 
@@ -46,9 +52,7 @@ namespace SharpLab.Container.Manager.Endpoints {
                     result = await _executionManager.ExecuteAsync(sessionId, bodyBytes, outputBuffer, includePerformance, requestExecutionCancellation.Token);
                 }
                 catch (Exception ex) {
-                    context.Response.StatusCode = 500;
-                    context.Response.ContentType = "text/vnd.sharplab.error+plain";
-                    await context.Response.WriteAsync(ex.ToString(), context.RequestAborted);
+                    await WriteErrorResponseAsync(context, ex);
                     return;
                 }
 
@@ -68,11 +72,18 @@ namespace SharpLab.Container.Manager.Endpoints {
                 }
             }
             finally {
+                _activeSessionRequests.TryRemove(sessionId, out var _);
                 if (bodyBytes != null)
                     ArrayPool<byte>.Shared.Return(bodyBytes);
                 if (outputBuffer != null)
                     ArrayPool<byte>.Shared.Return(outputBuffer);
             }
+        }
+
+        private Task WriteErrorResponseAsync(HttpContext context, Exception exception) {
+            context.Response.StatusCode = 500;
+            context.Response.ContentType = "text/vnd.sharplab.error+plain";
+            return context.Response.WriteAsync(exception.ToString(), context.RequestAborted);
         }
     }
 }

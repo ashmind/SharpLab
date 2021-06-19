@@ -52,7 +52,11 @@ namespace SharpLab.Container.Manager.Internal {
                 catch (Exception ex) {
                     _containerPool.LastContainerPreallocationException = ex;
                     _logger.LogError(ex, "Failed to pre-allocate next container, retryng in 1 minute.");
-                    await Task.Delay(TimeSpan.FromMinutes(1));
+                    try {
+                        await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+                    }
+                    catch (TaskCanceledException cancelEx) when (cancelEx.CancellationToken == stoppingToken) {
+                    }
                 }
             }
             _containerPool.PreallocatedContainersWriter.Complete();

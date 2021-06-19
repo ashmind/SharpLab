@@ -1,9 +1,9 @@
 namespace SharpLab.Container.Manager.Endpoints {
     public class ExecutionEndpointSettings {
-        public ExecutionEndpointSettings(string requiredAuthorization) {
-            RequiredAuthorization = requiredAuthorization;
+        public ExecutionEndpointSettings(string requiredAuthorizationToken) {
+            RequiredAuthorizationToken = requiredAuthorizationToken;
         }
 
-        public string RequiredAuthorization { get; }
+        public string RequiredAuthorizationToken { get; }
     }
 }

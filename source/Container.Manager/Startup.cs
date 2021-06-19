@@ -18,11 +18,9 @@ namespace SharpLab.Container.Manager {
         public void ConfigureServices(IServiceCollection services)
         {
             // TODO: proper DI, e.g. Autofac
-            var executionAuthorization = "Bearer " + (
-                Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_AUTHORIZATION_TOKEN")
-                ?? throw new Exception("Required environment variable SHARPLAB_CONTAINER_HOST_AUTHORIZATION_TOKEN was not provided.")
-            );
-            services.AddSingleton(new ExecutionEndpointSettings(executionAuthorization));
+            var authorizationToken = Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_AUTHORIZATION_TOKEN")
+                ?? throw new Exception("Required environment variable SHARPLAB_CONTAINER_HOST_AUTHORIZATION_TOKEN was not provided.");
+            services.AddSingleton(new ExecutionEndpointSettings(authorizationToken));
             services.AddSingleton<ExecutionEndpoint>();
 
             services.AddSingleton(new DockerClientConfiguration().CreateClient());
