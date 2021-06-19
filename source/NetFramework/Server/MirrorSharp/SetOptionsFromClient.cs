@@ -9,6 +9,7 @@ namespace SharpLab.Server.MirrorSharp {
     public class SetOptionsFromClient : ISetOptionsFromClientExtension {
         private const string Optimize = "x-optimize";
         private const string Target = "x-target";
+        private const string ContainerExperimentSeed = "x-container-experiment-seed";
 
         private readonly IDictionary<string, ILanguageAdapter> _languages;
 
@@ -24,6 +25,9 @@ namespace SharpLab.Server.MirrorSharp {
                 case Target:
                     session.SetTargetName(value);
                     _languages[session.LanguageName].SetOptionsForTarget(session, value);
+                    return true;
+                case ContainerExperimentSeed:
+                    // not supported in .NET Framework
                     return true;
                 default:
                     return false;
