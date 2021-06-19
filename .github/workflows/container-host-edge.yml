@@ -7,6 +7,7 @@ on:
       - '.github/actions/deploy-artifact-to-azure-windows-vm/**'
       - 'source/**'
       - '!source/Server/**'
+      - '!source/NetFramework/**'
       - '!source/WebApp/**'
       - '!source/WebApp.Server/**'
   pull_request:
