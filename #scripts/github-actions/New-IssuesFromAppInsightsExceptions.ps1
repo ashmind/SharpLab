@@ -59,8 +59,8 @@ $exceptions | % {
       AppInsights query:
       ``````Kusto
       exceptions
-        | where type = '$exceptionType'
-        | where method = '$atMethod'
+        | where type == '$exceptionType'
+        | where method == '$atMethod'
       ``````
     " -replace '      ',''
 
