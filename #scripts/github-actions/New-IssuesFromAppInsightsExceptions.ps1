@@ -59,7 +59,7 @@ $exceptions | % {
             | where type == '$exceptionType'
             | where method == '$atMethod'
           ``````
-        " -replace '^\s+','').Trim()
+        " -replace '          ','').Trim()
 
         Write-Host "    - creating"
         $url = $(gh issue create --title $title --body $body --label $ExceptionLabel)
