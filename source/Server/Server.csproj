@@ -43,7 +43,7 @@
     <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="1.0.5" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.2" />
     <PackageReference Include="MirrorSharp.AspNetCore" Version="3.0.3" />
-    <PackageReference Include="MirrorSharp.Common" Version="2.2.3" />
+    <PackageReference Include="MirrorSharp.Common" Version="2.2.5" />
     <PackageReference Include="MirrorSharp.FSharp" Version="0.20.0" />
     <PackageReference Include="MirrorSharp.VisualBasic" Version="2.1.1" />
     <PackageReference Include="Mono.Cecil" Version="0.10.0" />
