@@ -103,7 +103,7 @@ namespace SharpLab.Tests {
         }
 
         [Theory]
-        [InlineData("FSharp.EmptyType.fs2il")]
+        [InlineData("FSharp.EmptyType.fs")]
         [InlineData("FSharp.SimpleMethod.fs2cs")] // https://github.com/ashmind/SharpLab/issues/119
         [InlineData("FSharp.NotNull.fs2cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForFSharp(string resourceName) {
@@ -169,8 +169,8 @@ namespace SharpLab.Tests {
         [InlineData("Ast.EmptyClass.cs2ast")]
         [InlineData("Ast.StructuredTrivia.cs2ast")]
         [InlineData("Ast.LiteralTokens.cs2ast")]
-        [InlineData("Ast.EmptyType.fs2ast")]
-        [InlineData("Ast.LiteralTokens.fs2ast")]
+        [InlineData("Ast.EmptyType.fs")]
+        [InlineData("Ast.LiteralTokens.fs")]
         public async Task SlowUpdate_ReturnsExpectedResult_ForAst(string resourceName) {
             var data = TestCode.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);

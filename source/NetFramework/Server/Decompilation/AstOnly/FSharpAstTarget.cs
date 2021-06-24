@@ -8,41 +8,44 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.FSharp.Collections;
-using FSharp.Compiler;
 using MirrorSharp.Advanced;
 using MirrorSharp.FSharp.Advanced;
 using SharpLab.Server.Decompilation.Internal;
+using FSharp.Compiler.Syntax;
+using Range = FSharp.Compiler.Text.Range;
 
 namespace SharpLab.Server.Decompilation.AstOnly {
-    using Range = FSharp.Compiler.Range;
-
     public class FSharpAstTarget : IAstTarget {
         private delegate void SerializeChildAction<T>(T item, IFastJsonWriter writer, string parentPropertyName, ref bool childrenStarted, IFSharpSession session);
         private delegate void SerializeChildrenAction(object parent, IFastJsonWriter writer, ref bool childrenStarted, IFSharpSession session);
-        private delegate Range.range GetRangeFunc(object target);
+        private delegate Range GetRangeFunc(object target);
 
-        private static readonly ConcurrentDictionary<Type, Lazy<SerializeChildrenAction>> ChildrenSerializers =
-            new ConcurrentDictionary<Type, Lazy<SerializeChildrenAction>>();
-        private static readonly ConcurrentDictionary<Type, Lazy<GetRangeFunc?>> RangeGetters =
-            new ConcurrentDictionary<Type, Lazy<GetRangeFunc?>>();
+        private static readonly string SyntaxNamespace = typeof(Ident).Namespace!;
+        private static readonly Lazy<IReadOnlyList<Type>> TopLevelAstTypes = new(
+            () => typeof(Ident).Assembly.GetTypes().Where(t => t.Namespace == SyntaxNamespace && !t.IsNested).ToList(),
+            LazyThreadSafetyMode.ExecutionAndPublication
+        );
+
+        private static readonly ConcurrentDictionary<Type, Lazy<SerializeChildrenAction>> ChildrenSerializers = new();
+        private static readonly ConcurrentDictionary<Type, Lazy<GetRangeFunc?>> RangeGetters = new();
         private static readonly Lazy<IReadOnlyDictionary<Type, Func<object, string>>> TagNameGetters =
-            new Lazy<IReadOnlyDictionary<Type, Func<object, string>>>(CompileTagNameGetters, LazyThreadSafetyMode.ExecutionAndPublication);
-        private static readonly Lazy<IReadOnlyDictionary<Type, Func<SyntaxTree.SynConst, string>>> ConstValueGetters =
-            new Lazy<IReadOnlyDictionary<Type, Func<SyntaxTree.SynConst, string>>>(CompileConstValueGetters, LazyThreadSafetyMode.ExecutionAndPublication);
+            new(SlowCompileTagNameGetters, LazyThreadSafetyMode.ExecutionAndPublication);
+        private static readonly Lazy<IReadOnlyDictionary<Type, Func<SynConst, string>>> ConstValueGetters =
+            new(SlowCompileConstValueGetters, LazyThreadSafetyMode.ExecutionAndPublication);
         private static readonly Lazy<IReadOnlyDictionary<Type, string>> AstTypeNames =
-            new Lazy<IReadOnlyDictionary<Type, string>>(CollectAstTypeNames, LazyThreadSafetyMode.ExecutionAndPublication);
+            new(SlowCollectAstTypeNames, LazyThreadSafetyMode.ExecutionAndPublication);
 
         private static class Methods {
             // ReSharper disable MemberHidesStaticFromOuterClass
             // ReSharper disable HeapView.DelegateAllocation
             public static readonly MethodInfo SerializeNode =
-                ((SerializeChildAction<object>)FSharpAstTarget.SerializeNode).Method;
+                ((SerializeChildAction<object>)FSharpAstTarget.SerializeNode).Method.GetGenericMethodDefinition();
             public static readonly MethodInfo SerializeList =
                 ((SerializeChildAction<FSharpList<object>>)FSharpAstTarget.SerializeList).Method.GetGenericMethodDefinition();
             public static readonly MethodInfo SerializeIdent =
-                ((SerializeChildAction<SyntaxTree.Ident>)FSharpAstTarget.SerializeIdent).Method;
+                ((SerializeChildAction<Ident>)FSharpAstTarget.SerializeIdent).Method;
             public static readonly MethodInfo SerializeIdentList =
-                ((SerializeChildAction<FSharpList<SyntaxTree.Ident>>)FSharpAstTarget.SerializeIdentList).Method;
+                ((SerializeChildAction<FSharpList<Ident>>)FSharpAstTarget.SerializeIdentList).Method;
             public static readonly MethodInfo SerializeEnum =
                 ((SerializeChildAction<int>)FSharpAstTarget.SerializeEnum).Method.GetGenericMethodDefinition();
             // ReSharper restore HeapView.DelegateAllocation
@@ -50,8 +53,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
         }
 
         private static class EnumCache<TEnum>
-            where TEnum : struct, IFormattable
-        {
+            where TEnum : struct, IFormattable {
             public static readonly IReadOnlyDictionary<TEnum, string> Strings = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToDictionary(e => e, e => e.ToString("G", null));
         }
 
@@ -59,68 +61,73 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             var parseResult = session.FSharp().GetLastParseResults();
             if (parseResult == null)
                 throw new InvalidOperationException("Current session does not include F# parse results yet.");
-            return Task.FromResult((object)parseResult.ParseTree.Value);
+            return Task.FromResult((object)parseResult.ParseTree);
         }
 
         public void SerializeAst(object ast, IFastJsonWriter writer, IWorkSession session) {
-            var root = ((SyntaxTree.ParsedInput.ImplFile)ast).Item;
+            var root = ((ParsedInput.ImplFile)ast).Item;
             writer.WriteStartArray();
             var childrenStarted = true;
             SerializeNode(root, writer, null, ref childrenStarted, session.FSharp());
             writer.WriteEndArray();
         }
 
-        private static void SerializeNode(object node, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
+        private static void SerializeNode<T>(T node, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session)
+            where T: notnull
+        {
             EnsureChildrenStarted(ref parentChildrenStarted, writer);
             writer.WriteStartObject();
-            writer.WriteProperty("kind", AstTypeNames.Value[node.GetType()]);
+            var nodeType = node.GetType();
+            writer.WriteProperty("kind", AstTypeNames.Value[nodeType]);
             if (parentPropertyName != null)
                 writer.WriteProperty("property", parentPropertyName);
 
-            if (node is SyntaxTree.SynConst @const) {
+            if (node is SynConst @const) {
                 writer.WriteProperty("type", "token");
-                if (@const is SyntaxTree.SynConst.String @string) {
+                if (@const is SynConst.String @string) {
                     writer.WritePropertyName("value");
                     writer.WriteValueFromParts("\"", @string.text, "\"");
                 }
-                else if (@const is SyntaxTree.SynConst.Char @char) {
+                else if (@const is SynConst.Char @char) {
                     writer.WritePropertyName("value");
                     writer.WriteValueFromParts("'", @char.Item, "'");
                 }
                 else {
-                    if (ConstValueGetters.Value.TryGetValue(@const.GetType(), out var getter)) {
+                    if (ConstValueGetters.Value.TryGetValue(nodeType, out var getter)) {
                         writer.WritePropertyName("value");
                         writer.WriteValue(getter(@const));
                     }
                 }
             }
             else {
-                writer.WriteProperty("type", "node");
+                writer.WriteProperty("type", nodeType.IsValueType ? "value" : "node");
                 var tagName = GetTagName(node);
                 if (tagName != null)
                     writer.WriteProperty("value", tagName);
             }
-            var rangeGetter = GetRangeGetter(node.GetType());
+            var rangeGetter = GetRangeGetter(nodeType);
             if (rangeGetter != null)
                 SerializeRangeProperty(rangeGetter(node), writer, session);
 
             var childrenStarted = false;
-            GetChildrenSerializer(node.GetType()).Invoke(node, writer, ref childrenStarted, session);
+            GetChildrenSerializer(nodeType).Invoke(node, writer, ref childrenStarted, session);
             EnsureChildrenEnded(childrenStarted, writer);
             writer.WriteEndObject();
         }
 
-        private static void SerializeList<T>(FSharpList<T> list, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
+        private static void SerializeList<T>(FSharpList<T> list, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session)
+            where T: notnull
+        {
             foreach (var item in list) {
-                SerializeNode(item!, writer, null /* UI does not support list property names at the moment */, ref parentChildrenStarted, session);
+                SerializeNode(item, writer, null /* UI does not support list property names at the moment */, ref parentChildrenStarted, session);
             }
         }
 
-        private static void SerializeIdent(SyntaxTree.Ident ident, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
+        private static void SerializeIdent(Ident ident, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
             EnsureChildrenStarted(ref parentChildrenStarted, writer);
             writer.WriteStartObject();
             writer.WriteProperty("type", "token");
-            writer.WriteProperty("kind", "SyntaxTree.Ident");
+            writer.WriteProperty("kind", "Ident");
             if (parentPropertyName != null)
                 writer.WriteProperty("property", parentPropertyName);
             writer.WriteProperty("value", ident.idText);
@@ -128,15 +135,14 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             writer.WriteEndObject();
         }
 
-        private static void SerializeIdentList(FSharpList<SyntaxTree.Ident> list, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
+        private static void SerializeIdentList(FSharpList<Ident> list, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session) {
             foreach (var ident in list) {
                 SerializeIdent(ident, writer, parentPropertyName, ref parentChildrenStarted, session);
             }
         }
 
         private static void SerializeEnum<TEnum>(TEnum value, IFastJsonWriter writer, string? parentPropertyName, ref bool parentChildrenStarted, IFSharpSession session)
-            where TEnum: struct, IFormattable
-        {
+            where TEnum : struct, IFormattable {
             EnsureChildrenStarted(ref parentChildrenStarted, writer);
             if (parentPropertyName != null) {
                 writer.WriteStartObject();
@@ -150,7 +156,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             }
         }
 
-        private static void SerializeRangeProperty(Range.range range, IFastJsonWriter writer, IFSharpSession session) {
+        private static void SerializeRangeProperty(Range range, IFastJsonWriter writer, IFSharpSession session) {
             writer.WritePropertyName("range");
             var startOffset = session.ConvertToOffset(range.StartLine, range.StartColumn);
             var endOffset = session.ConvertToOffset(range.EndLine, range.EndColumn);
@@ -169,15 +175,19 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 return;
             writer.WriteEndArray();
         }
-        
+
         private static SerializeChildrenAction GetChildrenSerializer(Type type) {
-            return ChildrenSerializers.GetOrAdd(
-                type,
-                t => new Lazy<SerializeChildrenAction>(() => CompileChildrenSerializer(t), LazyThreadSafetyMode.ExecutionAndPublication)
-            ).Value;
+            if (!ChildrenSerializers.TryGetValue(type, out var lazySerialize)) {
+                lazySerialize = ChildrenSerializers.GetOrAdd(
+                    type,
+                    t => new(() => SlowCompileChildrenSerializer(t), LazyThreadSafetyMode.ExecutionAndPublication)
+                );
+            }
+
+            return lazySerialize.Value;
         }
 
-        private static SerializeChildrenAction CompileChildrenSerializer(Type type) {
+        private static SerializeChildrenAction SlowCompileChildrenSerializer(Type type) {
             var nodeAsObject = Expression.Parameter(typeof(object));
             var writer = Expression.Parameter(typeof(IFastJsonWriter));
             var refChildrenStarted = Expression.Parameter(typeof(bool).MakeByRefType());
@@ -192,27 +202,27 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                 if (ShouldSkipNodeProperty(type, property))
                     continue;
                 var propertyType = property.PropertyType;
-                var method = GetMethodToSerialize(propertyType);
+                var method = SlowGetMethodToSerialize(propertyType);
                 if (method == null)
                     continue;
 
-                var propertyName = (string?)property.Name;
+                var propertyName = property.Name;
                 if (Regex.IsMatch(propertyName, @"^Item\d*$"))
                     propertyName = null;
                 body.Add(Expression.Call(method, Expression.Property(node, property), writer, Expression.Constant(propertyName, typeof(string)), refChildrenStarted, session));
             }
 
             return Expression.Lambda<SerializeChildrenAction>(
-                Expression.Block(new[] {node}, body),
+                Expression.Block(new[] { node }, body),
                 nodeAsObject, writer, refChildrenStarted, session
             ).Compile();
         }
 
-        private static MethodInfo? GetMethodToSerialize(Type propertyType) {
-            if (propertyType == typeof(SyntaxTree.Ident))
+        private static MethodInfo? SlowGetMethodToSerialize(Type propertyType) {
+            if (propertyType == typeof(Ident))
                 return Methods.SerializeIdent;
 
-            if (propertyType == typeof(FSharpList<SyntaxTree.Ident>))
+            if (propertyType == typeof(FSharpList<Ident>))
                 return Methods.SerializeIdentList;
 
             if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(FSharpList<>)) {
@@ -228,7 +238,7 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             if (propertyType.IsEnum)
                 return Methods.SerializeEnum.MakeGenericMethod(propertyType);
 
-            return Methods.SerializeNode;
+            return Methods.SerializeNode.MakeGenericMethod(propertyType);
         }
 
         private static GetRangeFunc? GetRangeGetter(Type type) {
@@ -250,13 +260,13 @@ namespace SharpLab.Server.Decompilation.AstOnly {
         }
 
         private static bool ShouldSkipNodeProperty(Type type, PropertyInfo property) {
-            return (type == typeof(SyntaxTree.LongIdentWithDots) && property.Name == nameof(SyntaxTree.LongIdentWithDots.id));
+            return (type == typeof(LongIdentWithDots) && property.Name == nameof(LongIdentWithDots.id));
         }
 
         private static bool IsNodeType(Type type) {
-            return type.DeclaringType == typeof(SyntaxTree)
-                && type != typeof(SyntaxTree.QualifiedNameOfFile)
-                && type != typeof(SyntaxTree.SynModuleOrNamespaceKind)
+            return type.Namespace == SyntaxNamespace
+                && type != typeof(QualifiedNameOfFile)
+                && type != typeof(SynModuleOrNamespaceKind)
                 && !(type.Name.StartsWith("SequencePoint"));
         }
 
@@ -266,23 +276,25 @@ namespace SharpLab.Server.Decompilation.AstOnly {
                  : null;
         }
 
-        private static IReadOnlyDictionary<Type, Func<object, string>> CompileTagNameGetters() {
+        private static IReadOnlyDictionary<Type, Func<object, string>> SlowCompileTagNameGetters() {
             var getters = new Dictionary<Type, Func<object, string>>();
-            CompileAndCollectTagNameGettersRecursive(getters, typeof(SyntaxTree));
+            void SlowCompileAndCollectRecursive(Type astType) {
+                foreach (var nested in astType.GetNestedTypes()) {
+                    if (nested.Name == "Tags") {
+                        getters.Add(astType, SlowCompileTagNameGetter(astType, nested));
+                        continue;
+                    }
+                    SlowCompileAndCollectRecursive(nested);
+                }
+            }
+
+            foreach (var topLevel in TopLevelAstTypes.Value) {
+                SlowCompileAndCollectRecursive(topLevel);
+            }
             return getters;
         }
 
-        private static void CompileAndCollectTagNameGettersRecursive(IDictionary<Type, Func<object, string>> getters, Type astType) {
-            foreach (var nested in astType.GetNestedTypes()) {
-                if (nested.Name == "Tags") {
-                    getters.Add(astType, CompileTagNameGetter(astType, nested));
-                    continue;
-                }
-                CompileAndCollectTagNameGettersRecursive(getters, nested);
-            }
-        }
-
-        private static Func<object, string> CompileTagNameGetter(Type astType, Type tagsType) {
+        private static Func<object, string> SlowCompileTagNameGetter(Type astType, Type tagsType) {
             var tagMap = tagsType
                 .GetFields()
                 .OrderBy(f => (int)f.GetValue(null)!)
@@ -296,19 +308,19 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             return instance => tagMap[tagGetter(instance)];
         }
 
-        private static IReadOnlyDictionary<Type, Func<SyntaxTree.SynConst, string>> CompileConstValueGetters() {
-            var getters = new Dictionary<Type, Func<SyntaxTree.SynConst, string>>();
-            foreach (var type in typeof(SyntaxTree.SynConst).GetNestedTypes()) {
-                if (type.BaseType != typeof(SyntaxTree.SynConst))
+        private static IReadOnlyDictionary<Type, Func<SynConst, string>> SlowCompileConstValueGetters() {
+            var getters = new Dictionary<Type, Func<SynConst, string>>();
+            foreach (var type in typeof(SynConst).GetNestedTypes()) {
+                if (type.BaseType != typeof(SynConst))
                     continue;
 
                 var valueProperty = type.GetProperty("Item");
                 if (valueProperty == null)
                     continue;
 
-                var toString = valueProperty.PropertyType.GetMethod("ToString", Type.EmptyTypes);
-                var constUntyped = Expression.Parameter(typeof(SyntaxTree.SynConst));
-                getters.Add(type, Expression.Lambda<Func<SyntaxTree.SynConst, string>>(
+                var toString = valueProperty.PropertyType.GetMethod("ToString", Type.EmptyTypes)!;
+                var constUntyped = Expression.Parameter(typeof(SynConst));
+                getters.Add(type, Expression.Lambda<Func<SynConst, string>>(
                     Expression.Call(Expression.Property(Expression.Convert(constUntyped, type), valueProperty), toString),
                     constUntyped
                 ).Compile());
@@ -316,21 +328,21 @@ namespace SharpLab.Server.Decompilation.AstOnly {
             return getters;
         }
 
-        private static IReadOnlyDictionary<Type, string> CollectAstTypeNames() {
+        private static IReadOnlyDictionary<Type, string> SlowCollectAstTypeNames() {
             var results = new Dictionary<Type, string>();
-            void CollectRecusive(Type astType, string parentPrefix) {
-                var name = parentPrefix + astType.Name;
-                var prefix = name + ".";
-                results.Add(astType, name);
-                foreach (var nested in astType.GetNestedTypes()) {
-                    CollectRecusive(nested, prefix);
+            void CollectRecusive(IEnumerable<Type> astTypes, string parentPrefix) {
+                foreach (var astType in astTypes) {
+                    var name = parentPrefix + astType.Name;
+                    var prefix = name + ".";
+                    results.Add(astType, name);
+                    CollectRecusive(astType.GetNestedTypes(), prefix);
                 }
             }
 
-            CollectRecusive(typeof(SyntaxTree), "");
+            CollectRecusive(TopLevelAstTypes.Value, "");
             return results;
         }
 
-        public IReadOnlyCollection<string> SupportedLanguageNames { get; } = new[] {"F#"};
+        public IReadOnlyCollection<string> SupportedLanguageNames { get; } = new[] { "F#" };
     }
 }

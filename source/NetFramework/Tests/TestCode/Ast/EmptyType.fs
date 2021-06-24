@@ -1,43 +1,43 @@
 type Empty = class end
 
-#=>
+(* ast
 
 [
   {
-    "kind": "SyntaxTree.ParsedImplFileInput",
+    "kind": "ParsedImplFileInput",
     "type": "node",
     "children": [
       {
-        "kind": "SyntaxTree.SynModuleOrNamespace",
+        "kind": "SynModuleOrNamespace",
         "type": "node",
         "range": "0-22",
         "children": [
           {
             "type": "token",
-            "kind": "SyntaxTree.Ident",
+            "kind": "Ident",
             "property": "longId",
             "value": "_",
             "range": "0-0"
           },
           {
-            "kind": "SyntaxTree.SynModuleDecl.Types",
+            "kind": "SynModuleDecl.Types",
             "type": "node",
-            "range": "0-18",
+            "range": "0-22",
             "children": [
               {
-                "kind": "SyntaxTree.SynTypeDefn",
+                "kind": "SynTypeDefn",
                 "type": "node",
-                "range": "5-18",
+                "range": "5-22",
                 "children": [
                   {
-                    "kind": "SyntaxTree.SynComponentInfo",
+                    "kind": "SynComponentInfo",
                     "property": "typeInfo",
                     "type": "node",
                     "range": "5-10",
                     "children": [
                       {
                         "type": "token",
-                        "kind": "SyntaxTree.Ident",
+                        "kind": "Ident",
                         "property": "longId",
                         "value": "Empty",
                         "range": "5-10"
@@ -45,16 +45,16 @@ type Empty = class end
                     ]
                   },
                   {
-                    "kind": "SyntaxTree.SynTypeDefnRepr.ObjectModel",
+                    "kind": "SynTypeDefnRepr.ObjectModel",
                     "property": "typeRepr",
                     "type": "node",
-                    "range": "13-18",
+                    "range": "13-22",
                     "children": [
                       {
-                        "kind": "SyntaxTree.SynTypeDefnKind",
+                        "kind": "SynTypeDefnKind",
                         "property": "kind",
                         "type": "node",
-                        "value": "TyconClass"
+                        "value": "Class"
                       }
                     ]
                   }
@@ -67,3 +67,5 @@ type Empty = class end
     ]
   }
 ]
+
+*)

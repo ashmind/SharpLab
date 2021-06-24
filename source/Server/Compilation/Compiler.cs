@@ -2,25 +2,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using FSharp.Compiler.SourceCodeServices;
+using FSharp.Compiler.Diagnostics;
+using FSharp.Compiler.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Control;
 using MirrorSharp.Advanced;
 using MirrorSharp.FSharp.Advanced;
-using SharpLab.Server.Common.Diagnostics;
-using SyntaxTree = FSharp.Compiler.SyntaxTree;
 
 namespace SharpLab.Server.Compilation {
     public class Compiler : ICompiler {
-        private static readonly EmitOptions RoslynEmitOptions = new EmitOptions(
+        private static readonly EmitOptions RoslynEmitOptions = new(
             // TODO: try out embedded
             debugInformationFormat: DebugInformationFormat.PortablePdb
         );
 
         public async Task<(bool assembly, bool symbols)> TryCompileToStreamAsync(MemoryStream assemblyStream, MemoryStream? symbolStream, IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
-            PerformanceLog.Checkpoint("Compiler.TryCompileToStreamAsync.Start");
             if (session.IsFSharp()) {
                 var compiled = await TryCompileFSharpToStreamAsync(assemblyStream, session, diagnostics, cancellationToken).ConfigureAwait(false);
                 return (compiled, false);
@@ -29,7 +27,6 @@ namespace SharpLab.Server.Compilation {
             #warning TODO: Revisit after https://github.com/dotnet/docs/issues/14784
             var compilation = (await session.Roslyn.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false))!;
             var emitResult = compilation.Emit(assemblyStream, pdbStream: symbolStream, options: RoslynEmitOptions);
-            PerformanceLog.Checkpoint("Compiler.TryCompileToStreamAsync.Emit.End");
             if (!emitResult.Success) {
                 foreach (var diagnostic in emitResult.Diagnostics) {
                     diagnostics.Add(diagnostic);
@@ -46,7 +43,7 @@ namespace SharpLab.Server.Compilation {
             var parsed = fsharp.GetLastParseResults()!;
             using (var virtualAssemblyFile = FSharpFileSystem.RegisterVirtualFile(assemblyStream)) {
                 var compiled = await FSharpAsync.StartAsTask(fsharp.Checker.Compile(
-                    FSharpList<SyntaxTree.ParsedInput>.Cons(parsed.ParseTree.Value, FSharpList<SyntaxTree.ParsedInput>.Empty),
+                    FSharpList<ParsedInput>.Cons(parsed.ParseTree, FSharpList<ParsedInput>.Empty),
                     "_", virtualAssemblyFile.Name,
                     fsharp.AssemblyReferencePathsAsFSharpList,
                     pdbFile: null,
@@ -54,10 +51,10 @@ namespace SharpLab.Server.Compilation {
                     noframework: true,
                     userOpName: null
                 ), null, cancellationToken).ConfigureAwait(false);
-                foreach (var error in compiled.Item1) {
+                foreach (var diagnostic in compiled.Item1) {
                     // no reason to add warnings as check would have added them anyways
-                    if (error.Severity.Tag == FSharpErrorSeverity.Tags.Error)
-                        diagnostics.Add(fsharp.ConvertToDiagnostic(error));
+                    if (diagnostic.Severity.Tag == FSharpDiagnosticSeverity.Tags.Error)
+                        diagnostics.Add(fsharp.ConvertToDiagnostic(diagnostic));
                 }
                 return virtualAssemblyFile.Stream.Length > 0;
             }
