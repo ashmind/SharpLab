@@ -29,7 +29,7 @@ namespace SharpLab.Server.Execution.Container {
             using var response = await httpClient.SendAsync(request, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.InternalServerError && response.Content.Headers.ContentType?.MediaType == "text/vnd.sharplab.error+plain")
-                throw new Exception("Container host repoted an error:\n" + await response.Content.ReadAsStringAsync(cancellationToken));
+                throw new Exception("Container host reported an error:\n" + await response.Content.ReadAsStringAsync(cancellationToken));
 
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync(cancellationToken);

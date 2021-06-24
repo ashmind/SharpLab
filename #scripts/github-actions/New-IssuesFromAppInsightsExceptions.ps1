@@ -21,7 +21,14 @@ $query = "
     | where client_Type != 'Browser'
     | where assembly !startswith 'Unbreakable'
     | where type !in ('MirrorSharp.Advanced.EarlyAccess.RoslynSourceTextGuardException', 'MirrorSharp.Advanced.EarlyAccess.RoslynCompilationGuardException')
-    | summarize _count=sum(itemCount) by type, method
+    | extend containerType = iif(type == 'System.Exception', extract('Container host repor?ted an error:[\\r\\n]*([^:]+)', 1, outerMessage), '')
+    | where containerType != 'SharpLab.Container.Manager.Internal.ContainerAllocationException'
+    | extend containerMethod = iif(isnotempty(containerType), extract('[\\r\\n]+\\s*at ([^(]+)', 1, outerMessage), '')
+    | project itemCount, type=coalesce(containerType, type), method=coalesce(containerMethod, method), query=strcat(
+        'exceptions\n  | where type == \'', type, '\'\n  | where method == \'', method, '\'',
+        iif(isnotempty(containerType), strcat('\n  | where outerMessage contains \'', containerType, '\''), '')
+      )
+    | summarize _count=sum(itemCount) by type, method, query
     | sort by _count desc
     | take 50
 " -replace '\s+',' '
@@ -46,7 +53,8 @@ Write-Host 'Processing exceptions'
 $exceptions | % {
     $exceptionType = $_[0]
     $atMethod = $_[1]
-    $count = $_[2]
+    $query = $_[2]
+    $count = $_[3]
 
     $title = "$exceptionType at $atMethod"
     Write-Host "  $title"
@@ -55,9 +63,7 @@ $exceptions | % {
         $body = ("
           AppInsights query:
           ``````Kusto
-          exceptions
-            | where type == '$exceptionType'
-            | where method == '$atMethod'
+          $query
           ``````
         " -replace '          ','').Trim()
 
