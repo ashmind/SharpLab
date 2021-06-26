@@ -6,6 +6,7 @@ on:
       - '.github/workflows/container-host-edge.yml'
       - '.github/actions/deploy-artifact-to-azure-windows-vm/**'
       - 'source/**'
+      - '!source/#external/**'
       - '!source/Server/**'
       - '!source/NetFramework/**'
       - '!source/WebApp/**'
