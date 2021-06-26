@@ -20,7 +20,9 @@ $query = "
   exceptions
     | where client_Type != 'Browser'
     | where assembly !startswith 'Unbreakable'
+    | where not (type == 'System.NotSupportedException' and assembly startswith 'SharpLab')
     | where type !in ('MirrorSharp.Advanced.EarlyAccess.RoslynSourceTextGuardException', 'MirrorSharp.Advanced.EarlyAccess.RoslynCompilationGuardException')
+
     | extend containerType = iif(type == 'System.Exception', extract('Container host repor?ted an error:[\\r\\n]*([^:]+)', 1, outerMessage), '')
     | where containerType != 'SharpLab.Container.Manager.Internal.ContainerAllocationException'
     | extend containerMethod = iif(isnotempty(containerType), extract('[\\r\\n]+\\s*at ([^(]+)', 1, outerMessage), '')
@@ -28,6 +30,7 @@ $query = "
         'exceptions\n  | where type == \'', type, '\'\n  | where method == \'', method, '\'',
         iif(isnotempty(containerType), strcat('\n  | where outerMessage contains \'', containerType, '\''), '')
       )
+
     | summarize _count=sum(itemCount) by type, method, query
     | sort by _count desc
     | take 50
