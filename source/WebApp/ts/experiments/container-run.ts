@@ -1,14 +1,6 @@
 import defineState from '../helpers/define-state';
 import type { RunResult } from '../types/results';
 
-let seed = localStorage['sharplab.experiments.container.seed'];
-if (!seed) {
-    seed = Math.floor(Math.random() * 10) + 1;
-    localStorage['sharplab.experiments.container.seed'] = seed;
-}
-
-export const containerRunServerOptions = { 'x-container-experiment-seed': seed };
-
 const [containerRunException, setContainerRunException] = defineState<string|null>(null);
 const [containerRunActive, setContainerRunActive] = defineState<boolean>(false);
 

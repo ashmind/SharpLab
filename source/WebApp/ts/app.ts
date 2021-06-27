@@ -16,7 +16,7 @@ import state from './state/index';
 import url from './state/handlers/url';
 import defaults from './state/handlers/defaults';
 import uiAsync from './ui/index';
-import { containerRunServerOptions, updateContainerExperimentStateFromRunResult } from './experiments/container-run';
+import { updateContainerExperimentStateFromRunResult } from './experiments/container-run';
 import parseOutput from './helpers/parse-output';
 
 function getResultType(target: TargetName|string) {
@@ -167,8 +167,7 @@ async function createAppAsync() {
             serverOptions(this: App): ServerOptions {
                 return {
                     'x-optimize': this.options.release ? 'release' : 'debug',
-                    'x-target': this.options.target,
-                    ...containerRunServerOptions
+                    'x-target': this.options.target
                 };
             },
             status(this: App): AppStatus {
