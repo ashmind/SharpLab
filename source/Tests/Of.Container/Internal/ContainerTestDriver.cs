@@ -35,8 +35,6 @@ namespace SharpLab.Tests.Of.Container.Internal {
             roslynSessionMock.Setup.Project.Returns(project);
             session.Setup.Roslyn.Returns(roslynSessionMock);
 
-            session.SetInContainerExperiment(true);
-
             var executor = CreateContainerExecutor();
             return await executor.ExecuteAsync(await CompileAsync(project), session, CancellationToken.None);
         }

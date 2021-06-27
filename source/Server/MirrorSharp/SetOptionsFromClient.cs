@@ -3,7 +3,6 @@ using System.Linq;
 using JetBrains.Annotations;
 using MirrorSharp.Advanced;
 using SharpLab.Server.Common;
-using SharpLab.Server.Execution.Container;
 
 namespace SharpLab.Server.MirrorSharp {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
@@ -13,14 +12,9 @@ namespace SharpLab.Server.MirrorSharp {
         private const string ContainerExperimentSeedKey = "x-container-experiment-seed";
 
         private readonly IDictionary<string, ILanguageAdapter> _languages;
-        private readonly IFeatureFlagClient _featureFlagClient;
 
-        public SetOptionsFromClient(
-            IReadOnlyList<ILanguageAdapter> languages,
-            IFeatureFlagClient featureFlagClient
-        ) {
+        public SetOptionsFromClient(IReadOnlyList<ILanguageAdapter> languages) {
             _languages = languages.ToDictionary(l => l.LanguageName);
-            _featureFlagClient = featureFlagClient;
         }
 
         public bool TrySetOption(IWorkSession session, string name, string value) {
@@ -33,9 +27,7 @@ namespace SharpLab.Server.MirrorSharp {
                     _languages[session.LanguageName].SetOptionsForTarget(session, value);
                     return true;
                 case ContainerExperimentSeedKey:
-                    session.SetInContainerExperiment(
-                        int.Parse(value) <= (_featureFlagClient.GetInt32Flag("ContainerExperimentRollout") ?? 0)
-                    );
+                    // TODO: remove once UI logic is removed
                     return true;
                 default:
                     return false;

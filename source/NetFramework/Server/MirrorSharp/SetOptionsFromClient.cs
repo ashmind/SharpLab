@@ -27,7 +27,7 @@ namespace SharpLab.Server.MirrorSharp {
                     _languages[session.LanguageName].SetOptionsForTarget(session, value);
                     return true;
                 case ContainerExperimentSeed:
-                    // not supported in .NET Framework
+                    // TODO: remove once UI logic is removed (not supported in .NET Framework either way)
                     return true;
                 default:
                     return false;

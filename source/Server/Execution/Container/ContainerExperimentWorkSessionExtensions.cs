@@ -4,14 +4,6 @@ using MirrorSharp.Advanced;
 
 namespace SharpLab.Server.Execution.Container {
     public static class ContainerExperimentWorkSessionExtensions {
-        public static bool InContainerExperiment(this IWorkSession session) {
-            return (bool?)session.ExtensionData.GetValueOrDefault("InContainerExperiment") ?? false;
-        }
-
-        public static void SetInContainerExperiment(this IWorkSession session, bool value) {
-            session.ExtensionData["InContainerExperiment"] = value;
-        }
-
         public static bool HasContainerExperimentFailed(this IWorkSession session) {
             return session.GetContainerExperimentException() != null;
         }
