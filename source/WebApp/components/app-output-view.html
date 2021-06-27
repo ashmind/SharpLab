@@ -1,5 +1,5 @@
 <div class="output result-content">
-  <small v-else-if="containerRunExperimentException.value" class="disclaimer">
+  <small v-if="containerRunExperimentException.value" class="disclaimer">
     Legacy execution limits apply (due to a container run <a v-bind:title="containerRunExperimentException.value">failure</a>).
   </small>
   <div class="output-empty" v-show="output.length === 0">Completed — no output.</div>
