@@ -11,9 +11,24 @@ namespace SharpLab.Container.Manager.Internal {
             SingleWriter = true
         });
         private readonly MemoryCache _sessionCache = new("_");
+        private readonly IDateTimeProvider _dateTimeProvider;
+        private Exception? _lastContainerPreallocationException;
+
+        public ContainerPool(IDateTimeProvider dateTimeProvider) {
+            _dateTimeProvider = dateTimeProvider;
+        }
 
         public ChannelWriter<ActiveContainer> PreallocatedContainersWriter => _preallocated.Writer;
-        public Exception? LastContainerPreallocationException { get; set; }
+        public Exception? LastContainerPreallocationException {
+            get => _lastContainerPreallocationException;
+            set {
+                _lastContainerPreallocationException = value;
+                ContainerPreallocationFailingSince = value != null
+                    ? (ContainerPreallocationFailingSince ?? _dateTimeProvider.GetNow())
+                    : null;
+            }
+        }
+        public DateTimeOffset? ContainerPreallocationFailingSince { get; private set; }
 
         public async ValueTask<ActiveContainer> AllocateSessionContainerAsync(
             string sessionId, Action<ActiveContainer> scheduleCleanup, CancellationToken cancellationToken

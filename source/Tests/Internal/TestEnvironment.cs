@@ -9,7 +9,6 @@ using SharpLab.Server;
 namespace SharpLab.Tests.Internal {
     public static class TestEnvironment {
         public static IContainer Container { get; } = ((Func<IContainer>)(() => {
-            Environment.SetEnvironmentVariable("SHARPLAB_CONTAINER_EXPERIMENT_KEY", "_");
             Environment.SetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_URL", "http://localhost/test");
             Environment.SetEnvironmentVariable("SHARPLAB_LOCAL_SECRETS_ContainerHostAuthorizationToken", "_");
 

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>SharpLab.Tests</AssemblyName>
@@ -23,9 +23,7 @@
 
   <ItemGroup>
     <PackageReference Include="AshMind.Extensions" Version="3.0.0-pre-20190808-01" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0-preview4.19216.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.0.0-preview4.19216.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.0.0-preview4.19216.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.7" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.0" />
     <PackageReference Include="MirrorSharp.Testing" version="2.2.3" />
     <PackageReference Include="Pedantic.IO.EmbeddedResource" version="0.9.0-pre-02" />

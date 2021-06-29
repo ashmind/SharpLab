@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 using Docker.DotNet;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -18,6 +17,10 @@ namespace SharpLab.Container.Manager {
         public void ConfigureServices(IServiceCollection services)
         {
             // TODO: proper DI, e.g. Autofac
+            services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
+            services.AddSingleton<StatusEndpoint>();
+
             var authorizationToken = Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_AUTHORIZATION_TOKEN")
                 ?? throw new Exception("Required environment variable SHARPLAB_CONTAINER_HOST_AUTHORIZATION_TOKEN was not provided.");
             services.AddSingleton(new ExecutionEndpointSettings(authorizationToken));
@@ -61,14 +64,8 @@ namespace SharpLab.Container.Manager {
             app.UseRouting();
 
             app.UseEndpoints(endpoints => {
-                var okBytes = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes("OK"));
-                endpoints.MapGet("/status", context => {
-                    context.Response.ContentType = "text/plain";
-                    return context.Response.BodyWriter.WriteAsync(okBytes).AsTask();
-                });
-
-                var endpoint = app.ApplicationServices.GetRequiredService<ExecutionEndpoint>();
-                endpoints.MapPost("/", endpoint.ExecuteAsync);
+                endpoints.MapGet("/status", app.ApplicationServices.GetRequiredService<StatusEndpoint>().ExecuteAsync);
+                endpoints.MapPost("/", app.ApplicationServices.GetRequiredService<ExecutionEndpoint>().ExecuteAsync);
             });
         }
     }
