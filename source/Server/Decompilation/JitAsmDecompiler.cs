@@ -8,13 +8,14 @@ using Iced.Intel;
 using JetBrains.Annotations;
 using Microsoft.Diagnostics.Runtime;
 using SharpLab.Runtime;
+using SharpLab.Runtime.Internal;
 using SharpLab.Server.Common;
 using SharpLab.Server.Decompilation.Internal;
 
 namespace SharpLab.Server.Decompilation {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class JitAsmDecompiler : IDecompiler {
-        private static readonly FormatterOptions FormatterOptions = new FormatterOptions {
+        private static readonly FormatterOptions FormatterOptions = new() {
             HexPrefix = "0x",
             HexSuffix = null,
             UppercaseHex = false,
@@ -32,24 +33,22 @@ namespace SharpLab.Server.Decompilation {
             Argument.NotNull(nameof(streams), streams);
             Argument.NotNull(nameof(codeWriter), codeWriter);
 
-            using (var loadContext = new CustomAssemblyLoadContext(shouldShareAssembly: _ => true)) {
-                var assembly = loadContext.LoadFromStream(streams.AssemblyStream);
-                ValidateStaticConstructors(assembly);
+            using var loadContext = new CustomAssemblyLoadContext(shouldShareAssembly: _ => true); var assembly = loadContext.LoadFromStream(streams.AssemblyStream);
+            ValidateStaticConstructors(assembly);
 
-                using var runtimeLease = _runtimePool.GetOrCreate();
-                var runtime = runtimeLease.Object;
+            using var runtimeLease = _runtimePool.GetOrCreate();
+            var runtime = runtimeLease.Object;
 
-                runtime.Flush();
-                var context = new JitWriteContext(codeWriter, runtime);
+            runtime.Flush();
+            var context = new JitWriteContext(codeWriter, runtime);
 
-                WriteJitInfo(runtime.ClrInfo, codeWriter);
-                WriteProfilerState(codeWriter);
+            WriteJitInfo(runtime.ClrInfo, codeWriter);
+            WriteProfilerState(codeWriter);
 
-                foreach (var type in assembly.DefinedTypes) {
-                    if (type.IsNested)
-                        continue; // it's easier to handle nested generic types recursively, so we suppress all nested for consistency
-                    DisassembleAndWriteMembers(context, type);
-                }
+            foreach (var type in assembly.DefinedTypes) {
+                if (type.IsNested)
+                    continue; // it's easier to handle nested generic types recursively, so we suppress all nested for consistency
+                DisassembleAndWriteMembers(context, type);
             }
         }
 
@@ -104,14 +103,14 @@ namespace SharpLab.Server.Decompilation {
 
                 var fullArgumentTypes = (parentArgumentTypes ?? ImmutableArray<Type>.Empty)
                     .AddRange(attribute.ArgumentTypes);
-                var genericInstance = type.MakeGenericType(fullArgumentTypes.ToArray());
+                var genericInstance = ApplyJitGenericAttribute<Type>(type, fullArgumentTypes.ToArray(), static (t, a) => t.MakeGenericType(a));
                 DisassembleAndWriteMembers(context, genericInstance.GetTypeInfo(), fullArgumentTypes);
             }
             if (hadAttribute)
                 return true;
 
             if (parentArgumentTypes != null) {
-                var genericInstance = type.MakeGenericType(parentArgumentTypes.Value.ToArray());
+                var genericInstance = ApplyJitGenericAttribute<Type>(type, parentArgumentTypes.Value.ToArray(), static (t, a) => t.MakeGenericType(a));
                 DisassembleAndWriteMembers(context, genericInstance.GetTypeInfo(), parentArgumentTypes);
                 return true;
             }
@@ -143,7 +142,7 @@ namespace SharpLab.Server.Decompilation {
             var hasAttribute = false;
             foreach (var attribute in method.GetCustomAttributes<JitGenericAttribute>()) {
                 hasAttribute = true;
-                var genericInstance = method.MakeGenericMethod(attribute.ArgumentTypes);
+                var genericInstance = ApplyJitGenericAttribute(method, attribute.ArgumentTypes, static (m, a) => m.MakeGenericMethod(a));
                 DisassembleAndWriteSimpleMethod(context, genericInstance);
             }
             if (!hasAttribute)
@@ -221,13 +220,24 @@ namespace SharpLab.Server.Decompilation {
             writer.WriteLine("    ; Example: [JitGeneric(typeof(int)), JitGeneric(typeof(string))] void M<T>() { ... }.");
         }
 
-        private static void WriteSignatureFromReflection(JitWriteContext context, MethodBase method) {
+        private void WriteSignatureFromReflection(JitWriteContext context, MethodBase method) {
             context.Writer.WriteLine();
 
             var md = (ulong)method.MethodHandle.Value.ToInt64();
             var signature = context.Runtime.DacLibrary.SOSDacInterface.GetMethodDescName(md);
 
             context.Writer.WriteLine(signature ?? "Unknown Method");
+        }
+
+        private TMember ApplyJitGenericAttribute<TMember>(TMember definition, Type[] arguments, Func<TMember, Type[], TMember> makeGeneric)
+            where TMember : MemberInfo
+        {
+            try {
+                return makeGeneric(definition, arguments);
+            }
+            catch (ArgumentException ex) {
+                throw new JitGenericAttributeException($"Failed to apply JitGenericAttribute to {definition.Name}: {ex.Message}", ex);
+            }
         }
 
         private HotColdRegions? FindNonEmptyHotColdInfo(ClrMethod? method) {

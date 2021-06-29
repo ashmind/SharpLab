@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 
 namespace SharpLab.Runtime {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true, Inherited = false)]
-    public sealed class JitGenericAttribute : Attribute {
+    public class JitGenericAttribute : Attribute {
         public JitGenericAttribute(params Type[] argumentTypes) {
             ArgumentTypes = argumentTypes;
         }

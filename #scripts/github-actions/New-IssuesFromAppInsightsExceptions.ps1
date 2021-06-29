@@ -21,7 +21,11 @@ $query = "
     | where client_Type != 'Browser'
     | where type !startswith 'Unbreakable'
     | where not (type == 'System.NotSupportedException' and assembly startswith 'SharpLab')
-    | where type !in ('MirrorSharp.Advanced.EarlyAccess.RoslynSourceTextGuardException', 'MirrorSharp.Advanced.EarlyAccess.RoslynCompilationGuardException')
+    | where type !in (
+        'MirrorSharp.Advanced.EarlyAccess.RoslynSourceTextGuardException',
+        'MirrorSharp.Advanced.EarlyAccess.RoslynCompilationGuardException',
+        'SharpLab.Runtime.Internal.JitGenericAttributeException'
+      )
 
     | extend containerType = iif(type == 'System.Exception', extract('Container host repor?ted an error:[\\r\\n]*([^:]+)', 1, outerMessage), '')
     | where containerType != 'SharpLab.Container.Manager.Internal.ContainerAllocationException'
