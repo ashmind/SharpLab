@@ -26,15 +26,17 @@ $query = "
         'MirrorSharp.Advanced.EarlyAccess.RoslynCompilationGuardException',
         'SharpLab.Runtime.Internal.JitGenericAttributeException'
       )
-
     | extend containerType = iif(type == 'System.Exception', extract('Container host repor?ted an error:[\\r\\n]*([^:]+)', 1, outerMessage), '')
     | where containerType != 'SharpLab.Container.Manager.Internal.ContainerAllocationException'
     | extend containerMethod = iif(isnotempty(containerType), extract('[\\r\\n]+\\s*at ([^(]+)', 1, outerMessage), '')
-    | project itemCount, type=coalesce(containerType, type), method=coalesce(containerMethod, method), query=strcat(
-        'exceptions\n  | where type == \'', type, '\'\n  | where method == \'', method, '\'',
-        iif(isnotempty(containerType), strcat('\n  | where outerMessage contains \'', containerType, '\''), '')
-      )
-
+    | project itemCount,
+              type=coalesce(containerType, type),
+              method=iif(type != 'System.InvalidProgramException', coalesce(containerMethod, method), '<user code>'),
+              query=strcat(
+                'exceptions\n  | where type == \'', type,
+                iif(type != 'System.InvalidProgramException', strcat('\'\n  | where method == \'', method, '\''), ''),
+                iif(isnotempty(containerType), strcat('\n  | where outerMessage contains \'', containerType, '\''), '')
+              )
     | summarize _count=sum(itemCount) by type, method, query
     | sort by _count desc
     | take 50
