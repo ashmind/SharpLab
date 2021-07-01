@@ -29,7 +29,9 @@ namespace SharpLab.Server.Integration.Azure {
         public void Exception(Exception exception, IWorkSession? session, IDictionary<string, string>? extras = null) {
             var telemetry = new ExceptionTelemetry(exception) {
                 Properties = {
-                    { "Code", session?.GetText() }
+                    { "Code", session?.GetText() },
+                    { "Language", session?.LanguageName },
+                    { "Target", session?.GetTargetName() },
                 }
             };
             AddDefaultDetails(telemetry, session, extras);
