@@ -63,8 +63,12 @@ namespace SharpLab.Server.Execution {
                 PerformanceLog.Checkpoint("Executor.Rewrite.Flow.End");
 
                 AssemblyLog.Log("2.WithFlow", definition);
-                if (definition.EntryPoint == null)
-                    throw new ArgumentException("Failed to find an entry point (Main?) in assembly.", nameof(streams));
+                if (definition.EntryPoint == null) {
+                    Output.Reset();
+                    Flow.Reset();
+                    Output.WriteWarning("Could not find any code to run (either a Main method or any top level code).");
+                    return new ExecutionResult(Output.Stream, Flow.Steps);
+                }
 
                 var guardToken = AssemblyGuard.Rewrite(definition, _guardSettings);
                 using (var rewrittenStream = _memoryStreamManager.GetStream()) {

@@ -48,8 +48,10 @@ namespace SharpLab.Container.Execution {
             try {
                 var assembly = context.LoadFromStream(new MemoryStream(assemblyBytes));
                 var main = assembly.EntryPoint;
-                if (main == null)
-                    throw new ArgumentException("Assembly entry point was not found.", nameof(assemblyBytes));
+                if (main == null) {
+                    Output.WriteWarning("Could not find any code to run (either a Main method or any top level code).");
+                    return;
+                }
 
                 var args = main.GetParameters().Length > 0 ? EmptyMainArguments : null;
                 main.Invoke(null, args);

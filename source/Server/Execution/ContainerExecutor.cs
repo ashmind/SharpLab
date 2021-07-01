@@ -51,9 +51,6 @@ namespace SharpLab.Server.Execution {
                 rewriter.Rewrite(definition, session);
             }
 
-            if (definition.EntryPoint == null)
-                throw new ArgumentException("Failed to find an entry point (Main?) in assembly.", nameof(streams));
-
             using var rewrittenStream = _memoryStreamManager.GetStream();
             definition.Write(rewrittenStream);
             rewrittenStream.Seek(0, SeekOrigin.Begin);
