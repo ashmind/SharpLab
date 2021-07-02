@@ -23,13 +23,12 @@ namespace SharpLab.Tests.Internal {
             if (safeTestName.Length > 100)
                 safeTestName = safeTestName.Substring(0, 100) + "-" + safeTestName.GetHashCode();
 
-            var testPath = Path.Combine(
+            var basePath = Path.Combine(
                 AppContext.BaseDirectory, "assembly-log",
-                testType.Name, safeTestName,
-                "{0}.dll"
+                testType.Name, safeTestName
             );
             #if DEBUG
-            AssemblyLog.Enable(testPath);
+            AssemblyLog.Enable(stepName => Path.Combine(basePath, stepName));
             #endif
         }
     }

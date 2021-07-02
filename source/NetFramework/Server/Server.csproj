@@ -37,7 +37,7 @@
     <PackageReference Include="MirrorSharp.FSharp" Version="0.21.0" />
     <PackageReference Include="MirrorSharp.Owin" Version="2.3.3" />
     <PackageReference Include="MirrorSharp.VisualBasic" Version="2.1.1" />
-    <PackageReference Include="Mono.Cecil" Version="0.10.0" />
+    <PackageReference Include="Mono.Cecil" Version="0.11.4" />
     <PackageReference Include="SharpDisasm" Version="1.1.11" />
     <PackageReference Include="SharpYaml" Version="1.6.2" />
     <PackageReference Include="System.IO.Pipelines" Version="5.0.1" />
