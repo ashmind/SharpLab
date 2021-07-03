@@ -23,7 +23,7 @@ $query = "
     | where client_Type != 'Browser'
     | where type !startswith 'Unbreakable'
     | where not (type == 'System.NotSupportedException' and assembly startswith 'SharpLab')
-    | where type !in (
+    | where outerType !in (
         'MirrorSharp.Advanced.EarlyAccess.RoslynSourceTextGuardException',
         'MirrorSharp.Advanced.EarlyAccess.RoslynCompilationGuardException',
         'SharpLab.Runtime.Internal.JitGenericAttributeException'
