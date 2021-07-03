@@ -1,3 +1,5 @@
+#Requires -Version 6
+
 Set-StrictMode -Version 3
 $ErrorActionPreference = 'Stop'
 
@@ -30,6 +32,7 @@ $query = "
     | where containerType != 'SharpLab.Container.Manager.Internal.ContainerAllocationException'
     | extend containerMethod = iif(isnotempty(containerType), extract('[\\r\\n]+\\s*at ([^(]+)', 1, outerMessage), '')
     | project itemCount,
+              app=tostring(customDimensions['Web App']),
               type=coalesce(containerType, type),
               method=iif(type != 'System.InvalidProgramException', coalesce(containerMethod, method), '<user code>'),
               query=strcat(
@@ -37,9 +40,9 @@ $query = "
                 iif(type != 'System.InvalidProgramException', strcat('\'\n  | where method == \'', method, '\''), ''),
                 iif(isnotempty(containerType), strcat('\n  | where outerMessage contains \'', containerType, '\''), '')
               )
-    | summarize _count=sum(itemCount) by type, method, query
-    | sort by _count desc
-    | take 50
+    | summarize _count=sum(itemCount) by type, method, query, app
+    | summarize counts=make_list(pack('app', app, 'count', _count), 100) by type, method, query
+    | take 150
 " -replace '\s+',' '
 
 # Cannot use AZ PowerShell due to login performance issue
@@ -55,7 +58,7 @@ $exceptions = (Invoke-JsonCommand {
 
 Write-Host 'Getting current issues from GitHub'
 $issues = @(Invoke-JsonCommand {
-  gh issue list --label $ExceptionLabel --json title,url,number --state all --limit 500
+    gh issue list --label $ExceptionLabel --json title,url,number --state all --limit 500
 })
 
 Write-Host 'Processing exceptions'
@@ -63,7 +66,7 @@ $exceptions | % {
     $exceptionType = $_[0]
     $atMethod = $_[1]
     $query = $_[2]
-    $count = $_[3]
+    $counts = (ConvertFrom-Json $_[3])
 
     $title = "$exceptionType at $atMethod"
     Write-Host "  $title"
@@ -91,8 +94,12 @@ $exceptions | % {
         $issueNumber = $existing.number
     }
 
+    $comment = "| App | Count (last 24h) |`n| ------------- | ------------- |`n" +
+        (($counts | Sort-Object 'app' | % { "| $($_.app) | $($_.count) |" }) -join "`n") +
+        "`n| Total | $(($counts | Measure-Object 'count' -Sum).Sum) |"
+
     Write-Host "    - commenting"
-    $commentUrl = (gh issue comment $issueNumber --body "Count (last 24h): $count")
+    $commentUrl = (gh issue comment $issueNumber --body $comment)
     if ($LastExitCode -ne 0) {
         Write-Error "Command exited with code $LastExitCode"
     }
