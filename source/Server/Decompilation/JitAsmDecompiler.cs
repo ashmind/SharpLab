@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using Iced.Intel;
 using JetBrains.Annotations;
 using Microsoft.Diagnostics.Runtime;
+using Microsoft.Diagnostics.Runtime.DacInterface;
 using SharpLab.Runtime;
 using SharpLab.Runtime.Internal;
 using SharpLab.Server.Common;
@@ -39,7 +40,7 @@ namespace SharpLab.Server.Decompilation {
             using var runtimeLease = _runtimePool.GetOrCreate();
             var runtime = runtimeLease.Object;
 
-            runtime.Flush();
+            runtime.FlushCachedData();
             var context = new JitWriteContext(codeWriter, runtime);
 
             WriteJitInfo(runtime.ClrInfo, codeWriter);
@@ -152,46 +153,28 @@ namespace SharpLab.Server.Decompilation {
         private void DisassembleAndWriteSimpleMethod(JitWriteContext context, MethodBase method) {
             var handle = method.MethodHandle;
             RuntimeHelpers.PrepareMethod(handle);
-            
-            var clrMethod = context.Runtime.GetMethodByHandle((ulong)handle.Value.ToInt64());
-            var regions = FindNonEmptyHotColdInfo(clrMethod);
 
-            if (clrMethod == null || regions == null) {
-                context.Runtime.Flush();
-                clrMethod = context.Runtime.GetMethodByHandle((ulong)handle.Value.ToInt64());
-                regions = FindNonEmptyHotColdInfo(clrMethod);
-            }
-
-            if (clrMethod == null || regions == null) {
-                var address = (ulong)handle.GetFunctionPointer().ToInt64();
-                clrMethod = context.Runtime.GetMethodByAddress(address);
-                regions = FindNonEmptyHotColdInfo(clrMethod);
-            }
+            var clrMethodData = FindJitCompiledMethod(context, method);
 
             var writer = context.Writer;
-            if (clrMethod != null) {
+            if (clrMethodData?.Signature is {} signature) {
                 writer.WriteLine();
-                writer.WriteLine(clrMethod.GetFullSignature());
+                writer.WriteLine(signature);
             }
             else {
                 WriteSignatureFromReflection(context, method);
             }
 
-            if (regions == null) {
-                if (method.IsGenericMethod || (method.DeclaringType?.IsGenericType ?? false)) {
-                    writer.WriteLine("    ; Failed to find HotColdInfo for generic method (reference types?).");
-                    writer.WriteLine("    ; If you know a solution, please comment at https://github.com/ashmind/SharpLab/issues/99.");
-                    return;
-                }
-                writer.WriteLine("    ; Failed to find HotColdRegions — please report at https://github.com/ashmind/SharpLab/issues.");
+            if (clrMethodData == null) {
+                writer.WriteLine("    ; Failed to find JIT compiled data — please report at https://github.com/ashmind/SharpLab/issues.");
                 return;
             }
 
-            var methodAddress = regions.HotStart;
-            var methodLength = regions.HotSize;
+            var methodAddress = clrMethodData.Value.MethodAddress;
+            var methodLength = clrMethodData.Value.MethodSize;
 
             var reader = new MemoryCodeReader(new IntPtr(unchecked((long)methodAddress)), methodLength);
-            var decoder = Decoder.Create(MapArchitectureToBitness(context.Runtime.DataTarget.Architecture), reader);
+            var decoder = Decoder.Create(MapArchitectureToBitness(context.Runtime.DataTarget!.DataReader.Architecture), reader);
 
             var instructions = new InstructionList();
             decoder.IP = methodAddress;
@@ -210,6 +193,75 @@ namespace SharpLab.Server.Decompilation {
                 writer.Write(": ");
                 writer.WriteLine(output.ToStringAndReset());
             }
+        }
+
+        private ClrMethodData? FindJitCompiledMethod(JitWriteContext context, MethodBase method) {
+            context.Runtime.FlushCachedData();
+            var sos = context.Runtime.DacLibrary.SOSDacInterface;
+
+            var handle = method.MethodHandle;
+            var methodDescAddress = unchecked((ulong)handle.Value.ToInt64());
+            if (!sos.GetMethodDescData(methodDescAddress, 0, out var methodDesc))
+                return null;
+
+            return GetJitCompiledMethodByMethodDescIfValid(sos, methodDesc)
+                ?? FindJitCompiledMethodInMethodTable(sos, methodDesc);
+        }
+
+        private ClrMethodData? GetJitCompiledMethodByMethodDescIfValid(SOSDac sos, MethodDescData methodDesc) {
+            // https://github.com/microsoft/clrmd/issues/935
+            var codeHeaderAddress = methodDesc.HasNativeCode != 0
+                ? (ulong)methodDesc.NativeCodeAddr
+                : sos.GetMethodTableSlot(methodDesc.MethodTable, methodDesc.SlotNumber);
+
+            if (codeHeaderAddress == unchecked((ulong)-1))
+                return null;
+
+            if (!sos.GetCodeHeaderData(codeHeaderAddress, out var codeHeader))
+                return null;
+
+            return GetJitCompiledMethodByCodeHeaderIfValid(sos, codeHeader);
+        }
+
+        private ClrMethodData? GetJitCompiledMethodByCodeHeaderIfValid(SOSDac sos, CodeHeaderData codeHeader) {
+            if (codeHeader.MethodStart.Value == -1 || codeHeader.HotRegionSize == 0)
+                return null;
+
+            return new(
+                sos.GetMethodDescName(codeHeader.MethodDesc),
+                unchecked((ulong)codeHeader.MethodStart.Value),
+                codeHeader.HotRegionSize
+            );
+        }
+
+        private ClrMethodData? FindJitCompiledMethodInMethodTable(SOSDac sos, MethodDescData originalMethodDesc) {
+            // I can't really explain this, but it seems that some methods 
+            // are present multiple times in the same type -- one compiled
+            // and one not compiled.
+
+            if (!sos.GetMethodTableData(originalMethodDesc.MethodTable, out var methodTable))
+                return null;
+
+            ClrMethodData? methodData = null;
+            for (var i = 0u; i < methodTable.NumMethods; i++) {
+                if (i == originalMethodDesc.SlotNumber)
+                    continue;
+
+                var slot = sos.GetMethodTableSlot(originalMethodDesc.MethodTable, i);
+                if (!sos.GetCodeHeaderData(slot, out var candidateCodeHeader))
+                    continue;
+
+                if (!sos.GetMethodDescData(candidateCodeHeader.MethodDesc, 0, out var candidateMethodDesc))
+                    continue;
+
+                if (candidateMethodDesc.MDToken != originalMethodDesc.MDToken)
+                    continue;
+
+                methodData = GetJitCompiledMethodByCodeHeaderIfValid(sos, candidateCodeHeader);
+                if (methodData != null)
+                    break;
+            }
+            return methodData;
         }
 
         private void WriteIgnoredOpenGeneric(JitWriteContext context, MethodBase method) {
@@ -240,28 +292,6 @@ namespace SharpLab.Server.Decompilation {
             }
         }
 
-        private HotColdRegions? FindNonEmptyHotColdInfo(ClrMethod? method) {
-            if (method == null)
-                return null;
-
-            // I can't really explain this, but it seems that some methods 
-            // are present multiple times in the same type -- one compiled
-            // and one not compiled. A bug in clrmd?
-            if (method.HotColdInfo.HotSize > 0)
-                return method.HotColdInfo;
-
-            if (method.Type == null)
-                return null;
-
-            var methodSignature = method.GetFullSignature();
-            foreach (var other in method.Type.Methods) {
-                if (other.MetadataToken == method.MetadataToken && other.GetFullSignature() == methodSignature && other.HotColdInfo.HotSize > 0)
-                    return other.HotColdInfo;
-            }
-
-            return null;
-        }
-
         private int MapArchitectureToBitness(Architecture architecture) => architecture switch
         {
             Architecture.Amd64 => 64,
@@ -277,6 +307,18 @@ namespace SharpLab.Server.Decompilation {
             
             public TextWriter Writer { get; }
             public ClrRuntime Runtime { get; }
+        }
+
+        private readonly struct ClrMethodData {
+            public ClrMethodData(string? signature, ulong methodAddress, uint methodSize) {
+                Signature = signature;
+                MethodAddress = methodAddress;
+                MethodSize = methodSize;
+            }
+
+            public string? Signature { get; }
+            public ulong MethodAddress { get; }
+            public uint MethodSize { get; }
         }
     }
 }

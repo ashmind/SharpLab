@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using Microsoft.Diagnostics.Runtime;
 using SharpLab.Runtime.Internal;
 
@@ -12,14 +11,14 @@ public static partial class Inspect {
         if (@object == null)
             throw new Exception($"Inspect.Heap can't inspect null, as it does not point to a valid location on the heap.");
 
-        var runtme = GetRuntime();
+        var runtime = GetRuntime();
 
         var address = (ulong)GetHeapPointer(@object);
-        var objectType = runtme.Heap.GetObjectType(address);
+        var objectType = runtime.Heap.GetObjectType(address);
         if (objectType == null)
             throw new Exception($"Failed to find object type for address 0x{address:X}.");
 
-        var objectSize = objectType.GetSize(address);
+        var objectSize = runtime.Heap.GetObjectSize(address, objectType);
 
         // Move by one pointer size back -- Object Header,
         // see https://blogs.msdn.microsoft.com/seteplia/2017/05/26/managed-object-internals-part-1-layout/
@@ -38,7 +37,7 @@ public static partial class Inspect {
 
     private static byte[] ReadMemory(ulong address, ulong size) {
         var data = new byte[size];
-        GetRuntime().ReadMemory(address, data, (int)size, out var _);
+        GetRuntime().DataTarget!.DataReader.Read(address, data);
         return data;
     }
 
@@ -56,8 +55,8 @@ public static partial class Inspect {
 
         MemoryInspectionLabel[] labels;
         if (type.IsValueType && !type.IsPrimitive) {
-            var runtme = GetRuntime();
-            var runtimeType = runtme.Heap.GetTypeByMethodTable((ulong)type.TypeHandle.Value);
+            var runtime = GetRuntime();
+            var runtimeType = runtime.GetTypeByMethodTable((ulong)type.TypeHandle.Value)!;
             labels = CreateLabelsFromType(runtimeType, address, address + (uint)IntPtr.Size);
         }
         else {
@@ -78,7 +77,7 @@ public static partial class Inspect {
     ) {
         MemoryInspectionLabel[] labels;
         if (objectType.IsArray) {
-            var length = objectType.GetArrayLength(objectAddress);
+            var length = objectType.Heap.GetObject(objectAddress).AsArray().Length;
             labels = new MemoryInspectionLabel[first.index + 1 + length];
             labels[first.index] = new MemoryInspectionLabel("length", first.offset, IntPtr.Size);
             for (var i = 0; i < length; i++) {
@@ -87,39 +86,32 @@ public static partial class Inspect {
                 labels[first.index + 1 + i] = new MemoryInspectionLabel(
                     i.ToString(),
                     offset,
-                    objectType.ElementSize,
-                    GetNestedLabels(objectType.ComponentType, elementAddress, offsetBase)
+                    objectType.ComponentSize,
+                    GetNestedLabels(objectType.ComponentType!, elementAddress, offsetBase)
                 );
             }
             return labels;
         }
 
         var fields = objectType.Fields;
-        var fieldCount = fields.Count;
+        var fieldCount = fields.Length;
         labels = new MemoryInspectionLabel[first.index + fieldCount];
         for (var i = 0; i < fieldCount; i++) {
             var field = fields[i];
             var fieldAddress = field.GetAddress(objectAddress);
             var offset = (int)(fieldAddress - offsetBase);
             labels[first.index + i] = new MemoryInspectionLabel(
-                field.Name,
+                field.Name!,
                 offset,
-                GetCorrectFieldSize(field),
-                GetNestedLabels(field.Type, fieldAddress, offsetBase)
+                field.Size,
+                GetNestedLabels(field.Type!, fieldAddress, offsetBase)
             );
         }
         return labels;
     }
 
-    private static int GetCorrectFieldSize(ClrInstanceField field) {
-        // https://github.com/Microsoft/clrmd/issues/101
-        return !field.IsValueClass
-             ? field.Size
-             : (field.Size - (2 * IntPtr.Size));
-    }
-
     private static IReadOnlyList<MemoryInspectionLabel> GetNestedLabels(ClrType type, ulong valueAddress, ulong offsetBase) {
-        if (!type.IsValueClass)
+        if (!type.IsValueType)
             return Array.Empty<MemoryInspectionLabel>();
 
         return CreateLabelsFromType(type, valueAddress, offsetBase + (uint)IntPtr.Size);
@@ -128,11 +120,8 @@ public static partial class Inspect {
     private static ClrRuntime? _runtime;
     private static ClrRuntime GetRuntime() {
         if (_runtime == null) {
-            var dataTarget = DataTarget.AttachToProcess(InspectionSettings.CurrentProcessId, uint.MaxValue, AttachFlag.Passive);
-            var clrFlavor = RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.OrdinalIgnoreCase)
-                ? ClrFlavor.Core
-                : ClrFlavor.Desktop;
-            _runtime = dataTarget.ClrVersions.Single(c => c.Flavor == clrFlavor).CreateRuntime();
+            var dataTarget = DataTarget.AttachToProcess(InspectionSettings.CurrentProcessId, suspend: false);
+            _runtime = dataTarget.ClrVersions.Single(c => c.Flavor == ClrFlavor.Desktop).CreateRuntime();
         }
         return _runtime;
     }

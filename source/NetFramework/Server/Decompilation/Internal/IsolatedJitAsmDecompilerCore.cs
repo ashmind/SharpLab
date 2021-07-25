@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -105,23 +104,6 @@ namespace SharpLab.Server.Decompilation.Internal {
             RuntimeHelpers.PrepareMethod(handle);
             var isGeneric = method.IsGenericMethod || (method.DeclaringType?.IsGenericType ?? false);
             return new MethodJitResult(method.MethodHandle, isGeneric ? MethodJitStatus.SuccessGeneric : MethodJitStatus.Success);
-        }
-
-        private static byte[] ReadAllBytes(Stream stream) {
-            byte[] bytes;
-            if (stream is MemoryStream memoryStream) {
-                bytes = memoryStream.GetBuffer();
-                if (bytes.Length != memoryStream.Length)
-                    bytes = memoryStream.ToArray();
-                return bytes;
-            }
-
-            // we can't use ArrayPool here as this method is called in a temp AppDomain
-            bytes = new byte[stream.Length];
-            if (stream.Read(bytes, 0, (int)stream.Length) != bytes.Length)
-                throw new NotSupportedException();
-
-            return bytes;
         }
     }
 }

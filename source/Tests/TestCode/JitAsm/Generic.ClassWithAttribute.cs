@@ -9,9 +9,9 @@ static class C<T> {
     }
 }
 
-#=>
+/* asm
 
-; Core CLR v<IGNORE> on amd64
+; Core CLR <IGNORE> on amd64
 
 C`1[[System.Int32, System.Private.CoreLib]].M()
     L0000: xor eax, eax
@@ -28,3 +28,5 @@ C`1[[System.Decimal, System.Private.CoreLib]].M()
 C`1[[System.__Canon, System.Private.CoreLib]].M()
     L0000: xor eax, eax
     L0002: ret
+
+*/

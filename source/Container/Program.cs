@@ -55,7 +55,7 @@ namespace SharpLab.Container {
             RuntimeServices.InspectionWriter = new InspectionWriter(stdoutWriter);
             RuntimeServices.FlowWriter = flowWriter;
             RuntimeServices.MemoryBytesInspector = new MemoryBytesInspector(new Pool<ClrRuntime>(() => {
-                var dataTarget = DataTarget.AttachToProcess(Current.ProcessId, uint.MaxValue, AttachFlag.Passive);
+                var dataTarget = DataTarget.AttachToProcess(Current.ProcessId, suspend: false);
                 return dataTarget.ClrVersions.Single(c => c.Flavor == ClrFlavor.Core).CreateRuntime();
             }));
             RuntimeServices.MemoryGraphBuilderFactory = argumentNames => new MemoryGraphBuilder(argumentNames, RuntimeServices.ValuePresenter);

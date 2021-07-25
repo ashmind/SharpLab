@@ -10,9 +10,9 @@ static class C<T> {
     }
 }
 
-#=>
+/* asm
 
-; Core CLR v<IGNORE> on amd64
+; Core CLR <IGNORE> on amd64
 
 C`1+N`1[[System.Int32, System.Private.CoreLib],[System.Int32, System.Private.CoreLib]].M(Int32)
     L0000: xor eax, eax
@@ -29,3 +29,5 @@ C`1+N`1[[System.__Canon, System.Private.CoreLib],[System.Int32, System.Private.C
 C`1+N`1[[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]].M(System.__Canon)
     L0000: xor eax, eax
     L0002: ret
+
+*/

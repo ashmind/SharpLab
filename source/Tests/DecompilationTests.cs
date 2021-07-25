@@ -134,14 +134,14 @@ namespace SharpLab.Tests {
         [InlineData("JitAsm.Nested.Simple.cs2asm")]
         [InlineData("JitAsm.Generic.Open.Multiple.cs2asm")]
         [InlineData("JitAsm.Generic.MethodWithAttribute.cs2asm")]
-        [InlineData("JitAsm.Generic.ClassWithAttribute.cs2asm")]
+        [InlineData("JitAsm.Generic.ClassWithAttribute.cs")]
         #if !NETCOREAPP
         // TODO: Diagnose later
         // [InlineData("JitAsm.Generic.MethodWithAttribute.fs2asm")]
         #endif
-        [InlineData("JitAsm.Generic.Nested.AttributeOnTop.cs2asm")]
-        [InlineData("JitAsm.Generic.Nested.AttributeOnNested.cs2asm")]
-        [InlineData("JitAsm.Generic.Nested.AttributeOnBoth.cs2asm")]
+        [InlineData("JitAsm.Generic.Nested.AttributeOnTop.cs")]
+        [InlineData("JitAsm.Generic.Nested.AttributeOnNested.cs")]
+        [InlineData("JitAsm.Generic.Nested.AttributeOnBoth.cs")]
         [InlineData("JitAsm.Vectors.Avx2.cs2asm")]
         [InlineData("JitAsm.Math.FusedMultiplyAdd.Fma.cs2asm")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForJitAsm(string resourceName) {

@@ -20,7 +20,7 @@ namespace SharpLab.Server.Execution {
                    .SingleInstance();
 
             builder.Register(_ => {
-                var dataTarget = DataTarget.AttachToProcess(Current.ProcessId, uint.MaxValue, AttachFlag.Passive);
+                var dataTarget = DataTarget.AttachToProcess(Current.ProcessId, suspend: false);
                 return dataTarget.ClrVersions.Single(c => c.Flavor == ClrFlavor.Core).CreateRuntime();
             }).SingleInstance();
 

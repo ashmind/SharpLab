@@ -8,9 +8,9 @@ static class C {
     }
 }
 
-#=>
+/* asm
 
-; Core CLR v<IGNORE> on amd64
+; Core CLR <IGNORE> on amd64
 
 C+N`1[[System.Int32, System.Private.CoreLib]].get_M()
     L0000: xor eax, eax
@@ -19,3 +19,5 @@ C+N`1[[System.Int32, System.Private.CoreLib]].get_M()
 C+N`1[[System.__Canon, System.Private.CoreLib]].get_M()
     L0000: xor eax, eax
     L0002: ret
+
+*/

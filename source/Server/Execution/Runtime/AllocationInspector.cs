@@ -7,6 +7,9 @@ using SharpLab.Server.Common;
 
 namespace SharpLab.Server.Execution.Runtime {
     public class AllocationInspector : IAllocationInspector {
+        private const string NullTypeName = "<unknown type>";
+        private static readonly SimpleInspection NullType = new(NullTypeName);
+
         private readonly IValuePresenter _valuePresenter;
         private readonly Pool<ClrRuntime> _runtimePool;
 
@@ -47,13 +50,12 @@ namespace SharpLab.Server.Execution.Runtime {
             if (result == ProfilerNativeMethods.AllocationMonitoringResult.GC)
                 Output.WriteWarning("Garbage collection has happened while retrieving allocations. Please try again.");
 
-            if (allocationCount == 0) {
+            if (allocationCount == 0)
                 return new SimpleInspection("Allocations", "None");
-            }
 
             using var runtimeLease = _runtimePool.GetOrCreate();
             var runtime = runtimeLease.Object;
-            runtime.Flush();
+            runtime.FlushCachedData();
 
             var inspections = new List<IInspection>(allocationCount);
             foreach (var allocationPointer in new Span<IntPtr>(allocations, allocationCount)) {
@@ -71,8 +73,8 @@ namespace SharpLab.Server.Execution.Runtime {
 
         private SimpleInspection InspectClrObject(ClrObject value) => InspectAddress(value.Type, value.Address);
 
-        private unsafe SimpleInspection InspectAddress(ClrType type, ulong address) {
-            return type.ElementType switch
+        private unsafe SimpleInspection InspectAddress(ClrType? type, ulong address) {
+            return type?.ElementType switch
             {
                 ClrElementType.String => InspectString(address),
                 ClrElementType.Int8 => InspectPrimitive<sbyte>(address),
@@ -103,36 +105,63 @@ namespace SharpLab.Server.Execution.Runtime {
         }
 
         private unsafe SimpleInspection InspectPrimitive<T>(ulong address)
-            where T : unmanaged {
+            where T : unmanaged
+        {
             var headerSize = (uint)IntPtr.Size;
             var valueStartAddress = address + headerSize;
             return new SimpleInspection(FormatBoxedName(typeof(T).Name), (*(T*)valueStartAddress).ToString()!);
         }
 
-        private unsafe SimpleInspection InspectArray(ClrType type, ulong address) {
-            var componentType = type.ComponentType;
+        private SimpleInspection InspectArray(ClrType type, ulong address) {
+            var componentType = type.ComponentType!;
             if (componentType.IsObjectReference || !componentType.IsPrimitive)
                 return InspectOther(type);
 
-            var length = type.GetArrayLength(address);
-            var builder = new StringBuilder();
-            _valuePresenter.AppendEnumerableTo(
-                builder, ArrayAsEnumerable(type, address, length),
-                depth: 1,
-                new ValuePresenterLimits(maxEnumerableItemCount: 10, maxValueLength: 10)
-            );
+            var array = type.Heap.GetObject(address).AsArray();
 
-            var title = componentType.Name.Replace("System.", "") + "[" + length + "]";
-            return new SimpleInspection(title, builder);
-        }
+            SimpleInspection InspectArrayOf<T>()
+                where T: unmanaged
+            {
+                var builder = new StringBuilder();
+                var values = array.ReadValues<T>(0, array.Length);
+                if (values != null) {
+                    _valuePresenter.AppendEnumerableTo(
+                        builder, values,
+                        depth: 1,
+                        new ValuePresenterLimits(maxEnumerableItemCount: 10, maxValueLength: 10)
+                    );
+                }
+                else {
+                    builder.Append("<unknown array values>");
+                }
 
-        private IEnumerable<object> ArrayAsEnumerable(ClrType arrayType, ulong address, int length) {
-            for (var i = 0; i < length; i++) {
-                yield return arrayType.GetArrayElementValue(address, i);
+                var title = (componentType.Name?.Replace("System.", "") ?? NullTypeName) + "[" + array.Length + "]";
+                return new SimpleInspection(title, builder);
             }
+
+            return componentType.ElementType switch {
+                ClrElementType.Int8 => InspectArrayOf<sbyte>(),
+                ClrElementType.Int16 => InspectArrayOf<short>(),
+                ClrElementType.Int32 => InspectArrayOf<int>(),
+                ClrElementType.Int64 => InspectArrayOf<long>(),
+                ClrElementType.UInt8 => InspectArrayOf<byte>(),
+                ClrElementType.UInt16 => InspectArrayOf<ushort>(),
+                ClrElementType.UInt32 => InspectArrayOf<uint>(),
+                ClrElementType.UInt64 => InspectArrayOf<ulong>(),
+                ClrElementType.Float => InspectArrayOf<float>(),
+                ClrElementType.Double => InspectArrayOf<double>(),
+                ClrElementType.Boolean => InspectArrayOf<bool>(),
+                ClrElementType.Char => InspectArrayOf<char>(),
+                ClrElementType.NativeInt => InspectArrayOf<IntPtr>(),
+                ClrElementType.NativeUInt => InspectArrayOf<UIntPtr>(),
+                _ => InspectOther(type)
+            };
         }
 
-        private SimpleInspection InspectOther(ClrType type) {
+        private SimpleInspection InspectOther(ClrType? type) {
+            if (type?.Name == null)
+                return NullType;
+
             var title = type.Name;
             if (!type.IsObjectReference)
                 title = FormatBoxedName(title);

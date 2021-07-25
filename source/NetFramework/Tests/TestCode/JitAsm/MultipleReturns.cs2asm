@@ -6,7 +6,7 @@ static class C {
 
 #=>
 
-; Desktop CLR v<IGNORE> on x86
+; Desktop CLR <IGNORE> on x86
 
 C.M(Boolean)
     L0000: and ecx, 0xff

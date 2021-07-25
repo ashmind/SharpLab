@@ -15,7 +15,7 @@ static class C {
 
 #=>
 
-; Desktop CLR v<IGNORE> on x86
+; Desktop CLR <IGNORE> on x86
 
 C.M(Int32)
     L0000: push ebp

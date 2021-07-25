@@ -10,7 +10,7 @@ static class C {
 
 #=>
 
-; Desktop CLR v<IGNORE> on x86
+; Desktop CLR <IGNORE> on x86
 
 C.M[[System.Int32, mscorlib]]()
     L0000: xor eax, eax
@@ -32,5 +32,4 @@ C.M[[System.Decimal, mscorlib]]()
     L0017: ret
 
 C.M[[System.String, mscorlib]]()
-    ; Failed to find HotColdInfo for generic method (reference types?).
-    ; If you know a solution, please comment at https://github.com/ashmind/SharpLab/issues/99.
+    ; Failed to find JIT compiled data — please report at https://github.com/ashmind/SharpLab/issues.

@@ -20,13 +20,13 @@ namespace SharpLab.Server.Decompilation.Internal {
                 return true;
             }
 
-            var method = _runtime.GetMethodByAddress(address);
-            if (method == null) {
+            var method = _runtime.GetMethodByInstructionPointer(address);
+            if (method?.Signature == null) {
                 symbol = default;
                 return false;
             }
 
-            symbol = new SymbolResult(address, method.GetFullSignature());
+            symbol = new SymbolResult(address, method.Signature);
             return true;
         }
     }

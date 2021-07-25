@@ -10,7 +10,7 @@ static class C {
 
 #=>
 
-; Core CLR v<IGNORE> on amd64
+; Core CLR <IGNORE> on amd64
 
 C.M[[System.Int32, System.Private.CoreLib]]()
     L0000: xor eax, eax
