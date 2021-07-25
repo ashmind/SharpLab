@@ -32,4 +32,5 @@ C.M[[System.Decimal, mscorlib]]()
     L0017: ret
 
 C.M[[System.String, mscorlib]]()
-    ; Failed to find JIT compiled data — please report at https://github.com/ashmind/SharpLab/issues.
+    ; Failed to find JIT output for generic method (reference types?).
+    ; If you know a solution, please comment at https://github.com/ashmind/SharpLab/issues/99.

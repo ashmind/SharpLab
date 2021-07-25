@@ -111,7 +111,13 @@ namespace SharpLab.Server.Decompilation {
 
             if (FindJitCompiledMethod(runtime, result) is not {} method) {
                 WriteSignatureFromClrMethod();
-                writer.WriteLine("    ; Failed to find JIT compiled data — please report at https://github.com/ashmind/SharpLab/issues.");
+                if (result.Status == MethodJitStatus.SuccessGeneric) {
+                    writer.WriteLine("    ; Failed to find JIT output for generic method (reference types?).");
+                    writer.WriteLine("    ; If you know a solution, please comment at https://github.com/ashmind/SharpLab/issues/99.");
+                    return;
+                }
+
+                writer.WriteLine("    ; Failed to find JIT output — please report at https://github.com/ashmind/SharpLab/issues.");
                 return;
             }
 

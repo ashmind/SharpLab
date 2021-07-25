@@ -154,7 +154,7 @@ namespace SharpLab.Server.Decompilation {
             var handle = method.MethodHandle;
             RuntimeHelpers.PrepareMethod(handle);
 
-            var clrMethodData = FindJitCompiledMethod(context, method);
+            var clrMethodData = FindJitCompiledMethod(context, handle);
 
             var writer = context.Writer;
             if (clrMethodData?.Signature is {} signature) {
@@ -166,7 +166,13 @@ namespace SharpLab.Server.Decompilation {
             }
 
             if (clrMethodData == null) {
-                writer.WriteLine("    ; Failed to find JIT compiled data — please report at https://github.com/ashmind/SharpLab/issues.");
+                if (method.IsGenericMethod) {
+                    writer.WriteLine("    ; Failed to find JIT output for generic method (reference types?).");
+                    writer.WriteLine("    ; If you know a solution, please comment at https://github.com/ashmind/SharpLab/issues/99.");
+                    return;
+                }
+
+                writer.WriteLine("    ; Failed to find JIT output — please report at https://github.com/ashmind/SharpLab/issues.");
                 return;
             }
 
@@ -195,11 +201,10 @@ namespace SharpLab.Server.Decompilation {
             }
         }
 
-        private ClrMethodData? FindJitCompiledMethod(JitWriteContext context, MethodBase method) {
+        private ClrMethodData? FindJitCompiledMethod(JitWriteContext context, RuntimeMethodHandle handle) {
             context.Runtime.FlushCachedData();
             var sos = context.Runtime.DacLibrary.SOSDacInterface;
 
-            var handle = method.MethodHandle;
             var methodDescAddress = unchecked((ulong)handle.Value.ToInt64());
             if (!sos.GetMethodDescData(methodDescAddress, 0, out var methodDesc))
                 return null;

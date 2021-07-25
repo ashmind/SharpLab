@@ -111,7 +111,7 @@ public static partial class Inspect {
     }
 
     private static IReadOnlyList<MemoryInspectionLabel> GetNestedLabels(ClrType type, ulong valueAddress, ulong offsetBase) {
-        if (!type.IsValueType)
+        if (type.IsPrimitive || !type.IsValueType)
             return Array.Empty<MemoryInspectionLabel>();
 
         return CreateLabelsFromType(type, valueAddress, offsetBase + (uint)IntPtr.Size);

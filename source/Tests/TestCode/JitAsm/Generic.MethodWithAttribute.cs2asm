@@ -25,5 +25,5 @@ C.M[[System.Decimal, System.Private.CoreLib]]()
     L000e: ret
 
 C.M[[System.String, System.Private.CoreLib]]()
-    ; Failed to find HotColdInfo for generic method (reference types?).
+    ; Failed to find JIT output for generic method (reference types?).
     ; If you know a solution, please comment at https://github.com/ashmind/SharpLab/issues/99.

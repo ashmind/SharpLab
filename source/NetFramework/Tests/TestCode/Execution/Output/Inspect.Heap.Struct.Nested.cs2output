@@ -47,7 +47,7 @@ public static class Program {
     {
       "name": "n",
       "offset": 16,
-      "length": 8,
+      "length": 5,
       "nested": [
         {
           "name": "an",
