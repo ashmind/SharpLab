@@ -299,7 +299,7 @@ namespace SharpLab.Server.Decompilation {
                 ex is BadImageFormatException or TypeLoadException
                 && arguments.FirstOrDefault(static a => a.IsByRefLike) is {} refStructArgument
             ) {
-                throw new JitGenericAttributeException($"JitGenericAttribute argument {refStructArgument.Name} is a ref struct, which is not supported in generics", ex);
+                throw new JitGenericAttributeException($"JitGenericAttribute argument {refStructArgument.Name} is a ref struct, which is not supported in generics.", ex);
             }
         }
 
