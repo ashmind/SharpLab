@@ -10,6 +10,7 @@ using Xunit.Abstractions;
 using SharpLab.Server.Common;
 using SharpLab.Tests.Internal;
 using System.Runtime.Intrinsics.X86;
+using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Tests {
     public class DecompilationTests {
@@ -171,6 +172,24 @@ namespace SharpLab.Tests {
             await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.JitAsm);
 
             await Assert.ThrowsAsync<NotSupportedException>(() => driver.SendSlowUpdateAsync<string>());
+        }
+
+        [Theory]
+        [InlineData("[JitGeneric(typeof(int), typeof(int))] class C<T> {}")]
+        [InlineData("[JitGeneric(typeof(Span<int>))] class C<T> {}")]
+        [InlineData("class C { [JitGeneric(typeof(int), typeof(int))] void M<T>() {} }")]
+        [InlineData("class C { [JitGeneric(typeof(Span<int>))] void M<T>() {} }")]
+        public async Task SlowUpdate_ReturnsJitGenericAttributeException_ForIncorrectJitGenericArguments(string code) {
+            var driver = TestEnvironment.NewDriver().SetText($@"
+                using System;
+                using SharpLab.Runtime;
+                {code}
+            ");
+            await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.JitAsm);
+
+            var exception = await Record.ExceptionAsync(() => driver.SendSlowUpdateAsync<string>());
+
+            Assert.IsType<JitGenericAttributeException>(exception);
         }
 
         [Theory]

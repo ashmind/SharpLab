@@ -295,6 +295,12 @@ namespace SharpLab.Server.Decompilation {
             catch (ArgumentException ex) {
                 throw new JitGenericAttributeException($"Failed to apply JitGenericAttribute to {definition.Name}: {ex.Message}", ex);
             }
+            catch (Exception ex) when (
+                ex is BadImageFormatException or TypeLoadException
+                && arguments.FirstOrDefault(static a => a.IsByRefLike) is {} refStructArgument
+            ) {
+                throw new JitGenericAttributeException($"JitGenericAttribute argument {refStructArgument.Name} is a ref struct, which is not supported in generics", ex);
+            }
         }
 
         private int MapArchitectureToBitness(Architecture architecture) => architecture switch
