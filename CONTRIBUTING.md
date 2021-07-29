@@ -24,6 +24,11 @@ Please keep this in mind if you dislike a possibility of a license change or, fo
 
 #### Getting started
 
+Prerequisites:
+1. Install [node.js](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) (with npm package manager)
+2. Install [PowerShell Core](https://github.com/PowerShell/PowerShell)
+
+Building:
 1. After you cloned the repo, run `sl setup` to do initial project setup.
 2. If tests fail on `NullReferenceException` in `OptionsService`, just rerun them (Roslyn issue, looking into it).
 3. Code style is in `.editorconfig` — you should get 4-space indents and K&R braces automatically.
