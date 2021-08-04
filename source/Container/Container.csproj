@@ -8,6 +8,7 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <PackageReference Include="FSharp.Core" Version="5.0.2" />
     <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="2.0.226801" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
     <PackageReference Include="protobuf-net" Version="3.0.101" />
