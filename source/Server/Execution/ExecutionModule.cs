@@ -42,6 +42,7 @@ namespace SharpLab.Server.Execution {
 
             builder.RegisterType<FSharpEntryPointRewriter>()
                    .As<IAssemblyRewriter>()
+                   .As<IContainerAssemblyRewriter>()
                    .SingleInstance();
 
             builder.RegisterType<Executor>()

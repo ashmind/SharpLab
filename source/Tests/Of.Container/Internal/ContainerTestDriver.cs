@@ -8,35 +8,70 @@ using System.Threading.Tasks;
 using Autofac;
 using Docker.DotNet;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
+using MirrorSharp;
+using MirrorSharp.Advanced;
 using MirrorSharp.Advanced.Mocks;
+using MirrorSharp.Testing;
 using ProtoBuf;
 using SharpLab.Container;
 using SharpLab.Container.Manager.Internal;
 using SharpLab.Container.Protocol.Stdin;
 using SharpLab.Server.Common;
 using SharpLab.Server.Common.Internal;
+using SharpLab.Server.Compilation;
 using SharpLab.Server.Execution;
 using SharpLab.Server.Execution.Container;
 using SharpLab.Tests.Internal;
 
 namespace SharpLab.Tests.Of.Container.Internal {
     public class ContainerTestDriver {
-        public static async Task<string> CompileAndExecuteAsync(string code) {
-            var project = GetProject(code);
+        public static async Task<string> CompileAndExecuteAsync(string code, string languageName = LanguageNames.CSharp) {
+            var session = await PrepareWorkSessionAsync(code, languageName);
+
+            var assemblyStream = new MemoryStream();
+            var symbolStream = new MemoryStream();
+            var diagnostics = new List<Diagnostic>();
+            var (compiled, hasSymbols) = await new Compiler().TryCompileToStreamAsync(
+                assemblyStream,
+                symbolStream,
+                session,
+                diagnostics,
+                CancellationToken.None
+            );
+            if (!compiled)
+                throw new Exception("Compilation failed:\n" + string.Join('\n', diagnostics));
+            assemblyStream.Position = 0;
+            symbolStream.Position = 0;
+
+            var streams = new CompilationStreamPair(assemblyStream, hasSymbols ? symbolStream : null);
+            var executor = CreateContainerExecutor();
+            return await executor.ExecuteAsync(streams, session, CancellationToken.None);
+        }
+
+        private static async Task<IWorkSession> PrepareWorkSessionAsync(string code, string languageName = LanguageNames.CSharp) {
+            if (languageName == LanguageNames.FSharp) {
+                var mirrorsharp = MirrorSharpTestDriver.New(
+                    options: new MirrorSharpOptions().DisableCSharp().EnableFSharp(o => {
+                        o.AssemblyReferencePaths = o.AssemblyReferencePaths.Add(typeof(Inspect).Assembly.Location);
+                    }),
+                    languageName: LanguageNames.FSharp
+                ).SetText(code);
+                await mirrorsharp.SendSlowUpdateAsync();
+                return mirrorsharp.Session;
+            }
 
             var session = new WorkSessionMock();
-            session.Setup.LanguageName.Returns(LanguageNames.CSharp);
+            session.Setup.LanguageName.Returns(languageName);
             session.Setup.ExtensionData.Returns(new Dictionary<string, object>());
-            session.Setup.IsRoslyn.Returns(true);
 
+            var project = GetProject(code);
+            session.Setup.IsRoslyn.Returns(true);
             var roslynSessionMock = new RoslynSessionMock();
             roslynSessionMock.Setup.Project.Returns(project);
             session.Setup.Roslyn.Returns(roslynSessionMock);
 
-            var executor = CreateContainerExecutor();
-            return await executor.ExecuteAsync(await CompileAsync(project), session, CancellationToken.None);
+            return session;
         }
 
         private static IContainerExecutor CreateContainerExecutor() {
@@ -70,23 +105,6 @@ namespace SharpLab.Tests.Of.Container.Internal {
             return project;
         }
 
-        private static async Task<CompilationStreamPair> CompileAsync(Project project) {
-            var assemblyStream = new MemoryStream();
-            var symbolStream = new MemoryStream();
-
-            var compilation = (await project.GetCompilationAsync())!;
-            var emitResult = compilation.Emit(assemblyStream, pdbStream: symbolStream, options: new(
-                debugInformationFormat: DebugInformationFormat.PortablePdb
-            ));
-            if (!emitResult.Success)
-                throw new Exception("Compilation failed:\n" + string.Join('\n', emitResult.Diagnostics));
-
-            assemblyStream.Seek(0, SeekOrigin.Begin);
-            symbolStream.Seek(0, SeekOrigin.Begin);
-
-            return new CompilationStreamPair(assemblyStream, symbolStream);
-        }
-
         private class TestContainerClient : IContainerClient {
             public async Task<string> ExecuteAsync(string sessionId, Stream assemblyStream, bool includePerformance, CancellationToken cancellationToken) {
                 var startMarker = Guid.NewGuid();
@@ -102,7 +120,14 @@ namespace SharpLab.Tests.Of.Container.Internal {
                 stdin.Seek(0, SeekOrigin.Begin);
 
                 var stdout = new MemoryStream();
-                Program.Run(stdin, stdout);
+                var savedConsoleOut = Console.Out;
+                Console.SetOut(new StreamWriter(stdout) { AutoFlush = true });
+                try {
+                    Program.Run(stdin, stdout);
+                }
+                finally {
+                    Console.SetOut(savedConsoleOut);
+                }
 
                 stdout.Seek(0, SeekOrigin.Begin);
                 var stdoutReader = new StdoutReader();
