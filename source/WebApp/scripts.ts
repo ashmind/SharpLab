@@ -77,7 +77,7 @@ const tsAsmRegex = task('asm', async () => {
     // read list file as array of lines
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const listContents  = ((await jetpack.readAsync(asmSourcePath))!)
-        .split('\n');
+        .split(/\r?\n/);
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const regexPattern: string = regexCombiner(listContents).toString();
