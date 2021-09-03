@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
@@ -43,9 +43,11 @@
     <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="2.0.226801" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.2" />
     <PackageReference Include="MirrorSharp.AspNetCore" Version="3.0.3" />
-    <PackageReference Include="MirrorSharp.Common" Version="2.2.7" />
+    <PackageReference Include="MirrorSharp.Common" Version="2.2.8" />
     <PackageReference Include="MirrorSharp.FSharp" Version="0.22.0" />
+    <PackageReference Include="MirrorSharp.IL" Version="0.1.0" />
     <PackageReference Include="MirrorSharp.VisualBasic" Version="2.1.1" />
+    <PackageReference Include="Mobius.ILasm" Version="0.1.0" />
     <PackageReference Include="Mono.Cecil" Version="0.11.4" />
     <PackageReference Include="Octokit" Version="0.32.0" />
     <PackageReference Include="Iced" Version="1.6.0" />
