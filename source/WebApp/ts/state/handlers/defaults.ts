@@ -3,16 +3,50 @@ import { targets, TargetName } from '../../helpers/targets';
 import help from '../../helpers/help';
 import asLookup from '../../helpers/as-lookup';
 
+const normalize = (code: string) => {
+    // 8 spaces must match the layout below
+    return code
+        .replace(/^ {8}/gm, '')
+        .replace(/(\r\n|\r|\n)/g, '\r\n')
+        .trim();
+};
+
 const code = asLookup({
     [languages.csharp]: 'using System;\r\npublic class C {\r\n    public void M() {\r\n    }\r\n}',
     [languages.vb]: 'Imports System\r\nPublic Class C\r\n    Public Sub M()\r\n    End Sub\r\nEnd Class',
     [languages.fsharp]: 'open System\r\ntype C() =\r\n    member _.M() = ()',
-    [languages.il]: '.assembly ConsoleApp\r\n{\r\n}\r\n\r\n.class private auto ansi \'<Module>\'\r\n{\r\n}\r\n\r\n.class public auto ansi beforefieldinit C\r\nextends [System.Private.CoreLib]System.Object\r\n{\r\n   .method public hidebysig \r\n        instance void M () cil managed \r\n    {\r\n       .maxstack 8\r\n        ret\r\n    }\r\n\r\n   .method public hidebysig specialname rtspecialname \r\n        instance void .ctor () cil managed \r\n   {\r\n        .maxstack 8\r\n        ldarg.0\r\n        call instance void [System.Private.CoreLib]System.Object::.ctor()\r\n        ret\r\n    }\r\n}',
+    [languages.il]: normalize(`
+        .class public auto ansi abstract sealed beforefieldinit C
+            extends [System.Private.CoreLib]System.Object
+        {
+            .method public hidebysig static
+                void M () cil managed
+            {
+                .maxstack 8
+
+                IL_0000: ret
+            }
+        }
+    `),
 
     [`${languages.csharp}.run`]: `${help.run.csharp}\r\nusing System;\r\n\r\nConsole.WriteLine("🌄");`,
     [`${languages.vb}.run`]: 'Imports System\r\nPublic Module Program\r\n    Public Sub Main()\r\n        Console.WriteLine("🌄")\r\n    End Sub\r\nEnd Module',
     [`${languages.fsharp}.run`]: 'printfn "🌄"',
-    [`${languages.il}.run`]: '.assembly ConsoleApp\r\n{\r\n}\r\n\r\n.class private auto ansi \'<Module>\'\r\n{\r\n}\r\n\r\n.class public auto ansi beforefieldinit C\r\nextends [System.Private.CoreLib]System.Object\r\n{\r\n   .method public hidebysig \r\n        static void Main () cil managed \r\n    {\r\n       .maxstack 8\r\n       ldstr "Hello IL!"\r\n       call void [System.Console]System.Console::WriteLine(string)\r\n        ret\r\n    }\r\n\r\n   .method public hidebysig specialname rtspecialname \r\n        instance void .ctor () cil managed \r\n   {\r\n        .maxstack 8\r\n        ldarg.0\r\n        call instance void [System.Private.CoreLib]System.Object::.ctor()\r\n        ret\r\n    }\r\n}'
+    [`${languages.il}.run`]: normalize(`
+        .class public auto ansi abstract sealed beforefieldinit Program
+            extends [System.Private.CoreLib]System.Object
+        {
+            .method public hidebysig static
+                void Main () cil managed
+            {
+                .entrypoint
+                .maxstack 8
+
+                nop
+                ret
+            }
+        }
+    `)
 } as const);
 
 export default {
