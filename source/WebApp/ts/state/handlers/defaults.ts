@@ -24,7 +24,7 @@ const code = asLookup({
             {
                 .maxstack 8
 
-                IL_0000: ret
+                ret
             }
         }
     `),
