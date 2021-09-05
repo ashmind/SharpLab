@@ -1,24 +1,13 @@
 using System.Collections.Generic;
+using System.Text;
 
 namespace SharpLab.Server.Compilation.Internal {
     // Same as one inside FSharp, might want to consolidate later
-    internal class ILLineColumnMap {
+    public class ILLineColumnMap {
         private readonly IReadOnlyList<Line> _map;
 
-        private ILLineColumnMap(IReadOnlyList<Line> map) {
+        private ILLineColumnMap(IReadOnlyList<Line> map, int textLength) {
             _map = map;
-        }
-
-        public (Line line, int column) GetLineAndColumn(int offset) {
-            var map = _map;
-            var line = map[0];
-            for (var i = 1; i < map.Count; i++) {
-                var nextLine = map[i];
-                if (offset < nextLine.Start)
-                    break;
-                line = nextLine;
-            }
-            return (line, offset - line.Start);
         }
 
         public int GetOffset(int line, int column) {
@@ -32,20 +21,26 @@ namespace SharpLab.Server.Compilation.Internal {
             return _map[line - 1].Start + column;
         }
 
-        public static ILLineColumnMap BuildFor(string text) {
+        public int TextLength { get; }
+
+        public static ILLineColumnMap BuildFor(StringBuilder stringBuilderForReadOnly) {
             var map = new List<Line>();
             var start = 0;
             var previous = '\0';
-            for (var i = 0; i < text.Length; i++) {
-                var @char = text[i];
-                if (@char == '\r' || (previous != '\r' && @char == '\n'))
-                    map.Add(new Line(map.Count + 1, start, i));
-                if (previous == '\n' || (previous == '\r' && @char != '\n'))
-                    start = i;
-                previous = @char;
+            var offset = 0;
+            foreach (var chunk in stringBuilderForReadOnly.GetChunks()) {                
+                for (var i = 0; i < chunk.Length; i++) {
+                    var @char = chunk.Span[i];
+                    if (@char == '\r' || (previous != '\r' && @char == '\n'))
+                        map.Add(new Line(map.Count + 1, start, offset + i));
+                    if (previous == '\n' || (previous == '\r' && @char != '\n'))
+                        start = offset + i;
+                    previous = @char;
+                }
+                offset += chunk.Length;
             }
-            map.Add(new Line(map.Count + 1, start, text.Length));
-            return new ILLineColumnMap(map);
+            map.Add(new Line(map.Count + 1, start, stringBuilderForReadOnly.Length));
+            return new ILLineColumnMap(map, stringBuilderForReadOnly.Length);
         }
 
         public struct Line {

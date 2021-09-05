@@ -8,13 +8,12 @@ using Location = Mono.ILASM.Location;
 
 namespace SharpLab.Server.Compilation.Internal {
     public class ILCompilationLogger : ILogger {
-        private ILLineColumnMap? _lineColumnMap;
-        private readonly string _text;
         private readonly IList<Diagnostic> _diagnostics;
+        private readonly ILLineColumnMap _lineColumnMap;
 
-        public ILCompilationLogger(string text, IList<Diagnostic> diagnostics) {
-            _text = text;
+        public ILCompilationLogger(IList<Diagnostic> diagnostics, ILLineColumnMap lineColumnMap) {
             _diagnostics = diagnostics;
+            _lineColumnMap = lineColumnMap;
         }
 
         public void Info(string message) {
@@ -53,10 +52,8 @@ namespace SharpLab.Server.Compilation.Internal {
         }
 
         private CodeAnalysis.Location ConvertLocation(Location location) {
-            _lineColumnMap ??= ILLineColumnMap.BuildFor(_text);
-
             var offset = _lineColumnMap.GetOffset(location.line, location.column);
-            var length = Math.Min(2, _text.Length - offset);
+            var length = Math.Min(2, _lineColumnMap.TextLength - offset);
 
             return CodeAnalysis.Location.Create(
                 "_",

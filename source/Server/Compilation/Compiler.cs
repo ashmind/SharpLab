@@ -1,6 +1,8 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FSharp.Compiler.Diagnostics;
@@ -9,12 +11,13 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Control;
+using Microsoft.IO;
 using MirrorSharp.Advanced;
 using MirrorSharp.FSharp.Advanced;
 using MirrorSharp.IL.Advanced;
+using MirrorSharp.IL.Internal;
 using Mobius.ILasm.Core;
 using SharpLab.Server.Compilation.Internal;
-using SharpLab.Server.MirrorSharp;
 
 namespace SharpLab.Server.Compilation {
     public class Compiler : ICompiler {
@@ -22,6 +25,11 @@ namespace SharpLab.Server.Compilation {
             // TODO: try out embedded
             debugInformationFormat: DebugInformationFormat.PortablePdb
         );
+        private readonly RecyclableMemoryStreamManager _memoryStreamManager;
+
+        public Compiler(RecyclableMemoryStreamManager memoryStreamManager) {
+            _memoryStreamManager = memoryStreamManager;
+        }
 
         public async Task<(bool assembly, bool symbols)> TryCompileToStreamAsync(
             MemoryStream assemblyStream,
@@ -81,13 +89,22 @@ namespace SharpLab.Server.Compilation {
         }
 
         private bool TryCompileILToStream(MemoryStream assemblyStream, IWorkSession session, IList<Diagnostic> diagnostics) {
-            var il = session.IL();
-            var text = session.GetText();
+            var il = (IILSessionInternal)session.IL();
+            var ilBuilder = il.GetTextBuilderForReadsOnly();
 
-            var logger = new ILCompilationLogger(text, diagnostics);
+            // TODO: See if we can get offset from the library instead
+            var lineColumnMap = ILLineColumnMap.BuildFor(ilBuilder);
+            var logger = new ILCompilationLogger(diagnostics, lineColumnMap);
             var driver = new Driver(logger, il.Target, showParser: false, debuggingInfo: false, showTokens: false);
+
+            using var sourceStream = (RecyclableMemoryStream)_memoryStreamManager.GetStream("Compiler-IL", il.TextLength);
+            foreach (var chunk in il.GetTextBuilderForReadsOnly().GetChunks()) {
+                Encoding.UTF8.GetBytes(chunk.Span, sourceStream);
+            }
+            sourceStream.Position = 0;
+
             try {
-                return driver.Assemble(new[] { text }, assemblyStream);
+                return driver.Assemble(new[] { sourceStream }, assemblyStream);
             }
             catch (Exception ex) when (ex.GetType().Name.StartsWith("yy")) {
                 // These are also reported through the logger, so will be reported as diagnostics
