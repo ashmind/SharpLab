@@ -30,14 +30,6 @@ try {
     if ($LastExitCode -ne 0) {
         throw "npm ci failed with exit code $LastExitCode"
     }
-
-    Push-Location './dist'
-    try {
-        npm install --production
-    }
-    finally {
-        Pop-Location
-    }
 }
 finally {
     Pop-Location

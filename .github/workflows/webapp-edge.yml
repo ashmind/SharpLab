@@ -38,10 +38,6 @@ jobs:
         run: npm run build
         working-directory: source/#external/mirrorsharp/WebAssets
 
-      - name: Run npm install --production (mirrorsharp/dist)
-        run: npm install --production
-        working-directory: source/#external/mirrorsharp/WebAssets/dist
-
       - run: npm ci
 
       - run: npm run build-ci
