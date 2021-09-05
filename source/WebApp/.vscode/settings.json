@@ -43,6 +43,7 @@
         "endfault",
         "endfilter",
         "endfinally",
+        "entrypoint",
         "eqeqeq",
         "etype",
         "execa",
