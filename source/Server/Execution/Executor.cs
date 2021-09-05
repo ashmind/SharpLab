@@ -18,6 +18,7 @@ using SharpLab.Server.Common.Diagnostics;
 using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.Monitoring;
 using IAssemblyResolver = Mono.Cecil.IAssemblyResolver;
+using MirrorSharp.IL.Advanced;
 
 namespace SharpLab.Server.Execution {
     public class Executor : IExecutor {
@@ -48,6 +49,12 @@ namespace SharpLab.Server.Execution {
         }
 
         public ExecutionResult Execute(CompilationStreamPair streams, IWorkSession session) {
+            if (session.IsIL()) {
+                streams.Dispose();
+                Output.Write(new SimpleInspection("Exception", "For security reasons, legacy Run mode does not support IL."));
+                return new ExecutionResult(Output.Stream, Flow.Steps);
+            }
+
             var readerParameters = new ReaderParameters {
                 ReadSymbols = streams.SymbolStream != null,
                 SymbolStream = streams.SymbolStream,
