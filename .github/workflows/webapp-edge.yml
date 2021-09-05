@@ -31,6 +31,8 @@ jobs:
         id: version
 
       - run: npm ci
+      # DEBUG
+      - run: ls /home/runner/work/SharpLab/SharpLab/source/WebApp/node_modules/mirrorsharp
       - run: npm run build-ci
         env:
           NODE_ENV: ci
