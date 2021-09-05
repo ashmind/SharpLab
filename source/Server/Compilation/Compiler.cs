@@ -37,7 +37,7 @@ namespace SharpLab.Server.Compilation {
                 return (compiled, false);
             }
 
-#warning TODO: Revisit after https: //github.com/dotnet/docs/issues/14784
+            #warning TODO: Revisit after https: //github.com/dotnet/docs/issues/14784
             var compilation =
                 (await session.Roslyn.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false))!;
             var emitResult = compilation.Emit(assemblyStream, pdbStream: symbolStream, options: RoslynEmitOptions);

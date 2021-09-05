@@ -7,3 +7,6 @@
 [submodule "source/#external/mirrorsharp"]
 	path = "source/#external/mirrorsharp"
 	url = https://github.com/ashmind/mirrorsharp
+[submodule "source/#external/Mobius.ILasm"]
+	path = "source/#external/Mobius.ILasm"
+	url = https://github.com/ashmind/Mobius.ILasm

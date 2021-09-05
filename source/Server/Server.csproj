@@ -31,7 +31,7 @@
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="5.0.0" />
     <PackageReference Include="Autofac.Extras.FileSystemRegistration" Version="1.0.0-pre-03" />
     <PackageReference Include="Azure.Identity" Version="1.4.0" />
-    <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.1.0" />    
+    <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.1.0" />
     <PackageReference Include="ICSharpCode.Decompiler" Version="6.2.1.6137" />
     <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.17.0" />
@@ -42,7 +42,6 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.10.0" />
     <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="2.0.226801" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.2" />
-    <PackageReference Include="Mobius.ILasm" Version="0.1.0" />
     <PackageReference Include="Mono.Cecil" Version="0.11.4" />
     <PackageReference Include="Octokit" Version="0.32.0" />
     <PackageReference Include="Iced" Version="1.6.0" />
@@ -61,6 +60,7 @@
     <ProjectReference Include="..\#external\mirrorsharp\FSharp\FSharp.csproj" />
     <ProjectReference Include="..\#external\mirrorsharp\IL\IL.csproj" />
     <ProjectReference Include="..\#external\mirrorsharp\VisualBasic\VisualBasic.csproj" />
+    <ProjectReference Include="..\#external\Mobius.ILasm\Mobius.ILASM\Mobius.ILasm.csproj" />
     <ProjectReference Include="..\#external\SourcePath\Roslyn\Roslyn.csproj" />
     <ProjectReference Include="..\Runtime\Runtime.csproj" />
   </ItemGroup>
