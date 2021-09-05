@@ -18,7 +18,7 @@
     },
     "transform": {
       "\\.ts$": "ts-jest",
-      "node_modules[/\\\\]mirrorsharp": "./tests/transform-esm-in-node-modules.cjs"
+      "(node_modules[/\\\\]mirrorsharp|mirrorsharp.+dist)": "./tests/transform-esm-in-node-modules.cjs"
     },
     "transformIgnorePatterns": [
       "/node_modules/(?!mirrorsharp/)"
