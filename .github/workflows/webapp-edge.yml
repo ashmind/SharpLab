@@ -42,12 +42,8 @@ jobs:
         run: npm install --production
         working-directory: source/#external/mirrorsharp/WebAssets/dist
 
-      - run: npm ci      
-      
-      # DEBUG
-      - run: readlink -f ls /home/runner/work/SharpLab/SharpLab/source/WebApp/node_modules/mirrorsharp
-      - run: ls /home/runner/work/SharpLab/SharpLab/source/WebApp/node_modules/mirrorsharp
-      
+      - run: npm ci
+
       - run: npm run build-ci
         env:
           NODE_ENV: ci
