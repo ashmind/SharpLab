@@ -122,13 +122,14 @@ namespace SharpLab.Tests {
         [InlineData("JitAsm.Simple.cs2asm")]
         [InlineData("JitAsm.MultipleReturns.cs2asm")]
         [InlineData("JitAsm.ArrayElement.cs2asm")]
-        #if APPVEYOR
-        // not quite sure why some ASM symbols are not resolved when running in AppVeyor
-        [InlineData("JitAsm.AsyncRegression.AppVeyor.cs2asm")]
+        #if CI
+        // not quite sure why some ASM symbols are not resolved when running in CI
+        [InlineData("JitAsm.AsyncRegression.CI.cs2asm")]
+        [InlineData("JitAsm.ConsoleWrite.CI.cs2asm")]
         #else
         [InlineData("JitAsm.AsyncRegression.cs2asm")]
-        #endif
         [InlineData("JitAsm.ConsoleWrite.cs2asm")]
+        #endif
         [InlineData("JitAsm.JumpBack.cs2asm")] // https://github.com/ashmind/SharpLab/issues/229
         [InlineData("JitAsm.Delegate.cs2asm")]
         [InlineData("JitAsm.Nested.Simple.cs2asm")]

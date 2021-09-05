@@ -5,8 +5,8 @@
     <RootNamespace>SharpLab.Tests</RootNamespace>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(APPVEYOR)'!=''">
-    <DefineConstants>$(DefineConstants); APPVEYOR</DefineConstants>
+  <PropertyGroup Condition="'$(CI)' == 'true'">
+    <DefineConstants>$(DefineConstants); CI</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
