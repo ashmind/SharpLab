@@ -16,6 +16,9 @@ jobs:
         working-directory: source/WebApp
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+
       - uses: actions/setup-node@v1
         with:
           node-version: '12.16.1'
