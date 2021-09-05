@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -85,9 +86,13 @@ namespace SharpLab.Server.Compilation {
 
             var logger = new ILCompilationLogger(text, diagnostics);
             var driver = new Driver(logger, il.Target, showParser: false, debuggingInfo: false, showTokens: false);
-            var compiled = driver.Assemble(new[] { text }, assemblyStream);
-            assemblyStream.Seek(0, SeekOrigin.Begin);
-            return compiled;
+            try {
+                return driver.Assemble(new[] { text }, assemblyStream);
+            }
+            catch (Exception ex) when (ex.GetType().Name.StartsWith("yy")) {
+                // These are also reported through the logger, so will be reported as diagnostics
+                return false;
+            }
         }
     }
 }

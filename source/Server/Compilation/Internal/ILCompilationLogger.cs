@@ -18,7 +18,6 @@ namespace SharpLab.Server.Compilation.Internal {
         }
 
         public void Info(string message) {
-            AddDiagnostic(DiagnosticSeverity.Info, message);
         }
 
         public void Error(string message) {
@@ -26,7 +25,7 @@ namespace SharpLab.Server.Compilation.Internal {
         }
 
         public void Error(Location location, string message) {
-            AddDiagnostic(DiagnosticSeverity.Info, message, location);
+            AddDiagnostic(DiagnosticSeverity.Error, message, location);
         }
 
         public void Warning(string message) {
@@ -43,13 +42,13 @@ namespace SharpLab.Server.Compilation.Internal {
             Location? location = null,
             int warningLevel = 0
         ) {
-            var convertedLocation = location != null ? ConvertLocation(location) : null;
             _diagnostics.Add(Diagnostic.Create(
                 "IL", "Compiler", message,
                 severity,
                 severity,
                 isEnabledByDefault: true,
-                warningLevel
+                warningLevel,
+                location: location != null ? ConvertLocation(location) : null
             ));
         }
 
