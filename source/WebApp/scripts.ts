@@ -71,7 +71,7 @@ const tsMain = task('ts-main', () => exec2('rollup', ['-c', '-o', jsOutputPath])
 });
 
 const asmSourcePath = `${dirname}/components/internal/codemirror/mode-asm-instructions.txt`;
-const tsAsmRegex = task('asm', async () => {
+const tsAsmRegex = task('ts-asm-regex', async () => {
     const asmOutputPath = `${dirname}/components/internal/codemirror/mode-asm-instructions.ts`;
 
     // read list file as array of lines
@@ -113,7 +113,7 @@ const icons = task('icons', async () => {
         ...pngGeneration
     ]);
 }, {
-    timeout: 30000,
+    timeout: 60000,
     watch: [iconSvgSourcePath]
 });
 
