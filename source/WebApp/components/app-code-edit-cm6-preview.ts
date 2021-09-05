@@ -43,8 +43,10 @@ export default Vue.extend({
         // const cm = instance.getCodeMirror();
 
         this.$watch('language', (l: LanguageName) => {
+            // @ts-expect-error CM6 Preview does not support "IL" language yet
             options.language = l;
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            // @ts-expect-error CM6 Preview does not support "IL" language yet
             this.instance.setLanguage(l);
         }, { deep: true });
         this.$watch('serverOptions', (o: ServerOptions) => {

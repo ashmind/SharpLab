@@ -18,6 +18,23 @@ if ($LastExitCode -ne 0) {
     throw "dotnet failed with exit code $LastExitCode"
 }
 
+Write-Host "Preparing externals: mirrorsharp" -ForegroundColor White
+Push-Location './source/#external/mirrorsharp/WebAssets'
+try {
+    npm ci
+    if ($LastExitCode -ne 0) {
+        throw "npm ci failed with exit code $LastExitCode"
+    }
+
+    npm run build
+    if ($LastExitCode -ne 0) {
+        throw "npm ci failed with exit code $LastExitCode"
+    }
+}
+finally {
+    Pop-Location
+}
+
 Write-Host "Installing node modules" -ForegroundColor White
 Push-Location './source/WebApp'
 try {

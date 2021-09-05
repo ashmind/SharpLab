@@ -35,6 +35,8 @@ namespace SharpLab.Server.Common {
                     return null;
                 if (reference.Name == "System.Threading.AccessControl")
                     return null;
+                if (reference.Name == "mscorlib")
+                    return null;
 
                 throw new Exception($"Assembly {reference.Name} was not found in cache.");
             }

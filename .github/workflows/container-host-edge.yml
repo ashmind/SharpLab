@@ -13,6 +13,8 @@ on:
 jobs:
   build:
     name: 'Build (.NET 5)'
+    # https://github.community/t/duplicate-checks-on-push-and-pull-request-simultaneous-event/18012/5
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2

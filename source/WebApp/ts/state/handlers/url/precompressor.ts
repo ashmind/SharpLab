@@ -30,6 +30,17 @@ const dictionaries = asLookup({
         'public static class Program',
         'Inspect.Allocations(() =>',
         'Inspect.MemoryGraph('
+    ),
+
+    [languages.il]: build(
+        'Main ()',
+        'Program',
+        '.class public auto ansi abstract sealed beforefieldinit',
+        'extends [System.Private.CoreLib]System.Object',
+        '.method public hidebysig',
+        'cil managed',
+        '.entrypoint',
+        '.maxstack'
     )
 });
 

@@ -124,6 +124,21 @@ namespace SharpLab.Tests {
             data.AssertIsExpected(decompiledText, _output);
         }
 
+
+        [Theory]
+        [InlineData("IL.EmptyMethod.il")]
+        public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForIL(string resourceName) {
+            var data = TestCode.FromResource(resourceName);
+            var driver = await NewTestDriverAsync(data);
+
+            var result = await driver.SendSlowUpdateAsync<string>();
+            var errors = result.JoinErrors();
+
+            var decompiledText = result.ExtensionResult?.Trim();
+            Assert.True(string.IsNullOrEmpty(errors), errors);
+            data.AssertIsExpected(decompiledText, _output);
+        }
+
         [Theory]
         [InlineData("JitAsm.Simple.cs2asm")]
         [InlineData("JitAsm.MultipleReturns.cs2asm")]

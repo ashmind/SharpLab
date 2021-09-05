@@ -9,6 +9,7 @@ using Autofac;
 using Docker.DotNet;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.IO;
 using MirrorSharp;
 using MirrorSharp.Advanced;
 using MirrorSharp.Advanced.Mocks;
@@ -32,7 +33,7 @@ namespace SharpLab.Tests.Of.Container.Internal {
             var assemblyStream = new MemoryStream();
             var symbolStream = new MemoryStream();
             var diagnostics = new List<Diagnostic>();
-            var (compiled, hasSymbols) = await new Compiler().TryCompileToStreamAsync(
+            var (compiled, hasSymbols) = await new Compiler(new RecyclableMemoryStreamManager()).TryCompileToStreamAsync(
                 assemblyStream,
                 symbolStream,
                 session,

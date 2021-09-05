@@ -5,8 +5,8 @@
     <RootNamespace>SharpLab.Tests</RootNamespace>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(APPVEYOR)'!=''">
-    <DefineConstants>$(DefineConstants); APPVEYOR</DefineConstants>
+  <PropertyGroup Condition="'$(CI)' == 'true'">
+    <DefineConstants>$(DefineConstants); CI</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,13 +19,13 @@
 
   <ItemGroup>
     <PackageReference Include="AshMind.Extensions" Version="3.0.0-pre-20190808-01" />
-    <PackageReference Include="MirrorSharp.Testing" version="2.2.3" />
     <PackageReference Include="Pedantic.IO.EmbeddedResource" version="0.9.0-pre-02" />
     <PackageReference Include="xunit" version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\#external\mirrorsharp\Testing\Testing.csproj" />
     <ProjectReference Include="..\Server\Server.csproj" />
   </ItemGroup>
 

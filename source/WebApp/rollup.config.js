@@ -11,6 +11,7 @@ import { terser } from 'rollup-plugin-terser';
 
 export default {
     input: './ts/app.ts',
+    preserveSymlinks: true,
     plugins: [
         {
             name: 'rollup-plugin-adhoc-resolve-vue',
@@ -26,9 +27,7 @@ export default {
             presets: [['@babel/preset-env', { loose: true }]]
         }),
         pluginCommonJS({
-            include: [
-                'node_modules/**'
-            ]
+            include: ['node_modules/**']
         }),
         ...(process.env.NODE_ENV === 'ci' ? [terser()] : [])
     ],
