@@ -50,7 +50,8 @@ const code = asLookup({
                 .entrypoint
                 .maxstack 8
 
-                nop
+                ldstr "🌄"
+                call void [System.Console]System.Console::WriteLine(string)
                 ret
             }
         }

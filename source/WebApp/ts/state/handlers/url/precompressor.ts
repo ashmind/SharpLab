@@ -42,7 +42,8 @@ const dictionaries = asLookup({
         '.assembly',
         '.class public auto ansi abstract sealed beforefieldinit',
         'extends [System.Private.CoreLib]System.Object',
-        '.method public hidebysig'
+        '.method public hidebysig',
+        'call void [System.Console]System.Console::WriteLine('
     )
 });
 

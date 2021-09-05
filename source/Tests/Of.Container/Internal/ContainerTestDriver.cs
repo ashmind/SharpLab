@@ -50,16 +50,21 @@ namespace SharpLab.Tests.Of.Container.Internal {
             return await executor.ExecuteAsync(streams, session, CancellationToken.None);
         }
 
-        private static async Task<IWorkSession> PrepareWorkSessionAsync(string code, string languageName = LanguageNames.CSharp) {
+        private static Task<IWorkSession> PrepareWorkSessionAsync(string code, string languageName = LanguageNames.CSharp) {
             if (languageName == LanguageNames.FSharp) {
-                var mirrorsharp = MirrorSharpTestDriver.New(
-                    options: new MirrorSharpOptions().DisableCSharp().EnableFSharp(o => {
+                return PrepareNonRoslynSessionAsync(
+                    new MirrorSharpOptions().DisableCSharp().EnableFSharp(o => {
                         o.AssemblyReferencePaths = o.AssemblyReferencePaths.Add(typeof(Inspect).Assembly.Location);
                     }),
-                    languageName: LanguageNames.FSharp
-                ).SetText(code);
-                await mirrorsharp.SendSlowUpdateAsync();
-                return mirrorsharp.Session;
+                    code
+                );
+            }
+
+            if (languageName == "IL") {
+                return PrepareNonRoslynSessionAsync(
+                    new MirrorSharpOptions().DisableCSharp().EnableIL(),
+                    code
+                );
             }
 
             var session = new WorkSessionMock();
@@ -72,7 +77,13 @@ namespace SharpLab.Tests.Of.Container.Internal {
             roslynSessionMock.Setup.Project.Returns(project);
             session.Setup.Roslyn.Returns(roslynSessionMock);
 
-            return session;
+            return Task.FromResult((IWorkSession)session);
+        }
+
+        private static async Task<IWorkSession> PrepareNonRoslynSessionAsync(MirrorSharpOptions options, string code) {
+            var mirrorsharp = MirrorSharpTestDriver.New(options, options.Languages.Keys.First()).SetText(code);
+            await mirrorsharp.SendSlowUpdateAsync();
+            return mirrorsharp.Session;
         }
 
         private static IContainerExecutor CreateContainerExecutor() {
