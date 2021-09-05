@@ -101,6 +101,7 @@
         "portfinder",
         "precompressed",
         "precompressor",
+        "preinstall",
         "printfn",
         "promisify",
         "pwsh",

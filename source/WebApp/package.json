@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "preinstall": "ts-node-script ./scripts/preinstall.ts",
     "build": "ts-node-script ./scripts.ts build",
     "lint": "ts-node-script ./scripts.ts ts-lint",
     "test": "jest",
@@ -104,7 +105,7 @@
     "dateformat": "1.0.12",
     "lz-string": "1.4.4",
     "marked": "0.7.0",
-    "mirrorsharp": "2.0.5-preview-2021-06-26-1",
+    "mirrorsharp": "file:../#external/mirrorsharp/WebAssets/dist",
     "mirrorsharp-codemirror-6-preview": "0.0.11",
     "normalize.css": "8.0.1",
     "portal-vue": "2.1.7",

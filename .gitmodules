@@ -4,3 +4,6 @@
 [submodule "source/#external/SourcePath"]
 	path = "source/#external/SourcePath"
 	url = https://github.com/ashmind/SourcePath.git
+[submodule "source/#external/mirrorsharp"]
+	path = "source/#external/mirrorsharp"
+	url = https://github.com/ashmind/mirrorsharp

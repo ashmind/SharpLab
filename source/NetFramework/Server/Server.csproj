@@ -33,10 +33,6 @@
     <PackageReference Include="Microsoft.Owin" Version="3.0.1" />
     <PackageReference Include="Microsoft.Owin.Cors" Version="3.0.1" />
     <PackageReference Include="Microsoft.Owin.Host.SystemWeb" Version="3.0.1" />
-    <PackageReference Include="MirrorSharp.Common" Version="2.2.7" />
-    <PackageReference Include="MirrorSharp.FSharp" Version="0.22.0" />
-    <PackageReference Include="MirrorSharp.Owin" Version="2.3.3" />
-    <PackageReference Include="MirrorSharp.VisualBasic" Version="2.1.1" />
     <PackageReference Include="Mono.Cecil" Version="0.11.4" />
     <PackageReference Include="SharpDisasm" Version="1.1.11" />
     <PackageReference Include="SharpYaml" Version="1.6.2" />
@@ -49,6 +45,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\#external\mirrorsharp\Common\Common.csproj" />
+    <ProjectReference Include="..\..\#external\mirrorsharp\FSharp\FSharp.csproj" />
+    <ProjectReference Include="..\..\#external\mirrorsharp\IL\IL.csproj" />
+    <ProjectReference Include="..\..\#external\mirrorsharp\VisualBasic\VisualBasic.csproj" />
+    <ProjectReference Include="..\..\#external\mirrorsharp\Owin\Owin.csproj" />
     <ProjectReference Include="..\..\#external\SourcePath\Roslyn\Roslyn.csproj" />
     <ProjectReference Include="..\Runtime\Runtime.csproj" />
   </ItemGroup>
