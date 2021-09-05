@@ -43,6 +43,10 @@ namespace SharpLab.Server.Common {
                    .As<ILanguageAdapter>()
                    .SingleInstance();
 
+            builder.RegisterType<ILAdapter>()
+                .As<ILanguageAdapter>()
+                .SingleInstance();
+
             RegisterConfiguration(builder);
         }
 
