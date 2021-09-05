@@ -16,6 +16,10 @@ const code = asLookup({
     [languages.vb]: 'Imports System\r\nPublic Class C\r\n    Public Sub M()\r\n    End Sub\r\nEnd Class',
     [languages.fsharp]: 'open System\r\ntype C() =\r\n    member _.M() = ()',
     [languages.il]: normalize(`
+        .assembly A
+        {
+        }
+
         .class public auto ansi abstract sealed beforefieldinit C
             extends [System.Private.CoreLib]System.Object
         {
@@ -33,6 +37,10 @@ const code = asLookup({
     [`${languages.vb}.run`]: 'Imports System\r\nPublic Module Program\r\n    Public Sub Main()\r\n        Console.WriteLine("🌄")\r\n    End Sub\r\nEnd Module',
     [`${languages.fsharp}.run`]: 'printfn "🌄"',
     [`${languages.il}.run`]: normalize(`
+        .assembly ConsoleApp
+        {
+        }
+
         .class public auto ansi abstract sealed beforefieldinit Program
             extends [System.Private.CoreLib]System.Object
         {

@@ -8,6 +8,7 @@ namespace SharpLab.Server.Compilation.Internal {
 
         private ILLineColumnMap(IReadOnlyList<Line> map, int textLength) {
             _map = map;
+            TextLength = textLength;
         }
 
         public int GetOffset(int line, int column) {

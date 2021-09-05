@@ -35,12 +35,14 @@ const dictionaries = asLookup({
     [languages.il]: build(
         'Main ()',
         'Program',
-        '.class public auto ansi abstract sealed beforefieldinit',
-        'extends [System.Private.CoreLib]System.Object',
-        '.method public hidebysig',
+        'ConsoleApp',
         'cil managed',
         '.entrypoint',
-        '.maxstack'
+        '.maxstack',
+        '.assembly',
+        '.class public auto ansi abstract sealed beforefieldinit',
+        'extends [System.Private.CoreLib]System.Object',
+        '.method public hidebysig'
     )
 });
 
