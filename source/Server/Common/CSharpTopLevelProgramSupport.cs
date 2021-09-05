@@ -10,6 +10,7 @@ using SharpLab.Server.MirrorSharp;
 
 namespace SharpLab.Server.Compilation {
     using static OutputKind;
+    using LanguageNames = Common.LanguageNames;
 
     public class CSharpTopLevelProgramSupport : ICSharpTopLevelProgramSupport {
         private static class DiagnosticIds {

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using SharpLab.Server.Common;
 using SharpLab.Tests.Internal;
 using SharpLab.Tests.Of.Container.Internal;
 using Xunit;
@@ -28,7 +29,7 @@ namespace SharpLab.Tests.Of.Container {
                 }
             ";
 
-            var output = await ContainerTestDriver.CompileAndExecuteAsync(code, "IL");
+            var output = await ContainerTestDriver.CompileAndExecuteAsync(code, LanguageNames.IL);
 
             Assert.Equal("🌄", output);
         }

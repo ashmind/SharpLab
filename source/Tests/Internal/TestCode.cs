@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis;
 using Pedantic.IO;
 using SharpLab.Server.Common;
 using Xunit;

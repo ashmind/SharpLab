@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using MirrorSharp.Advanced.EarlyAccess;
 using MirrorSharp.Testing;
 using Newtonsoft.Json.Linq;
@@ -25,7 +24,7 @@ namespace SharpLab.Tests {
         [InlineData("class C { void M((int, string) t) {} }")] // Tuples, https://github.com/ashmind/SharpLab/issues/139
         public async Task SlowUpdate_DecompilesSimpleCodeWithoutErrors(string code) {
             var driver = TestEnvironment.NewDriver().SetText(code);
-            await driver.SendSetOptionsAsync(LanguageNames.CSharp, LanguageNames.CSharp);
+            await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.CSharp);
 
             var result = await driver.SendSlowUpdateAsync<string>();
             var errors = result.JoinErrors();

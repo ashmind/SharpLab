@@ -9,7 +9,7 @@ using SharpLab.Server.Decompilation.Internal;
 namespace SharpLab.Server.Decompilation {
     public class CSharpDecompiler : IDecompiler {
         private static readonly CSharpFormattingOptions FormattingOptions = CreateFormattingOptions();
-        private static readonly DecompilerSettings DecompilerSettings = new DecompilerSettings(ICSharpCode.Decompiler.CSharp.LanguageVersion.CSharp1) {
+        private static readonly DecompilerSettings DecompilerSettings = new(ICSharpCode.Decompiler.CSharp.LanguageVersion.CSharp1) {
             ArrayInitializers = false,
             AutomaticEvents = false,
             DecimalConstants = false,

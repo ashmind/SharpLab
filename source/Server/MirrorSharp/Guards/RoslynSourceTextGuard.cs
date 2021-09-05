@@ -10,7 +10,7 @@ namespace SharpLab.Server.MirrorSharp.Guards {
         private const int BracketsNestingLimit = 5;
         private const int BracketsAdjacentPairLimit = 4;
 
-        private static readonly Pool<ValidatingSourceTextWriter> _validatingWriterPool = new Pool<ValidatingSourceTextWriter>(
+        private static readonly Pool<ValidatingSourceTextWriter> _validatingWriterPool = new(
             () => new ValidatingSourceTextWriter()
         );
 

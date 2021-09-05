@@ -22,7 +22,7 @@ namespace SharpLab.Server.Common.Languages {
         private static readonly ImmutableArray<KeyValuePair<string, object>> ReleasePreprocessorSymbols = PreprocessorSymbols.Release.Select(s => KeyValuePair.Create(s, (object)true)).ToImmutableArray();
 
         private readonly IAssemblyReferenceCollector _referenceCollector;
-        private readonly AssemblyReferenceDiscoveryTaskSource _assemblyReferenceDiscoveryTaskSource = new AssemblyReferenceDiscoveryTaskSource();
+        private readonly AssemblyReferenceDiscoveryTaskSource _assemblyReferenceDiscoveryTaskSource = new();
         private readonly IAssemblyDocumentationResolver _documentationResolver;
 
         public VisualBasicAdapter(IAssemblyReferenceCollector referenceCollector, IAssemblyDocumentationResolver documentationResolver) {

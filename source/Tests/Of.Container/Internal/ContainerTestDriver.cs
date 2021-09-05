@@ -24,6 +24,7 @@ using SharpLab.Server.Compilation;
 using SharpLab.Server.Execution;
 using SharpLab.Server.Execution.Container;
 using SharpLab.Tests.Internal;
+using LanguageNames = SharpLab.Server.Common.LanguageNames;
 
 namespace SharpLab.Tests.Of.Container.Internal {
     public class ContainerTestDriver {
@@ -60,7 +61,7 @@ namespace SharpLab.Tests.Of.Container.Internal {
                 );
             }
 
-            if (languageName == "IL") {
+            if (languageName == LanguageNames.IL) {
                 return PrepareNonRoslynSessionAsync(
                     new MirrorSharpOptions().DisableCSharp().EnableIL(),
                     code

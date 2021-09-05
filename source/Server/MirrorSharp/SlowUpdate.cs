@@ -19,6 +19,7 @@ using SharpLab.Server.Execution;
 using SharpLab.Server.Execution.Container;
 using SharpLab.Server.Explanation;
 using SharpLab.Server.Monitoring;
+using LanguageNames = SharpLab.Server.Common.LanguageNames;
 
 namespace SharpLab.Server.MirrorSharp {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
@@ -64,6 +65,9 @@ namespace SharpLab.Server.MirrorSharp {
             _topLevelProgramSupport.UpdateOutputKind(session, diagnostics);
 
             if (targetName is TargetNames.Ast or TargetNames.Explain) {
+                if (session.LanguageName == LanguageNames.IL)
+                    throw new NotSupportedException($"Target '{targetName}' is not (yet?) supported for IL.");
+
                 var astTarget = _astTargets[session.LanguageName];
                 var ast = await astTarget.GetAstAsync(session, cancellationToken).ConfigureAwait(false);
                 if (targetName == TargetNames.Explain)

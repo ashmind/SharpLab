@@ -21,9 +21,9 @@ namespace SharpLab.Server.Decompilation.Internal {
          .ToDictionary(t => t.value, t => t.name);
 
         private static readonly ConcurrentDictionary<Type, Lazy<Func<SyntaxNode, SyntaxNode, string>>> CompiledSyntaxNodeGetParentPropertyName 
-            = new ConcurrentDictionary<Type, Lazy<Func<SyntaxNode, SyntaxNode, string>>>();
+            = new();
         private static readonly ConcurrentDictionary<Type, Lazy<Func<SyntaxToken, SyntaxNode, string>>> CompiledSyntaxTokenGetParentPropertyName
-            = new ConcurrentDictionary<Type, Lazy<Func<SyntaxToken, SyntaxNode, string>>>();
+            = new();
         // ReSharper restore HeapView.ObjectAllocation
         // ReSharper restore HeapView.ObjectAllocation.Evident
 

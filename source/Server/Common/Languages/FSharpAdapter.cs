@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
 using JetBrains.Annotations;
-using Microsoft.CodeAnalysis;
 using Microsoft.FSharp.Core;
 using MirrorSharp;
 using MirrorSharp.Advanced;
@@ -18,7 +17,7 @@ using SharpLab.Server.Compilation.Internal;
 namespace SharpLab.Server.Common.Languages {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class FSharpAdapter : ILanguageAdapter {
-        private readonly AssemblyReferenceDiscoveryTaskSource _referencedAssembliesTaskSource = new AssemblyReferenceDiscoveryTaskSource();
+        private readonly AssemblyReferenceDiscoveryTaskSource _referencedAssembliesTaskSource = new();
         private readonly IAssemblyReferenceCollector _referenceCollector;
 
         public string LanguageName => LanguageNames.FSharp;

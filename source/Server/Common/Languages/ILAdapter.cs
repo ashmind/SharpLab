@@ -11,7 +11,7 @@ namespace SharpLab.Server.Common.Languages {
     public class ILAdapter : ILanguageAdapter {
         private readonly AssemblyReferenceDiscoveryTaskSource _referencedAssembliesTaskSource = new();
 
-        public string LanguageName => "IL";
+        public string LanguageName => LanguageNames.IL;
 
         public void SlowSetup(MirrorSharpOptions options) {
             options.EnableIL();
