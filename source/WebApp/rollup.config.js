@@ -27,7 +27,8 @@ export default {
         }),
         pluginCommonJS({
             include: [
-                'node_modules/**'
+                'node_modules/**',
+                '../#external/mirrorsharp/WebAssets/dist/node_modules/**'
             ]
         }),
         ...(process.env.NODE_ENV === 'ci' ? [terser()] : [])

@@ -2,7 +2,7 @@
     csharp: 'C#',
     vb:     'Visual Basic',
     fsharp: 'F#',
-    IL:     'IL'
+    il:     'IL'
 } as const);
 
 export type LanguageName = typeof languages[keyof typeof languages];
