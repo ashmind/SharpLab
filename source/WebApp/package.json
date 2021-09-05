@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "preinstall": "ts-node-script ./scripts/preinstall.ts",
     "build": "ts-node-script ./scripts.ts build",
     "lint": "ts-node-script ./scripts.ts ts-lint",
     "test": "jest",

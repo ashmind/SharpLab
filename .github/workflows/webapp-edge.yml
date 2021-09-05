@@ -30,9 +30,24 @@ jobs:
       - run: 'git show ${{ github.sha }} --format="::set-output name=version_number::%cd" --date=format:%Y-%m-%d-%H%M --no-patch'
         id: version
 
-      - run: npm ci
+      - name: Run npm ci (mirrorsharp)
+        run: npm ci
+        working-directory: source/#external/mirrorsharp/WebAssets
+        
+      - name: Run npm run build (mirrorsharp)
+        run: npm run build
+        working-directory: source/#external/mirrorsharp/WebAssets
+
+      - name: Run npm install --production (mirrorsharp/dist)
+        run: npm install --production
+        working-directory: source/#external/mirrorsharp/WebAssets/dist
+
+      - run: npm ci      
+      
       # DEBUG
+      - run: readlink -f ls /home/runner/work/SharpLab/SharpLab/source/WebApp/node_modules/mirrorsharp
       - run: ls /home/runner/work/SharpLab/SharpLab/source/WebApp/node_modules/mirrorsharp
+      
       - run: npm run build-ci
         env:
           NODE_ENV: ci
