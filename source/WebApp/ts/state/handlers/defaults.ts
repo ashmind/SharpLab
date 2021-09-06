@@ -21,7 +21,7 @@ const code = asLookup({
         }
 
         .class public auto ansi abstract sealed beforefieldinit C
-            extends [System.Private.CoreLib]System.Object
+            extends System.Object
         {
             .method public hidebysig static
                 void M () cil managed
@@ -42,7 +42,7 @@ const code = asLookup({
         }
 
         .class public auto ansi abstract sealed beforefieldinit Program
-            extends [System.Private.CoreLib]System.Object
+            extends System.Object
         {
             .method public hidebysig static
                 void Main () cil managed

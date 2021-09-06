@@ -41,7 +41,7 @@ const dictionaries = asLookup({
         '.maxstack',
         '.assembly',
         '.class public auto ansi abstract sealed beforefieldinit',
-        'extends [System.Private.CoreLib]System.Object',
+        'extends System.Object',
         '.method public hidebysig',
         'call void [System.Console]System.Console::WriteLine('
     )
