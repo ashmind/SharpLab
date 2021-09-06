@@ -13,6 +13,8 @@ using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.Monitoring;
 using IAssemblyResolver = Mono.Cecil.IAssemblyResolver;
 using SharpLab.Server.Execution;
+using MirrorSharp.IL.Advanced;
+using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Server.AspNetCore.Execution {
     public abstract class ExecutorBase : IExecutor {
@@ -43,6 +45,14 @@ namespace SharpLab.Server.AspNetCore.Execution {
         }
 
         public ExecutionResult Execute(CompilationStreamPair streams, IWorkSession session) {
+            if (session.IsIL()) {
+                streams.Dispose();
+                return new ExecutionResult(
+                    new[] { new SimpleInspection("Exception", "For security reasons, .NET Framework Run mode does not support IL.") },
+                    Array.Empty<Flow.Step>()
+                );
+            }
+
             var readerParameters = new ReaderParameters {
                 ReadSymbols = streams.SymbolStream != null,
                 SymbolStream = streams.SymbolStream,

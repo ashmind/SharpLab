@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using MirrorSharp.Testing;
 using Xunit;
 using SharpLab.Server.Common;

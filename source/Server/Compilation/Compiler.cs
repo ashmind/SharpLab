@@ -61,8 +61,12 @@ namespace SharpLab.Server.Compilation {
             return (true, true);
         }
 
-        private async Task<bool> TryCompileFSharpToStreamAsync(MemoryStream assemblyStream, IWorkSession session,
-            IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
+        private async Task<bool> TryCompileFSharpToStreamAsync(
+            MemoryStream assemblyStream,
+            IWorkSession session,
+            IList<Diagnostic> diagnostics,
+            CancellationToken cancellationToken
+        ) {
             var fsharp = session.FSharp();
 
             // GetLastParseResults are guaranteed to be available here as MirrorSharp's SlowUpdate does the parse
@@ -89,15 +93,15 @@ namespace SharpLab.Server.Compilation {
 
         private bool TryCompileILToStream(MemoryStream assemblyStream, IWorkSession session, IList<Diagnostic> diagnostics) {
             var il = (IILSessionInternal)session.IL();
-            var ilBuilder = il.GetTextBuilderForReadsOnly();
+            var ilText = il.GetTextBuilderForReadsOnly();
 
             // TODO: See if we can get offset from the library instead
-            var lineColumnMap = ILLineColumnMap.BuildFor(ilBuilder);
+            var lineColumnMap = ILLineColumnMap.BuildFor(ilText);
             var logger = new ILCompilationLogger(diagnostics, lineColumnMap);
             var driver = new Driver(logger, il.Target, showParser: false, debuggingInfo: false, showTokens: false);
 
             using var sourceStream = (RecyclableMemoryStream)_memoryStreamManager.GetStream("Compiler-IL", il.TextLength);
-            foreach (var chunk in il.GetTextBuilderForReadsOnly().GetChunks()) {
+            foreach (var chunk in ilText.GetChunks()) {
                 Encoding.UTF8.GetBytes(chunk.Span, sourceStream);
             }
             sourceStream.Position = 0;

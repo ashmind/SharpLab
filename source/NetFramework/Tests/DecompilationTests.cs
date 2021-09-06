@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using MirrorSharp.Advanced.EarlyAccess;
 using MirrorSharp.Testing;
 using Newtonsoft.Json.Linq;
@@ -107,6 +106,20 @@ namespace SharpLab.Tests {
         [InlineData("FSharp.SimpleMethod.fs2cs")] // https://github.com/ashmind/SharpLab/issues/119
         [InlineData("FSharp.NotNull.fs2cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForFSharp(string resourceName) {
+            var data = TestCode.FromResource(resourceName);
+            var driver = await NewTestDriverAsync(data);
+
+            var result = await driver.SendSlowUpdateAsync<string>();
+            var errors = result.JoinErrors();
+
+            var decompiledText = result.ExtensionResult?.Trim();
+            Assert.True(string.IsNullOrEmpty(errors), errors);
+            data.AssertIsExpected(decompiledText, _output);
+        }
+
+        [Theory]
+        [InlineData("IL.EmptyMethod.il")]
+        public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForIL(string resourceName) {
             var data = TestCode.FromResource(resourceName);
             var driver = await NewTestDriverAsync(data);
 

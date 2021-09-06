@@ -6,8 +6,8 @@ using Mono.Cecil;
 
 namespace SharpLab.Server.Common {
     public class PreCachedAssemblyResolver : ICSharpCode.Decompiler.Metadata.IAssemblyResolver, Mono.Cecil.IAssemblyResolver {
-        private readonly ConcurrentDictionary<string, PEFile> _peFileCache = new ConcurrentDictionary<string, PEFile>();
-        private readonly ConcurrentDictionary<string, AssemblyDefinition> _cecilCache = new ConcurrentDictionary<string, AssemblyDefinition>();
+        private readonly ConcurrentDictionary<string, PEFile> _peFileCache = new();
+        private readonly ConcurrentDictionary<string, AssemblyDefinition> _cecilCache = new();
 
         public PreCachedAssemblyResolver(IReadOnlyCollection<ILanguageAdapter> languages) {
             foreach (var language in languages) {

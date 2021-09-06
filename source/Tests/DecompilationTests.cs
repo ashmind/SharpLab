@@ -123,7 +123,6 @@ namespace SharpLab.Tests {
             data.AssertIsExpected(decompiledText, _output);
         }
 
-
         [Theory]
         [InlineData("IL.EmptyMethod.il")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForIL(string resourceName) {

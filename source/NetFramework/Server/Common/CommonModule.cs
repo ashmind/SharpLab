@@ -33,6 +33,10 @@ namespace SharpLab.Server.Common {
             builder.RegisterType<FSharpAdapter>()
                    .As<ILanguageAdapter>()
                    .SingleInstance();
+
+            builder.RegisterType<ILAdapter>()
+                   .As<ILanguageAdapter>()
+                   .SingleInstance();
         }
 
         private void RegisterExternals(ContainerBuilder builder) {
