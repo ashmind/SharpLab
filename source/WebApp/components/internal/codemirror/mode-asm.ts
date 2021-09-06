@@ -8,11 +8,14 @@ CodeMirror.defineMode('asm', () => {
         builtin: instructionsRegex
     };
     const specifiers = [ 'byte', 'dword', 'ptr', 'qword', 'short', 'tbyte', 'word' ];
-    const registers = [ 'ah', 'al', 'ax', 'bh', 'bl', 'bp', 'bpl', 'bx', 'ch', 'cl', 'cx', 'dh', 'di', 'dil',
-        'dl', 'dx', 'eax', 'ebp', 'ebx', 'ecx', 'edi', 'edx', 'esi', 'esp', 'rax', 'rbp', 'rbx', 'rcx', 'rdi',
-        'rdx', 'rsi', 'rsp', 'r8', 'r9', 'r10', 'r11', 'r12', 'r13', 'r14', 'r15', 'r8b', 'r9b', 'r10b', 'r11b',
-        'r13b', 'r14b', 'r15b', 'r8d', 'r9d', 'r10d', 'r11d', 'r12d', 'r13d', 'r14d', 'r15d', 'r8w', 'r9w',
-        'r10w', 'r11w', 'r12w', 'r13w', 'r14w', 'r15w' ];
+
+    // In order to match longest possible register name, this array is pre-sorted using naturalSort function:
+    // https://github.com/Bill4Time/javascript-natural-sort/blob/master/naturalSort.js
+    const registers = [ 'rsp', 'rsi', 'rdx', 'rdi', 'rcx', 'rbx', 'rbp', 'rax', 'r15w', 'r15d', 'r15b', 'r15',
+        'r14w', 'r14d', 'r14b', 'r14', 'r13w', 'r13d', 'r13b', 'r13', 'r12w', 'r12d', 'r12', 'r11w', 'r11d', 'r11b',
+        'r11', 'r10w', 'r10d', 'r10b', 'r10', 'r9w', 'r9d', 'r9b', 'r9', 'r8w', 'r8d', 'r8b', 'r8', 'esp', 'esi',
+        'edx', 'edi', 'ecx', 'ebx', 'ebp', 'eax', 'dx', 'dl', 'dil', 'di', 'dh', 'cx', 'cl', 'ch', 'bx', 'bpl',
+        'bp', 'bl', 'bh', 'ax', 'al', 'ah' ];
 
     return {
         startState() {
