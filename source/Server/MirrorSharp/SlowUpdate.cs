@@ -66,7 +66,7 @@ namespace SharpLab.Server.MirrorSharp {
 
             if (targetName is TargetNames.Ast or TargetNames.Explain) {
                 if (session.LanguageName == LanguageNames.IL)
-                    return $"Target '{targetName}' is not (yet?) supported for IL.";
+                    throw new NotSupportedException($"Target '{targetName}' is not (yet?) supported for IL.");
 
                 var astTarget = _astTargets[session.LanguageName];
                 var ast = await astTarget.GetAstAsync(session, cancellationToken).ConfigureAwait(false);
