@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Docker.DotNet;
@@ -11,6 +12,12 @@ using Microsoft.Extensions.Logging;
 namespace SharpLab.Container.Manager.Azure {
     public class ContainerCountMetricReporter : BackgroundService {
         private static readonly MetricIdentifier ContainerCountMetric = new("Custom Metrics", "Container Count");
+
+        private static readonly ContainersListParameters RunningOnlyListParameters = new() {
+            Filters = new Dictionary<string, IDictionary<string, bool>> {
+                { "status", new Dictionary<string, bool> { { "running", true } } }
+            }
+        };
 
         private readonly DockerClient _dockerClient;
         private readonly TelemetryClient _telemetryClient;
@@ -29,7 +36,7 @@ namespace SharpLab.Container.Manager.Azure {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken) {
             while (!stoppingToken.IsCancellationRequested) {
                 try {
-                    var containers = await _dockerClient.Containers.ListContainersAsync(new ContainersListParameters { All = true });
+                    var containers = await _dockerClient.Containers.ListContainersAsync(RunningOnlyListParameters);
 
                     _telemetryClient.GetMetric(ContainerCountMetric).TrackValue(containers.Count);
                 }
