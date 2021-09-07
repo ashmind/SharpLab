@@ -4,6 +4,7 @@ using System.Reflection;
 using MirrorSharp.Advanced;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Mono.Cecil.Rocks;
 using SharpLab.Runtime.Internal;
 using SharpLab.Server.Common;
 
@@ -96,6 +97,8 @@ namespace SharpLab.Server.Execution.Internal {
             if (!method.HasBody || method.Body.Instructions.Count == 0)
                 return;
 
+            method.Body.SimplifyMacros();
+
             var il = method.Body.GetILProcessor();
             var instructions = il.Body.Instructions;
             var lastLine = (int?)null;
@@ -130,6 +133,8 @@ namespace SharpLab.Server.Execution.Internal {
             }
 
             RewriteExceptionHandlers(il, flow);
+
+            method.Body.OptimizeMacros();
         }
 
         private void TryInsertReportMethodArguments(ILProcessor il, Instruction instruction, SequencePoint sequencePoint, MethodDefinition method, ReportMethods flow, IWorkSession session, ref int index) {
