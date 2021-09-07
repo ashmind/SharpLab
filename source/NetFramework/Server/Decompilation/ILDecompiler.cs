@@ -22,7 +22,7 @@ namespace SharpLab.Server.Decompilation {
             Argument.NotNull(nameof(streams), streams);
             Argument.NotNull(nameof(codeWriter), codeWriter);
 
-            using (var assemblyFile = new PEFile("", streams.AssemblyStream))
+            using (var assemblyFile = new PEFile("_", streams.AssemblyStream))
             using (var debugInfo = streams.SymbolStream != null ? _debugInfoFactory(streams.SymbolStream) : null) {
                 //#if DEBUG
                 //assembly.Write(@"d:\Temp\assembly\" + System.DateTime.Now.Ticks + "-il.dll");
@@ -33,6 +33,9 @@ namespace SharpLab.Server.Decompilation {
                     DebugInfo = debugInfo,
                     ShowSequencePoints = true
                 };
+
+                disassembler.WriteAssemblyHeader(assemblyFile);
+                output.WriteLine(); // empty line
                 disassembler.WriteModuleContents(assemblyFile);
             }
         }

@@ -2,6 +2,15 @@ type Empty = class end
 
 (* il
 
+.assembly _
+{
+    .custom instance void [FSharp.Core]Microsoft.FSharp.Core.FSharpInterfaceDataVersionAttribute::.ctor(int32, int32, int32) = (
+        01 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00
+    )
+    .hash algorithm 0x<IGNORE> // SHA1
+    .ver 0:0:0:0
+}
+
 .class private auto ansi '<Module>'
     extends [mscorlib]System.Object
 {
