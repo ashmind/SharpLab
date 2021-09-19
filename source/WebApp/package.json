@@ -6,6 +6,7 @@
     "build": "ts-node-script ./scripts.ts build",
     "lint": "ts-node-script ./scripts.ts ts-lint",
     "test": "jest",
+    "test:skip-render": "cross-env TEST_SKIP_RENDER=true jest --testPathIgnorePatterns rendering --maxWorkers=1",
     "start": "ts-node-script ./scripts.ts start --watch",
     "build-ci": "ts-node-script ./scripts.ts build-ci"
   },
@@ -30,8 +31,7 @@
       "<rootDir>/tests/setup.ts",
       "<rootDir>/tests/rendering/setup.ts"
     ],
-    "globalSetup": "<rootDir>/tests/rendering/global-setup.ts",
-    "globalTeardown": "<rootDir>/tests/rendering/global-teardown.ts",
+    "globalTeardown": "<rootDir>/tests/rendering/docker/global-teardown.ts",
     "testMatch": [
       "<rootDir>/tests/**/*.tests.ts"
     ],
@@ -67,6 +67,7 @@
     "adm-zip": "0.5.1",
     "autoprefixer": "9.7.6",
     "babel-jest": "26.0.1",
+    "cross-env": "7.0.3",
     "eslint": "6.8.0",
     "eslint-plugin-import": "2.18.2",
     "execa": "5.0.0",

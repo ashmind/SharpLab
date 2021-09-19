@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import puppeteer, { Page } from 'puppeteer';
-import port from './port';
+import lazyRenderSetup from './docker/lazy-setup';
 
 function getCachePath(url: string) {
     return path.join(__dirname, '__request_cache__', url.replace(/[^a-z._=+-]/ig, '_') + '.json');
@@ -91,6 +91,7 @@ async function setupRequestInterception(page: Page) {
     };
 }
 
+export { shouldSkipRender } from './should-skip';
 export default async function render({
     html,
     bodyClass = '',
@@ -108,6 +109,8 @@ export default async function render({
     debug?: boolean;
 }) {
     const content = `<!DOCTYPE html><html><head></head><body class="${bodyClass}">${html}</body></html>`;
+
+    const { port } = await lazyRenderSetup();
 
     const browser = await puppeteer.connect({ browserURL: `http://localhost:${port}` });
     const page = await browser.newPage();

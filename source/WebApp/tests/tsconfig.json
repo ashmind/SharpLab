@@ -1,13 +1,7 @@
 {
+    "extends": "../tsconfig.json",
     "compilerOptions": {
-        "target": "es2019",
-        "module": "ESNext",
-        "moduleResolution": "node",
-        "noEmit": true,
-        "strict": true,
-        "importsNotUsedAsValues": "error",
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true
+        "module": "esnext"
     },
     "include": [
         ".",

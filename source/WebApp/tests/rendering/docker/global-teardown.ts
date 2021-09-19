@@ -1,8 +1,12 @@
 import execa from 'execa';
-import { global } from './global-setup';
+import { shouldSkipRender } from '../should-skip';
+import { getContainerId } from './container-id';
 
 export default async () => {
-    const { chromeContainerId } = global;
+    if (shouldSkipRender)
+        return;
+
+    const chromeContainerId = getContainerId();
     if (!chromeContainerId)
         return;
     await execa('docker', [
