@@ -6,6 +6,7 @@ on:
     - '.github/workflows/webapp-edge.yml'
     - 'source/WebApp/**'
   pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
