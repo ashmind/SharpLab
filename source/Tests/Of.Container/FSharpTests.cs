@@ -8,7 +8,7 @@ namespace SharpLab.Tests.Of.Container {
     [Collection(TestCollectionNames.Execution)]
     public class FSharpTests {
         [Fact]
-        public async Task SlowUpdate_ExecutesFSharp() {
+        public async Task FSharp_Simple() {
             var code = @"
                 open System
                 printf ""Test""
@@ -20,7 +20,7 @@ namespace SharpLab.Tests.Of.Container {
         }
 
         [Fact]
-        public async Task SlowUpdate_ExecutesFSharp_WithExplicitEntryPoint() {
+        public async Task FSharp_WithExplicitEntryPoint() {
             var code = @"
                 open System
 

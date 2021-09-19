@@ -8,7 +8,7 @@ namespace SharpLab.Tests.Of.Container {
     [Collection(TestCollectionNames.Execution)]
     public class ILTests {
         [Fact]
-        public async Task SlowUpdate_ExecutesIL() {
+        public async Task IL_Simple() {
             var code = @"
                 .assembly ConsoleApp
                 {

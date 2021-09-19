@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace SharpLab.Server.Common.Internal {
     public class AssemblyReferenceCollector : IAssemblyReferenceCollector {
-        public ISet<Assembly> SlowGetAllReferencedAssembliesRecursive(params Assembly[] assemblies) {
+        public IReadOnlySet<Assembly> SlowGetAllReferencedAssembliesRecursive(params Assembly[] assemblies) {
             var set = new HashSet<Assembly>();
             foreach (var assembly in assemblies) {
                 SlowCollectAllReferencedAssemblies(assembly, set);

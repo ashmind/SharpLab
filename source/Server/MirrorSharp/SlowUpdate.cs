@@ -59,6 +59,7 @@ namespace SharpLab.Server.MirrorSharp {
         }
 
         public async Task<object?> ProcessAsync(IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
+            //AssemblyLog.Enable(n => $"assembly/{n}.dll");
             PerformanceLog.Checkpoint("SlowUpdate.ProcessAsync.Start");
             var targetName = GetAndEnsureTargetName(session);
 
