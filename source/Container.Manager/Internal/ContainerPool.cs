@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharpLab.Container.Manager.Internal {
     public class ContainerPool {
-        private readonly Channel<ActiveContainer> _preallocated = Channel.CreateBounded<ActiveContainer>(new BoundedChannelOptions(5) {
+        private readonly Channel<ActiveContainer> _preallocated = Channel.CreateBounded<ActiveContainer>(new BoundedChannelOptions(2) {
             FullMode = BoundedChannelFullMode.Wait,
             SingleWriter = true
         });
