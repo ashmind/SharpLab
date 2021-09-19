@@ -5,7 +5,7 @@
   "scripts": {
     "build": "ts-node-script ./scripts.ts build",
     "lint": "ts-node-script ./scripts.ts ts-lint",
-    "test": "jest",
+    "test": "jest --maxWorkers=1",
     "test:skip-render": "cross-env TEST_SKIP_RENDER=true jest --testPathIgnorePatterns rendering --maxWorkers=1",
     "start": "ts-node-script ./scripts.ts start --watch",
     "build-ci": "ts-node-script ./scripts.ts build-ci"

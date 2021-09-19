@@ -3,6 +3,10 @@ import fetch from 'node-fetch';
 import { shouldSkipRender } from '../should-skip';
 import { setContainerIdFromSetup } from './container-id';
 
+// TODO: Investigate concurrency issues here.
+// For now test workers are limited to 1 in package.json,
+// so the setup state "lock" is not really applied.
+
 type RenderSetupState = 'none' | 'pending' | 'ready';
 function setSetupState(state: RenderSetupState) {
     process.env.TEST_DOCKER_SETUP_STATE = state;
