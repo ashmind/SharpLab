@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
-        "target": "ES2019",
+        "target": "es2019",
+        "lib": ["dom", "dom.iterable", "es2019", "es2020.string"],
         "moduleResolution": "node",
         "allowJs": true,
         "checkJs": true,
