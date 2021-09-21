@@ -5,7 +5,6 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Docker.DotNet;
 using SharpLab.Container.Manager.Internal;
 using Xunit;
 
@@ -28,7 +27,7 @@ namespace SharpLab.Tests.Of.Container.Unit {
                 Debugger.IsAttached ? TimeSpan.FromMinutes(15) : TimeSpan.FromSeconds(30)
             );
             var result = await reader.ReadOutputAsync(
-                new MultiplexedStream(inputStream, multiplexed: false),
+                inputStream,
                 outputBuffer,
                 Encoding.UTF8.GetBytes("START"),
                 Encoding.UTF8.GetBytes("END"),

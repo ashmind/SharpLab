@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using Microsoft.Diagnostics.Runtime;
@@ -13,6 +14,8 @@ using SharpLab.Runtime.Internal;
 
 namespace SharpLab.Container {
     public static class Program {
+        public static string ExeFileName { get; } = Path.ChangeExtension(Path.GetFileName(typeof(Program).Assembly.Location), "exe");
+
         public static void Main() {
             try {
                 SafeMain();
@@ -23,6 +26,7 @@ namespace SharpLab.Container {
         }
 
         private static void SafeMain() {
+            Console.OutputEncoding = Encoding.UTF8;
             using var stdin = Console.OpenStandardInput(1024);
             using var stdout = Console.OpenStandardOutput(1024);
 

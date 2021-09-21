@@ -1,5 +1,6 @@
 using System;
-using Docker.DotNet;
+using System.IO;
+using Fragile;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
@@ -17,6 +18,15 @@ namespace SharpLab.Container.Manager {
         public void ConfigureServices(IServiceCollection services)
         {
             // TODO: proper DI, e.g. Autofac
+            services.AddSingleton(new ProcessRunnerConfiguration(
+                workingDirectoryPath: AppContext.BaseDirectory,
+                exeFileName: Container.Program.ExeFileName,
+                workingDirectoryAccessCapabilitySid: "S-1-15-3-1024-4233803318-1181731508-1220533431-3050556506-2713139869-1168708946-594703785-1824610955",
+                maximumMemorySize: 15 * 1024 * 1024,
+                maximumCpuPercentage: 1
+            ));
+            services.AddSingleton<IProcessRunner, ProcessRunner>();
+
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
             services.AddSingleton<StatusEndpoint>();
@@ -26,9 +36,6 @@ namespace SharpLab.Container.Manager {
             services.AddSingleton(new ExecutionEndpointSettings(authorizationToken));
             services.AddSingleton<ExecutionEndpoint>();
 
-            services.AddSingleton(new DockerClientConfiguration().CreateClient());
-
-            services.AddSingleton<ContainerNameFormat>();
             services.AddSingleton<ContainerPool>();
 
             services.AddHostedService<ContainerAllocationWorker>();

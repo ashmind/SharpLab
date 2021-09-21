@@ -1,13 +1,17 @@
-using Docker.DotNet;
+using System.IO;
+using Fragile;
 
 namespace SharpLab.Container.Manager.Internal {
-    public class ActiveContainer {
-        public ActiveContainer(string containerId, MultiplexedStream stream) {
-            ContainerId = containerId;
-            Stream = stream;
+    public class ActiveContainer
+    {
+        public ActiveContainer(
+            IProcessContainer container
+        ) {
+            Container = container;
         }
 
-        public string ContainerId { get; }
-        public MultiplexedStream Stream { get; }
+        public IProcessContainer Container { get; }
+        public Stream InputStream => Container.InputStream;
+        public Stream OutputStream => Container.OutputStream;
     }
 }

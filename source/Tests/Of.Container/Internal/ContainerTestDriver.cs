@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
-using Docker.DotNet;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.IO;
@@ -149,7 +148,7 @@ namespace SharpLab.Tests.Of.Container.Internal {
                 stdout.Seek(0, SeekOrigin.Begin);
                 var stdoutReader = new StdoutReader();
                 var outputResult = await stdoutReader.ReadOutputAsync(
-                    new MultiplexedStream(stdout, multiplexed: false),
+                    stdout,
                     new byte[stdout.Length],
                     Encoding.UTF8.GetBytes(startMarker.ToString()),
                     Encoding.UTF8.GetBytes(endMarker.ToString()),

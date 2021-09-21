@@ -16,7 +16,7 @@ namespace SharpLab.Container.Manager.Internal {
         }
 
         public async Task<ExecutionOutputResult> ExecuteInContainerAsync(
-            ActiveContainer container,            
+            ActiveContainer container,
             byte[] assemblyBytes,
             byte[] outputBufferBytes,
             bool includePerformance,
@@ -24,12 +24,12 @@ namespace SharpLab.Container.Manager.Internal {
         ) {
             var outputStartMarker = Guid.NewGuid();
             var outputEndMarker = Guid.NewGuid();
-            await _stdinWriter.WriteCommandAsync(container.Stream, new ExecuteCommand(
+            _stdinWriter.WriteCommand(container.InputStream, new ExecuteCommand(
                 assemblyBytes,
                 outputStartMarker,
                 outputEndMarker,
                 includePerformance
-            ), cancellationToken);
+            ));
 
             const int OutputMarkerLength = 36; // length of guid
             byte[]? outputStartMarkerBytes = null;
@@ -43,7 +43,7 @@ namespace SharpLab.Container.Manager.Internal {
 
                 using var executionCancellation = CancellationFactory.ContainerExecution(cancellationToken);
                 return await _stdoutReader.ReadOutputAsync(
-                    container.Stream,
+                    container.Container.OutputStream,
                     outputBufferBytes,
                     outputStartMarkerBytes.AsMemory(0, OutputMarkerLength),
                     outputEndMarkerBytes.AsMemory(0, OutputMarkerLength),

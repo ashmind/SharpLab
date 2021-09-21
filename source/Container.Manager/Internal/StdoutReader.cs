@@ -1,9 +1,8 @@
 using System;
+using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Docker.DotNet;
-using static Docker.DotNet.MultiplexedStream;
 
 namespace SharpLab.Container.Manager.Internal {
     public class StdoutReader {
@@ -12,7 +11,7 @@ namespace SharpLab.Container.Manager.Internal {
         private static readonly byte[] UnexpectedEndOfOutput = Encoding.UTF8.GetBytes("\n(Unexpected end of output)");
 
         public async Task<ExecutionOutputResult> ReadOutputAsync(
-            MultiplexedStream stream,
+            Stream stream,
             byte[] outputBuffer,
             ReadOnlyMemory<byte> outputStartMarker,
             ReadOnlyMemory<byte> outputEndMarker,
@@ -26,20 +25,23 @@ namespace SharpLab.Container.Manager.Internal {
             var cancelled = false;
 
             while (outputEndIndex < 0) {
-                var (read, readCancelled) = await ReadWithCancellationAsync(stream, outputBuffer, currentIndex, outputBuffer.Length - currentIndex, cancellationToken);
-                if (readCancelled) {
+                int readCount;
+                try {
+                    readCount = await stream.ReadAsync(outputBuffer, currentIndex, outputBuffer.Length - currentIndex, cancellationToken);
+                }
+                catch (OperationCanceledException) {
                     cancelled = true;
                     break;
                 }
 
-                if (read.EOF) {
+                if (readCount == 0) {
                     await Task.Delay(10, cancellationToken);
                     continue;
                 }
 
                 if (outputStartIndex == -1) {
                     var startMarkerEndIndex = GetMarkerEndIndex(
-                        outputBuffer, currentIndex, read.Count,
+                        outputBuffer, currentIndex, readCount,
                         outputStartMarker, ref nextStartMarkerIndexToCompare
                     );
                     if (startMarkerEndIndex != -1)
@@ -49,14 +51,14 @@ namespace SharpLab.Container.Manager.Internal {
                 // cannot be else if -- it might have changed inside previous if
                 if (outputStartIndex != -1) {
                     var endMarkerEndIndex = GetMarkerEndIndex(
-                        outputBuffer, currentIndex, read.Count,
+                        outputBuffer, currentIndex, readCount,
                         outputEndMarker, ref nextEndMarkerIndexToCompare
                     );
                     if (endMarkerEndIndex != -1)
                         outputEndIndex = endMarkerEndIndex - outputEndMarker.Length;
                 }
 
-                currentIndex += read.Count;
+                currentIndex += readCount;
                 if (currentIndex >= outputBuffer.Length)
                     break;
             }
@@ -69,22 +71,6 @@ namespace SharpLab.Container.Manager.Internal {
                 return new(outputBuffer.AsMemory(outputStartIndex, currentIndex - outputStartIndex), UnexpectedEndOfOutput);
 
             return new(outputBuffer.AsMemory(outputStartIndex, outputEndIndex - outputStartIndex));
-        }
-
-        // Underlying stream does not handle cancellation correctly by default, see
-        // https://stackoverflow.com/questions/12421989/networkstream-readasync-with-a-cancellation-token-never-cancels
-        private async Task<(ReadResult result, bool cancelled)> ReadWithCancellationAsync(MultiplexedStream stream, byte[] buffer, int index, int count, CancellationToken cancellationToken) {
-            var cancellationTaskSource = new TaskCompletionSource<object?>();
-            using var _ = cancellationToken.Register(() => cancellationTaskSource.SetResult(null));
-
-            var result = await Task.WhenAny(
-                stream.ReadOutputAsync(buffer, index, count, cancellationToken),
-                cancellationTaskSource.Task
-            );
-            if (result == cancellationTaskSource.Task)
-                return (default, true);
-
-            return (await (Task<ReadResult>)result, false);
         }
 
         private static int GetMarkerEndIndex(byte[] outputBuffer, int currentIndex, int length, ReadOnlyMemory<byte> marker, ref int nextMarkerIndexToCompare) {
