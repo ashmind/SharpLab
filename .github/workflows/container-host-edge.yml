@@ -8,6 +8,7 @@ on:
       - 'source/Container/**'
       - 'source/Container.*/**'
       - 'source/Runtime/**'
+      - 'source/#external/Fragile/**'
   pull_request:
 
 jobs:
