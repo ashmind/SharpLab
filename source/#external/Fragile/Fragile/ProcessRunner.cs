@@ -40,7 +40,7 @@ namespace Fragile {
         }
 
         public void InitialSetup() {
-            var workingDirectory = new DirectoryInfo(_configuration.WorkingDirectoryPath);
+            /*var workingDirectory = new DirectoryInfo(_configuration.WorkingDirectoryPath);
             var workingDirectorySecurity = workingDirectory.GetAccessControl();
             workingDirectorySecurity.AddAccessRule(new FileSystemAccessRule(
                 _workingDirectoryAccessCapabilityIdentifier,
@@ -49,7 +49,7 @@ namespace Fragile {
                 PropagationFlags.None,
                 AccessControlType.Allow
             ));
-            workingDirectory.SetAccessControl(workingDirectorySecurity);
+            workingDirectory.SetAccessControl(workingDirectorySecurity);*/
             _initialSetupCompleted = true;
         }
 
