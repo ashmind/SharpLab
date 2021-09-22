@@ -9,7 +9,8 @@ on:
       - 'source/Container.*/**'
       - 'source/Runtime/**'
       - 'source/#external/Fragile/**'
-  pull_request:
+  pull_request:  
+  workflow_dispatch:
 
 jobs:
   build:
