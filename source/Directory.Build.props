@@ -5,7 +5,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>RS1022; CS1030</NoWarn>
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <SolutionDir Condition="'$(SolutionDir)'==''">$(MSBuildThisFileDirectory)</SolutionDir>
     <SourcePathSharpLabTargetFrameworksFix>true</SourcePathSharpLabTargetFrameworksFix>
