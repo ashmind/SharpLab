@@ -29,6 +29,9 @@ jobs:
       # https://github.com/actions/setup-dotnet/issues/155
       - run: dotnet nuget locals all --clear
 
+      # https://github.com/dotnet/sdk/issues/13281
+      - run: dotnet nuget add source https://ci.appveyor.com/nuget/vanara-prerelease
+
       - run: msbuild source/Native.Profiler/Native.Profiler.vcxproj /p:SolutionName=SharpLab /p:Configuration=Release /p:Platform=x64
       - run: dotnet build source/Tests --configuration Release
       # Tests do not reference that one yet
