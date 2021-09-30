@@ -32,6 +32,16 @@ const iconSizes = [
     16, 32, 64, 72, 96, 120, 128, 144, 152, 180, 192, 196, 256, 384, 512
 ];
 
+const depsCheckDuplicates = task('deps:check-duplicates', async () => {
+    const output = (await execa('npm', ['find-dupes'])).stdout;
+    if (output.length > 0)
+        throw new Error(`npm find-duplicates has discovered duplicates:\n${output}`);
+});
+
+const deps = task('deps', () => Promise.all([
+    depsCheckDuplicates()
+]));
+
 const less = task('less', async () => {
     const sourcePath = `${dirname}/less/app.less`;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -64,14 +74,14 @@ const less = task('less', async () => {
     ]);
 }, { watch: [`${dirname}/less/**/*.less`] });
 
-const tsLint = task('ts-lint', () => exec('eslint . --max-warnings 0 --ext .js,.ts'));
+const tsLint = task('ts:lint', () => exec('eslint . --max-warnings 0 --ext .js,.ts'));
 const jsOutputPath = `${outputVersionRoot}/app.min.js`;
-const tsMain = task('ts-main', () => exec2('rollup', ['-c', '-o', jsOutputPath]), {
+const tsMain = task('ts:main', () => exec2('rollup', ['-c', '-o', jsOutputPath]), {
     watch: () => exec2('rollup', ['-c', '-w', '-o', jsOutputPath])
 });
 
 const asmSourcePath = `${dirname}/components/internal/codemirror/mode-asm-instructions.txt`;
-const tsAsmRegex = task('ts-asm-regex', async () => {
+const tsAsmRegex = task('ts:asm-regex', async () => {
     const asmOutputPath = `${dirname}/components/internal/codemirror/mode-asm-instructions.ts`;
 
     // read list file as array of lines
@@ -167,6 +177,7 @@ const latest = task('latest', () => jetpack.writeAsync(
 const build = task('build', async () => {
     await jetpack.removeAsync(outputSharedRoot);
     await Promise.all([
+        deps(),
         less(),
         ts(),
         icons(),
