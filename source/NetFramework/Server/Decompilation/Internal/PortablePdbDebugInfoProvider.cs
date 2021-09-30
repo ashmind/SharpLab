@@ -14,6 +14,7 @@ namespace SharpLab.Server.Decompilation.Internal {
             _reader = _readerProvider.GetMetadataReader();
         }
 
+        public string SourceFileName => "_";
         public string Description => "";
 
         public IList<Decompiler.DebugInfo.SequencePoint> GetSequencePoints(MethodDefinitionHandle method) {

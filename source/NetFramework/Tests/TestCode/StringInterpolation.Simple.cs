@@ -5,7 +5,7 @@ public class C {
     }
 }
 
-#=>
+/* cs
 
 using System.Diagnostics;
 using System.Reflection;
@@ -23,7 +23,9 @@ public class C
 {
     public void M()
     {
-        string str = string.Format("This {0} That", 1);
-        string text = string.Concat("This ", str, " That");
+        string text = string.Format("This {0} That", 1);
+        string text2 = string.Concat("This ", text, " That");
     }
 }
+
+*/

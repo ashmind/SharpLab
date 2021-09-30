@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <AssemblyName>SharpLab.Server</AssemblyName>
@@ -20,7 +20,7 @@
     <PackageReference Include="Autofac" Version="4.9.2" />
     <PackageReference Include="Autofac.Extras.FileSystemRegistration" Version="1.0.0-pre-03" />
     <PackageReference Include="Autofac.Owin" Version="4.2.0" />
-    <PackageReference Include="ICSharpCode.Decompiler" Version="6.2.1.6137" />
+    <PackageReference Include="ICSharpCode.Decompiler" Version="7.1.0.6543" />
     <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.4.0" />
     <PackageReference Include="Microsoft.AspNet.Cors" Version="5.2.3" />
