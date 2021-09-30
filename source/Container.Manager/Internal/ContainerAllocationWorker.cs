@@ -70,7 +70,9 @@ namespace SharpLab.Container.Manager.Internal {
                 var outputBuffer = ArrayPool<byte>.Shared.Rent(2048);
                 try {
                     var result = await _warmupExecutionProcessor.ExecuteInContainerAsync(
-                        activeContainer, _warmupAssemblyBytes, outputBuffer, includePerformance: false, cancellationToken
+                        activeContainer, _warmupAssemblyBytes, outputBuffer,
+                        includePerformance: false, isWarmup: true,
+                        cancellationToken
                     );
                     if (!result.IsOutputReadSuccess)
                         throw new Exception($"Warmup output failed:\r\n" + Encoding.UTF8.GetString(result.Output.Span) + Encoding.UTF8.GetString(result.OutputReadFailureMessage.Span));

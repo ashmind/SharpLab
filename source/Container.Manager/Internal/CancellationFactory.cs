@@ -12,6 +12,9 @@ namespace SharpLab.Container.Manager.Internal {
         public static CancellationTokenSource ContainerExecution(CancellationToken linkedToken)
             => CancelTokenAfter(linkedToken, 10000);
 
+        public static CancellationTokenSource ContainerWarmup(CancellationToken linkedToken)
+            => CancelTokenAfter(linkedToken, 30000);
+
         private static CancellationTokenSource CancelTokenAfter(CancellationToken linkedToken, int cancelDelayMilliseconds) {
             var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(linkedToken);
             try {

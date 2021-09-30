@@ -20,6 +20,7 @@ namespace SharpLab.Container.Manager.Internal {
             byte[] assemblyBytes,
             byte[] outputBufferBytes,
             bool includePerformance,
+            bool isWarmup,
             CancellationToken cancellationToken
         ) {
             var outputStartMarker = Guid.NewGuid();
@@ -41,7 +42,10 @@ namespace SharpLab.Container.Manager.Internal {
                 Utf8Formatter.TryFormat(outputStartMarker, outputStartMarkerBytes, out _);
                 Utf8Formatter.TryFormat(outputEndMarker, outputEndMarkerBytes, out _);
 
-                using var executionCancellation = CancellationFactory.ContainerExecution(cancellationToken);
+                using var executionCancellation = isWarmup
+                    ? CancellationFactory.ContainerWarmup(cancellationToken)
+                    : CancellationFactory.ContainerExecution(cancellationToken);
+
                 return await _stdoutReader.ReadOutputAsync(
                     container.Container.OutputStream,
                     outputBufferBytes,

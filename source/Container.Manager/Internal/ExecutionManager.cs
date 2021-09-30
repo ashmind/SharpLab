@@ -48,6 +48,7 @@ namespace SharpLab.Container.Manager.Internal {
                 assemblyBytes,
                 outputBufferBytes,
                 includePerformance,
+                isWarmup: false,
                 cancellationToken
             );
 
