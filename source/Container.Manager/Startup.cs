@@ -21,7 +21,7 @@ namespace SharpLab.Container.Manager {
             services.AddSingleton(new ProcessRunnerConfiguration(
                 workingDirectoryPath: AppContext.BaseDirectory,
                 exeFileName: Container.Program.ExeFileName,
-                workingDirectoryAccessCapabilitySid: "S-1-15-3-1024-4233803318-1181731508-1220533431-3050556506-2713139869-1168708946-594703785-1824610955",
+                essentialAccessCapabilitySid: "S-1-15-3-1024-4233803318-1181731508-1220533431-3050556506-2713139869-1168708946-594703785-1824610955",
                 maximumMemorySize: 15 * 1024 * 1024,
                 maximumCpuPercentage: 1
             ));
@@ -48,6 +48,8 @@ namespace SharpLab.Container.Manager {
             services.AddSingleton<CrashSuspensionManager>();
             services.AddSingleton<ExecutionManager>();
 
+            services.AddSingleton<DebugEndpoint>();
+
             ConfigureAzureDependentServices(services);
         }
 
@@ -72,6 +74,7 @@ namespace SharpLab.Container.Manager {
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapGet("/status", app.ApplicationServices.GetRequiredService<StatusEndpoint>().ExecuteAsync);
+                endpoints.MapGet("/debug", app.ApplicationServices.GetRequiredService<DebugEndpoint>().CreateAsync);
                 endpoints.MapPost("/", app.ApplicationServices.GetRequiredService<ExecutionEndpoint>().ExecuteAsync);
             });
         }

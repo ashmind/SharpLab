@@ -8,6 +8,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Text;
 using Fragile.Internal;
+using Fragile.Internal.WindowObjectAccessControl;
 using Fs.Processes.JobObjects;
 using Vanara.PInvoke;
 
@@ -16,10 +17,10 @@ namespace Fragile {
     using SafeHPIPE = Kernel32.SafeHPIPE;
 
     [SupportedOSPlatform("windows")]
-    public class ProcessRunner : IProcessRunner {
+    public partial class ProcessRunner : IProcessRunner {
         private readonly ProcessRunnerConfiguration _configuration;        
-        private readonly SecurityIdentifier _workingDirectoryAccessCapabilityIdentifier;
-        private readonly byte[] _workingDirectoryAccessCapabilitySidBytes;
+        private readonly SecurityIdentifier _essentialAccessCapabilityIdentifier;
+        private readonly byte[] _essentialAccessCapabilitySidBytes;
         private readonly string _exeFilePath;
         private readonly StringBuilder _commandLine;
 
@@ -28,9 +29,9 @@ namespace Fragile {
         public ProcessRunner(ProcessRunnerConfiguration configuration) {
             _configuration = configuration;
 
-            _workingDirectoryAccessCapabilityIdentifier = new SecurityIdentifier(_configuration.WorkingDirectoryAccessCapabilitySid);
-            _workingDirectoryAccessCapabilitySidBytes = new byte[_workingDirectoryAccessCapabilityIdentifier.BinaryLength];
-            _workingDirectoryAccessCapabilityIdentifier.GetBinaryForm(_workingDirectoryAccessCapabilitySidBytes, 0);
+            _essentialAccessCapabilityIdentifier = new SecurityIdentifier(_configuration.EssentialAccessCapabilitySid);
+            _essentialAccessCapabilitySidBytes = new byte[_essentialAccessCapabilityIdentifier.BinaryLength];
+            _essentialAccessCapabilityIdentifier.GetBinaryForm(_essentialAccessCapabilitySidBytes, 0);
 
             _exeFilePath = Path.Combine(_configuration.WorkingDirectoryPath, _configuration.ExeFileName);
             _commandLine = new StringBuilder(_exeFilePath.Length + 2)
@@ -50,10 +51,29 @@ namespace Fragile {
                 AccessControlType.Allow
             ));
             workingDirectory.SetAccessControl(workingDirectorySecurity);*/
+
+            var windowStationHandle = User32.GetProcessWindowStation();
+            var windowStationSecurity = new WindowObjectSecurity(new WindowObjectNoCloseHandle(windowStationHandle), AccessControlSections.Access);
+            windowStationSecurity.AddAccessRule(new WindowObjectAccessRule(
+                _essentialAccessCapabilityIdentifier,
+                WindowStationRights.ReadAttributes,
+                AccessControlType.Allow
+            ));
+            windowStationSecurity.Persist();
+
+            var desktopHandle = User32.GetThreadDesktop(Kernel32.GetCurrentThreadId());
+            var desktopSecurity = new WindowObjectSecurity(new WindowObjectNoCloseHandle(desktopHandle), AccessControlSections.Access);
+            desktopSecurity.AddAccessRule(new WindowObjectAccessRule(
+                _essentialAccessCapabilityIdentifier,
+                DesktopRights.ReadObjects,
+                AccessControlType.Allow
+            ));
+            desktopSecurity.Persist();
+
             _initialSetupCompleted = true;
         }
 
-        public IProcessContainer StartProcess() {
+        public IProcessContainer StartProcess(bool DEBUG_suspended = false) {
             if (!_initialSetupCompleted)
                 throw new InvalidOperationException("InitialSetup must be called before Run.");
 
@@ -68,12 +88,13 @@ namespace Fragile {
                 streams = StandardStreams.CreateFromPipes();
                 appContainerProfile = CreateAppContainerProfile();
 
-                var processInformation = CreateProcessInAppContainer(appContainerProfile.sid, streams!.Value);
+                using var processInformation = CreateProcessInAppContainer(appContainerProfile.sid, streams!.Value);
                 process = Process.GetProcessById(unchecked((int)processInformation.dwProcessId));
 
                 jobObject = AssignProcessToJobObject(processInformation);
 
-                ((HRESULT)Kernel32.ResumeThread(processInformation.hThread)).ThrowIfFailed();                
+                if (!DEBUG_suspended)
+                    ((HRESULT)Kernel32.ResumeThread(processInformation.hThread)).ThrowIfFailed();                
 
                 return new ProcessContainer(
                     process,
@@ -133,7 +154,7 @@ namespace Fragile {
             var capabilityListHandle = default(GCHandle);
 
             try {
-                workingDirectoryAccessCapabilitySidHandle = GCHandle.Alloc(_workingDirectoryAccessCapabilitySidBytes, GCHandleType.Pinned);
+                workingDirectoryAccessCapabilitySidHandle = GCHandle.Alloc(_essentialAccessCapabilitySidBytes, GCHandleType.Pinned);
                 var capability = new AdvApi32.SID_AND_ATTRIBUTES {
                     Sid = workingDirectoryAccessCapabilitySidHandle.AddrOfPinnedObject(),
                     Attributes = (uint)AdvApi32.GroupAttributes.SE_GROUP_ENABLED
@@ -156,7 +177,9 @@ namespace Fragile {
                     null,
                     null,
                     bInheritHandles: true,
-                    Kernel32.CREATE_PROCESS.EXTENDED_STARTUPINFO_PRESENT | Kernel32.CREATE_PROCESS.CREATE_SUSPENDED,
+                    Kernel32.CREATE_PROCESS.EXTENDED_STARTUPINFO_PRESENT
+                        | Kernel32.CREATE_PROCESS.CREATE_SUSPENDED
+                        /*| Kernel32.CREATE_PROCESS.DETACHED_PROCESS*/,
                     null,
                     lpCurrentDirectory: _configuration.WorkingDirectoryPath,
                     new Kernel32.STARTUPINFOEX {

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -13,5 +13,6 @@
     <PackageReference Include="Fs.Processes" Version="0.1.16" />
     <PackageReference Include="Vanara.PInvoke.Security" Version="3.3.13" />
     <PackageReference Include="Vanara.PInvoke.UserEnv" Version="3.3.11" />
+    <PackageReference Include="Vanara.PInvoke.User32" Version="3.3.12" />
   </ItemGroup>
 </Project>

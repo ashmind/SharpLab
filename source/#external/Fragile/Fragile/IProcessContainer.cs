@@ -8,5 +8,7 @@ namespace Fragile {
         Stream InputStream { get; }
         Stream OutputStream { get; }
         Stream ErrorStream { get; }
+
+
     }
 }
