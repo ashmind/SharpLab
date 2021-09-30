@@ -238,6 +238,26 @@ namespace SharpLab.Tests {
             await Assert.ThrowsAsync<RoslynCompilationGuardException>(() => driver.SendSlowUpdateAsync<string>());
         }
 
+        [Fact] // https://github.com/ashmind/SharpLab/issues/817
+        public async Task SlowUpdate_DoesNotReportAynErrors_WhenSwitchingFromTopLevelStatements_ToNonTopLevel() {
+            // Arrange
+            var code = "class C { void M() {} }";
+            var driver = TestEnvironment.NewDriver().SetTextWithCursor(code + "|");
+            await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.CSharp);
+            // switches to top-level statement mode
+            await driver.SendTypeCharAsync('+');
+            await driver.SendSlowUpdateAsync();
+            // switches back (removes + at the end)
+            await driver.SendBackspaceAsync();
+
+            // Act
+            var result = await driver.SendSlowUpdateAsync<string>();
+
+            // Assert
+            var errors = result.JoinErrors();
+            Assert.True(string.IsNullOrEmpty(errors), errors);
+        }
+
         [Theory]
         [InlineData("x[][][][][]")]
         [InlineData("x [,,,] [,] [,,,]   [,,,] [,]")]

@@ -19,7 +19,7 @@ namespace SharpLab.Server.Compilation {
             public const string TopLevelNotInExecutableOld = "CS9004"; // old code in feature branch
 
             // "Program does not contain a static 'Main' method suitable for an entry point"
-            public const string NoStaticMain = "CS8805";
+            public const string NoStaticMain = "CS5001";
         }
 
         // not all branches have this yet, so we can't use the normal enum value

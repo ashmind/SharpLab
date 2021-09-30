@@ -1,7 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.QuickInfo;
-using MirrorSharp.Testing;
 using MirrorSharp.Testing.Internal;
 using SharpLab.Tests.Internal;
 using Xunit;
