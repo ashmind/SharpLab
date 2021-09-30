@@ -7,7 +7,7 @@ on:
       - 'source/**'
       - '!source/WebApp/**'
       - '!source/Container/**'
-      - '!source/Container.Manager/**'      
+      - '!source/Container.Manager/**'
       - '!source/#external/Fragile/**'
   pull_request:
 
@@ -61,19 +61,22 @@ jobs:
            artifact: WebApp.Server
            app: sharplab-edge
            url: https://edge.sharplab.io
+           environment: edge-server
          - name: x64
            artifact: Server
            app: sl-a-edge-core-x64
            url: https://sl-a-edge-core-x64.azurewebsites.net/status
+           environment: edge-server-x64
          - name: 'x64, Profiler'
            artifact: Server
            app: sl-a-edge-core-x64-profiled
            url: https://sl-a-edge-core-x64-profiled.azurewebsites.net/status
+           environment: edge-server-x64-profiled
     name: 'Deploy to Edge (${{ matrix.name }})'
     runs-on: ubuntu-latest
     needs: build-core
     if: github.ref == 'refs/heads/main'
-    environment: edge-server
+    environment: ${{ matrix.environment }}
     steps:
       - uses: actions/download-artifact@v2
         with:
@@ -136,14 +139,16 @@ jobs:
          - name: '.NET Framework, x86'
            app: sl-a-edge-netfx
            url: https://sl-a-edge-netfx.azurewebsites.net/status
+           environment: edge-server-netfx
          - name: '.NET Framework, x64'
            app: sl-a-edge-netfx-x64
            url: https://sl-a-edge-netfx-x64.azurewebsites.net/status
+           environment: edge-server-netfx-x64
     name: 'Deploy to Edge (${{ matrix.name }})'
     runs-on: ubuntu-latest
     needs: build-netfx
     if: github.ref == 'refs/heads/main'
-    environment: edge-server
+    environment: ${{ matrix.environment }}
     steps:
       - uses: actions/download-artifact@v2
         with:

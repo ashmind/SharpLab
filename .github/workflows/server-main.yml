@@ -12,34 +12,39 @@ jobs:
            app: sharplab
            stop-app: true
            url: https://sharplab.io
+           environment: main-server
 
          - name: x64
            package: Server.zip
            app: sl-a-core-x64
            stop-app: true
            url: https://sl-a-core-x64.azurewebsites.net/status
+           environment: main-server-x64
 
          - name: 'x64, Profiler'
            package: Server.zip
            app: sl-a-core-x64-profiled
            stop-app: true
            url: https://sl-a-core-x64-profiled.azurewebsites.net/status
+           environment: main-server-x64-profiled
 
          - name: '.NET Framework, x86'
            package: Server.NetFramework.zip
            app: sl-a-netfx
            stop-app: false
            url: https://sl-a-netfx.azurewebsites.net/status
+           environment: main-server-netfx
 
          - name: '.NET Framework, x64'
            package: Server.NetFramework.zip
            app: sl-a-netfx-x64
            stop-app: false
            url: https://sl-a-netfx-x64.azurewebsites.net/status
+           environment: main-server-netfx-x64
 
     name: 'Deploy to Main (${{ matrix.name }})'
     runs-on: ubuntu-latest
-    environment: main-server
+    environment: ${{ matrix.environment }}
     steps:
       - uses: actions/github-script@v3
         id: get-release-tag
