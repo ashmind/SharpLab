@@ -8,7 +8,7 @@ namespace SharpLab.Runtime.Internal {
     public static class Output {
         private const int MaxStreamDataCount = 50;
 
-        private static readonly LazyAsyncLocal<IList<object>> _stream = new LazyAsyncLocal<IList<object>>(() => new List<object>());
+        private static readonly LazyAsyncLocal<IList<object>> _stream = new(() => new List<object>());
         public static IReadOnlyList<object> Stream => (IReadOnlyList<object>?)_stream.ValueIfCreated ?? Array.Empty<object>();
 
         public static TextWriter Writer { get; } = new OutputWriter();

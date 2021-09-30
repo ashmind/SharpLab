@@ -139,7 +139,7 @@ namespace SharpLab.Tests.Of.Container.Internal {
                 var savedConsoleOut = Console.Out;
                 Console.SetOut(new StreamWriter(stdout) { AutoFlush = true });
                 try {
-                    Program.Run(stdin, stdout);
+                    Program.Run(stdin, stdout, () => {});
                 }
                 finally {
                     Console.SetOut(savedConsoleOut);

@@ -27,14 +27,17 @@ namespace SharpLab.Container {
 
         private static void SafeMain() {
             Console.OutputEncoding = Encoding.UTF8;
+            var consoleIn = new UserCodeConsoleReader();
+            Console.SetIn(consoleIn);
+
             using var stdin = Console.OpenStandardInput(1024);
             using var stdout = Console.OpenStandardOutput(1024);
 
-            Run(stdin, stdout);
+            Run(stdin, stdout, () => consoleIn.Reset());
         }
 
         // TODO: Change test structure so that this can be inlined
-        internal static void Run(Stream stdin, Stream stdout) {
+        internal static void Run(Stream stdin, Stream stdout, Action beforeCommand) {
             var stdoutWriter = new StdoutWriter(stdout, new Utf8JsonWriter(stdout, new() {
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             }));
@@ -48,6 +51,7 @@ namespace SharpLab.Container {
                 var command = Serializer.DeserializeWithLengthPrefix<ExecuteCommand?>(stdin, PrefixStyle.Base128);
                 if (command == null)
                     break; // end-of-input
+                beforeCommand();
                 executeCommandHandler.Execute(command);
             }
         }
