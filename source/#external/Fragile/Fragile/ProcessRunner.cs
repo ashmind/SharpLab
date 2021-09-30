@@ -73,7 +73,7 @@ namespace Fragile {
             _initialSetupCompleted = true;
         }
 
-        public IProcessContainer StartProcess(bool DEBUG_suspended = false) {
+        public IProcessContainer StartProcess() {
             if (!_initialSetupCompleted)
                 throw new InvalidOperationException("InitialSetup must be called before Run.");
 
@@ -93,8 +93,7 @@ namespace Fragile {
 
                 jobObject = AssignProcessToJobObject(processInformation);
 
-                if (!DEBUG_suspended)
-                    ((HRESULT)Kernel32.ResumeThread(processInformation.hThread)).ThrowIfFailed();                
+                ((HRESULT)Kernel32.ResumeThread(processInformation.hThread)).ThrowIfFailed();                
 
                 return new ProcessContainer(
                     process,

@@ -48,8 +48,6 @@ namespace SharpLab.Container.Manager {
             services.AddSingleton<CrashSuspensionManager>();
             services.AddSingleton<ExecutionManager>();
 
-            services.AddSingleton<DebugEndpoint>();
-
             ConfigureAzureDependentServices(services);
         }
 
@@ -74,7 +72,6 @@ namespace SharpLab.Container.Manager {
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapGet("/status", app.ApplicationServices.GetRequiredService<StatusEndpoint>().ExecuteAsync);
-                endpoints.MapGet("/debug", app.ApplicationServices.GetRequiredService<DebugEndpoint>().CreateAsync);
                 endpoints.MapPost("/", app.ApplicationServices.GetRequiredService<ExecutionEndpoint>().ExecuteAsync);
             });
         }
