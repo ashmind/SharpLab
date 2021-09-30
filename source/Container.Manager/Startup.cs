@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using Fragile;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;

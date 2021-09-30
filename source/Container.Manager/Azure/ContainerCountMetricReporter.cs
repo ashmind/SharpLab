@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace SharpLab.Container.Manager.Azure {
     public class ContainerCountMetricReporter : BackgroundService {
+        private static readonly string ContainerProcessName = Path.GetFileNameWithoutExtension(Container.Program.ExeFileName);
         private static readonly MetricIdentifier ContainerCountMetric = new("Custom Metrics", "Container Count");
 
         private readonly TelemetryClient _telemetryClient;
@@ -27,7 +28,7 @@ namespace SharpLab.Container.Manager.Azure {
             while (!stoppingToken.IsCancellationRequested) {
                 try {
                     var count = 0;
-                    foreach (var process in Process.GetProcessesByName(Container.Program.ExeFileName)) {
+                    foreach (var process in Process.GetProcessesByName(ContainerProcessName)) {
                         count += 1;
                         process.Dispose();
                     }
