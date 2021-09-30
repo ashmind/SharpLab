@@ -109,19 +109,17 @@ const ts = task('ts', async () => {
 const iconSvgSourcePath = `${dirname}/icon.svg`;
 const icons = task('icons', async () => {
     await jetpack.dirAsync(outputVersionRoot);
-    const pngGeneration = iconSizes.map(async size => {
+    
+    await jetpack.copyAsync(iconSvgSourcePath, `${outputVersionRoot}/icon.svg`, { overwrite: true });
+    // Not parallelizing with Promise.all as sharp seems to be prone to timeouts when running in parallel
+    for (const size of iconSizes) {
         // https://github.com/lovell/sharp/issues/729
         const density = size > 128 ? Math.round(72 * size / 128) : 72;
         await sharp(iconSvgSourcePath, { density })
             .resize(size, size)
             .png()
             .toFile(`${outputVersionRoot}/icon-${size}.png`);
-    });
-
-    return Promise.all([
-        jetpack.copyAsync(iconSvgSourcePath, `${outputVersionRoot}/icon.svg`, { overwrite: true }),
-        ...pngGeneration
-    ]);
+    }
 }, {
     timeout: 60000,
     watch: [iconSvgSourcePath]
