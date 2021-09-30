@@ -14,11 +14,10 @@ using Vanara.PInvoke;
 
 namespace Fragile {
     using SafeAllocatedSID = AdvApi32.SafeAllocatedSID;
-    using SafeHPIPE = Kernel32.SafeHPIPE;
 
     [SupportedOSPlatform("windows")]
     public partial class ProcessRunner : IProcessRunner {
-        private readonly ProcessRunnerConfiguration _configuration;        
+        private readonly ProcessRunnerConfiguration _configuration;
         private readonly SecurityIdentifier _essentialAccessCapabilityIdentifier;
         private readonly byte[] _essentialAccessCapabilitySidBytes;
         private readonly string _exeFilePath;
@@ -208,17 +207,6 @@ namespace Fragile {
                     capabilityListHandle, SafeDispose.FreeGCHandle
                 );
             }
-        }
-
-        private (SafeHPIPE parent, SafeHPIPE child) CreatePipe() {
-            Kernel32.CreatePipe(
-                out var parentPipeHandle,
-                out var childPipeHandle,
-                new SECURITY_ATTRIBUTES { bInheritHandle = true },
-                0
-            );
-
-            return (parentPipeHandle, childPipeHandle);
         }
 
         private Kernel32.SafeProcThreadAttributeList CreateProcThreadAttributeList(
