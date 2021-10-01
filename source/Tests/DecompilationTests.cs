@@ -158,6 +158,7 @@ namespace SharpLab.Tests {
         [InlineData("JitAsm.Generic.Nested.AttributeOnBoth.cs")]
         [InlineData("JitAsm.Vectors.Avx2.cs2asm")]
         [InlineData("JitAsm.Math.FusedMultiplyAdd.Fma.cs2asm")]
+        [InlineData("JitAsm.DllImport.cs")] // https://github.com/ashmind/SharpLab/issues/666
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForJitAsm(string resourceName) {
             // https://github.com/ashmind/SharpLab/issues/514
             if (resourceName.Contains(".Fma.") && !Fma.IsSupported)

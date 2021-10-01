@@ -6,6 +6,7 @@ namespace SharpLab.Server.Decompilation.Internal {
         Success,
         SuccessGeneric,
         IgnoredRuntime,
+        IgnoredPInvoke,
         IgnoredOpenGenericWithNoAttribute
     }
 }

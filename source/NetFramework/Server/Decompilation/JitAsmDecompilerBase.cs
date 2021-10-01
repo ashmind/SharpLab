@@ -97,6 +97,10 @@ namespace SharpLab.Server.Decompilation {
             }
 
             switch (result.Status) {
+                case MethodJitStatus.IgnoredPInvoke:
+                    WriteSignatureFromClrMethod();
+                    writer.WriteLine("    ; Cannot produce JIT assembly for a P/Invoke method.");
+                    return;
                 case MethodJitStatus.IgnoredRuntime:
                     WriteSignatureFromClrMethod();
                     writer.WriteLine("    ; Cannot produce JIT assembly for runtime-implemented method.");

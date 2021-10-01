@@ -75,6 +75,11 @@ namespace SharpLab.Server.Decompilation.Internal {
                 return;
             }
 
+            if ((method.Attributes & MethodAttributes.PinvokeImpl) == MethodAttributes.PinvokeImpl) {
+                results.Add(new MethodJitResult(method.MethodHandle, MethodJitStatus.IgnoredPInvoke));
+                return;
+            }
+
             if (method.DeclaringType?.IsGenericTypeDefinition ?? false) {
                 results.Add(new MethodJitResult(method.MethodHandle, MethodJitStatus.IgnoredOpenGenericWithNoAttribute));
                 return;

@@ -126,6 +126,12 @@ namespace SharpLab.Server.Decompilation {
                 return;
             }
 
+            if ((method.Attributes & MethodAttributes.PinvokeImpl) == MethodAttributes.PinvokeImpl) {
+                WriteSignatureFromReflection(context, method);
+                context.Writer.WriteLine("    ; Cannot produce JIT assembly for a P/Invoke method.");
+                return;
+            }
+
             if (method.DeclaringType?.IsGenericTypeDefinition ?? false) {
                 WriteIgnoredOpenGeneric(context, method);
                 return;
