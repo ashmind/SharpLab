@@ -34,7 +34,7 @@ namespace SharpLab.Tests.Internal {
         }
 
         public static TestCode FromResource(string name) {
-            var content = EmbeddedResource.ReadAllText(typeof(DecompilationTests), "TestCode." + name);
+            var content = EmbeddedResource.ReadAllText(typeof(ExecutionTests), "TestCode." + name);
             var extension = Path.GetExtension(name);
             if (extension.Contains("2"))
                 return FromResourceFormatV1(content, extension);

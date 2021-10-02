@@ -9,7 +9,7 @@ static class C<T> {
     }
 }
 
-#=>
+/* asm
 
 ; Desktop CLR <IGNORE> on x86
 
@@ -35,3 +35,5 @@ C`1[[System.Decimal, mscorlib]].M()
 C`1[[System.__Canon, mscorlib]].M()
     L0000: xor eax, eax
     L0002: ret
+
+*/

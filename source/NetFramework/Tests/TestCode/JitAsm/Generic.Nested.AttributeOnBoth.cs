@@ -10,7 +10,7 @@ static class C<T> {
     }
 }
 
-#=>
+/* asm
 
 ; Desktop CLR <IGNORE> on x86
 
@@ -29,3 +29,5 @@ C`1+N`1[[System.__Canon, mscorlib],[System.Int32, mscorlib]].M(Int32)
 C`1+N`1[[System.__Canon, mscorlib],[System.__Canon, mscorlib]].M(System.__Canon)
     L0000: xor eax, eax
     L0002: ret
+
+ */

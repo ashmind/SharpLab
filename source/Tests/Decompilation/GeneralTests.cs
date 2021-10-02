@@ -1,27 +1,25 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using MirrorSharp.Advanced.EarlyAccess;
-using MirrorSharp.Testing;
-using Newtonsoft.Json.Linq;
-using Xunit;
-using Xunit.Abstractions;
 using SharpLab.Server.Common;
 using SharpLab.Tests.Internal;
+using Xunit;
+using Xunit.Abstractions;
 
-namespace SharpLab.Tests {
-    public class DecompilationTests {
+namespace SharpLab.Tests.Decompilation {
+    public class GeneralTests {
         private readonly ITestOutputHelper _output;
 
-        public DecompilationTests(ITestOutputHelper output) {
+        public GeneralTests(ITestOutputHelper output) {
             _output = output;
+            // TestAssemblyLog.Enable(output);
         }
 
         [Theory]
         [InlineData("class C { void M((int, string) t) {} }")] // Tuples, https://github.com/ashmind/SharpLab/issues/139
         public async Task SlowUpdate_DecompilesSimpleCodeWithoutErrors(string code) {
             var driver = TestEnvironment.NewDriver().SetText(code);
-            await driver.SendSetOptionsAsync(LanguageNames.CSharp, LanguageNames.CSharp);
+            await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.CSharp);
 
             var result = await driver.SendSlowUpdateAsync<string>();
             var errors = result.JoinErrors();
@@ -44,16 +42,19 @@ namespace SharpLab.Tests {
         [InlineData("Finalizer.Exception.cs2il")] // https://github.com/ashmind/SharpLab/issues/205
         [InlineData("Parameters.Optional.Decimal.cs2cs")] // https://github.com/ashmind/SharpLab/issues/316
         [InlineData("Unsafe.FixedBuffer.cs2cs")] // https://github.com/ashmind/SharpLab/issues/398
+        [InlineData("Switch.String.Large.cs2cs")]
+        [InlineData("Lock.Simple.cs2cs")]
+        [InlineData("Property.InitOnly.cs2cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string resourceName) {
-            var data = TestCode.FromResource(resourceName);
-            var driver = await NewTestDriverAsync(data);
+            var code = TestCode.FromResource(resourceName);
+            var driver = await TestDriverFactory.FromCodeAsync(code);
 
             var result = await driver.SendSlowUpdateAsync<string>();
             var errors = result.JoinErrors();
 
             var decompiledText = result.ExtensionResult?.Trim();
             Assert.True(string.IsNullOrEmpty(errors), errors);
-            data.AssertIsExpected(decompiledText, _output);
+            code.AssertIsExpected(decompiledText, _output);
         }
 
         [Theory]
@@ -66,7 +67,7 @@ namespace SharpLab.Tests {
         [InlineData("StringInterpolation.Simple.cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_InDebug(string resourceName) {
             var data = TestCode.FromResource(resourceName);
-            var driver = await NewTestDriverAsync(data, Optimize.Debug);
+            var driver = await TestDriverFactory.FromCodeAsync(data, Optimize.Debug);
 
             var result = await driver.SendSlowUpdateAsync<string>();
             var errors = result.JoinErrors();
@@ -77,7 +78,7 @@ namespace SharpLab.Tests {
         }
 
         [Theory]
-        [InlineData(LanguageNames.CSharp,"/// <summary><see cref=\"Incorrect\"/></summary>\r\npublic class C {}", "CS1574")] // https://github.com/ashmind/SharpLab/issues/219
+        [InlineData(LanguageNames.CSharp, "/// <summary><see cref=\"Incorrect\"/></summary>\r\npublic class C {}", "CS1574")] // https://github.com/ashmind/SharpLab/issues/219
         [InlineData(LanguageNames.VisualBasic, "''' <summary><see cref=\"Incorrect\"/></summary>\r\nPublic Class C\r\nEnd Class", "BC42309")]
         public async Task SlowUpdate_ReturnsExpectedWarnings_ForXmlDocumentation(string sourceLanguageName, string code, string expectedWarningId) {
             var driver = TestEnvironment.NewDriver().SetText(code);
@@ -99,104 +100,6 @@ namespace SharpLab.Tests {
 
             var result = await driver.SendSlowUpdateAsync<string>();
             Assert.Empty(result.Diagnostics);
-        }
-
-        [Theory]
-        [InlineData("FSharp.EmptyType.fs")]
-        [InlineData("FSharp.SimpleMethod.fs2cs")] // https://github.com/ashmind/SharpLab/issues/119
-        [InlineData("FSharp.NotNull.fs2cs")]
-        public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForFSharp(string resourceName) {
-            var data = TestCode.FromResource(resourceName);
-            var driver = await NewTestDriverAsync(data);
-
-            var result = await driver.SendSlowUpdateAsync<string>();
-            var errors = result.JoinErrors();
-
-            var decompiledText = result.ExtensionResult?.Trim();
-            Assert.True(string.IsNullOrEmpty(errors), errors);
-            data.AssertIsExpected(decompiledText, _output);
-        }
-
-        [Theory]
-        [InlineData("IL.EmptyMethod.il")]
-        public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForIL(string resourceName) {
-            var data = TestCode.FromResource(resourceName);
-            var driver = await NewTestDriverAsync(data);
-
-            var result = await driver.SendSlowUpdateAsync<string>();
-            var errors = result.JoinErrors();
-
-            var decompiledText = result.ExtensionResult?.Trim();
-            Assert.True(string.IsNullOrEmpty(errors), errors);
-            data.AssertIsExpected(decompiledText, _output);
-        }
-
-        [Theory]
-        [InlineData("JitAsm.Simple.cs2asm")]
-        [InlineData("JitAsm.MultipleReturns.cs2asm")]
-        [InlineData("JitAsm.ArrayElement.cs2asm")]
-        // TODO: Understand why these tests are flaky and keep switching between
-        // resolving and non-resolving symbols. Since it's .NET Framework, low priority.
-        //
-        // Non-resolving:
-        // [InlineData("JitAsm.AsyncRegression.CI.cs2asm")]
-        // [InlineData("JitAsm.ConsoleWrite.CI.cs2asm")]
-        //
-        // Resolving
-        // [InlineData("JitAsm.AsyncRegression.cs2asm")]
-        // [InlineData("JitAsm.ConsoleWrite.cs2asm")]
-        [InlineData("JitAsm.JumpBack.cs2asm")] // https://github.com/ashmind/SharpLab/issues/229
-        [InlineData("JitAsm.Delegate.cs2asm")]
-        [InlineData("JitAsm.Nested.Simple.cs2asm")]
-        [InlineData("JitAsm.Generic.Open.Multiple.cs2asm")]
-        [InlineData("JitAsm.Generic.MethodWithAttribute.cs2asm")]
-        [InlineData("JitAsm.Generic.ClassWithAttribute.cs2asm")]
-        #if !NETCOREAPP
-        // TODO: Diagnose later
-        // [InlineData("JitAsm.Generic.MethodWithAttribute.fs2asm")]
-        #endif
-        [InlineData("JitAsm.Generic.Nested.AttributeOnTop.cs2asm")]
-        [InlineData("JitAsm.Generic.Nested.AttributeOnNested.cs2asm")]
-        [InlineData("JitAsm.Generic.Nested.AttributeOnBoth.cs2asm")]
-        [InlineData("JitAsm.DllImport.cs")] // https://github.com/ashmind/SharpLab/issues/820
-        public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForJitAsm(string resourceName) {
-            var data = TestCode.FromResource(resourceName);
-            var driver = await NewTestDriverAsync(data);
-
-            var result = await driver.SendSlowUpdateAsync<string>();
-            var errors = result.JoinErrors();
-
-            var decompiledText = result.ExtensionResult?.Trim();
-            Assert.True(string.IsNullOrEmpty(errors), errors);
-            data.AssertIsExpected(decompiledText, _output);
-        }
-
-        [Theory]
-        [InlineData("class C { static int F = 1; }")]
-        [InlineData("class C { static C() {} }")]
-        [InlineData("class C { class N { static N() {} } }")]
-        public async Task SlowUpdate_ReturnsNotSupportedError_ForJitAsmWithStaticConstructors(string code) {
-            var driver = TestEnvironment.NewDriver().SetText(code);
-            await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.JitAsm);
-
-            await Assert.ThrowsAsync<NotSupportedException>(() => driver.SendSlowUpdateAsync<string>());
-        }
-
-        [Theory]
-        [InlineData("Ast.EmptyClass.cs2ast")]
-        [InlineData("Ast.StructuredTrivia.cs2ast")]
-        [InlineData("Ast.LiteralTokens.cs2ast")]
-        [InlineData("Ast.EmptyType.fs")]
-        [InlineData("Ast.LiteralTokens.fs")]
-        public async Task SlowUpdate_ReturnsExpectedResult_ForAst(string resourceName) {
-            var data = TestCode.FromResource(resourceName);
-            var driver = await NewTestDriverAsync(data);
-
-            var result = await driver.SendSlowUpdateAsync<JArray>();
-
-            var json = result.ExtensionResult?.ToString();
-
-            data.AssertIsExpected(json, _output);
         }
 
         [Theory]
@@ -244,11 +147,24 @@ namespace SharpLab.Tests {
             Assert.Null(exception);
         }
 
-        private static async Task<MirrorSharpTestDriver> NewTestDriverAsync(TestCode code, string optimize = Optimize.Release) {
-            var driver = TestEnvironment.NewDriver();
-            await driver.SendSetOptionsAsync(code.SourceLanguageName, code.TargetName, optimize);
-            driver.SetText(code.Original);
-            return driver;
+        [Fact] // https://github.com/ashmind/SharpLab/issues/817
+        public async Task SlowUpdate_DoesNotReportAnyErrors_WhenSwitchingFromTopLevelStatementsToNonTopLevel() {
+            // Arrange
+            var code = "class C { void M() {} }";
+            var driver = TestEnvironment.NewDriver().SetTextWithCursor(code + "|");
+            await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.CSharp);
+            // switches to top-level statement mode
+            await driver.SendTypeCharAsync('+');
+            await driver.SendSlowUpdateAsync();
+            // switches back (removes + at the end)
+            await driver.SendBackspaceAsync();
+
+            // Act
+            var result = await driver.SendSlowUpdateAsync<string>();
+
+            // Assert
+            var errors = result.JoinErrors();
+            Assert.True(string.IsNullOrEmpty(errors), errors);
         }
     }
 }

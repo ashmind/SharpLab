@@ -8,7 +8,7 @@ static class C {
     }
 }
 
-#=>
+/* asm
 
 ; Desktop CLR <IGNORE> on x86
 
@@ -19,3 +19,5 @@ C+N`1[[System.Int32, mscorlib]].get_M()
 C+N`1[[System.__Canon, mscorlib]].get_M()
     L0000: xor eax, eax
     L0002: ret
+
+*/
