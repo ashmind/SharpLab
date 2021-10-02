@@ -72,5 +72,27 @@ namespace SharpLab.Tests.Decompilation {
                 result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
             );
         }
+
+        [Fact]
+        public async Task SlowUpdate_ReportsErrorDiagnostic_ForDuplicateMethodDefinition() {
+            // Arrange
+            var driver = await TestDriverFactory.FromCode(@"
+                .class C
+                    extends System.Object
+                {
+                    .method void M() cil managed {}
+                    .method void M() cil managed {}
+                }
+            ", LanguageNames.IL, TargetNames.IL);
+
+            // Act
+            var result = await driver.SendSlowUpdateAsync<string>();
+
+            // Assert
+            Assert.Equal(
+                new[] { ("error", "IL", "Duplicate method declaration: instance System.Void M()") },
+                result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
+            );
+        }
     }
 }
