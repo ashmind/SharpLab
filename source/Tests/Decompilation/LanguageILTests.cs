@@ -94,5 +94,25 @@ namespace SharpLab.Tests.Decompilation {
                 result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
             );
         }
+
+        [Fact]
+        public async Task SlowUpdate_ReportsErrorDiagnostic_ForBranchToNonExistentLabel() {
+            // Arrange
+            var driver = await TestDriverFactory.FromCode(@"
+                .method void M() cil managed
+                {
+                    br IL_0001
+                }
+            ", LanguageNames.IL, TargetNames.IL);
+
+            // Act
+            var result = await driver.SendSlowUpdateAsync<string>();
+
+            // Assert
+            Assert.Equal(
+                new[] { ("error", "IL", "Undefined Label:  IL_0001") },
+                result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
+            );
+        }
     }
 }
