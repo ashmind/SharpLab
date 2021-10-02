@@ -68,7 +68,7 @@ namespace SharpLab.Tests.Decompilation {
 
             // Assert
             Assert.Equal(
-                new[] { ("warning", "IL", "Code Access Security is not supported on this runtime. This permision set will be ignored.") },
+                new[] { ("warning", "IL", "Code Access Security is not supported on this runtime. This permission set will be ignored.") },
                 result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
             );
         }

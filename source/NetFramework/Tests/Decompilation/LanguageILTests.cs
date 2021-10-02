@@ -64,7 +64,7 @@ namespace SharpLab.Tests.Decompilation {
 
             // Assert
             Assert.Equal(
-                new[] { ("warning", "IL", "Newer (non-XML) permission set format is not yet supported by this library. This permision set will be ignored.") },
+                new[] { ("warning", "IL", "Newer (non-XML) permission set format is not yet supported by this library. This permission set will be ignored.") },
                 result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
             );
         }
