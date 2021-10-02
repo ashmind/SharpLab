@@ -14,13 +14,13 @@ namespace SharpLab.Tests.Decompilation {
         }
 
         [Theory]
-        [InlineData("Ast.EmptyClass.cs2ast")]
-        [InlineData("Ast.StructuredTrivia.cs2ast")]
-        [InlineData("Ast.LiteralTokens.cs2ast")]
-        [InlineData("Ast.EmptyType.fs")]
-        [InlineData("Ast.LiteralTokens.fs")]
-        public async Task SlowUpdate_ReturnsExpectedResult(string resourceName) {
-            var code = TestCode.FromResource(resourceName);
+        [InlineData("Ast/EmptyClass.cs2ast")]
+        [InlineData("Ast/StructuredTrivia.cs2ast")]
+        [InlineData("Ast/LiteralTokens.cs2ast")]
+        [InlineData("Ast/EmptyType.fs")]
+        [InlineData("Ast/LiteralTokens.fs")]
+        public async Task SlowUpdate_ReturnsExpectedResult(string codeFilePath) {
+            var code = TestCode.FromFile(codeFilePath);
             var driver = await TestDriverFactory.FromCodeAsync(code);
 
             var result = await driver.SendSlowUpdateAsync<JArray>();

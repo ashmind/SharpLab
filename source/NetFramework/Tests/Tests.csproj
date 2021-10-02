@@ -12,9 +12,16 @@
   <ItemGroup>
     <Compile Remove="TestCode\**\*.cs" />
     <None Remove="TestCode\**\*.*" />
-    <None Remove="TestData\**\*.*" />
     <EmbeddedResource Include="TestCode\**\*.*" />
+
+    <None Remove="TestData\**\*.*" />
     <EmbeddedResource Include="TestData\language-syntax-explanations\*.yml" />
+
+    <Compile Remove="Decompilation\TestCode\**\*.cs" />
+    <None Remove="Decompilation\TestCode\**\*.*" />
+    <Content Include="Decompilation\TestCode\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -31,10 +38,6 @@
 
   <ItemGroup>
     <Reference Include="System.Net.Http" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="TestData\" />
   </ItemGroup>
 
   <!--  https://github.com/dotnet/sdk/issues/1458#issuecomment-401497095 -->

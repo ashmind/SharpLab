@@ -17,33 +17,33 @@ namespace SharpLab.Tests.Decompilation {
         }
 
         [Theory]
-        [InlineData("JitAsm.Simple.cs2asm")]
-        [InlineData("JitAsm.MultipleReturns.cs2asm")]
-        [InlineData("JitAsm.ArrayElement.cs2asm")]
-        [InlineData("JitAsm.AsyncRegression.cs2asm")]
-        [InlineData("JitAsm.ConsoleWrite.cs2asm")]
-        [InlineData("JitAsm.JumpBack.cs2asm")] // https://github.com/ashmind/SharpLab/issues/229
-        [InlineData("JitAsm.Delegate.cs2asm")]
-        [InlineData("JitAsm.Nested.Simple.cs2asm")]
-        [InlineData("JitAsm.Generic.Open.Multiple.cs2asm")]
-        [InlineData("JitAsm.Generic.MethodWithAttribute.cs2asm")]
-        [InlineData("JitAsm.Generic.ClassWithAttribute.cs")]
+        [InlineData("JitAsm/Simple.cs2asm")]
+        [InlineData("JitAsm/MultipleReturns.cs2asm")]
+        [InlineData("JitAsm/ArrayElement.cs2asm")]
+        [InlineData("JitAsm/AsyncRegression.cs2asm")]
+        [InlineData("JitAsm/ConsoleWrite.cs2asm")]
+        [InlineData("JitAsm/JumpBack.cs2asm")] // https://github.com/ashmind/SharpLab/issues/229
+        [InlineData("JitAsm/Delegate.cs2asm")]
+        [InlineData("JitAsm/Nested.Simple.cs2asm")]
+        [InlineData("JitAsm/Generic.Open.Multiple.cs2asm")]
+        [InlineData("JitAsm/Generic.MethodWithAttribute.cs2asm")]
+        [InlineData("JitAsm/Generic.ClassWithAttribute.cs")]
         // TODO: Diagnose later
-        // [InlineData("JitAsm.Generic.MethodWithAttribute.fs2asm")]
-        [InlineData("JitAsm.Generic.Nested.AttributeOnTop.cs")]
-        [InlineData("JitAsm.Generic.Nested.AttributeOnNested.cs")]
-        [InlineData("JitAsm.Generic.Nested.AttributeOnBoth.cs")]
-        [InlineData("JitAsm.Vectors.Avx2.cs2asm")]
-        [InlineData("JitAsm.Math.FusedMultiplyAdd.Fma.cs2asm")]
-        [InlineData("JitAsm.DllImport.cs")] // https://github.com/ashmind/SharpLab/issues/666
-        public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string resourceName) {
+        // [InlineData("JitAsm/Generic.MethodWithAttribute.fs2asm")]
+        [InlineData("JitAsm/Generic.Nested.AttributeOnTop.cs")]
+        [InlineData("JitAsm/Generic.Nested.AttributeOnNested.cs")]
+        [InlineData("JitAsm/Generic.Nested.AttributeOnBoth.cs")]
+        [InlineData("JitAsm/Vectors.Avx2.cs2asm")]
+        [InlineData("JitAsm/Math.FusedMultiplyAdd.Fma.cs2asm")]
+        [InlineData("JitAsm/DllImport.cs")] // https://github.com/ashmind/SharpLab/issues/666
+        public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string codeFilePath) {
             // https://github.com/ashmind/SharpLab/issues/514
-            if (resourceName.Contains(".Fma.") && !Fma.IsSupported)
-                resourceName = resourceName.Replace(".Fma.", ".NoFma.");
-            if (resourceName.Contains(".Avx2.") && !Avx2.IsSupported)
-                resourceName = resourceName.Replace(".Avx2.", ".NoAvx2.");
+            if (codeFilePath.Contains(".Fma.") && !Fma.IsSupported)
+                codeFilePath = codeFilePath.Replace(".Fma.", ".NoFma.");
+            if (codeFilePath.Contains(".Avx2.") && !Avx2.IsSupported)
+                codeFilePath = codeFilePath.Replace(".Avx2.", ".NoAvx2.");
 
-            var code = TestCode.FromResource(resourceName);
+            var code = await TestCode.FromFileAsync(codeFilePath);
             var driver = await TestDriverFactory.FromCodeAsync(code);
 
             var result = await driver.SendSlowUpdateAsync<string>();

@@ -45,8 +45,8 @@ namespace SharpLab.Tests.Decompilation {
         [InlineData("Switch.String.Large.cs2cs")]
         [InlineData("Lock.Simple.cs2cs")]
         [InlineData("Property.InitOnly.cs2cs")]
-        public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string resourceName) {
-            var code = TestCode.FromResource(resourceName);
+        public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string codeFilePath) {
+            var code = await TestCode.FromFileAsync(codeFilePath);
             var driver = await TestDriverFactory.FromCodeAsync(code);
 
             var result = await driver.SendSlowUpdateAsync<string>();
@@ -62,11 +62,11 @@ namespace SharpLab.Tests.Decompilation {
         //[InlineData("Variable.FromArgumentToCall.cs2cs")] // https://github.com/ashmind/SharpLab/issues/128
         [InlineData("Preprocessor.IfDebug.cs2cs")] // https://github.com/ashmind/SharpLab/issues/161
         [InlineData("Preprocessor.IfDebug.vb2cs")] // https://github.com/ashmind/SharpLab/issues/161
-        [InlineData("FSharp.Preprocessor.IfDebug.fs2cs")] // https://github.com/ashmind/SharpLab/issues/161
+        [InlineData("FSharp/Preprocessor.IfDebug.fs2cs")] // https://github.com/ashmind/SharpLab/issues/161
         [InlineData("Using.Simple.cs2cs")] // https://github.com/ashmind/SharpLab/issues/185
         [InlineData("StringInterpolation.Simple.cs")]
-        public async Task SlowUpdate_ReturnsExpectedDecompiledCode_InDebug(string resourceName) {
-            var data = TestCode.FromResource(resourceName);
+        public async Task SlowUpdate_ReturnsExpectedDecompiledCode_InDebug(string codeFilePath) {
+            var data = await TestCode.FromFileAsync(codeFilePath);
             var driver = await TestDriverFactory.FromCodeAsync(data, Optimize.Debug);
 
             var result = await driver.SendSlowUpdateAsync<string>();

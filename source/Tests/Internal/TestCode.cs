@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Pedantic.IO;
 using SharpLab.Server.Common;
 using Xunit;
@@ -33,11 +35,26 @@ namespace SharpLab.Tests.Internal {
             _expected = expected;
         }
 
+        public static async Task<TestCode> FromFileAsync(string relativePath, [CallerFilePath] string callerFilePath = "") {
+            var testBasePath = Path.GetDirectoryName(callerFilePath)!;
+            var fullPath = Path.Combine(AppContext.BaseDirectory, testBasePath, "TestCode", relativePath);
+
+            var content = await File.ReadAllTextAsync(fullPath);
+            var extension = Path.GetExtension(relativePath);
+
+            return FromContent(content, extension);
+        }
+
         public static TestCode FromResource(string name) {
             var content = EmbeddedResource.ReadAllText(typeof(ExecutionTests), "TestCode." + name);
             var extension = Path.GetExtension(name);
+
+            return FromContent(content, extension);
+        }
+
+        private static TestCode FromContent(string content, string extension) {
             if (extension.Contains("2"))
-                return FromResourceFormatV1(content, extension);
+                return FromContentFormatV1(content, extension);
 
             var split = Regex.Matches(content, @"[/(]\* (?<to>\S+)").Last();
             var from = LanguageAndTargetMap[extension.TrimStart('.')];
@@ -52,7 +69,7 @@ namespace SharpLab.Tests.Internal {
             return new TestCode(code, expected, from, to);
         }
 
-        private static TestCode FromResourceFormatV1(string content, string extension) {
+        private static TestCode FromContentFormatV1(string content, string extension) {
             var parts = content.Split("#=>");
             var code = parts[0].Trim();
             var expected = parts[1].Trim();

@@ -15,33 +15,33 @@ namespace SharpLab.Tests.Decompilation {
         }
 
         [Theory]
-        [InlineData("JitAsm.Simple.cs2asm")]
-        [InlineData("JitAsm.MultipleReturns.cs2asm")]
-        [InlineData("JitAsm.ArrayElement.cs2asm")]
+        [InlineData("JitAsm/Simple.cs2asm")]
+        [InlineData("JitAsm/MultipleReturns.cs2asm")]
+        [InlineData("JitAsm/ArrayElement.cs2asm")]
         // TODO: Understand why these tests are flaky and keep switching between
         // resolving and non-resolving symbols. Since it's .NET Framework, low priority.
         //
         // Non-resolving:
-        // [InlineData("JitAsm.AsyncRegression.CI.cs2asm")]
-        // [InlineData("JitAsm.ConsoleWrite.CI.cs2asm")]
+        // [InlineData("JitAsm/AsyncRegression.CI.cs2asm")]
+        // [InlineData("JitAsm/ConsoleWrite.CI.cs2asm")]
         //
         // Resolving
-        // [InlineData("JitAsm.AsyncRegression.cs2asm")]
-        // [InlineData("JitAsm.ConsoleWrite.cs2asm")]
-        [InlineData("JitAsm.JumpBack.cs2asm")] // https://github.com/ashmind/SharpLab/issues/229
-        [InlineData("JitAsm.Delegate.cs2asm")]
-        [InlineData("JitAsm.Nested.Simple.cs2asm")]
-        [InlineData("JitAsm.Generic.Open.Multiple.cs2asm")]
-        [InlineData("JitAsm.Generic.MethodWithAttribute.cs2asm")]
-        [InlineData("JitAsm.Generic.ClassWithAttribute.cs")]
+        // [InlineData("JitAsm/AsyncRegression.cs2asm")]
+        // [InlineData("JitAsm/ConsoleWrite.cs2asm")]
+        [InlineData("JitAsm/JumpBack.cs2asm")] // https://github.com/ashmind/SharpLab/issues/229
+        [InlineData("JitAsm/Delegate.cs2asm")]
+        [InlineData("JitAsm/Nested.Simple.cs2asm")]
+        [InlineData("JitAsm/Generic.Open.Multiple.cs2asm")]
+        [InlineData("JitAsm/Generic.MethodWithAttribute.cs2asm")]
+        [InlineData("JitAsm/Generic.ClassWithAttribute.cs")]
         // TODO: Diagnose later
-        // [InlineData("JitAsm.Generic.MethodWithAttribute.fs2asm")]
-        [InlineData("JitAsm.Generic.Nested.AttributeOnTop.cs")]
-        [InlineData("JitAsm.Generic.Nested.AttributeOnNested.cs")]
-        [InlineData("JitAsm.Generic.Nested.AttributeOnBoth.cs")]
-        [InlineData("JitAsm.DllImport.cs")] // https://github.com/ashmind/SharpLab/issues/666
-        public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string resourceName) {
-            var code = TestCode.FromResource(resourceName);
+        // [InlineData("JitAsm/Generic.MethodWithAttribute.fs2asm")]
+        [InlineData("JitAsm/Generic.Nested.AttributeOnTop.cs")]
+        [InlineData("JitAsm/Generic.Nested.AttributeOnNested.cs")]
+        [InlineData("JitAsm/Generic.Nested.AttributeOnBoth.cs")]
+        [InlineData("JitAsm/DllImport.cs")] // https://github.com/ashmind/SharpLab/issues/666
+        public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string codeFilePath) {
+            var code = TestCode.FromFile(codeFilePath);
             var driver = await TestDriverFactory.FromCodeAsync(code);
 
             var result = await driver.SendSlowUpdateAsync<string>();

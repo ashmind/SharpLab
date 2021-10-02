@@ -13,11 +13,11 @@ namespace SharpLab.Tests.Decompilation {
         }
 
         [Theory]
-        [InlineData("FSharp.EmptyType.fs")]
-        [InlineData("FSharp.SimpleMethod.fs2cs")] // https://github.com/ashmind/SharpLab/issues/119
-        [InlineData("FSharp.NotNull.fs2cs")]
-        public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForFSharp(string resourceName) {
-            var code = TestCode.FromResource(resourceName);
+        [InlineData("FSharp/EmptyType.fs")]
+        [InlineData("FSharp/SimpleMethod.fs2cs")] // https://github.com/ashmind/SharpLab/issues/119
+        [InlineData("FSharp/NotNull.fs2cs")]
+        public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForFSharp(string codeFilePath) {
+            var code = TestCode.FromFile(codeFilePath);
             var driver = await TestDriverFactory.FromCodeAsync(code);
 
             var result = await driver.SendSlowUpdateAsync<string>();

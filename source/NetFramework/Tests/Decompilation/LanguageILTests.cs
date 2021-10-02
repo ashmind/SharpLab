@@ -13,9 +13,9 @@ namespace SharpLab.Tests.Decompilation {
         }
 
         [Theory]
-        [InlineData("IL.EmptyMethod.il")]
-        public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string resourceName) {
-            var code = TestCode.FromResource(resourceName);
+        [InlineData("IL/EmptyMethod.il")]
+        public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string codeFilePath) {
+            var code = TestCode.FromFile(codeFilePath);
             var driver = await TestDriverFactory.FromCodeAsync(code);
 
             var result = await driver.SendSlowUpdateAsync<string>();
