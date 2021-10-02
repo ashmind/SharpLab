@@ -10,5 +10,11 @@ namespace SharpLab.Tests.Internal {
             driver.SetText(code.Original);
             return driver;
         }
+
+        public static async Task<MirrorSharpTestDriver> FromCode(string code, string sourceLanguageName, string targetName) {
+            var driver = TestEnvironment.NewDriver().SetText(code);
+            await driver.SendSetOptionsAsync(sourceLanguageName, targetName);
+            return driver;
+        }
     }
 }

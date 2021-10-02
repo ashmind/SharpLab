@@ -55,5 +55,22 @@ namespace SharpLab.Tests.Decompilation {
                 result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
             );
         }
+
+        [Fact]
+        public async Task SlowUpdate_ReturnsUnsupportedWarningDiagnostic_ForAnyPermissionSet() {
+            // Arrange
+            var driver = await TestDriverFactory.FromCode(@"
+                .assembly _ { .permissionset reqmin = ( 01 ) }
+            ", LanguageNames.IL, TargetNames.IL);
+
+            // Act
+            var result = await driver.SendSlowUpdateAsync<string>();
+
+            // Assert
+            Assert.Equal(
+                new[] { ("warning", "IL", "Code Access Security is not supported on this runtime. This permision set will be ignored.") },
+                result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
+            );
+        }
     }
 }
