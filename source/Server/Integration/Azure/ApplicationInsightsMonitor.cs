@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Metrics;
 using MirrorSharp.Advanced;
+using MirrorSharp.Internal;
+using Newtonsoft.Json;
 using SharpLab.Server.MirrorSharp;
 using SharpLab.Server.Monitoring;
 
@@ -27,27 +29,49 @@ namespace SharpLab.Server.Integration.Azure {
         }
 
         public void Exception(Exception exception, IWorkSession? session, IDictionary<string, string>? extras = null) {
+            var sessionInternals = session as WorkSession;
             var telemetry = new ExceptionTelemetry(exception) {
+                Context = { Session = { Id = session?.GetSessionId() } },
                 Properties = {
+                    { "Web App", _webAppName },
                     { "Code", session?.GetText() },
                     { "Language", session?.LanguageName },
                     { "Target", session?.GetTargetName() },
+                    { "Cursor", sessionInternals?.CursorPosition.ToString() },
+                    { "Completion", FormatCompletion(sessionInternals) }
                 }
             };
-            AddDefaultDetails(telemetry, session, extras);
+            if (extras != null) {
+                foreach (var pair in extras) {
+                    telemetry.Properties.Add(pair.Key, pair.Value);
+                }
+            }
             _client.TrackException(telemetry);
         }
 
-        private void AddDefaultDetails<TTelemetry>(TTelemetry telemetry, IWorkSession? session, IDictionary<string, string>? extras)
-            where TTelemetry: ITelemetry, ISupportProperties
-        {
-            telemetry.Context.Session.Id = session?.GetSessionId();
-            telemetry.Properties.Add("Web App", _webAppName);
-            if (extras == null)
-                return;
+        private string? FormatCompletion(WorkSession? session) {
+            try {
+                if (session == null)
+                    return null;
 
-            foreach (var pair in extras) {
-                telemetry.Properties.Add(pair.Key, pair.Value);
+                var current = session.CurrentCompletion;
+                if (current.List == null && !current.ChangeEchoPending && current.PendingChar == null)
+                    return null;
+
+                return JsonConvert.ToString(new {
+                    List = current.List is { } list ? new {
+                        Items = new {
+                            Take10 = list.Items.Take(10),
+                            Length = list.Items.Length
+                        },
+                        list.Span
+                    } : null,
+                    current.ChangeEchoPending,
+                    current.PendingChar
+                });
+            }
+            catch (Exception ex) {
+                return "<Failed to format completion: " + ex.ToString() + ">";
             }
         }
     }
