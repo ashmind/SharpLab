@@ -10,13 +10,7 @@ using SharpLab.Runtime;
 namespace SharpLab.Server.Decompilation.Internal {
     public static class IsolatedJitAsmDecompilerCore {
         public static IReadOnlyList<MethodJitResult> JitCompileAndGetMethods(Assembly assembly) {
-            // This is a security consideration as PrepareMethod calls static ctors
-            foreach (var type in assembly.DefinedTypes) {
-                foreach (var constructor in type.DeclaredConstructors) {
-                    if (constructor.IsStatic)
-                        throw new NotSupportedException("Type " + type + " has a static constructor, which is not supported by SharpLab JIT decompiler.");
-                }
-            }
+            ValidateStaticConstructors(assembly);
             var results = new List<MethodJitResult>();
             foreach (var type in assembly.DefinedTypes) {
                 if (type.IsNested)
@@ -24,6 +18,21 @@ namespace SharpLab.Server.Decompilation.Internal {
                 CompileAndCollectMembers(results, type);
             }
             return results;
+        }
+
+        // This is a security consideration as PrepareMethod calls static ctors
+        private static void ValidateStaticConstructors(Assembly assembly) {
+            try {
+                foreach (var type in assembly.DefinedTypes) {
+                    foreach (var constructor in type.DeclaredConstructors) {
+                        if (constructor.IsStatic)
+                            throw new NotSupportedException($"Type {type} has a static constructor, which is not supported by SharpLab JIT decompiler.");
+                    }
+                }
+            }
+            catch (ReflectionTypeLoadException ex) {
+                throw new NotSupportedException("Unable to validate whether code is using static contructors (not supported by SharpLab JIT decompiler).", ex);
+            }
         }
 
         private static void CompileAndCollectMembers(ICollection<MethodJitResult> results, TypeInfo type, ImmutableArray<Type>? genericArgumentTypes = null) {

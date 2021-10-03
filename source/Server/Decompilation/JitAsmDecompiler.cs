@@ -34,7 +34,8 @@ namespace SharpLab.Server.Decompilation {
             Argument.NotNull(nameof(streams), streams);
             Argument.NotNull(nameof(codeWriter), codeWriter);
 
-            using var loadContext = new CustomAssemblyLoadContext(shouldShareAssembly: _ => true); var assembly = loadContext.LoadFromStream(streams.AssemblyStream);
+            using var loadContext = new CustomAssemblyLoadContext(shouldShareAssembly: _ => true);
+            var assembly = loadContext.LoadFromStream(streams.AssemblyStream);
             ValidateStaticConstructors(assembly);
 
             using var runtimeLease = _runtimePool.GetOrCreate();
@@ -54,11 +55,16 @@ namespace SharpLab.Server.Decompilation {
         }
 
         private void ValidateStaticConstructors(Assembly assembly) {
-            foreach (var type in assembly.DefinedTypes) {
-                foreach (var constructor in type.DeclaredConstructors) {
-                    if (constructor.IsStatic)
-                        throw new NotSupportedException($"Type {type} has a static constructor, which is not supported by SharpLab JIT decompiler.");
+            try {
+                foreach (var type in assembly.DefinedTypes) {
+                    foreach (var constructor in type.DeclaredConstructors) {
+                        if (constructor.IsStatic)
+                            throw new NotSupportedException($"Type {type} has a static constructor, which is not supported by SharpLab JIT decompiler.");
+                    }
                 }
+            }
+            catch (ReflectionTypeLoadException ex) {
+                throw new NotSupportedException("Unable to validate whether code is using static contructors (not supported by SharpLab JIT decompiler).", ex);
             }
         }
 
