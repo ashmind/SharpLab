@@ -35,7 +35,14 @@ namespace SharpLab.Container.Manager.Internal {
                 }
 
                 if (readCount == 0) {
-                    await Task.Delay(10, cancellationToken);
+                    try {
+                        await Task.Delay(10, cancellationToken);
+                    }
+                    catch (OperationCanceledException) {
+                        cancelled = true;
+                        break;
+                    }
+
                     continue;
                 }
 
