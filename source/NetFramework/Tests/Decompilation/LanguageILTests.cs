@@ -86,5 +86,20 @@ namespace SharpLab.Tests.Decompilation {
                 result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
             );
         }
+
+        [Fact]
+        public async Task SlowUpdate_ReportsErrorDiagnostic_ForIncompleteMethod() {
+            // Arrange
+            var driver = await TestDriverFactory.FromCodeAsync(@".method", LanguageNames.IL, TargetNames.IL);
+
+            // Act
+            var result = await driver.SendSlowUpdateAsync<string>();
+
+            // Assert
+            Assert.Equal(
+                new[] { ("error", "IL", "Unexpected end of file") },
+                result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
+            );
+        }
     }
 }

@@ -11,14 +11,7 @@ namespace SharpLab.Server.Compilation.Internal {
         }
 
         public int GetOffset(int line, int column) {
-            if (line < 1)
-                return column;
-
-            // slightly weird behaviour in some AST ranges
-            if (line == _map.Count + 1 && column == 0)
-                return _map[line - 2].End;
-
-            return _map[line - 1].Start + column;
+            return _map[line - 1].Start + (column - 1);
         }
 
         public int TextLength { get; }

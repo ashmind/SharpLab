@@ -53,6 +53,8 @@ namespace SharpLab.Server.Compilation.Internal {
 
         private CodeAnalysis.Location ConvertLocation(Location location) {
             var offset = _lineColumnMap.GetOffset(location.line, location.column);
+            if (offset == _lineColumnMap.TextLength)
+                offset = _lineColumnMap.TextLength - 2;
             var length = Math.Min(2, _lineColumnMap.TextLength - offset);
 
             return CodeAnalysis.Location.Create(

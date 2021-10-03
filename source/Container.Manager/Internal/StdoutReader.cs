@@ -42,7 +42,6 @@ namespace SharpLab.Container.Manager.Internal {
                         cancelled = true;
                         break;
                     }
-
                     continue;
                 }
 
