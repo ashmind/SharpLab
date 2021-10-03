@@ -16,6 +16,7 @@ namespace SharpLab.Tests.Decompilation {
 
         [Theory]
         [InlineData("IL/EmptyMethod.il")]
+        [InlineData("IL/UnknownAssembly.ToCSharp.il")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string codeFilePath) {
             var code = await TestCode.FromFileAsync(codeFilePath);
             var driver = await TestDriverFactory.FromCodeAsync(code);
@@ -44,7 +45,7 @@ namespace SharpLab.Tests.Decompilation {
                     ret
                 }
             ";
-            var driver = await TestDriverFactory.FromCode(code, LanguageNames.IL, LanguageNames.IL);
+            var driver = await TestDriverFactory.FromCodeAsync(code, LanguageNames.IL, LanguageNames.IL);
 
             // Act
             var result = await driver.SendSlowUpdateAsync<string>();
@@ -59,7 +60,7 @@ namespace SharpLab.Tests.Decompilation {
         [Fact]
         public async Task SlowUpdate_ReturnsUnsupportedWarningDiagnostic_ForAnyPermissionSet() {
             // Arrange
-            var driver = await TestDriverFactory.FromCode(@"
+            var driver = await TestDriverFactory.FromCodeAsync(@"
                 .assembly _ { .permissionset reqmin = ( 01 ) }
             ", LanguageNames.IL, TargetNames.IL);
 
@@ -76,7 +77,7 @@ namespace SharpLab.Tests.Decompilation {
         [Fact]
         public async Task SlowUpdate_ReportsErrorDiagnostic_ForDuplicateMethodDefinition() {
             // Arrange
-            var driver = await TestDriverFactory.FromCode(@"
+            var driver = await TestDriverFactory.FromCodeAsync(@"
                 .class C
                     extends System.Object
                 {
@@ -98,7 +99,7 @@ namespace SharpLab.Tests.Decompilation {
         [Fact]
         public async Task SlowUpdate_ReportsErrorDiagnostic_ForBranchToNonExistentLabel() {
             // Arrange
-            var driver = await TestDriverFactory.FromCode(@"
+            var driver = await TestDriverFactory.FromCodeAsync(@"
                 .method void M() cil managed
                 {
                     br IL_0001

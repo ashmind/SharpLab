@@ -32,24 +32,14 @@ namespace SharpLab.Server.Common {
         }
 
         public PEFile? Resolve(IAssemblyReference reference) {
-            return ResolveFromCache(reference).file;
+            return ResolveFromCacheForDecompilation(reference).file;
         }
 
         public Task<PEFile?> ResolveAsync(IAssemblyReference reference) {
-            return ResolveFromCache(reference).task;
+            return ResolveFromCacheForDecompilation(reference).task;
         }
 
         public PEFile ResolveModule(PEFile mainModule, string moduleName) {
-            throw new NotSupportedException();
-        }
-
-        public AssemblyDefinition Resolve(Mono.Cecil.AssemblyNameReference name) {
-            if (!_cecilCache.TryGetValue(name.Name, out var assembly))
-                throw new Exception($"Assembly {name.Name} was not found in cache.");
-            return assembly;
-        }
-
-        public AssemblyDefinition Resolve(Mono.Cecil.AssemblyNameReference name, ReaderParameters parameters) {
             throw new NotSupportedException();
         }
 
@@ -57,19 +47,26 @@ namespace SharpLab.Server.Common {
             throw new NotSupportedException();
         }
 
-        private (PEFile? file, Task<PEFile?> task) ResolveFromCache(IAssemblyReference reference) {
-            if (!_peFileCache.TryGetValue(reference.Name, out var cached)) {
-                // F# assembly graph includes these for some reason
-                if (reference.Name == "System.Security.Permissions")
-                    return (null, NullFileTask);
-                if (reference.Name == "System.Threading.AccessControl")
-                    return (null, NullFileTask);
-                if (reference.Name == "mscorlib")
-                    return (null, NullFileTask);
+        public AssemblyDefinition Resolve(Mono.Cecil.AssemblyNameReference name) {
+            return ResolveFromCacheForExecution(name);
+        }
 
-                throw new Exception($"Assembly {reference.Name} was not found in cache.");
-            }
+        public AssemblyDefinition Resolve(Mono.Cecil.AssemblyNameReference name, ReaderParameters parameters) {
+            throw new NotSupportedException();
+        }
+
+        private (PEFile? file, Task<PEFile?> task) ResolveFromCacheForDecompilation(IAssemblyReference reference) {
+            // It is OK to _not_ find the assembly for decompilation, as e.g. in IL we can reference arbitrary assemblies
+            if (!_peFileCache.TryGetValue(reference.Name, out var cached))
+                return (null, NullFileTask);
+
             return (cached.file, ResultAsNullable(cached.task));
+        }
+
+        private AssemblyDefinition ResolveFromCacheForExecution(Mono.Cecil.AssemblyNameReference name) {
+            if (!_cecilCache.TryGetValue(name.Name, out var assembly))
+                throw new Exception($"Assembly {name.Name} was not found in cache.");
+            return assembly;
         }
 
         private Task<PEFile?> ResultAsNullable(Task<PEFile> task) => (Task<PEFile?>)(object)task;

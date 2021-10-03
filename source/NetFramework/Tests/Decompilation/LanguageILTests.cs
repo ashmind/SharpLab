@@ -16,6 +16,7 @@ namespace SharpLab.Tests.Decompilation {
 
         [Theory]
         [InlineData("IL/EmptyMethod.il")]
+        [InlineData("IL/UnknownAssembly.ToCSharp.il")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string codeFilePath) {
             var code = TestCode.FromFile(codeFilePath);
             var driver = await TestDriverFactory.FromCodeAsync(code);
@@ -31,7 +32,7 @@ namespace SharpLab.Tests.Decompilation {
         [Fact]
         public async Task SlowUpdate_ReturnsWarningDiagnostic_ForPermissionSetInNewerFormat() {
             // Arrange
-            var driver = await TestDriverFactory.FromCode(@"
+            var driver = await TestDriverFactory.FromCodeAsync(@"
                 .assembly _
                 {
                     .permissionset reqmin = (
@@ -72,7 +73,7 @@ namespace SharpLab.Tests.Decompilation {
         [Fact]
         public async Task SlowUpdate_ReturnsErrorDiagnostic_ForMalformedPermissionSet() {
             // Arrange
-            var driver = await TestDriverFactory.FromCode(@"
+            var driver = await TestDriverFactory.FromCodeAsync(@"
                 .assembly _ { .permissionset reqmin = ( 01 ) }
             ", LanguageNames.IL, TargetNames.IL);
 
