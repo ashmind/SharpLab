@@ -38,7 +38,7 @@ namespace SharpLab.Container.Runtime {
 
         // Must be thread safe
         public void WriteValue<T>(T value, string? name, int lineNumber) {
-            if (_valueCountsPerLine[lineNumber] > Limits.MaxValuesPerLine)
+            if (lineNumber >= _valueCountsPerLine.Length || _valueCountsPerLine[lineNumber] > Limits.MaxValuesPerLine)
                 return;
 
             var valueCountPerLine = Interlocked.Increment(ref _valueCountsPerLine[lineNumber]);
