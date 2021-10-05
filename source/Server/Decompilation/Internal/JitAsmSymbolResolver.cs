@@ -6,11 +6,18 @@ namespace SharpLab.Server.Decompilation.Internal {
         private readonly ClrRuntime _runtime;
         private readonly ulong _currentMethodAddress;
         private readonly uint _currentMethodLength;
+        private readonly JitAsmSettings _settings;
 
-        public JitAsmSymbolResolver(ClrRuntime runtime, ulong currentMethodAddress, uint currentMethodLength) {
+        public JitAsmSymbolResolver(
+            ClrRuntime runtime,
+            ulong currentMethodAddress,
+            uint currentMethodLength,
+            JitAsmSettings settings
+        ) {
             _runtime = runtime;
             _currentMethodAddress = currentMethodAddress;
             _currentMethodLength = currentMethodLength;
+            _settings = settings;
         }
 
         public bool TryGetSymbol(in Instruction instruction, int operand, int instructionOperand, ulong address, int addressSize, out SymbolResult symbol) {
@@ -18,6 +25,11 @@ namespace SharpLab.Server.Decompilation.Internal {
                 // relative offset reference
                 symbol = new SymbolResult(address, "L" + (address - _currentMethodAddress).ToString("x4"));
                 return true;
+            }
+
+            if (_settings.ShouldDisableMethodSymbolResolver) {
+                symbol = default;
+                return false;
             }
 
             var method = _runtime.GetMethodByInstructionPointer(address);

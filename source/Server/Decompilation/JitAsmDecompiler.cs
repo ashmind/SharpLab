@@ -23,11 +23,13 @@ namespace SharpLab.Server.Decompilation {
             SpaceAfterOperandSeparator = true
         };
         private readonly Pool<ClrRuntime> _runtimePool;
+        private readonly JitAsmSettings _settings;
 
         public string LanguageName => TargetNames.JitAsm;
 
-        public JitAsmDecompiler(Pool<ClrRuntime> runtimePool) {
+        public JitAsmDecompiler(Pool<ClrRuntime> runtimePool, JitAsmSettings settings) {
             _runtimePool = runtimePool;
+            _settings = settings;
         }
 
         public void Decompile(CompilationStreamPair streams, TextWriter codeWriter) {
@@ -200,7 +202,7 @@ namespace SharpLab.Server.Decompilation {
                 decoder.Decode(out instructions.AllocUninitializedElement());
             }
 
-            var resolver = new JitAsmSymbolResolver(context.Runtime, methodAddress, methodLength);
+            var resolver = new JitAsmSymbolResolver(context.Runtime, methodAddress, methodLength, _settings);
             var formatter = new IntelFormatter(FormatterOptions, resolver);
             var output = new StringOutput();
             foreach (ref var instruction in instructions) {

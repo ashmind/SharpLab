@@ -1,3 +1,4 @@
+using System;
 using Autofac;
 using JetBrains.Annotations;
 using SharpLab.Server.Decompilation.AstOnly;
@@ -27,6 +28,13 @@ namespace SharpLab.Server.Decompilation {
             builder.RegisterType<ILDecompiler>()
                    .As<IDecompiler>()
                    .SingleInstance();
+
+            builder.RegisterInstance(new JitAsmSettings(
+                shouldDisableMethodSymbolResolver: Environment.GetEnvironmentVariable("SHARPLAB_JITASM_DISABLE_METHOD_RESOLVER") is {} d
+                    ? bool.Parse(d)
+                    : false
+            )).AsSelf();
+
             builder.RegisterType<JitAsmDecompiler>()
                    .As<IDecompiler>()
                    .SingleInstance();
