@@ -21,8 +21,8 @@ $ExceptionLabel = ":boom: exception"
 $query = "
   exceptions
     | where client_Type != 'Browser'
-    | where outerType !startswith 'Unbreakable'
-    | where not (outerType == 'System.NotSupportedException' and outerAssembly startswith 'SharpLab')
+    | where type !startswith 'Unbreakable'
+    | where not (type == 'System.NotSupportedException' and assembly startswith 'SharpLab')
     | where outerType !in (
         'MirrorSharp.Advanced.EarlyAccess.RoslynSourceTextGuardException',
         'MirrorSharp.Advanced.EarlyAccess.RoslynCompilationGuardException',
@@ -33,8 +33,8 @@ $query = "
     | extend containerMethod = iif(isnotempty(containerType), extract('[\\r\\n]+\\s*at ([^(]+)', 1, outerMessage), '')
     | project itemCount,
               app=tostring(customDimensions['Web App']),
-              type=coalesce(containerType, outerType),
-              method=iif(type != 'System.InvalidProgramException', coalesce(containerMethod, outerMethod), '<user code>'),
+              type=coalesce(containerType, type),
+              method=iif(type != 'System.InvalidProgramException', coalesce(containerMethod, method), '<user code>'),
               query=strcat(
                 'exceptions\n  | where type == \'', type,
                 iif(type != 'System.InvalidProgramException', strcat('\'\n  | where method == \'', method, '\''), ''),
