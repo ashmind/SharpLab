@@ -36,7 +36,7 @@ CodeMirror.defineMode('asm', () => {
             }
 
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-            if (stream.match(/L[0-9a-f]{4,}/)) {
+            if (stream.match(/L[0-9a-f]{4,}:?/)) {
                 return 'tag';
             }
 
