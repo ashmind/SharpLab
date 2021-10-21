@@ -67,11 +67,6 @@ jobs:
            app: sl-a-edge-core-x64
            url: https://sl-a-edge-core-x64.azurewebsites.net/status
            environment: edge-server-x64
-         - name: 'x64, Profiler'
-           artifact: Server
-           app: sl-a-edge-core-x64-profiled
-           url: https://sl-a-edge-core-x64-profiled.azurewebsites.net/status
-           environment: edge-server-x64-profiled
     name: 'Deploy to Edge (${{ matrix.name }})'
     runs-on: ubuntu-latest
     needs: build-core

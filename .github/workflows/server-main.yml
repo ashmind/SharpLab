@@ -21,13 +21,6 @@ jobs:
            url: https://sl-a-core-x64.azurewebsites.net/status
            environment: main-server-x64
 
-         - name: 'x64, Profiler'
-           package: Server.zip
-           app: sl-a-core-x64-profiled
-           stop-app: true
-           url: https://sl-a-core-x64-profiled.azurewebsites.net/status
-           environment: main-server-x64-profiled
-
          - name: '.NET Framework, x86'
            package: Server.NetFramework.zip
            app: sl-a-netfx
