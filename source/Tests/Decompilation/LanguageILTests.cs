@@ -117,6 +117,28 @@ namespace SharpLab.Tests.Decompilation {
         }
 
         [Fact]
+        public async Task SlowUpdate_ReportsErrorDiagnostic_ForDuplicateFieldDefinition() {
+            // Arrange
+            var driver = await TestDriverFactory.FromCodeAsync(@"
+                .class C
+                    extends System.Object
+                {
+                    .field int32 f
+                    .field int32 f
+                }
+            ", LanguageNames.IL, TargetNames.IL);
+
+            // Act
+            var result = await driver.SendSlowUpdateAsync<string>();
+
+            // Assert
+            Assert.Equal(
+                new[] { ("error", "IL", "Duplicate field declaration: System.Int32 f") },
+                result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
+            );
+        }
+
+        [Fact]
         public async Task SlowUpdate_ReportsErrorDiagnostic_ForBranchToNonExistentLabel() {
             // Arrange
             var driver = await TestDriverFactory.FromCodeAsync(@"
