@@ -4,6 +4,8 @@ using Xunit.Abstractions;
 using SharpLab.Tests.Internal;
 using SharpLab.Server.Common;
 using System.Linq;
+using System.IO;
+using System;
 
 namespace SharpLab.Tests.Decompilation {
     public class LanguageILTests {
@@ -145,6 +147,27 @@ namespace SharpLab.Tests.Decompilation {
             // Assert
             Assert.Equal(
                 new[] { ("error", "IL", "Unexpected end of file") },
+                result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
+            );
+        }
+
+        [Theory]
+        [InlineData("SharpLab.Tests.dll", false)]
+        [InlineData("SharpLab.Tests.dll", true)]
+        public async Task SlowUpdate_ReportsErrorDiagnostic_ForManifestFileAccess(string path, bool useAbsolutePath) {
+            // Arrange
+            if (useAbsolutePath)
+                path = Path.Combine(AppContext.BaseDirectory, path);
+            // it is important that the file exists, non-existent file will obviously not be included
+            if (!File.Exists(path)) throw new($"File {path} was not found");
+            var driver = await TestDriverFactory.FromCodeAsync($@".mresource public '{path.Replace(@"\", @"\\")}' {{}}", LanguageNames.IL, TargetNames.IL);
+
+            // Act
+            var result = await driver.SendSlowUpdateAsync<string>();
+
+            // Assert
+            Assert.Equal(
+                new[] { ("error", "IL", $"Resource file '{path}' does not exist or cannot be accessed from SharpLab") },
                 result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
             );
         }

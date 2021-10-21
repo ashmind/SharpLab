@@ -48,7 +48,7 @@ namespace SharpLab.Server.Compilation {
                 return (compiled, false);
             }
 
-#warning TODO: Revisit after https: //github.com/dotnet/docs/issues/14784
+            #warning TODO: Revisit after https: //github.com/dotnet/docs/issues/14784
             var compilation = (await session.Roslyn.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false))!;
             var emitResult = compilation.Emit(assemblyStream, pdbStream: symbolStream, options: RoslynEmitOptions);
             if (!emitResult.Success) {
@@ -92,6 +92,9 @@ namespace SharpLab.Server.Compilation {
             }
         }
 
+        private static readonly DriverSettings ILDriverSettings = new() {
+            ResourceResolver = ILNullResourceResolver.Default
+        };
         private bool TryCompileILToStream(MemoryStream assemblyStream, IWorkSession session, IList<Diagnostic> diagnostics) {
             var il = (IILSessionInternal)session.IL();
             var ilText = il.GetText();
@@ -99,7 +102,7 @@ namespace SharpLab.Server.Compilation {
             // TODO: See if we can get offset from the library instead
             var lineColumnMap = ILLineColumnMap.BuildFor(ilText);
             var logger = new ILCompilationLogger(diagnostics, lineColumnMap);
-            var driver = new Driver(logger, il.Target, showParser: false, debuggingInfo: false, showTokens: false);
+            var driver = new Driver(logger, il.Target, ILDriverSettings);
 
             var sourceBytesLength = Encoding.UTF8.GetByteCount(ilText);
             var sourceBytes = ArrayPool<byte>.Shared.Rent(sourceBytesLength);

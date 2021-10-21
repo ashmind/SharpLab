@@ -91,6 +91,9 @@ namespace SharpLab.Server.Compilation {
             }
         }
 
+        private static readonly DriverSettings ILDriverSettings = new() {
+            ResourceResolver = ILNullResourceResolver.Default
+        };
         private bool TryCompileILToStream(MemoryStream assemblyStream, IWorkSession session, IList<Diagnostic> diagnostics) {
             var il = (IILSessionInternal)session.IL();
             var ilText = il.GetTextBuilderForReadsOnly();
@@ -98,7 +101,7 @@ namespace SharpLab.Server.Compilation {
             // TODO: See if we can get offset from the library instead
             var lineColumnMap = ILLineColumnMap.BuildFor(ilText);
             var logger = new ILCompilationLogger(diagnostics, lineColumnMap);
-            var driver = new Driver(logger, il.Target, showParser: false, debuggingInfo: false, showTokens: false);
+            var driver = new Driver(logger, il.Target, ILDriverSettings);
 
             using var sourceStream = (RecyclableMemoryStream)_memoryStreamManager.GetStream("Compiler-IL", il.TextLength);
             foreach (var chunk in ilText.GetChunks()) {
