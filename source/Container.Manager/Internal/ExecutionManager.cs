@@ -32,7 +32,7 @@ namespace SharpLab.Container.Manager.Internal {
             // so atomicity is not required within same session id
             using var allocationCancellation = CancellationFactory.ContainerAllocation(cancellationToken);
             if (_containerPool.GetSessionContainer(sessionId) is not {} container) {
-                if (_crashSuspensionManager.GetSuspension(sessionId, outputBufferBytes) is {} suspension)
+                if (_crashSuspensionManager.GetSuspension(sessionId) is {} suspension)
                     return suspension;
 
                 try {
@@ -53,7 +53,7 @@ namespace SharpLab.Container.Manager.Internal {
             );
 
             if (!result.IsOutputReadSuccess) {
-                if (container.Container.Process.HasExited)
+                if (container.Process.HasExited)
                     _containerPool.RemoveSessionContainer(sessionId);
 
                 return _crashSuspensionManager.SetSuspension(sessionId, result);

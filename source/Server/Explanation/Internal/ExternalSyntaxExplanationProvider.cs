@@ -14,12 +14,12 @@ namespace SharpLab.Server.Explanation.Internal {
         private readonly ExternalSyntaxExplanationSettings _settings;
 
         private IReadOnlyCollection<SyntaxExplanation>? _explanations;
-        private readonly SemaphoreSlim _explanationsLock = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _explanationsLock = new(1);
 
         private Task? _updateTask;
         private CancellationTokenSource? _updateCancellationSource;
 
-        private readonly Serializer _serilializer = new Serializer(new SerializerSettings {
+        private readonly Serializer _serilializer = new (new() {
             NamingConvention = new FlatNamingConvention()
         });
         private readonly IMonitor _monitor;

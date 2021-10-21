@@ -10,6 +10,7 @@ using Autofac;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.IO;
+using Microsoft.Extensions.Logging.Mocks;
 using MirrorSharp;
 using MirrorSharp.Advanced;
 using MirrorSharp.Testing;
@@ -146,7 +147,7 @@ namespace SharpLab.Tests.Of.Container.Internal {
                 }
 
                 stdout.Seek(0, SeekOrigin.Begin);
-                var stdoutReader = new StdoutReader();
+                var stdoutReader = new StdoutReader(new LoggerMock<StdoutReader>());
                 var outputResult = await stdoutReader.ReadOutputAsync(
                     stdout,
                     new byte[stdout.Length],

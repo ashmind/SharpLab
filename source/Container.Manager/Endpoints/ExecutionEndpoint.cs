@@ -6,17 +6,20 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using SharpLab.Container.Manager.Internal;
 
 namespace SharpLab.Container.Manager.Endpoints {
     // Not using controller for this to avoid per-request allocations on a hot path
     public class ExecutionEndpoint {
         private readonly ExecutionManager _executionManager;
+        private readonly ILogger<ExecutionEndpoint> _logger;
         private readonly string _requiredBearerAuthorization;
         private readonly ConcurrentDictionary<string, byte> _activeSessionRequests = new();
 
-        public ExecutionEndpoint(ExecutionManager executionManager, ExecutionEndpointSettings settings) {
+        public ExecutionEndpoint(ExecutionManager executionManager, ExecutionEndpointSettings settings, ILogger<ExecutionEndpoint> logger) {
             _executionManager = executionManager;
+            _logger = logger;
             _requiredBearerAuthorization = "Bearer " + settings.RequiredAuthorizationToken;
         }
 
@@ -29,8 +32,11 @@ namespace SharpLab.Container.Manager.Endpoints {
             }
 
             var sessionId = context.Request.Headers["SL-Session-Id"][0]!;
+            using var sessionLogScope = _logger.IsEnabled(LogLevel.Debug) ? _logger.BeginScope(("SessionId", sessionId)) : null;
             var includePerformance = context.Request.Headers["SL-Debug-Performance"].Count > 0;
             var contentLength = (int)context.Request.Headers.ContentLength!;
+
+            _logger.LogDebug("Processing Execute request", null);
 
             var stopwatch = includePerformance ? Stopwatch.StartNew() : null;
 
@@ -83,6 +89,7 @@ namespace SharpLab.Container.Manager.Endpoints {
         private Task WriteErrorResponseAsync(HttpContext context, Exception exception) {
             context.Response.StatusCode = 500;
             context.Response.ContentType = "text/vnd.sharplab.error+plain";
+            _logger.LogError(exception, "Execution endpoint error", null);
             return context.Response.WriteAsync(exception.ToString(), context.RequestAborted);
         }
     }

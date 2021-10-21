@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics;
-using System.IO;
+using System.IO.Pipes;
 using Fs.Processes.JobObjects;
 using Vanara.PInvoke;
 
@@ -27,9 +27,9 @@ namespace Fragile.Internal {
         }
 
         public Process Process { get; }
-        public Stream InputStream => _streams.Input;
-        public Stream OutputStream => _streams.Output;
-        public Stream ErrorStream => _streams.Error;
+        public PipeStream InputStream => _streams.Input;
+        public PipeStream OutputStream => _streams.Output;
+        public PipeStream ErrorStream => _streams.Error;
 
         internal static void Dispose(
             Process? process,

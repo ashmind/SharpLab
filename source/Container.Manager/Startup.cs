@@ -3,9 +3,7 @@ using Fragile;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using SharpLab.Container.Manager.Azure;
 using SharpLab.Container.Manager.Endpoints;
 using SharpLab.Container.Manager.Internal;
@@ -63,10 +61,7 @@ namespace SharpLab.Container.Manager {
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-            if (env.IsDevelopment())
-                app.UseDeveloperExceptionPage();
-
+        public void Configure(IApplicationBuilder app) {
             app.UseRouting();
 
             app.UseEndpoints(endpoints => {

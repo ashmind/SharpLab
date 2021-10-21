@@ -10,7 +10,7 @@ namespace SharpLab.Container.Manager.Internal {
     public class ContainerCleanupWorker : BackgroundService {
         private readonly ILogger<ContainerCleanupWorker> _logger;
 
-        private readonly Channel<IProcessContainer> _cleanupQueueChannel = Channel.CreateUnbounded<IProcessContainer>();
+        private readonly Channel<IDisposable> _cleanupQueueChannel = Channel.CreateUnbounded<IDisposable>();
 
         public ContainerCleanupWorker(
             ILogger<ContainerCleanupWorker> logger
@@ -56,14 +56,13 @@ namespace SharpLab.Container.Manager.Internal {
         }
         */
 
-        public void QueueForCleanup(IProcessContainer cage) {
-            var queued = _cleanupQueueChannel.Writer.TryWrite(cage);
+        public void QueueForCleanup(IProcessContainer container) => QueueForCleanup((IDisposable)container);
+        public void QueueForCleanup(ActiveContainer container) => QueueForCleanup((IDisposable)container);
+
+        private void QueueForCleanup(IDisposable container) {
+            var queued = _cleanupQueueChannel.Writer.TryWrite(container);
             if (!queued)
                 throw new Exception("Failed to queue synchronously -- this should not happen with the unbounded channel.");
-        }
-
-        public void QueueForCleanup(ActiveContainer container) {
-            QueueForCleanup(container.Container);
         }
     }
 }

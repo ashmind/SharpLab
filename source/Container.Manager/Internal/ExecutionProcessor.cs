@@ -47,7 +47,7 @@ namespace SharpLab.Container.Manager.Internal {
                     : CancellationFactory.ContainerExecution(cancellationToken);
 
                 return await _stdoutReader.ReadOutputAsync(
-                    container.Container.OutputStream,
+                    container.CancellableOutputStream,
                     outputBufferBytes,
                     outputStartMarkerBytes.AsMemory(0, OutputMarkerLength),
                     outputEndMarkerBytes.AsMemory(0, OutputMarkerLength),

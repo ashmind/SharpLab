@@ -12,7 +12,7 @@ namespace SharpLab.Container.Manager.Internal {
 
         private readonly ConcurrentDictionary<string, DateTime> _suspensions = new();
 
-        public ExecutionOutputResult? GetSuspension(string sessionId, byte[] buffer) {
+        public ExecutionOutputResult? GetSuspension(string sessionId) {
             if (!_suspensions.TryGetValue(sessionId, out var suspensionEndTime))
                 return null;
 

@@ -1,5 +1,6 @@
 using System;
 using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using MirrorSharp;
 using MirrorSharp.Advanced;
 using MirrorSharp.Advanced.EarlyAccess;
@@ -8,13 +9,12 @@ using SharpLab.Server;
 
 namespace SharpLab.Tests.Internal {
     public static class TestEnvironment {
-        public static IContainer Container { get; } = ((Func<IContainer>)(() => {
+        public static ILifetimeScope Container { get; } = ((Func<ILifetimeScope>)(() => {
             Environment.SetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_URL", "http://localhost/test");
             Environment.SetEnvironmentVariable("SHARPLAB_LOCAL_SECRETS_ContainerHostAuthorizationToken", "_");
 
-            var builder = new ContainerBuilder();
-            new Startup().ConfigureContainer(builder);
-            return builder.Build();
+            var host = Program.CreateHostBuilder(new string[0]).Build();
+            return host.Services.GetAutofacRoot();
         }))();
 
         public static MirrorSharpOptions MirrorSharpOptions { get; } = Startup.CreateMirrorSharpOptions(Container);

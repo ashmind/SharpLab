@@ -1,14 +1,12 @@
 using System;
 using System.Diagnostics;
-using System.IO;
+using System.IO.Pipes;
 
 namespace Fragile {
     public interface IProcessContainer : IDisposable {
         Process Process { get; }
-        Stream InputStream { get; }
-        Stream OutputStream { get; }
-        Stream ErrorStream { get; }
-
-
+        PipeStream InputStream { get; }
+        PipeStream OutputStream { get; }
+        PipeStream ErrorStream { get; }
     }
 }

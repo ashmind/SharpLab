@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging.Mocks;
 using SharpLab.Container.Manager.Internal;
 using Xunit;
 
@@ -19,7 +20,7 @@ namespace SharpLab.Tests.Of.Container.Unit {
         [InlineData(new[] { "STARTEND" }, "")]
         [InlineData(new[] { "STAR", "TEND" }, "")]
         public async Task ReadOutputAsync_DetectsOutputBoundariesCorrectly(string[] segments, string expectedOutput) {
-            var reader = new StdoutReader();
+            var reader = new StdoutReader(new LoggerMock<StdoutReader>());
             var inputStream = new Utf8SegmentedAsyncStream(segments);
 
             var outputBuffer = new byte[10240];

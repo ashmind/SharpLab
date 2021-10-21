@@ -3,12 +3,18 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace SharpLab.Container.Manager.Internal {
     public class StdoutReader {
         private static readonly byte[] ExecutionTimedOut = Encoding.UTF8.GetBytes("\n(Execution timed out)");
         private static readonly byte[] StartOfOutputNotFound = Encoding.UTF8.GetBytes("\n(Could not find start of output)");
         private static readonly byte[] UnexpectedEndOfOutput = Encoding.UTF8.GetBytes("\n(Unexpected end of output)");
+        private readonly ILogger<StdoutReader> _logger;
+
+        public StdoutReader(ILogger<StdoutReader> logger) {
+            _logger = logger;
+        }
 
         public async Task<ExecutionOutputResult> ReadOutputAsync(
             Stream stream,
@@ -31,6 +37,7 @@ namespace SharpLab.Container.Manager.Internal {
                 }
                 catch (OperationCanceledException) {
                     cancelled = true;
+                    _logger.LogDebug("Timeout at stream.ReadAsync", null);
                     break;
                 }
 
