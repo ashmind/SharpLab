@@ -1,10 +1,9 @@
 ﻿import LZString from 'lz-string';
 import type { RawOptions } from '../../types/raw-options';
 import type { Gist } from '../../types/gist';
-import { languages } from '../../helpers/languages';
-import { targets } from '../../helpers/targets';
+import { LanguageName, languages } from '../../helpers/languages';
+import { TargetName, targets } from '../../helpers/targets';
 import warn from '../../helpers/warn';
-import extendType from '../../helpers/extend-type';
 import throwError from '../../helpers/throw-error';
 import {
     languageMap,
@@ -14,16 +13,49 @@ import {
     targetMapReverseV1
 } from './helpers/language-and-target-maps';
 import precompressor from './url/precompressor';
-import loadGistAsync from './url/load-gist-async';
+import loadGistAsync, { StateLoadedFromGist } from './url/load-gist-async';
+import { fromBase64Url, toBase64Url } from './url/base64url';
+
+type OptionsLoadedFromLegacyUrlV1 = {
+    language: LanguageName|undefined;
+    target: TargetName|undefined;
+    release: boolean;
+    branchId: string|undefined;
+};
+
+type StateLoadedFromLegacyUrlV1 = {
+    code: string;
+    options: OptionsLoadedFromLegacyUrlV1;
+};
+
+type OptionsLoadedFromUrl = {
+    language: LanguageName;
+    target: TargetName;
+    release: boolean;
+    branchId: string|undefined;
+};
+
+export type StateLoadedFromUrl = {
+    code: string;
+    options: OptionsLoadedFromUrl;
+} | StateLoadedFromLegacyUrlV1 | StateLoadedFromGist;
+
+// u stands for "You" since it's your code
+const pathPrefix = '/u/';
+const gistPrefix = 'gist-';
 
 const last = {
-    hash: null as string|null
+    dataString: null as string|null
 };
-function save(code: string|null|undefined, options: RawOptions, { gist = null }: { gist?: Gist|null } = {}) {
+export function saveStateToUrl(
+    code: string|null|undefined,
+    options: RawOptions,
+    { gist = null }: { gist?: Gist|null } = {}
+) {
     if (code == null) // too early?
         return {};
 
-    if (gist && saveGist(code, options, gist))
+    if (gist && saveGistToPath(code, options, gist))
         return { keepGist: true };
 
     const optionsPacked = {
@@ -38,13 +70,13 @@ function save(code: string|null|undefined, options: RawOptions, { gist = null }:
         .map(([key, value]) => key + ':' + value) // eslint-disable-line prefer-template
         .join(',');
     const precompressedCode = precompressor.compress(code, options.language);
-    const hash = 'v2:' + LZString.compressToBase64(optionsPackedString + '|' + precompressedCode); // eslint-disable-line prefer-template
+    const dataString = LZString.compressToBase64(optionsPackedString + '|' + precompressedCode); // eslint-disable-line prefer-template
 
-    saveHash(hash);
+    saveDataStringToPath(dataString);
     return {};
 }
 
-function saveGist(code: string, options: RawOptions, gist: Gist) {
+function saveGistToPath(code: string, options: RawOptions, gist: Gist) {
     if (code !== gist.code)
         return false;
 
@@ -54,30 +86,46 @@ function saveGist(code: string, options: RawOptions, gist: Gist) {
             return false;
     }
 
-    saveHash('gist:' + gist.id);
+    saveDataStringToPath(gistPrefix + gist.id);
     return true;
 }
 
-function saveHash(hash: string) {
-    last.hash = hash;
-    history.replaceState(null, '', '#' + hash);
+function saveDataStringToPath(dataString: string) {
+    last.dataString = dataString;
+    history.replaceState(null, '', pathPrefix + toBase64Url(dataString));
 }
 
-function loadAsync() {
-    let hash = getCurrentHash();
+export function loadStateFromUrlAsync(): Promise<StateLoadedFromUrl>|StateLoadedFromUrl|null {
+    const path = window.location.pathname;
+    if (!path || path === '/')
+        return loadFromLegacyHashAsync();
+
+    const pathString = decodeURIComponent(path.substring(pathPrefix.length));
+    if (pathString.startsWith(gistPrefix))
+        return loadGistAsync(pathString.substring(gistPrefix.length));
+
+    return loadFromDataString(pathString);
+}
+
+function loadFromLegacyHashAsync() : Promise<StateLoadedFromUrl>|StateLoadedFromUrl|null {
+    const { hash } = window.location;
     if (!hash)
         return null;
 
-    last.hash = hash;
-    if (hash.startsWith('gist:'))
-        return loadGistAsync(hash);
+    const hashString = decodeURIComponent(hash.replace(/^#/, ''));
+    if (hashString.startsWith('gist:'))
+        return loadGistAsync(hashString.substring('gist:'.length));
 
-    if (!hash.startsWith('v2:'))
-        return legacyLoadFrom(hash);
+    if (!hashString.startsWith('v2:'))
+        return loadFromLegacyV1HashString(hash);
 
-    hash = hash.substring('v2:'.length);
+    return loadFromDataString(hashString.substring('v2:'.length));
+}
+
+function loadFromDataString(dataString: string): StateLoadedFromUrl|null {
+    last.dataString = dataString;
     try {
-        const decompressed = LZString.decompressFromBase64(hash);
+        const decompressed = LZString.decompressFromBase64(fromBase64Url(dataString));
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const [, optionsPart, codePart] = /^([^|]*)\|([\s\S]*)$/.exec(decompressed)!;
 
@@ -96,13 +144,13 @@ function loadAsync() {
                     ?? throwError(`Failed to resolve target: ${optionsPacked.t}`);
         const code = precompressor.decompress(codePart, language);
         return {
+            code,
             options: {
                 branchId: optionsPacked.b,
                 language,
                 target,
                 release:  optionsPacked.d !== '+'
-            },
-            code
+            }
         };
     }
     catch (e) {
@@ -111,29 +159,25 @@ function loadAsync() {
     }
 }
 
-function changed(callback: () => void) {
-    window.addEventListener('hashchange', () => {
-        const hash = getCurrentHash();
-        if (hash !== last.hash)
-            callback();
-    });
-}
-
-function getCurrentHash() {
-    const hash = window.location.hash;
-    if (!hash)
-        return null;
-    return decodeURIComponent(hash.replace(/^#/, ''));
-}
-
-function legacyLoadFrom(hash: string) {
+function loadFromLegacyV1HashString(hash: string): StateLoadedFromLegacyUrlV1|null {
     const match = /(?:b:([^/]+)\/)?(?:f:([^/]+)\/)?(.+)/.exec(hash);
     if (match === null)
         return null;
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     const flags = (match[2] ?? '').match(/^([^>]*?)(>.+?)?(r)?$/) ?? [];
-    const result = extendType({
+
+    const code = (() => {
+        try {
+            return LZString.decompressFromBase64(match[3]);
+        }
+        catch (e) {
+            return '';
+        }
+    })();
+
+    return {
+        code,
         options: {
             branchId: match[1],
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -142,19 +186,5 @@ function legacyLoadFrom(hash: string) {
             target: targetMapReverseV1[flags[2] || '>cs'],
             release: flags[3] === 'r'
         }
-    })<{ code?: string }>();
-
-    try {
-        result.code = LZString.decompressFromBase64(match[3]);
-    }
-    catch (e) {
-        result.code = '';
-    }
-    return result;
+    };
 }
-
-export default {
-    save,
-    loadAsync,
-    changed
-};

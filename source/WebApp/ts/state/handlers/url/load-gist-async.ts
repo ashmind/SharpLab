@@ -1,12 +1,30 @@
 import { TargetName, targets } from '../../../helpers/targets';
-import { getGistAsync } from '../../../helpers/github/gists';
+import { getGistAsync, GistGetResult } from '../../../helpers/github/gists';
 import { targetMapReverse } from '../helpers/language-and-target-maps';
+import type { LanguageName } from '../../../helpers/languages';
 
 interface Overrides {
     target: TargetName|undefined;
     branchId: string|undefined;
     mode: 'debug'|'release'|null;
 }
+
+type FailedStateFromGist = {
+    code: string;
+    options?: undefined;
+};
+
+export type StateLoadedFromGist = {
+    code: string;
+    gist: GistGetResult;
+    options: {
+        language: LanguageName;
+        target: string;
+        release: boolean;
+        branchId: string|undefined;
+    }
+} | FailedStateFromGist;
+
 
 function getIsRelease(options: { release: boolean|null|undefined }, overrides: Overrides) {
     if (overrides.mode || options.release == null)
@@ -15,7 +33,7 @@ function getIsRelease(options: { release: boolean|null|undefined }, overrides: O
     return options.release;
 }
 
-export default async function loadGistAsync(hash: string) {
+export default async function loadGistAsync(hash: string) : Promise<StateLoadedFromGist> {
     const parts = hash.replace(/^gist:/, '').split('/');
     const id = parts[0];
     let gist;
@@ -25,8 +43,7 @@ export default async function loadGistAsync(hash: string) {
     catch (e) {
         const message = `Failed to load gist '${id}': ${(e as { json?: { message?: string } }).json?.message ?? '<unknown>'}.`;
         return {
-            code: message.replace(/^/mg, '#error '),
-            options: {}
+            code: message.replace(/^/mg, '#error ')
         };
     }
 
