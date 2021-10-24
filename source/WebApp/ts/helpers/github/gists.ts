@@ -2,7 +2,7 @@ import type { CodeResult, AstResult, RunResult, VerifyResult, ExplainResult, Err
 import type { Gist } from '../../types/gist';
 import extendType from '../extend-type';
 import { languages, LanguageName } from '../languages';
-import { TargetName, targets } from '../targets';
+import { targets } from '../targets';
 import asLookup from '../as-lookup';
 import { token } from './auth';
 import renderOutputToText from './internal/render-output-to-text';
@@ -17,19 +17,6 @@ type TargetResultMap = {
     [targets.explain]: ExplainResult;
     // not actually supported anymore, but needed for completeness
     [targets.vb]: CodeResult;
-};
-
-export type GistGetResult = {
-    id: string,
-    name: string,
-    url: string,
-    code: string,
-    options: {
-        language: LanguageName,
-        target: string|undefined,
-        release: boolean,
-        branchId: string|undefined
-    }
 };
 
 // Zero-width space (\u200B) is invisible, but ensures that these will be sorted after other files
@@ -93,7 +80,7 @@ function prepareResultForGist(target: string, result: Result) {
     }
 }
 
-export async function getGistAsync(id: string): Promise<GistGetResult> {
+export async function getGistAsync(id: string) {
     const gist = await validateResponseAndParseJsonAsync(await fetch(`https://api.github.com/gists/${id}`));
 
     const [codeFileName, codeFile] = Object.entries(gist.files)[0] as [string, { content: string }];
@@ -118,13 +105,14 @@ export async function getGistAsync(id: string): Promise<GistGetResult> {
         branchId: gistOptions.branch
     };
 
-    return {
+    const result = {
         id,
         name,
         url: gist.html_url,
         code: codeFile.content,
         options
     };
+    return result as { readonly [key in keyof Gist]: (typeof result)[key] };
 }
 
 export async function createGistAsync(

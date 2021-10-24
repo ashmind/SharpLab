@@ -13,7 +13,7 @@ import { targets, TargetName } from './helpers/targets';
 import extractRangesFromIL from './helpers/extract-ranges-from-il';
 import { branchesPromise, resolveBranch } from './ui/branches';
 import state from './state/index';
-import { saveStateToUrl } from './state/handlers/url';
+import url from './state/handlers/url';
 import defaults from './state/handlers/defaults';
 import uiAsync from './ui/index';
 import { updateContainerExperimentStateFromRunResult } from './experiments/container-run';
@@ -125,7 +125,7 @@ function applyCursorMove(this: App, getCursorOffset: () => number) {
 }
 
 function applyGistSave(this: App, gist: Gist) {
-    saveStateToUrl(gist.code, gist.options, { gist });
+    url.save(gist.code, gist.options, { gist });
     this.gist = gist;
 }
 
@@ -228,6 +228,12 @@ async function createAppAsync() {
         if (data.code !== defaults.getCode(language, oldTarget))
             return;
         data.code = defaults.getCode(language, newTarget);
+        data.lastLoadedCode = data.code;
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    url.changed(async () => {
+        await state.loadAsync(data, resolveBranch);
         data.lastLoadedCode = data.code;
     });
 })();

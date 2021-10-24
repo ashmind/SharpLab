@@ -1,42 +1,21 @@
 import { TargetName, targets } from '../../../helpers/targets';
-import { getGistAsync, GistGetResult } from '../../../helpers/github/gists';
+import { getGistAsync } from '../../../helpers/github/gists';
 import { targetMapReverse } from '../helpers/language-and-target-maps';
-import type { LanguageName } from '../../../helpers/languages';
 
-interface LegacyOverrides {
+interface Overrides {
     target: TargetName|undefined;
     branchId: string|undefined;
     mode: 'debug'|'release'|null;
 }
 
-type FailedStateFromGist = {
-    code: string;
-    options?: undefined;
-};
-
-export type StateLoadedFromGist = {
-    code: string;
-    gist: GistGetResult;
-    options: {
-        language: LanguageName;
-        target: string;
-        release: boolean;
-        branchId: string|undefined;
-    }
-} | FailedStateFromGist;
-
-
-function getIsRelease(options: { release: boolean|null|undefined }, overrides: LegacyOverrides) {
+function getIsRelease(options: { release: boolean|null|undefined }, overrides: Overrides) {
     if (overrides.mode || options.release == null)
         return overrides.mode !== 'debug';
 
     return options.release;
 }
 
-export default async function loadGistAsync(
-    hash: string,
-    { allowLegacyOverrides = false }: { allowLegacyOverrides?: boolean } = {}
-) : Promise<StateLoadedFromGist> {
+export default async function loadGistAsync(hash: string) {
     const parts = hash.replace(/^gist:/, '').split('/');
     const id = parts[0];
     let gist;
@@ -46,17 +25,18 @@ export default async function loadGistAsync(
     catch (e) {
         const message = `Failed to load gist '${id}': ${(e as { json?: { message?: string } }).json?.message ?? '<unknown>'}.`;
         return {
-            code: message.replace(/^/mg, '#error ')
+            code: message.replace(/^/mg, '#error '),
+            options: {}
         };
     }
 
     // legacy feature: overriding gist settings through URL.
     // Only keeping this for permalink support.
-    const overrides = allowLegacyOverrides ? {
+    const overrides = {
         target: targetMapReverse[parts[1]],
         branchId: parts[2],
         mode: parts.length > 1 ? (parts[3] ?? 'release') : null
-    } as LegacyOverrides : {} as LegacyOverrides;
+    } as Overrides;
 
     return {
         gist,

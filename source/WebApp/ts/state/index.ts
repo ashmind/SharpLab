@@ -1,30 +1,30 @@
+import type { App } from '../types/app';
 import type { Branch } from '../types/branch';
 import type { Gist } from '../types/gist';
 import toRawOptions from '../helpers/to-raw-options';
-import type { App } from '../types/app';
 import defaults from './handlers/defaults';
 import lastUsed from './handlers/last-used';
-import { loadStateFromUrlAsync, saveStateToUrl, StateLoadedFromUrl } from './handlers/url';
+import url from './handlers/url';
 
 type AppStateKey = 'options'|'code'|'gist';
-export type AppState = Pick<App, AppStateKey>;
+type UnwrapPromise<U> = U extends Promise<infer T> ? T : never;
 
 export default {
-    save(state: AppState) {
+    save(state: Pick<App, AppStateKey>) {
         const { code, options, gist } = state;
         const rawOptions = toRawOptions(options);
 
         lastUsed.saveOptions(rawOptions);
-        const { keepGist } = saveStateToUrl(code, rawOptions, { gist });
+        const { keepGist } = url.save(code, rawOptions, { gist });
         if (!keepGist)
             state.gist = null;
     },
 
-    async loadAsync(state: Partial<AppState>, resolveBranch: (id: string) => Promise<Branch|null>) {
-        const fromUrl = (await loadStateFromUrlAsync()) ?? {} as Partial<StateLoadedFromUrl>;
+    async loadAsync(state: Partial<Pick<App, AppStateKey>>, resolveBranch: (id: string) => Promise<Branch|null>) {
+        const fromUrl = (await url.loadAsync()) ?? {} as Partial<UnwrapPromise<ReturnType<typeof url.loadAsync>>>;
         const lastUsedOptions = lastUsed.loadOptions();
 
-        const loadedOptions = fromUrl.options ?? lastUsedOptions ?? {} as Partial<Exclude<StateLoadedFromUrl['options'], undefined>>;
+        const loadedOptions = fromUrl.options ?? lastUsedOptions ?? {};
         const defaultOptions = defaults.getOptions();
 
         const language = loadedOptions.language ?? defaultOptions.language;
@@ -43,6 +43,6 @@ export default {
         state.code = code;
         state.gist = (fromUrl as { gist?: Gist }).gist;
         if (lastUsedOptions && !fromUrl.options) // need to re-sync implicit options into URL
-            saveStateToUrl(fromUrl.code, toRawOptions(options));
+            url.save(fromUrl.code, toRawOptions(options));
     }
 };

@@ -16,7 +16,7 @@ const languageMap = {
     [languages.vb]:     'vb',
     [languages.fsharp]: 'fs',
     [languages.il]:     'il'
-} as const;
+};
 assertType<{ [K in typeof languages[keyof typeof languages]]: string }>(languageMap);
 
 const languageMapReverse = reverseMap(languageMap);
@@ -48,4 +48,4 @@ export {
     targetMapReverseAsLookup as targetMapReverse
 };
 
-export const targetMapReverseV1 = mapObject(targetMapReverseAsLookup, (key, value) => ['>' + key, value]); // eslint-disable-line prefer-template
+export const targetMapReverseV1 = mapObject(targetMapReverse, (key, value) => ['>' + key, value]); // eslint-disable-line prefer-template
