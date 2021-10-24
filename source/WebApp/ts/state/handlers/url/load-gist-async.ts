@@ -3,7 +3,7 @@ import { getGistAsync, GistGetResult } from '../../../helpers/github/gists';
 import { targetMapReverse } from '../helpers/language-and-target-maps';
 import type { LanguageName } from '../../../helpers/languages';
 
-interface Overrides {
+interface LegacyOverrides {
     target: TargetName|undefined;
     branchId: string|undefined;
     mode: 'debug'|'release'|null;
@@ -26,14 +26,17 @@ export type StateLoadedFromGist = {
 } | FailedStateFromGist;
 
 
-function getIsRelease(options: { release: boolean|null|undefined }, overrides: Overrides) {
+function getIsRelease(options: { release: boolean|null|undefined }, overrides: LegacyOverrides) {
     if (overrides.mode || options.release == null)
         return overrides.mode !== 'debug';
 
     return options.release;
 }
 
-export default async function loadGistAsync(hash: string) : Promise<StateLoadedFromGist> {
+export default async function loadGistAsync(
+    hash: string,
+    { allowLegacyOverrides = false }: { allowLegacyOverrides?: boolean } = {}
+) : Promise<StateLoadedFromGist> {
     const parts = hash.replace(/^gist:/, '').split('/');
     const id = parts[0];
     let gist;
@@ -49,11 +52,11 @@ export default async function loadGistAsync(hash: string) : Promise<StateLoadedF
 
     // legacy feature: overriding gist settings through URL.
     // Only keeping this for permalink support.
-    const overrides = {
+    const overrides = allowLegacyOverrides ? {
         target: targetMapReverse[parts[1]],
         branchId: parts[2],
         mode: parts.length > 1 ? (parts[3] ?? 'release') : null
-    } as Overrides;
+    } as LegacyOverrides : {} as LegacyOverrides;
 
     return {
         gist,

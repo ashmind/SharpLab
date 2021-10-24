@@ -114,7 +114,7 @@ function loadFromLegacyHashAsync() : Promise<StateLoadedFromUrl>|StateLoadedFrom
 
     const hashString = decodeURIComponent(hash.replace(/^#/, ''));
     if (hashString.startsWith('gist:'))
-        return loadGistAsync(hashString.substring('gist:'.length));
+        return loadGistAsync(hashString.substring('gist:'.length), { allowLegacyOverrides: true });
 
     if (!hashString.startsWith('v2:'))
         return loadFromLegacyV1HashString(hash);
