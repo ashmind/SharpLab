@@ -4,9 +4,7 @@ import { targets } from '../ts/helpers/targets';
 import { loadStateFromUrlAsync, saveStateToUrl } from '../ts/state/handlers/url';
 import { fromPartial, asMutable } from './helpers';
 
-const stubCacheSecret = new Int8Array([1]);
-
-describe('v3', () => {
+describe('v2', () => {
     for (const [name, value] of ([
         ['branchId', 'main'],
         ...Object.values(languages).map(l => ['language', l]),
@@ -15,8 +13,8 @@ describe('v3', () => {
         ['release', false]
     ] as const)) {
         test(`save/load preserves option '${name}' ('${value}')`, async () => {
-            saveStateToUrl('', fromPartial({ [name]: value }), { cacheSecret: stubCacheSecret });
-            const { options } = await loadStateFromUrlAsync()!;
+            saveStateToUrl('', fromPartial({ [name]: value }));
+            const { options } = (await loadStateFromUrlAsync())!;
             expect((options as { [key: string]: string|boolean })[name]).toBe(value);
         });
     }
@@ -27,14 +25,12 @@ describe('v3', () => {
         'void Func13() {}'
     ] as const) {
         test(`save/load preserves code '${code}'`, async () => {
-            saveStateToUrl(code, fromPartial({ language: languages.csharp }), { cacheSecret: stubCacheSecret });
-            const { code: loaded } = await loadStateFromUrlAsync()!;
+            saveStateToUrl(code, fromPartial({ language: languages.csharp }));
+            const { code: loaded } = (await loadStateFromUrlAsync())!;
             expect(loaded).toBe(code);
         });
     }
-});
 
-describe('v2', () => {
     test('loads v2 hash', async () => {
         window.location.hash = '#v2:EYLgtghglgdgNAFxFANgHwQUwM4IAQDGA9gCaZA=';
         const loaded = await loadStateFromUrlAsync()!;
@@ -53,7 +49,7 @@ describe('v2', () => {
 describe('v1', () => {
     test('loads language as csharp if empty', async () => {
         window.location.hash = '#/';
-        const { options } = await loadStateFromUrlAsync()!;
+        const { options } = (await loadStateFromUrlAsync())!;
         expect(options.language).toBe(languages.csharp);
     });
 });
@@ -63,7 +59,7 @@ describe('gist', () => {
         asMutable(gists).getGistAsync = id => Promise.resolve(fromPartial({ code: 'code of ' + id, options: {} }));
 
         window.location.hash = '#gist:test';
-        const { code } = await loadStateFromUrlAsync()!;
+        const { code } = (await loadStateFromUrlAsync())!;
         expect(code).toBe('code of test');
     });
 
@@ -71,7 +67,7 @@ describe('gist', () => {
         asMutable(gists).getGistAsync = id => Promise.resolve(fromPartial({ options: { language: 'language of ' + id as LanguageName } }));
 
         window.location.hash = '#gist:test';
-        const { options } = await loadStateFromUrlAsync()!;
+        const { options } = (await loadStateFromUrlAsync())!;
         expect(options.language).toBe('language of test');
     });
 
@@ -81,7 +77,7 @@ describe('gist', () => {
             asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
 
             window.location.hash = '#gist:_/' + key;
-            const { options } = await loadStateFromUrlAsync()!;
+            const { options } = (await loadStateFromUrlAsync())!;
             expect(options.target).toBe(target);
         });
     }
@@ -90,7 +86,7 @@ describe('gist', () => {
         asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
 
         window.location.hash = '#gist:_//branch';
-        const { options } = await loadStateFromUrlAsync()!;
+        const { options } = (await loadStateFromUrlAsync())!;
         expect(options.branchId).toBe('branch');
     });
 
@@ -98,7 +94,7 @@ describe('gist', () => {
         asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
 
         window.location.hash = '#gist:_/_';
-        const { options } = await loadStateFromUrlAsync()!;
+        const { options } = (await loadStateFromUrlAsync())!;
         expect(options.branchId).toBeUndefined();
     });
 
@@ -107,7 +103,7 @@ describe('gist', () => {
             asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
 
             window.location.hash = '#gist:_' + suffix;
-            const { options } = await loadStateFromUrlAsync()!;
+            const { options } = (await loadStateFromUrlAsync())!;
             expect(options.release).toBe(release);
         });
     }
@@ -125,17 +121,17 @@ describe('gist', () => {
 
             window.location.hash = '#gist:xyz';
             await loadStateFromUrlAsync();
-            saveStateToUrl('test', fromPartial({ release: true, [key]: newValue }), { cacheSecret: stubCacheSecret });
-            expect(window.location.hash).toMatch(/^#v3:/);
+            saveStateToUrl('test', fromPartial({ release: true, [key]: newValue }));
+            expect(window.location.hash).toMatch(/^#v2:/);
         });
     }
 
-    test(`save changes format to v3 if gist code changed`, async () => {
+    test(`save changes format to v2 if gist code changed`, async () => {
         asMutable(gists).getGistAsync = id => Promise.resolve(fromPartial({ id, code: 'original', options: {} }));
 
         window.location.hash = '#gist:xyz';
         await loadStateFromUrlAsync();
-        saveStateToUrl('updated', fromPartial({}), { cacheSecret: stubCacheSecret });
-        expect(window.location.hash).toMatch(/^#v3:/);
+        saveStateToUrl('updated', fromPartial({}));
+        expect(window.location.hash).toMatch(/^#v2:/);
     });
 });

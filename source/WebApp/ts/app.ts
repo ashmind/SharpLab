@@ -3,7 +3,7 @@ import type { Branch } from './types/branch';
 import type { CodeRange } from './types/code-range';
 import type { AstItem, CodeResult, NonErrorResult, Result, DiagnosticError, DiagnosticWarning, RunResult } from './types/results';
 import type { Gist } from './types/gist';
-import type { App, AppData, AppDefinition, AppStatus } from './types/app';
+import type { App, AppData, AppDefinition, AppOptions, AppStatus } from './types/app';
 import { PartiallyMutable, partiallyMutable } from './helpers/partially-mutable';
 import type { ServerOptions } from './types/server-options';
 import './polyfills/index';
@@ -11,16 +11,15 @@ import trackFeature from './helpers/track-feature';
 import { languages } from './helpers/languages';
 import { targets, TargetName } from './helpers/targets';
 import extractRangesFromIL from './helpers/extract-ranges-from-il';
-import { branchesPromise, resolveBranch } from './ui/branches';
-import state from './state/state';
+import { branchesPromise, resolveBranchAsync } from './ui/branches';
+import { saveState, loadStateAsync } from './state/state';
 import { saveStateToUrl, subscribeToUrlStateChanged } from './state/handlers/url';
 import defaults from './state/handlers/defaults';
 import uiAsync from './ui/index';
 import { updateContainerExperimentStateFromRunResult } from './experiments/container-run';
 import parseOutput from './helpers/parse-output';
-import { generateCacheEncryptionKeyAsync } from './caching/encryption';
 
-function getResultType(target: TargetName|string) {
+const getResultType = (target: TargetName|string) => {
     switch (target) {
         case targets.verify: return 'verify';
         case targets.ast: return 'ast';
@@ -28,15 +27,64 @@ function getResultType(target: TargetName|string) {
         case targets.run: return 'run';
         default: return 'code';
     }
-}
+};
 
-function resetLoading(this: App) {
-    if (this.loadingDelay) {
-        clearTimeout(this.loadingDelay);
-        this.loadingDelay = null;
+const resetLoading = (app: Pick<AppData, 'loadingDelay' | 'loading'>) => {
+    if (app.loadingDelay) {
+        clearTimeout(app.loadingDelay);
+        app.loadingDelay = null;
     }
-    this.loading = false;
-}
+    app.loading = false;
+};
+
+const setResult = (app: Pick<AppData, 'result' | 'lastResultOfType' | 'loadingDelay' | 'loading'>, result: Result) => {
+    app.result = result;
+    if (result.success) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        app.lastResultOfType[result.type] = result as any;
+    }
+    resetLoading(app);
+};
+
+const setResultFromUpdate = (
+    app: Pick<AppData, 'result' | 'lastResultOfType' | 'loadingDelay' | 'loading'>,
+    options: Pick<AppOptions, 'target'>,
+    updateResult: MirrorSharpSlowUpdateResult<Result['value']> & {
+        cached?: true
+    }
+) => {
+    const result = {
+        success: true,
+        type: getResultType(options.target),
+        value: updateResult.x,
+        errors: [],
+        warnings: [],
+        cached: updateResult.cached
+    } as PartiallyMutable<NonErrorResult, 'success'>;
+    for (const diagnostic of updateResult.diagnostics) {
+        if (diagnostic.severity === 'error') {
+            if (result.type !== 'ast' && result.type !== 'explain')
+                result.success = false;
+            result.errors.push(diagnostic as DiagnosticError);
+        }
+        else if (diagnostic.severity === 'warning') {
+            result.warnings.push(diagnostic as DiagnosticWarning);
+        }
+    }
+    if (options.target === targets.il && result.value) {
+        const ilResult = result as PartiallyMutable<CodeResult & { value: string }, 'ranges'|'value'>;
+        const { code, ranges } = extractRangesFromIL(ilResult.value);
+        ilResult.value = code;
+        ilResult.ranges = ranges;
+    }
+    if (result.type === 'run') {
+        updateContainerExperimentStateFromRunResult(result as RunResult);
+        if (typeof result.value === 'string')
+            partiallyMutable(result)<'value'>().value = parseOutput(result.value);
+    }
+
+    setResult(app, result as NonErrorResult);
+};
 
 function applyUpdateWait(this: App) {
     if (this.loadingDelay)
@@ -49,48 +97,15 @@ function applyUpdateWait(this: App) {
 }
 
 function applyUpdateResult(this: App, updateResult: MirrorSharpSlowUpdateResult<Result['value']>) {
-    const result = {
-        success: true,
-        type: getResultType(this.options.target),
-        value: updateResult.x,
-        errors: [],
-        warnings: []
-    } as PartiallyMutable<NonErrorResult, 'success'>;
-    for (const diagnostic of updateResult.diagnostics) {
-        if (diagnostic.severity === 'error') {
-            if (result.type !== 'ast' && result.type !== 'explain')
-                result.success = false;
-            result.errors.push(diagnostic as DiagnosticError);
-        }
-        else if (diagnostic.severity === 'warning') {
-            result.warnings.push(diagnostic as DiagnosticWarning);
-        }
-    }
-    if (this.options.target === targets.il && result.value) {
-        const ilResult = result as PartiallyMutable<CodeResult & { value: string }, 'ranges'|'value'>;
-        const { code, ranges } = extractRangesFromIL(ilResult.value);
-        ilResult.value = code;
-        ilResult.ranges = ranges;
-    }
-    if (result.type === 'run') {
-        updateContainerExperimentStateFromRunResult(result as RunResult);
-        if (typeof result.value === 'string')
-            partiallyMutable(result)<'value'>().value = parseOutput(result.value);
-    }
-
-    this.result = result as NonErrorResult;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this.lastResultOfType[result.type] = result as any;
-    resetLoading.apply(this);
+    setResultFromUpdate(this, this.options, updateResult);
 }
 
 function applyServerError(this: App, message: string) {
-    this.result = {
+    setResult(this, {
         success: false,
         errors: [{ message }],
         warnings: []
-    };
-    resetLoading.apply(this);
+    });
 }
 
 function applyConnectionChange(this: App, connectionState: MirrorSharpConnectionState) {
@@ -126,7 +141,7 @@ function applyCursorMove(this: App, getCursorOffset: () => number) {
 }
 
 function applyGistSave(this: App, gist: Gist) {
-    saveStateToUrl(gist.code, gist.options, { gist, cacheSecret: this.cache.secret });
+    saveStateToUrl(gist.code, gist.options, { gist });
     this.gist = gist;
 }
 
@@ -150,18 +165,17 @@ async function createAppAsync() {
         lastResultOfType: { run: null, code: null, ast: null },
 
         highlightedCodeRange: null,
-        gist: null,
-
-        cache: {
-            secret: (await generateCacheEncryptionKeyAsync()).exported
-        }
+        gist: null
     } as Omit<AppData, 'code'|'options'|'serviceUrl'> & Partial<Pick<AppData, 'code'|'options'|'serviceUrl'>>;
 
     // not awaiting as we don't want this to block UI
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     (async () => data.branches = await branchesPromise)();
 
-    await state.loadAsync(data, resolveBranch);
+    await loadStateAsync(data, {
+        resolveBranchAsync,
+        setResultFromCache: (result, options) => setResultFromUpdate(data, options, result)
+    });
     data.lastLoadedCode = data.code;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     data.serviceUrl = getServiceUrl(data.options!.branch);
@@ -203,8 +217,8 @@ async function createAppAsync() {
     const ui = await uiAsync(app);
     const data = app.data;
 
-    ui.watch('options', () => state.save(data), { deep: true });
-    ui.watch('code', () => state.save(data));
+    ui.watch('options', () => saveState(data), { deep: true });
+    ui.watch('code', () => saveState(data));
     ui.watch('options.branch', value => {
         if (value)
             trackFeature('Branch: ' + value.id);
@@ -238,7 +252,10 @@ async function createAppAsync() {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     subscribeToUrlStateChanged(async () => {
-        await state.loadAsync(data, resolveBranch);
+        await loadStateAsync(data, {
+            resolveBranchAsync,
+            setResultFromCache: (result, options) => setResultFromUpdate(data, options, result)
+        });
         data.lastLoadedCode = data.code;
     });
 })();

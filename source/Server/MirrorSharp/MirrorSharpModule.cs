@@ -37,6 +37,10 @@ namespace SharpLab.Server.MirrorSharp {
             builder.RegisterType<RoslynSourceTextGuard>()
                    .As<IRoslynSourceTextGuard>()
                    .SingleInstance();
+
+            builder.RegisterType<ConnectionSendViewer>()
+                   .As<IConnectionSendViewer>()
+                   .SingleInstance();
         }
     }
 }

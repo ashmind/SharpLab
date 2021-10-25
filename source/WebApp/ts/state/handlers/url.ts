@@ -1,8 +1,4 @@
 ﻿import LZString from 'lz-string';
-import {
-    encode as encodeArrayBufferToBase64,
-    decode as decodeArrayBufferFromBase64
-} from 'base64-arraybuffer';
 import type { RawOptions } from '../../types/raw-options';
 import type { Gist } from '../../types/gist';
 import { LanguageName, languages } from '../../helpers/languages';
@@ -18,14 +14,13 @@ import {
 import precompressor from './url/precompressor';
 import loadGistAsync, { LoadStateFromGistResult } from './url/load-gist-async';
 import { loadFromLegacyV1, LoadStateFromUrlV1Result } from './url/load-from-v1';
-import { loadFromLegacyV2, LoadStateFromUrlV2Result } from './url/load-from-v2';
 
 let lastHash: string|undefined;
 
 export const saveStateToUrl = (
     code: string|null|undefined,
     options: RawOptions,
-    { cacheSecret, gist = null }: { cacheSecret: ArrayBuffer, gist?: Gist|null }
+    { gist = null }: { gist?: Gist|null } = {}
 ) => {
     if (code == null) // too early?
         return {};
@@ -45,7 +40,7 @@ export const saveStateToUrl = (
         .map(([key, value]) => key + ':' + value) // eslint-disable-line prefer-template
         .join(',');
     const precompressedCode = precompressor.compress(code, options.language);
-    const hash = 'v3:' + LZString.compressToBase64(optionsPackedString + '|' + precompressedCode) + '.' + encodeArrayBufferToBase64(cacheSecret); // eslint-disable-line prefer-template
+    const hash = 'v2:' + LZString.compressToBase64(optionsPackedString + '|' + precompressedCode); // eslint-disable-line prefer-template
 
     saveHash(hash);
     return {};
@@ -70,24 +65,22 @@ function saveHash(hash: string) {
     history.replaceState(null, '', '#' + hash);
 }
 
-type LoadStateFromUrlV3Result = {
+export type LoadStateFromUrlV2Result = {
     readonly options: {
         readonly branchId: string | undefined,
         readonly language: LanguageName,
         readonly target: TargetName,
         readonly release: boolean
     },
-    readonly code: string,
-    readonly cacheSecret: ArrayBuffer
+    readonly code: string
 } | null;
 
-type LoadStateFromUrlResult =
-    Promise<LoadStateFromGistResult>
+export type LoadStateFromUrlResult =
+    LoadStateFromGistResult
     | LoadStateFromUrlV1Result
-    | LoadStateFromUrlV2Result
-    | LoadStateFromUrlV3Result;
+    | LoadStateFromUrlV2Result;
 
-export const loadStateFromUrlAsync = (): LoadStateFromUrlResult => {
+export const loadStateFromUrlAsync = async (): Promise<LoadStateFromUrlResult> => {
     let hash = getCurrentHash();
     if (!hash)
         return null;
@@ -99,13 +92,9 @@ export const loadStateFromUrlAsync = (): LoadStateFromUrlResult => {
     if (!/^v\d:/.test(hash))
         return loadFromLegacyV1(hash);
 
-    if (hash.startsWith('v2'))
-        return loadFromLegacyV2(hash);
-
-    hash = hash.substring('v3:'.length);
+    hash = hash.substring('v2:'.length);
     try {
-        const [data, cacheSecretString] = hash.split('.');
-        const decompressed = LZString.decompressFromBase64(data);
+        const decompressed = LZString.decompressFromBase64(hash);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const [, optionsPart, codePart] = /^([^|]*)\|([\s\S]*)$/.exec(decompressed)!;
 
@@ -123,7 +112,6 @@ export const loadStateFromUrlAsync = (): LoadStateFromUrlResult => {
                     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                     ?? throwError(`Failed to resolve target: ${optionsPacked.t}`);
         const code = precompressor.decompress(codePart, language);
-        const cacheSecret = decodeArrayBufferFromBase64(cacheSecretString);
         return {
             options: {
                 branchId: optionsPacked.b,
@@ -131,9 +119,8 @@ export const loadStateFromUrlAsync = (): LoadStateFromUrlResult => {
                 target,
                 release:  optionsPacked.d !== '+'
             },
-            code,
-            cacheSecret
-        } as LoadStateFromUrlV3Result;
+            code
+        };
     }
     catch (e) {
         warn('Failed to load state from URL:', e);

@@ -12,6 +12,7 @@ namespace SharpLab.Tests.Internal {
         public static ILifetimeScope Container { get; } = ((Func<ILifetimeScope>)(() => {
             Environment.SetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_URL", "http://localhost/test");
             Environment.SetEnvironmentVariable("SHARPLAB_LOCAL_SECRETS_ContainerHostAuthorizationToken", "_");
+            Environment.SetEnvironmentVariable("SHARPLAB_WEBAPP_NAME", "sl-test");
 
             var host = Program.CreateHostBuilder(new string[0]).Build();
             return host.Services.GetAutofacRoot();
@@ -24,6 +25,7 @@ namespace SharpLab.Tests.Internal {
             SlowUpdate = Container.ResolveOptional<ISlowUpdateExtension>(),
             RoslynSourceTextGuard = Container.ResolveOptional<IRoslynSourceTextGuard>(),
             RoslynCompilationGuard = Container.ResolveOptional<IRoslynCompilationGuard>(),
+            ConnectionSendViewer = Container.ResolveOptional<IConnectionSendViewer>(),
             ExceptionLogger = Container.ResolveOptional<IExceptionLogger>()
         };
 

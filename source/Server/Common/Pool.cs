@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 namespace SharpLab.Server.Common {
     public class Pool<T> {
         private readonly Func<T> _factory;
-        private readonly ConcurrentBag<T> _pool = new ConcurrentBag<T>();
+        private readonly ConcurrentBag<T> _pool = new();
 
         public Pool(Func<T> factory) {
             _factory = factory;

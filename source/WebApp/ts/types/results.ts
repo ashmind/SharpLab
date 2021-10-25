@@ -1,4 +1,4 @@
-import type { MirrorSharpDiagnostic } from 'mirrorsharp';
+import type { MirrorSharpDiagnostic, MirrorSharpSlowUpdateResult } from 'mirrorsharp';
 import type { ContainerExperimentFallbackRunValue } from '../experiments/container-run';
 import type { CodeRange } from './code-range';
 
@@ -139,4 +139,6 @@ export interface ErrorResult extends ResultBase {
 }
 
 export type NonErrorResult = CodeResult|AstResult|ExplainResult|RunResult;
-export type Result = NonErrorResult|ErrorResult;
+export type Result = (NonErrorResult|ErrorResult) & { cached?: true };
+
+export type CachedUpdateResult = MirrorSharpSlowUpdateResult<Result['value']> & { cached: true };

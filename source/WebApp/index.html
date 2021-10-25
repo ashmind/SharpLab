@@ -63,6 +63,7 @@
           </header>
           <div class="content">
             <app-code-edit v-bind:initial-text="lastLoadedCode"
+                           v-bind:initial-cached="result.cached"
                            v-bind:service-url="serviceUrl"
                            v-bind:language="options.language"
                            v-bind:server-options="serverOptions"
@@ -88,6 +89,9 @@
             <app-select-mode v-model="options.release" tabindex="5"></app-select-mode>
           </header>
           <div class="content">
+            <small v-if="result.cached && !loading" class="result-cached-indicator" title="Note: This output is cached and might not represent the latest behavior">
+              Cached
+            </small>
             <div class="loader"></div>
             <app-code-view v-if="lastResultOfType.code"
                            v-show="result.type === 'code'"

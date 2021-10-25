@@ -20,6 +20,7 @@ namespace SharpLab.Server.MirrorSharp {
         public bool TrySetOption(IWorkSession session, string name, string value) {
             switch (name) {
                 case Optimize:
+                    session.SetOptimize(value);
                     _languages[session.LanguageName].SetOptimize(session, value);
                     return true;
                 case Target:

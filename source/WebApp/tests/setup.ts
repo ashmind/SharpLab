@@ -1,3 +1,5 @@
+import { TextEncoder, TextDecoder } from 'util';
+import { Crypto } from '@peculiar/webcrypto';
 import Vue from 'vue';
 
 let error: (Error & { vm?: Vue; info?: string })|undefined|null;
@@ -15,3 +17,10 @@ Vue.config.errorHandler = (err, vm, info) => {
     error.info = info;
     throw error;
 };
+
+Object.defineProperty(global, 'crypto', {
+    value: new Crypto()
+});
+
+global.TextDecoder = TextDecoder as typeof global.TextDecoder;
+global.TextEncoder = TextEncoder;

@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Pedantic.IO;
+using SharpLab.Server.Caching.Internal;
+using SharpLab.Server.Caching.Internal.Mocks;
 using SharpLab.Server.Execution.Unbreakable;
 using Unbreakable;
 
@@ -37,6 +39,19 @@ namespace SharpLab.Tests.Internal {
                 .Build();
             builder.RegisterInstance<IConfiguration>(configuration)
                    .SingleInstance();
+
+            RegisterResultCacheStoreMock(builder);
+        }
+
+        private void RegisterResultCacheStoreMock(ContainerBuilder builder) {
+            var mockPerTest = new AsyncLocal<ResultCacheStoreMock>();
+            var singletonWrapper = new ResultCacheStoreMock();
+            singletonWrapper.Setup.StoreAsync()
+                .Runs((key, stream, cancellationToken) => mockPerTest.Value?.StoreAsync(key, stream, cancellationToken) ?? Task.CompletedTask);
+
+            builder.Register(_ => mockPerTest.Value ??= new());
+            builder.RegisterInstance<IResultCacheStore>(singletonWrapper);
+
         }
 
         private class TestDataMessageHandler : HttpMessageHandler {

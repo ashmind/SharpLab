@@ -3,10 +3,12 @@ using Autofac;
 using Autofac.Core;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using Azure.Storage.Blobs;
 using JetBrains.Annotations;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Azure.Cosmos.Table;
+using SharpLab.Server.Caching.Internal;
 using SharpLab.Server.Common;
 using SharpLab.Server.Monitoring;
 
@@ -14,6 +16,9 @@ namespace SharpLab.Server.Integration.Azure {
     [UsedImplicitly]
     public class AzureModule : Module {
         protected override void Load(ContainerBuilder builder) {
+            // This is available even on local (through a mock)
+            RegisterCacheStore(builder);
+
             var keyVaultUrl = Environment.GetEnvironmentVariable("SHARPLAB_KEY_VAULT_URL");
             if (keyVaultUrl == null)
                 return;
@@ -21,6 +26,29 @@ namespace SharpLab.Server.Integration.Azure {
             RegisterKeyVault(builder, keyVaultUrl);
             RegisterTableStorage(builder);
             RegisterApplicationInsights(builder);
+        }
+
+        private void RegisterCacheStore(ContainerBuilder builder) {
+            const string cacheClientName = "BlobContainerClient-CacheClient";
+            var cachePathPrefix = EnvironmentHelper.GetRequiredEnvironmentVariable("SHARPLAB_CACHE_PATH_PREFIX");
+
+            builder
+                .Register(c => {
+                    var connectionString = c.Resolve<ISecretsClient>().GetSecret("PublicStorageConnectionString");
+                    return new BlobContainerClient(connectionString, "cache");
+                })
+                .Named<BlobContainerClient>(cacheClientName)
+                .SingleInstance();
+
+            builder
+                .RegisterType<AzureBlobResultCacheStore>()
+                .As<IResultCacheStore>()
+                .SingleInstance()
+                .WithParameter("cachePathPrefix", cachePathPrefix)
+                .WithParameter(new ResolvedParameter(
+                    (p, c) => p.ParameterType == typeof(BlobContainerClient),
+                    (p, c) => c.ResolveNamed<BlobContainerClient>(cacheClientName)
+                ));
         }
 
         private void RegisterKeyVault(ContainerBuilder builder, string keyVaultUrl) {

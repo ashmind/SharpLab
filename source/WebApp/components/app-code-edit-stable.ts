@@ -12,6 +12,7 @@ import extendType from '../ts/helpers/extend-type';
 
 export const appCodeEditProps = {
     initialText:       String,
+    initialCached:     Boolean,
     serviceUrl:        String,
     language:          String as () => LanguageName|undefined,
     serverOptions:     Object as () => ServerOptions|undefined,
@@ -22,6 +23,7 @@ export const appCodeEditProps = {
 export default Vue.extend({
     props: appCodeEditProps,
     data: () => extendType({})<{
+        initialConnectionRequested: boolean;
         instance: MirrorSharpInstance<ServerOptions>;
     }>(),
     async mounted() {
@@ -30,15 +32,23 @@ export default Vue.extend({
         const textarea = this.$el as HTMLTextAreaElement;
         textarea.value = this.initialText;
 
+        this.initialConnectionRequested = !this.initialCached;
         const options = {
             serviceUrl: this.serviceUrl,
             language: this.language,
             initialServerOptions: this.serverOptions,
+            noInitialConnection: this.initialCached,
             on: {
                 slowUpdateWait: () => this.$emit('slow-update-wait'),
                 slowUpdateResult: result => this.$emit('slow-update-result', result),
                 connectionChange: (type: MirrorSharpConnectionState) => this.$emit('connection-change', type),
-                textChange: getText => this.$emit('text-change', getText),
+                textChange: getText => {
+                    if (!this.initialConnectionRequested) {
+                        this.instance.connect();
+                        this.initialConnectionRequested = true;
+                    }
+                    this.$emit('text-change', getText);
+                },
                 serverError: message => this.$emit('server-error', message)
             }
         } as PartiallyMutable<MirrorSharpOptions<ServerOptions, Result['value']>, 'language'|'initialServerOptions'|'serviceUrl'>;

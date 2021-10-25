@@ -18,6 +18,12 @@ if ($LastExitCode -ne 0) {
     throw "dotnet failed with exit code $LastExitCode"
 }
 
+Write-Host "Installing azurite (global)" -ForegroundColor White
+npm install azurite -g
+if ($LastExitCode -ne 0) {
+    throw "npm install failed with exit code $LastExitCode"
+}
+
 Write-Host "Preparing externals: mirrorsharp" -ForegroundColor White
 Push-Location './source/#external/mirrorsharp/WebAssets'
 try {

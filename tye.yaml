@@ -2,6 +2,12 @@ name: sharplab
 
 services:
 
+# Used by the cache implementation
+- name: azurite
+  executable: pwsh
+  args: -Command "azurite"
+  workingDirectory: "!azurite"
+
 - name: container-manager
   project: source/Container.Manager/Container.Manager.csproj
   bindings:

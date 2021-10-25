@@ -35,18 +35,15 @@ export interface AppData {
 
     result?: Result;
     lastResultOfType: {
-        code: CodeResult|null;
-        ast: AstResult|null;
-        explain?: ExplainResult|null;
-        run: RunResult|null;
+        code: CodeResult | null;
+        ast: AstResult | null;
+        explain?: ExplainResult | null;
+        run: RunResult | null;
     };
 
     highlightedCodeRange: HighlightedRange|null;
 
     gist: Gist|null|undefined;
-    cache: {
-        secret: ArrayBuffer;
-    }
 }
 
 export interface AppStatus {

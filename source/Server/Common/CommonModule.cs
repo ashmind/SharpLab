@@ -14,6 +14,8 @@ namespace SharpLab.Server.Common {
         protected override void Load(ContainerBuilder builder) {
             RegisterExternals(builder);
 
+            builder.RegisterInstance(MemoryPoolSlim<byte>.Shared);
+
             builder.RegisterType<AssemblyReferenceCollector>()
                    .As<IAssemblyReferenceCollector>()
                    .SingleInstance();
