@@ -9,7 +9,7 @@ describe('getGistAsync', () => {
         const options = {
             branchId: 'test-branch',
             language: 'C#',
-            target:   'test-target',
+            target:   'IL',
             release:  true
         } as const;
         let files: [{ [key: string]: { content: string }|undefined }];

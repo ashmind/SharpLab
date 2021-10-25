@@ -12,12 +12,13 @@ import { languages } from './helpers/languages';
 import { targets, TargetName } from './helpers/targets';
 import extractRangesFromIL from './helpers/extract-ranges-from-il';
 import { branchesPromise, resolveBranch } from './ui/branches';
-import state from './state/index';
-import url from './state/handlers/url';
+import state from './state/state';
+import { saveStateToUrl, subscribeToUrlStateChanged } from './state/handlers/url';
 import defaults from './state/handlers/defaults';
 import uiAsync from './ui/index';
 import { updateContainerExperimentStateFromRunResult } from './experiments/container-run';
 import parseOutput from './helpers/parse-output';
+import { generateCacheEncryptionKeyAsync } from './caching/encryption';
 
 function getResultType(target: TargetName|string) {
     switch (target) {
@@ -125,7 +126,7 @@ function applyCursorMove(this: App, getCursorOffset: () => number) {
 }
 
 function applyGistSave(this: App, gist: Gist) {
-    url.save(gist.code, gist.options, { gist });
+    saveStateToUrl(gist.code, gist.options, { gist, cacheSecret: this.cache.secret });
     this.gist = gist;
 }
 
@@ -149,7 +150,11 @@ async function createAppAsync() {
         lastResultOfType: { run: null, code: null, ast: null },
 
         highlightedCodeRange: null,
-        gist: null
+        gist: null,
+
+        cache: {
+            secret: (await generateCacheEncryptionKeyAsync()).exported
+        }
     } as Omit<AppData, 'code'|'options'|'serviceUrl'> & Partial<Pick<AppData, 'code'|'options'|'serviceUrl'>>;
 
     // not awaiting as we don't want this to block UI
@@ -232,7 +237,7 @@ async function createAppAsync() {
     });
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    url.changed(async () => {
+    subscribeToUrlStateChanged(async () => {
         await state.loadAsync(data, resolveBranch);
         data.lastLoadedCode = data.code;
     });

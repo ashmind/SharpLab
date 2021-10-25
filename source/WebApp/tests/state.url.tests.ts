@@ -1,18 +1,12 @@
 import * as gists from '../ts/helpers/github/gists';
 import { languages, LanguageName } from '../ts/helpers/languages';
 import { targets } from '../ts/helpers/targets';
-import url from '../ts/state/handlers/url';
+import { loadStateFromUrlAsync, saveStateToUrl } from '../ts/state/handlers/url';
 import { fromPartial, asMutable } from './helpers';
 
-describe('legacy load', () => {
-    test('loads language as csharp if empty', async () => {
-        window.location.hash = '#/';
-        const { options } = await url.loadAsync()!;
-        expect(options.language).toBe(languages.csharp);
-    });
-});
+const stubCacheSecret = new Int8Array([1]);
 
-describe('v2', () => {
+describe('v3', () => {
     for (const [name, value] of ([
         ['branchId', 'main'],
         ...Object.values(languages).map(l => ['language', l]),
@@ -21,8 +15,8 @@ describe('v2', () => {
         ['release', false]
     ] as const)) {
         test(`save/load preserves option '${name}' ('${value}')`, async () => {
-            url.save('', fromPartial({ [name]: value }));
-            const { options } = await url.loadAsync()!;
+            saveStateToUrl('', fromPartial({ [name]: value }), { cacheSecret: stubCacheSecret });
+            const { options } = await loadStateFromUrlAsync()!;
             expect((options as { [key: string]: string|boolean })[name]).toBe(value);
         });
     }
@@ -33,11 +27,35 @@ describe('v2', () => {
         'void Func13() {}'
     ] as const) {
         test(`save/load preserves code '${code}'`, async () => {
-            url.save(code, fromPartial({ language: languages.csharp }));
-            const { code: loaded } = await url.loadAsync()!;
+            saveStateToUrl(code, fromPartial({ language: languages.csharp }), { cacheSecret: stubCacheSecret });
+            const { code: loaded } = await loadStateFromUrlAsync()!;
             expect(loaded).toBe(code);
         });
     }
+});
+
+describe('v2', () => {
+    test('loads v2 hash', async () => {
+        window.location.hash = '#v2:EYLgtghglgdgNAFxFANgHwQUwM4IAQDGA9gCaZA=';
+        const loaded = await loadStateFromUrlAsync()!;
+        expect(loaded).toEqual({
+            options: {
+                language: languages.csharp,
+                target: targets.il,
+                release: true,
+                branchId: 'main'
+            },
+            code: 'test code'
+        });
+    });
+});
+
+describe('v1', () => {
+    test('loads language as csharp if empty', async () => {
+        window.location.hash = '#/';
+        const { options } = await loadStateFromUrlAsync()!;
+        expect(options.language).toBe(languages.csharp);
+    });
 });
 
 describe('gist', () => {
@@ -45,7 +63,7 @@ describe('gist', () => {
         asMutable(gists).getGistAsync = id => Promise.resolve(fromPartial({ code: 'code of ' + id, options: {} }));
 
         window.location.hash = '#gist:test';
-        const { code } = await url.loadAsync()!;
+        const { code } = await loadStateFromUrlAsync()!;
         expect(code).toBe('code of test');
     });
 
@@ -53,7 +71,7 @@ describe('gist', () => {
         asMutable(gists).getGistAsync = id => Promise.resolve(fromPartial({ options: { language: 'language of ' + id as LanguageName } }));
 
         window.location.hash = '#gist:test';
-        const { options } = await url.loadAsync()!;
+        const { options } = await loadStateFromUrlAsync()!;
         expect(options.language).toBe('language of test');
     });
 
@@ -63,32 +81,16 @@ describe('gist', () => {
             asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
 
             window.location.hash = '#gist:_/' + key;
-            const { options } = await url.loadAsync()!;
+            const { options } = await loadStateFromUrlAsync()!;
             expect(options.target).toBe(target);
         });
     }
-
-    test.each(Object.values(languages))(`load returns default target '${targets.csharp}' for language '%s'`, async language => {
-        asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: { language } }));
-
-        window.location.hash = '#gist:_';
-        const { options } = await url.loadAsync()!;
-        expect(options.target).toBe(targets.csharp);
-    });
-
-    test('load returns default target DEBUG', async () => {
-        asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: { language: languages.vb } }));
-
-        window.location.hash = '#gist:_';
-        const { options } = await url.loadAsync()!;
-        expect(options.target).toBe(targets.csharp);
-    });
 
     test(`load returns branchId if specified`, async () => {
         asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
 
         window.location.hash = '#gist:_//branch';
-        const { options } = await url.loadAsync()!;
+        const { options } = await loadStateFromUrlAsync()!;
         expect(options.branchId).toBe('branch');
     });
 
@@ -96,7 +98,7 @@ describe('gist', () => {
         asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
 
         window.location.hash = '#gist:_/_';
-        const { options } = await url.loadAsync()!;
+        const { options } = await loadStateFromUrlAsync()!;
         expect(options.branchId).toBeUndefined();
     });
 
@@ -105,7 +107,7 @@ describe('gist', () => {
             asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
 
             window.location.hash = '#gist:_' + suffix;
-            const { options } = await url.loadAsync()!;
+            const { options } = await loadStateFromUrlAsync()!;
             expect(options.release).toBe(release);
         });
     }
@@ -118,22 +120,22 @@ describe('gist', () => {
         ['release',  false, true],
         ['release',  true, false]
     ] as const) {
-        test(`save (option '${key}') changes format to v2 if option changed`, async () => {
+        test(`save (option '${key}') changes format to v3 if option changed`, async () => {
             asMutable(gists).getGistAsync = id => Promise.resolve(fromPartial({ id, code: 'test', options: { [key]: gistValue } }));
 
             window.location.hash = '#gist:xyz';
-            await url.loadAsync();
-            url.save('test', fromPartial({ release: true, [key]: newValue }));
-            expect(window.location.hash).toMatch(/^#v2:/);
+            await loadStateFromUrlAsync();
+            saveStateToUrl('test', fromPartial({ release: true, [key]: newValue }), { cacheSecret: stubCacheSecret });
+            expect(window.location.hash).toMatch(/^#v3:/);
         });
     }
 
-    test(`save changes format to v2 if gist code changed`, async () => {
+    test(`save changes format to v3 if gist code changed`, async () => {
         asMutable(gists).getGistAsync = id => Promise.resolve(fromPartial({ id, code: 'original', options: {} }));
 
         window.location.hash = '#gist:xyz';
-        await url.loadAsync();
-        url.save('updated', fromPartial({}));
-        expect(window.location.hash).toMatch(/^#v2:/);
+        await loadStateFromUrlAsync();
+        saveStateToUrl('updated', fromPartial({}), { cacheSecret: stubCacheSecret });
+        expect(window.location.hash).toMatch(/^#v3:/);
     });
 });

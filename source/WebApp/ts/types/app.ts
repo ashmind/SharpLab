@@ -7,16 +7,16 @@ import type { ServerOptions } from './server-options';
 import type { HighlightedRange } from './highlighted-range';
 import type { Result, CodeResult, AstResult, ExplainResult, AstItem, RunResult } from './results';
 import type { AstViewRef } from './component-ref-interfaces/ast-view-ref';
-import type { Gist } from './gist';
 import type { CodeRange } from './code-range';
+import type { Gist } from './gist';
 
 export type AppTheme = 'light'|'dark'|'auto';
 
 export interface AppOptions {
     language: LanguageName;
-    target: TargetName|string;
+    target: TargetName;
     release: boolean;
-    branch: Branch|null;
+    branch: Branch | null;
 }
 
 export interface AppData {
@@ -44,6 +44,9 @@ export interface AppData {
     highlightedCodeRange: HighlightedRange|null;
 
     gist: Gist|null|undefined;
+    cache: {
+        secret: ArrayBuffer;
+    }
 }
 
 export interface AppStatus {

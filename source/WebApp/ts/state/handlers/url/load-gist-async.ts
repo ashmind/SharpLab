@@ -1,12 +1,30 @@
-import { TargetName, targets } from '../../../helpers/targets';
 import { getGistAsync } from '../../../helpers/github/gists';
 import { targetMapReverse } from '../helpers/language-and-target-maps';
+import type { LanguageName } from '../../../helpers/languages';
+import type { TargetName } from '../../../helpers/targets';
+import type { Gist } from '../../../types/gist';
 
 interface Overrides {
-    target: TargetName|undefined;
-    branchId: string|undefined;
-    mode: 'debug'|'release'|null;
+    readonly target: TargetName | undefined;
+    readonly branchId: string | undefined;
+    readonly mode: 'debug' | 'release' | null;
 }
+
+export type LoadStateFromGistResult = {
+    readonly gist: Gist;
+    readonly options: {
+        readonly language: LanguageName;
+        readonly target: TargetName;
+        readonly release: boolean;
+        readonly branchId: string | null;
+    },
+    readonly code: string;
+} | {
+    readonly options: {
+        readonly [key: string]: undefined;
+    };
+    readonly code: string;
+};
 
 function getIsRelease(options: { release: boolean|null|undefined }, overrides: Overrides) {
     if (overrides.mode || options.release == null)
@@ -15,7 +33,7 @@ function getIsRelease(options: { release: boolean|null|undefined }, overrides: O
     return options.release;
 }
 
-export default async function loadGistAsync(hash: string) {
+export default async function loadGistAsync(hash: string): Promise<LoadStateFromGistResult> {
     const parts = hash.replace(/^gist:/, '').split('/');
     const id = parts[0];
     let gist;
@@ -43,7 +61,7 @@ export default async function loadGistAsync(hash: string) {
         code: gist.code,
         options: {
             language: gist.options.language,
-            target:   overrides.target   ?? gist.options.target ?? targets.csharp,
+            target:   overrides.target   ?? gist.options.target,
             branchId: overrides.branchId ?? gist.options.branchId,
             release:  getIsRelease(gist.options, overrides)
         }

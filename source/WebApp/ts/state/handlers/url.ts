@@ -1,25 +1,32 @@
 ﻿import LZString from 'lz-string';
+import {
+    encode as encodeArrayBufferToBase64,
+    decode as decodeArrayBufferFromBase64
+} from 'base64-arraybuffer';
 import type { RawOptions } from '../../types/raw-options';
 import type { Gist } from '../../types/gist';
-import { languages } from '../../helpers/languages';
-import { targets } from '../../helpers/targets';
+import { LanguageName, languages } from '../../helpers/languages';
+import { TargetName, targets } from '../../helpers/targets';
 import warn from '../../helpers/warn';
-import extendType from '../../helpers/extend-type';
 import throwError from '../../helpers/throw-error';
 import {
     languageMap,
     languageMapReverse,
     targetMap,
-    targetMapReverse,
-    targetMapReverseV1
+    targetMapReverse
 } from './helpers/language-and-target-maps';
 import precompressor from './url/precompressor';
-import loadGistAsync from './url/load-gist-async';
+import loadGistAsync, { LoadStateFromGistResult } from './url/load-gist-async';
+import { loadFromLegacyV1, LoadStateFromUrlV1Result } from './url/load-from-v1';
+import { loadFromLegacyV2, LoadStateFromUrlV2Result } from './url/load-from-v2';
 
-const last = {
-    hash: null as string|null
-};
-function save(code: string|null|undefined, options: RawOptions, { gist = null }: { gist?: Gist|null } = {}) {
+let lastHash: string|undefined;
+
+export const saveStateToUrl = (
+    code: string|null|undefined,
+    options: RawOptions,
+    { cacheSecret, gist = null }: { cacheSecret: ArrayBuffer, gist?: Gist|null }
+) => {
     if (code == null) // too early?
         return {};
 
@@ -38,11 +45,11 @@ function save(code: string|null|undefined, options: RawOptions, { gist = null }:
         .map(([key, value]) => key + ':' + value) // eslint-disable-line prefer-template
         .join(',');
     const precompressedCode = precompressor.compress(code, options.language);
-    const hash = 'v2:' + LZString.compressToBase64(optionsPackedString + '|' + precompressedCode); // eslint-disable-line prefer-template
+    const hash = 'v3:' + LZString.compressToBase64(optionsPackedString + '|' + precompressedCode) + '.' + encodeArrayBufferToBase64(cacheSecret); // eslint-disable-line prefer-template
 
     saveHash(hash);
     return {};
-}
+};
 
 function saveGist(code: string, options: RawOptions, gist: Gist) {
     if (code !== gist.code)
@@ -59,25 +66,46 @@ function saveGist(code: string, options: RawOptions, gist: Gist) {
 }
 
 function saveHash(hash: string) {
-    last.hash = hash;
+    lastHash = hash;
     history.replaceState(null, '', '#' + hash);
 }
 
-function loadAsync() {
+type LoadStateFromUrlV3Result = {
+    readonly options: {
+        readonly branchId: string | undefined,
+        readonly language: LanguageName,
+        readonly target: TargetName,
+        readonly release: boolean
+    },
+    readonly code: string,
+    readonly cacheSecret: ArrayBuffer
+} | null;
+
+type LoadStateFromUrlResult =
+    Promise<LoadStateFromGistResult>
+    | LoadStateFromUrlV1Result
+    | LoadStateFromUrlV2Result
+    | LoadStateFromUrlV3Result;
+
+export const loadStateFromUrlAsync = (): LoadStateFromUrlResult => {
     let hash = getCurrentHash();
     if (!hash)
         return null;
 
-    last.hash = hash;
+    lastHash = hash;
     if (hash.startsWith('gist:'))
         return loadGistAsync(hash);
 
-    if (!hash.startsWith('v2:'))
-        return legacyLoadFrom(hash);
+    if (!/^v\d:/.test(hash))
+        return loadFromLegacyV1(hash);
 
-    hash = hash.substring('v2:'.length);
+    if (hash.startsWith('v2'))
+        return loadFromLegacyV2(hash);
+
+    hash = hash.substring('v3:'.length);
     try {
-        const decompressed = LZString.decompressFromBase64(hash);
+        const [data, cacheSecretString] = hash.split('.');
+        const decompressed = LZString.decompressFromBase64(data);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const [, optionsPart, codePart] = /^([^|]*)\|([\s\S]*)$/.exec(decompressed)!;
 
@@ -89,12 +117,13 @@ function loadAsync() {
             }, {} as { [key: string]: string|undefined })
         );
         const language = languageMapReverse[optionsPacked.l ?? 'cs']
-                      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                      ?? throwError(`Failed to resolve language: ${optionsPacked.l}`);
+                        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                        ?? throwError(`Failed to resolve language: ${optionsPacked.l}`);
         const target = targetMapReverse[optionsPacked.t ?? 'cs']
                     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                     ?? throwError(`Failed to resolve target: ${optionsPacked.t}`);
         const code = precompressor.decompress(codePart, language);
+        const cacheSecret = decodeArrayBufferFromBase64(cacheSecretString);
         return {
             options: {
                 branchId: optionsPacked.b,
@@ -102,22 +131,23 @@ function loadAsync() {
                 target,
                 release:  optionsPacked.d !== '+'
             },
-            code
-        };
+            code,
+            cacheSecret
+        } as LoadStateFromUrlV3Result;
     }
     catch (e) {
         warn('Failed to load state from URL:', e);
         return null;
     }
-}
+};
 
-function changed(callback: () => void) {
+export const subscribeToUrlStateChanged = (callback: () => void) => {
     window.addEventListener('hashchange', () => {
         const hash = getCurrentHash();
-        if (hash !== last.hash)
+        if (hash !== lastHash)
             callback();
     });
-}
+};
 
 function getCurrentHash() {
     const hash = window.location.hash;
@@ -125,36 +155,3 @@ function getCurrentHash() {
         return null;
     return decodeURIComponent(hash.replace(/^#/, ''));
 }
-
-function legacyLoadFrom(hash: string) {
-    const match = /(?:b:([^/]+)\/)?(?:f:([^/]+)\/)?(.+)/.exec(hash);
-    if (match === null)
-        return null;
-
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    const flags = (match[2] ?? '').match(/^([^>]*?)(>.+?)?(r)?$/) ?? [];
-    const result = extendType({
-        options: {
-            branchId: match[1],
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-            language: languageMapReverse[flags[1] || 'cs'],
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-            target: targetMapReverseV1[flags[2] || '>cs'],
-            release: flags[3] === 'r'
-        }
-    })<{ code?: string }>();
-
-    try {
-        result.code = LZString.decompressFromBase64(match[3]);
-    }
-    catch (e) {
-        result.code = '';
-    }
-    return result;
-}
-
-export default {
-    save,
-    loadAsync,
-    changed
-};

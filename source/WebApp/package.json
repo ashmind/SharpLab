@@ -96,6 +96,7 @@
     "vue-template-compiler": "2.5.16"
   },
   "dependencies": {
+    "base64-arraybuffer": "1.0.1",
     "clean-css": "4.2.1",
     "codemirror": "5.61.1",
     "codemirror-addon-infotip": "1.0.0",

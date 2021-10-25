@@ -2,8 +2,9 @@ import type { CodeResult, AstResult, RunResult, VerifyResult, ExplainResult, Err
 import type { Gist } from '../../types/gist';
 import extendType from '../extend-type';
 import { languages, LanguageName } from '../languages';
-import { targets } from '../targets';
+import { TargetName, targets } from '../targets';
 import asLookup from '../as-lookup';
+import { targetMap } from '../../state/handlers/helpers/language-and-target-maps';
 import { token } from './auth';
 import renderOutputToText from './internal/render-output-to-text';
 
@@ -80,7 +81,7 @@ function prepareResultForGist(target: string, result: Result) {
     }
 }
 
-export async function getGistAsync(id: string) {
+export async function getGistAsync(id: string): Promise<Gist> {
     const gist = await validateResponseAndParseJsonAsync(await fetch(`https://api.github.com/gists/${id}`));
 
     const [codeFileName, codeFile] = Object.entries(gist.files)[0] as [string, { content: string }];
@@ -97,27 +98,29 @@ export async function getGistAsync(id: string) {
         mode?: string;
         branch?: string;
     } : {};
+    const target = gistOptions.target && targetMap[gistOptions.target]
+        ? gistOptions.target as TargetName
+        : targets.csharp;
 
-    const options = {
-        language,
-        target: gistOptions.target,
-        release: gistOptions.mode === 'Release',
-        branchId: gistOptions.branch
-    };
-
-    const result = {
+    return {
         id,
         name,
         url: gist.html_url,
         code: codeFile.content,
-        options
+        options: {
+            language,
+            target,
+            release: gistOptions.mode === 'Release',
+            branchId: gistOptions.branch ?? null
+        }
     };
-    return result as { readonly [key in keyof Gist]: (typeof result)[key] };
 }
 
-export async function createGistAsync(
-    { name, code, options, result }: Pick<Gist, 'name'|'code'|'options'> & { result: Result }
-) {
+type CreateGistRequest = Pick<Gist, 'name' | 'code' | 'options'> & {
+    readonly result: Result;
+};
+
+export async function createGistAsync({ name, code, options, result }: CreateGistRequest): Promise<Gist> {
     if (!token)
         throw new Error("Can't save Gists without GitHub auth.");
 
@@ -167,5 +170,5 @@ export async function createGistAsync(
         name,
         code,
         options
-    } as Gist;
+    };
 }
