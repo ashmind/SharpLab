@@ -28,7 +28,7 @@ namespace SharpLab.Tests.Caching {
             await driver.SendSlowUpdateAsync();
 
             // Assert
-            Assert.Equal("58b7e1a46ace8243ab08bc6e6014cdbd8d1d30c705b3e963293d6a1e1ff1b99a", cacheKey);
+            Assert.Equal("sl-test/58b7e1a46ace8243ab08bc6e6014cdbd8d1d30c705b3e963293d6a1e1ff1b99a", cacheKey);
             var json = Encoding.UTF8.GetString(cacheBytes!);
             var cached = JsonSerializer.Deserialize<CacheData>(json, new() {
                 PropertyNameCaseInsensitive = true

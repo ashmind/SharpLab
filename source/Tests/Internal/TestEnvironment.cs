@@ -13,6 +13,7 @@ namespace SharpLab.Tests.Internal {
             Environment.SetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_URL", "http://localhost/test");
             Environment.SetEnvironmentVariable("SHARPLAB_LOCAL_SECRETS_ContainerHostAuthorizationToken", "_");
             Environment.SetEnvironmentVariable("SHARPLAB_WEBAPP_NAME", "sl-test");
+            Environment.SetEnvironmentVariable("SHARPLAB_CACHE_PATH_PREFIX", "test");
 
             var host = Program.CreateHostBuilder(new string[0]).Build();
             return host.Services.GetAutofacRoot();

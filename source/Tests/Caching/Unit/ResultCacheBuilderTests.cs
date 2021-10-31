@@ -8,12 +8,12 @@ using Xunit;
 namespace SharpLab.Tests.Caching.Unit {
     public class ResultCacheBuilderTests {
         [Theory]
-        [InlineData("branch", LanguageNames.CSharp, TargetNames.CSharp, Optimize.Debug, "test code", "5aff343407aa8328fa32c34fec412261171c62d33de0dae11ab48f6c5082954b")]
-        [InlineData("branch", LanguageNames.CSharp, TargetNames.CSharp, Optimize.Debug, "test code 2", "67b3ef62ced8cd27170598066f9ec66dfe455312dcf5a6876d492c3943e8ffb6")]
-        [InlineData("branch", LanguageNames.CSharp, TargetNames.CSharp, Optimize.Release, "test code", "f0bd5e67096cd42fd590eaf4e19de8413f2dade8f5aca39a8c572b789d4f637c")]
-        [InlineData("branch", LanguageNames.CSharp, TargetNames.IL, Optimize.Debug, "test code", "6a51e5e5f51c0dd69a945db26629e5827a14995c81dcfbcad99d690d0f3329d2")]
-        [InlineData("branch", LanguageNames.IL, TargetNames.CSharp, Optimize.Debug, "test code", "3ef7679726bbb5f63ae69838b0e3188c927974b1a4eeda8a3f25407976c2d28c")]
-        [InlineData(null, LanguageNames.CSharp, TargetNames.CSharp, Optimize.Debug, "test code", "78ec17551e4d752128f283d01e58c7c5e9fd921c7cb5fb27696c05012097e7a5")]
+        [InlineData("branch", LanguageNames.CSharp, TargetNames.CSharp, Optimize.Debug, "test code", "branch/5aff343407aa8328fa32c34fec412261171c62d33de0dae11ab48f6c5082954b")]
+        [InlineData("branch", LanguageNames.CSharp, TargetNames.CSharp, Optimize.Debug, "test code 2", "branch/67b3ef62ced8cd27170598066f9ec66dfe455312dcf5a6876d492c3943e8ffb6")]
+        [InlineData("branch", LanguageNames.CSharp, TargetNames.CSharp, Optimize.Release, "test code", "branch/f0bd5e67096cd42fd590eaf4e19de8413f2dade8f5aca39a8c572b789d4f637c")]
+        [InlineData("branch", LanguageNames.CSharp, TargetNames.IL, Optimize.Debug, "test code", "branch/6a51e5e5f51c0dd69a945db26629e5827a14995c81dcfbcad99d690d0f3329d2")]
+        [InlineData("branch", LanguageNames.IL, TargetNames.CSharp, Optimize.Debug, "test code", "branch/3ef7679726bbb5f63ae69838b0e3188c927974b1a4eeda8a3f25407976c2d28c")]
+        [InlineData(null, LanguageNames.CSharp, TargetNames.CSharp, Optimize.Debug, "test code", "default/78ec17551e4d752128f283d01e58c7c5e9fd921c7cb5fb27696c05012097e7a5")]
         public void Build_ReturnsExpectedCacheKey(
             string? branchId, string languageName, string targetName, string optimize, string code,
             string expectedCacheKey
