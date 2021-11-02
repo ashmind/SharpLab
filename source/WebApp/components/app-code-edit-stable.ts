@@ -33,6 +33,13 @@ export default Vue.extend({
         textarea.value = this.initialText;
 
         this.initialConnectionRequested = !this.initialCached;
+        const connectIfInitialWasCached = () => {
+            if (this.initialConnectionRequested)
+                return;
+            this.instance.connect();
+            this.initialConnectionRequested = true;
+        };
+
         const options = {
             serviceUrl: this.serviceUrl,
             language: this.language,
@@ -43,10 +50,7 @@ export default Vue.extend({
                 slowUpdateResult: result => this.$emit('slow-update-result', result),
                 connectionChange: (type: MirrorSharpConnectionState) => this.$emit('connection-change', type),
                 textChange: getText => {
-                    if (!this.initialConnectionRequested) {
-                        this.instance.connect();
-                        this.initialConnectionRequested = true;
-                    }
+                    connectIfInitialWasCached();
                     this.$emit('text-change', getText);
                 },
                 serverError: message => this.$emit('server-error', message)
@@ -69,11 +73,13 @@ export default Vue.extend({
             options.language = l;
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.instance.setLanguage(l);
+            connectIfInitialWasCached();
         }, { deep: true });
         this.$watch('serverOptions', (o: ServerOptions) => {
             options.initialServerOptions = o;
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.instance.setServerOptions(o);
+            connectIfInitialWasCached();
         }, { deep: true });
 
         const recreate = () => {
