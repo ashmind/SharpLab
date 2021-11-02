@@ -24,6 +24,7 @@ type Encrypted = {
 
 type CacheData = {
     version: 1;
+    date: string;
     encrypted: Encrypted;
 };
 
@@ -75,6 +76,6 @@ export const loadResultFromCacheAsync = async (keyData: CacheKeyData): Promise<C
     const data = await decryptCacheDataAsync(json.encrypted, secretKey);
     return {
         ...(JSON.parse(data) as Omit<CachedUpdateResult, 'cached'>),
-        cached: true
+        cached: { date: new Date(json.date) }
     };
 };

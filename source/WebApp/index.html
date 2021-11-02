@@ -87,7 +87,7 @@
             <h1>Results</h1>
             <app-select-target v-model="options.target" tabindex="4"></app-select-target>
             <small v-if="result.cached" class="result-cached-indicator" title="Note: This output is cached and might not represent the latest behavior">
-              Cached
+              Cached: {{formatDate(result.cached.date, 'd mmm yyyy')}}
             </small>
             <app-select-mode v-model="options.release" tabindex="5"></app-select-mode>
           </header>
