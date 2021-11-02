@@ -64,6 +64,8 @@ namespace SharpLab.Container.Manager.Endpoints {
 
                 try {
                     context.Response.StatusCode = 200;
+                    if (!result.IsOutputReadSuccess)
+                        context.Response.Headers.Add("SL-Container-Output-Failed", "true");
                     await context.Response.BodyWriter.WriteAsync(result.Output, context.RequestAborted);
                     if (!result.IsOutputReadSuccess)
                         await context.Response.BodyWriter.WriteAsync(result.OutputReadFailureMessage, context.RequestAborted);

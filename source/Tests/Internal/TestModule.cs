@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Pedantic.IO;
 using SharpLab.Server.Caching.Internal;
 using SharpLab.Server.Caching.Internal.Mocks;
+using SharpLab.Server.Execution.Container;
+using SharpLab.Server.Execution.Container.Mocks;
 using SharpLab.Server.Execution.Unbreakable;
 using Unbreakable;
 
@@ -40,18 +42,24 @@ namespace SharpLab.Tests.Internal {
             builder.RegisterInstance<IConfiguration>(configuration)
                    .SingleInstance();
 
-            RegisterResultCacheStoreMock(builder);
+            RegisterMock<IResultCacheStore, ResultCacheStoreMock>(builder, (wrapper, target) =>
+                wrapper.Setup.StoreAsync().Runs((key, stream, cancellationToken) => target.Value?.StoreAsync(key, stream, cancellationToken) ?? Task.CompletedTask)
+            );
+            RegisterMock<IContainerClient, ContainerClientMock>(builder, (wrapper, target) =>
+                wrapper.Setup.ExecuteAsync().Runs((sessionId, assemblyStream, includePerformance, cancellationToken) => target.Value!.ExecuteAsync(sessionId, assemblyStream, includePerformance, cancellationToken))
+            );
         }
 
-        private void RegisterResultCacheStoreMock(ContainerBuilder builder) {
-            var mockPerTest = new AsyncLocal<ResultCacheStoreMock>();
-            var singletonWrapper = new ResultCacheStoreMock();
-            singletonWrapper.Setup.StoreAsync()
-                .Runs((key, stream, cancellationToken) => mockPerTest.Value?.StoreAsync(key, stream, cancellationToken) ?? Task.CompletedTask);
+        private void RegisterMock<T, TMock>(ContainerBuilder builder, Action<TMock, AsyncLocal<TMock>> setupSingletonWrapper)
+            where T : class
+            where TMock: T, new()
+        {
+            var mockPerTest = new AsyncLocal<TMock>();
+            var singletonWrapper = new TMock();
+            setupSingletonWrapper(singletonWrapper, mockPerTest);
 
             builder.Register(_ => mockPerTest.Value ??= new());
-            builder.RegisterInstance<IResultCacheStore>(singletonWrapper);
-
+            builder.RegisterInstance<T>(singletonWrapper);
         }
 
         private class TestDataMessageHandler : HttpMessageHandler {

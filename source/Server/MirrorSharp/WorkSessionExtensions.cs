@@ -36,6 +36,14 @@ namespace SharpLab.Server.MirrorSharp {
             session.ExtensionData["DebugIncludePerformance"] = value;
         }
 
+        public static object? GetLastSlowUpdateResult(this IWorkSession session) {
+            return session.ExtensionData.GetValueOrDefault("LastSlowUpdateResult");
+        }
+
+        public static void SetLastSlowUpdateResult(this IWorkSession session, object? value) {
+            session.ExtensionData["LastSlowUpdateResult"] = value;
+        }
+
         public static string GetSessionId(this IWorkSession session) {
             var id = (string?)session.ExtensionData.GetValueOrDefault("SessionId");
             if (id == null) {

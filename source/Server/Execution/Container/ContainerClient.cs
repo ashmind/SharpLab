@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -16,7 +17,7 @@ namespace SharpLab.Server.Execution.Container {
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<string> ExecuteAsync(string sessionId, Stream assemblyStream, bool includePerformance, CancellationToken cancellationToken) {
+        public async Task<ContainerExecutionResult> ExecuteAsync(string sessionId, Stream assemblyStream, bool includePerformance, CancellationToken cancellationToken) {
             var request = new HttpRequestMessage(HttpMethod.Post, _settings.ContainerHostUrl) {
                 Headers = { { "SL-Session-Id", sessionId } },
                 Content = new StreamContent(assemblyStream)
@@ -32,7 +33,10 @@ namespace SharpLab.Server.Execution.Container {
                 throw new Exception("Container host reported an error:\n" + await response.Content.ReadAsStringAsync(cancellationToken));
 
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync(cancellationToken);
+            var output = await response.Content.ReadAsStringAsync(cancellationToken);
+            var outputFailed = response.Headers.TryGetValues("SL-Container-Output-Failed", out var l) && l.First() == "true";
+
+            return new ContainerExecutionResult(output, outputFailed);
         }
     }
 }

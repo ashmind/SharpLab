@@ -115,14 +115,14 @@ namespace SharpLab.Server.MirrorSharp {
                 if (targetName == TargetNames.Run) {
                     if (!session.HasContainerExperimentFailed()) {
                         try {
-                            var output = await _containerExecutor.ExecuteAsync(streams, session, cancellationToken);
+                            var result = await _containerExecutor.ExecuteAsync(streams, session, cancellationToken);
                             if (compilationStopwatch != null) {
                                 // TODO: Prettify
-                                output += $"\n  COMPILATION: {compilationStopwatch.ElapsedMilliseconds,15}ms";
+                                // output += $"\n  COMPILATION: {compilationStopwatch.ElapsedMilliseconds,15}ms";
                             }
                             streams.Dispose();
                             _monitor.Metric(ContainerExperimentMetrics.ContainerRunCount, 1);
-                            return output;
+                            return result;
                         }
                         catch (Exception ex) {
                             _monitor.Metric(ContainerExperimentMetrics.ContainerFailureCount, 1);
@@ -148,6 +148,8 @@ namespace SharpLab.Server.MirrorSharp {
         }
 
         public void WriteResult(IFastJsonWriter writer, object? result, IWorkSession session) {
+            session.SetLastSlowUpdateResult(result);
+
             if (result == null) {
                 writer.WriteValue((string?)null);
                 return;
@@ -171,6 +173,11 @@ namespace SharpLab.Server.MirrorSharp {
             }
 
             if (targetName == TargetNames.Run) {
+                if (result is ContainerExecutionResult { Output: var output }) {
+                    writer.WriteValue(output);
+                    return;
+                }
+
                 _executor.Serialize((ExecutionResult)result, writer, session);
                 return;
             }

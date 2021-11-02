@@ -5,6 +5,6 @@ using SharpLab.Server.Common;
 
 namespace SharpLab.Server.Execution {
     public interface IContainerExecutor {
-        Task<string> ExecuteAsync(CompilationStreamPair streams, IWorkSession session, CancellationToken cancellationToken);
+        Task<ContainerExecutionResult> ExecuteAsync(CompilationStreamPair streams, IWorkSession session, CancellationToken cancellationToken);
     }
 }
