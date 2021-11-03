@@ -100,16 +100,14 @@
         }
     }
 
-    .result .loader,
-    .result-cached-indicator {
+    .result .loader {
         top: 25px;
         right: @option-target-right-compatibility;
         right: @option-target-right;
     }
 
     .result-cached-indicator {
-        font-size: 70%;
-        margin-right: 0;
+        display: none;
     }
 
     .CodeMirror {
@@ -193,6 +191,10 @@
     .footer-author-full {
         display: none;
     }
+
+    .result-cached-indicator {
+        display: none;
+    }
 }
 
 @media screen and (max-width: 499px) and (max-height: 499px) {
@@ -204,5 +206,9 @@
     .top-section-group-code,
     .top-section-group-results {
         min-height: 200px;
+    }
+
+    .result-cached-indicator {
+        display: none;
     }
 }

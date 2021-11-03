@@ -53,7 +53,7 @@ namespace SharpLab.Tests.Of.Container.Internal {
 
             var streams = new CompilationStreamPair(assemblyStream, hasSymbols ? symbolStream : null);
             var executor = CreateContainerExecutor();
-            return await executor.ExecuteAsync(streams, session, CancellationToken.None);
+            return (await executor.ExecuteAsync(streams, session, CancellationToken.None)).Output;
         }
 
         private static async Task<IWorkSession> PrepareWorkSessionAsync(string code, string languageName, OptimizationLevel optimizationLevel) {
@@ -123,7 +123,7 @@ namespace SharpLab.Tests.Of.Container.Internal {
         }
 
         private class TestContainerClient : IContainerClient {
-            public async Task<string> ExecuteAsync(string sessionId, Stream assemblyStream, bool includePerformance, CancellationToken cancellationToken) {
+            public async Task<ContainerExecutionResult> ExecuteAsync(string sessionId, Stream assemblyStream, bool includePerformance, CancellationToken cancellationToken) {
                 var startMarker = Guid.NewGuid();
                 var endMarker = Guid.NewGuid();
                 var executeCommand = new ExecuteCommand(
@@ -156,7 +156,7 @@ namespace SharpLab.Tests.Of.Container.Internal {
                     cancellationToken
                 );
 
-                return Encoding.UTF8.GetString(outputResult.Output.Span);
+                return new(Encoding.UTF8.GetString(outputResult.Output.Span), outputFailed: false);
             }
         }
     }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MirrorSharp.Advanced;
 using MirrorSharp.Advanced.EarlyAccess;
 using SharpLab.Server.Caching;
+using SharpLab.Server.Execution;
 
 namespace SharpLab.Server.MirrorSharp {
     public class ConnectionSendViewer : IConnectionSendViewer {
@@ -23,7 +24,17 @@ namespace SharpLab.Server.MirrorSharp {
                 return Task.CompletedTask;
 
             session.SetFirstSlowUpdateCached(true);
+            // if update should not be cached, we will still not want to cache the next one
+            if (!ShouldCache(session.GetLastSlowUpdateResult()))
+                return Task.CompletedTask;
+
             return SafeCacheAsync(message, session, cancellationToken);
+        }
+
+        private bool ShouldCache(object? result) {
+            return result is not ContainerExecutionResult { OutputFailed: true }
+               // not caching legacy non-container results
+               and not ExecutionResult;
         }
 
         private async Task SafeCacheAsync(ReadOnlyMemory<byte> message, IWorkSession session, CancellationToken cancellationToken) {

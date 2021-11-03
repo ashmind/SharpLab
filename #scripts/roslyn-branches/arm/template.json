@@ -60,6 +60,10 @@
                         {
                             "name": "SHARPLAB_KEY_VAULT_URL",
                             "value": "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('vaults_name')), '2019-09-01').vaultUri]"
+                        },
+                        {
+                            "name": "SHARPLAB_CACHE_PATH_PREFIX",
+                            "value": "main"
                         }
                     ]
                 }

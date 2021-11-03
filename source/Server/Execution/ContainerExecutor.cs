@@ -34,7 +34,7 @@ namespace SharpLab.Server.Execution {
             _client = client;
         }
 
-        public async Task<string> ExecuteAsync(CompilationStreamPair streams, IWorkSession session, CancellationToken cancellationToken) {
+        public async Task<ContainerExecutionResult> ExecuteAsync(CompilationStreamPair streams, IWorkSession session, CancellationToken cancellationToken) {
             var includePerformance = session.ShouldReportPerformance();
             var rewriteStopwatch = includePerformance ? Stopwatch.StartNew() : null;
             var readerParameters = new ReaderParameters {
@@ -56,12 +56,12 @@ namespace SharpLab.Server.Execution {
             rewriteStopwatch?.Stop();
 
             var executeStopwatch = includePerformance ? Stopwatch.StartNew() : null;
-            var output = await _client.ExecuteAsync(session.GetSessionId(), rewrittenStream, includePerformance, cancellationToken);
+            var result = await _client.ExecuteAsync(session.GetSessionId(), rewrittenStream, includePerformance, cancellationToken);
             if (rewriteStopwatch != null && executeStopwatch != null) {
                 // TODO: Prettify
-                output += $"\n  REWRITERS: {rewriteStopwatch.ElapsedMilliseconds,17}ms\n  CONTAINER EXECUTOR: {executeStopwatch.ElapsedMilliseconds,8}ms";
+                // output += $"\n  REWRITERS: {rewriteStopwatch.ElapsedMilliseconds,17}ms\n  CONTAINER EXECUTOR: {executeStopwatch.ElapsedMilliseconds,8}ms";
             }
-            return output;
+            return result;
         }
     }
 }

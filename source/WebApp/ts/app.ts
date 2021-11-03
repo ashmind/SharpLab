@@ -50,7 +50,7 @@ const setResultFromUpdate = (
     app: Pick<AppData, 'result' | 'lastResultOfType' | 'loadingDelay' | 'loading'>,
     options: Pick<AppOptions, 'target'>,
     updateResult: MirrorSharpSlowUpdateResult<Result['value']> & {
-        cached?: true
+        cached?: { date: Date }
     }
 ) => {
     const result = {

@@ -13,7 +13,6 @@
     --warning-header-color: @warning-color;
     --muted-header-color: #bbb;
     --content-loader-color: @primary-color;
-    --result-cached-indicator-color: #909090;
 
     --disclaimer-padding: 2px 4px;
 }
@@ -256,18 +255,9 @@ section.details-only {
 }
 
 .result-cached-indicator {
-    position: absolute;
-    top: 10px;
-    margin-right: 5px;
-    // ~ required by https://github.com/less/less.js/issues/3463
-    right: ~"max(var(--js-scrollbar-width, 0px), 5px)";
-    // for browsers that don't support min()
-    right: var(--js-scrollbar-width, 0px);
-    z-index: 10;
-    padding: var(--disclaimer-padding);
     cursor: help;
-    border: 1px solid var(--result-cached-indicator-color);
-    color: var(--result-cached-indicator-color);
+    color: var(--header-text-color);
+    opacity: 0.6;
 }
 
 .disclaimer,
