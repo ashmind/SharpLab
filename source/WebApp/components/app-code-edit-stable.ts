@@ -55,7 +55,10 @@ export default Vue.extend({
                 },
                 serverError: message => this.$emit('server-error', message)
             }
-        } as PartiallyMutable<MirrorSharpOptions<ServerOptions, Result['value']>, 'language'|'initialServerOptions'|'serviceUrl'>;
+        } as PartiallyMutable<
+            MirrorSharpOptions<ServerOptions, Result['value']>,
+            'language' | 'initialServerOptions' | 'serviceUrl' | 'noInitialConnection'
+        >;
         // incorrect, based on type _name_ match?
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
         this.instance = mirrorsharp(textarea, options);
@@ -84,6 +87,9 @@ export default Vue.extend({
 
         const recreate = () => {
             this.instance.destroy({ keepCodeMirror: true });
+
+            options.noInitialConnection = false;
+            this.initialConnectionRequested = true;
             this.instance = mirrorsharp(textarea, options);
         };
         this.$watch('serviceUrl', (u: string) => {
