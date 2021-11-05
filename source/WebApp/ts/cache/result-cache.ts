@@ -77,7 +77,7 @@ const getBranchCacheKey = (branchId: string | null) => {
         'core-x64': architecturePrefix + 'core-x64',
         'netfx': architecturePrefix + 'netfx',
         'x64': architecturePrefix + 'netfx-x64'
-    }[branchId] ?? `sl-b-${branchId}`;
+    }[branchId] ?? `sl-b-dotnet-${branchId}`;
 };
 
 export const loadResultFromCacheAsync = async (keyData: CacheKeyData): Promise<CachedUpdateResult | null> => {
