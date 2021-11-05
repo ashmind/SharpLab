@@ -2,9 +2,10 @@ import { decodeArrayBufferFromBase64 } from '../helpers/array-buffer';
 import type { CachedUpdateResult } from '../types/results';
 
 const { host } = window.location;
+const cacheEnvironment = host === 'sharplab.io' ? 'main' : 'edge';
 const cacheCdnBaseUrl = host.endsWith('sharplab.io')
-    ? (`https://slpublic.azureedge.net/cache/` + (host !== 'sharplab.io' ? 'edge' : 'main'))
-    : `http://127.0.0.1:10000/devstoreaccount1/cache/edge`;
+    ? 'https://slpublic.azureedge.net/cache/' + cacheEnvironment
+    : 'http://127.0.0.1:10000/devstoreaccount1/cache/edge';
 
 const AES = 'AES-GCM';
 
@@ -62,9 +63,28 @@ export const decryptCacheDataAsync = async (encrypted: Encrypted, secretKey: Cry
     return new TextDecoder('utf-8').decode(resultBytes);
 };
 
+const getBranchCacheKey = (branchId: string | null) => {
+    if (!branchId)
+        return 'default';
+
+    // Workaround, should probably update server to use id
+    // as the cache key instead, to be defined. Will not
+    // work for edge branches for now.
+    const architecturePrefix = cacheEnvironment === 'main'
+        ? 'sl-a-'
+        : 'sl-a-edge-';
+    return {
+        'core-x64': architecturePrefix + 'core-x64',
+        'netfx': architecturePrefix + 'netfx',
+        'x64': architecturePrefix + 'netfx-x64'
+    }[branchId] ?? `sl-b-${branchId}`;
+};
+
 export const loadResultFromCacheAsync = async (keyData: CacheKeyData): Promise<CachedUpdateResult | null> => {
     const { cacheKey, secretKey } = await buildCacheKeysAsync(keyData);
-    const response = await fetch(`${cacheCdnBaseUrl}/${keyData.branchId ?? 'default'}/${cacheKey}.json`);
+    const branchKey = getBranchCacheKey(keyData.branchId);
+
+    const response = await fetch(`${cacheCdnBaseUrl}/${branchKey}/${cacheKey}.json`);
     if (response.status === 404)
         return null;
 
