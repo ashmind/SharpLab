@@ -1,11 +1,26 @@
 import { decodeArrayBufferFromBase64 } from '../helpers/array-buffer';
+import asLookup from '../helpers/as-lookup';
 import type { CachedUpdateResult } from '../types/results';
 
-const { host } = window.location;
-const cacheEnvironment = host === 'sharplab.io' ? 'main' : 'edge';
-const cacheCdnBaseUrl = host.endsWith('sharplab.io')
-    ? 'https://slpublic.azureedge.net/cache/' + cacheEnvironment
-    : 'http://127.0.0.1:10000/devstoreaccount1/cache/edge';
+const [cacheEnvironment, cacheCdnBaseUrl] = (() => {
+    const main = ['main', 'https://slpublic.azureedge.net/cache/main'] as const;
+    const edge = ['edge', 'https://slpublic.azureedge.net/cache/edge'] as const;
+    const local = ['edge', 'http://127.0.0.1:10000/devstoreaccount1/cache/edge'] as const;
+
+    const { host } = window.location;
+    const override = (window.location.search.match(/[?&]cache=([^?&]+)/) ?? [])[1];
+
+    switch (host) {
+        case 'sharplab.io':
+            if (override)
+                throw new Error('Cannot override cache environment on the main site (remove ?cache=).');
+            return main;
+        case 'edge.sharplab.io':
+            return override === 'main' ? main : edge;
+        default:
+            return asLookup({ main, edge })[override] ?? local;
+    }
+})();
 
 const AES = 'AES-GCM';
 
