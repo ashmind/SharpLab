@@ -37,8 +37,8 @@ const encodeArrayBufferToHex = (buffer: ArrayBuffer) => {
         .join('');
 };
 
-export const buildCacheKeysAsync = async ({ language, target, release, branchId, code }: CacheKeyData) => {
-    const keyFormat = `${language}|${target}|${release ? 'release' : 'debug'}|${branchId ?? ''}|${code}`;
+export const buildCacheKeysAsync = async ({ language, target, release, code }: CacheKeyData, branchKey: string | null) => {
+    const keyFormat = `${language}|${target}|${release ? 'release' : 'debug'}|${branchKey ?? ''}|${code}`;
     const secretKeyBytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(keyFormat));
     const cacheKey = encodeArrayBufferToHex(await crypto.subtle.digest('SHA-256', secretKeyBytes));
 
@@ -63,9 +63,9 @@ export const decryptCacheDataAsync = async (encrypted: Encrypted, secretKey: Cry
     return new TextDecoder('utf-8').decode(resultBytes);
 };
 
-const getBranchCacheKey = (branchId: string | null) => {
+const getBranchCacheId = (branchId: string | null) => {
     if (!branchId)
-        return 'default';
+        return null;
 
     // Workaround, should probably update server to use id
     // as the cache key instead, to be defined. Will not
@@ -81,10 +81,10 @@ const getBranchCacheKey = (branchId: string | null) => {
 };
 
 export const loadResultFromCacheAsync = async (keyData: CacheKeyData): Promise<CachedUpdateResult | null> => {
-    const { cacheKey, secretKey } = await buildCacheKeysAsync(keyData);
-    const branchKey = getBranchCacheKey(keyData.branchId);
+    const branchCacheId = getBranchCacheId(keyData.branchId);
+    const { cacheKey, secretKey } = await buildCacheKeysAsync(keyData, branchCacheId);
 
-    const response = await fetch(`${cacheCdnBaseUrl}/${branchKey}/${cacheKey}.json`);
+    const response = await fetch(`${cacheCdnBaseUrl}/${branchCacheId ?? 'default'}/${cacheKey}.json`);
     if (response.status === 404)
         return null;
 
