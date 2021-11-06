@@ -35,9 +35,7 @@ namespace SharpLab.Server.MirrorSharp {
         }
 
         private bool ShouldCache(object? result) {
-            return result is not ContainerExecutionResult { OutputFailed: true }
-               // not caching legacy non-container results
-               and not ExecutionResult;
+            return result is not ContainerExecutionResult { OutputFailed: true };
         }
 
         private async Task SafeCacheAsync(ReadOnlyMemory<byte> message, IWorkSession session, CancellationToken cancellationToken) {

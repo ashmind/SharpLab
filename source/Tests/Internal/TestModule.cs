@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,8 +10,6 @@ using SharpLab.Server.Caching.Internal;
 using SharpLab.Server.Caching.Internal.Mocks;
 using SharpLab.Server.Execution.Container;
 using SharpLab.Server.Execution.Container.Mocks;
-using SharpLab.Server.Execution.Unbreakable;
-using Unbreakable;
 
 namespace SharpLab.Tests.Internal {
     public class TestModule : Module {
@@ -25,12 +22,6 @@ namespace SharpLab.Tests.Internal {
 
             builder.RegisterInstance<Func<HttpClient>>(() => new HttpClient(new TestDataMessageHandler()))
                    .As<Func<HttpClient>>()
-                   .SingleInstance();
-
-            var testApiPolicy = ApiPolicySetup.CreatePolicy()
-                .Namespace("System.Globalization", ApiAccess.Neutral, n => n.Type(typeof(CultureInfo), ApiAccess.Neutral, t => t.Setter(nameof(CultureInfo.CurrentCulture), ApiAccess.Allowed)));
-            builder.RegisterInstance(testApiPolicy)
-                   .AsSelf()
                    .SingleInstance();
 
             var configuration = new ConfigurationBuilder()

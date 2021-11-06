@@ -127,7 +127,7 @@ namespace SharpLab.Server.Execution.Internal {
                 InsertReportValue(
                     il, instruction,
                     il.Create(OpCodes.Dup), value.type, value.name,
-                    sequencePoint?.StartLine ?? lastLine ?? Flow.UnknownLineNumber,
+                    sequencePoint?.StartLine ?? lastLine ?? ContainerFlow.UnknownLineNumber,
                     flow, ref i
                 );
             }

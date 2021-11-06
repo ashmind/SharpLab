@@ -6,6 +6,7 @@ using SharpLab.Runtime.Internal;
 using SharpLab.Server.Common;
 
 namespace SharpLab.Server.Execution.Runtime {
+    [Obsolete("Only used as a reference for future allocation support in Container.", true)]
     public class AllocationInspector : IAllocationInspector {
         private const string NullTypeName = "<unknown type>";
         private static readonly SimpleInspection NullType = new(NullTypeName);

@@ -2,6 +2,8 @@ using System;
 
 namespace SharpLab.Runtime.Internal {
     public static class ContainerFlow {
+        public const int UnknownLineNumber = -1;
+
         public static void ReportLineStart(int lineNumber) {
             RuntimeServices.FlowWriter.WriteLineVisit(lineNumber);
         }

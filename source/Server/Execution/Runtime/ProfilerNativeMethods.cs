@@ -1,6 +1,8 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace SharpLab.Server.Execution.Runtime {
+    [Obsolete("Only used as a reference for future allocation support in Container.", true)]
     internal static class ProfilerNativeMethods {
         public enum AllocationMonitoringResult : int {
             OK = 0,

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Autofac;
 using SharpLab.Server.Caching.Internal.Mocks;
 using SharpLab.Server.Common;
-using SharpLab.Server.Execution.Container;
 using SharpLab.Server.Execution.Container.Mocks;
 using SharpLab.Tests.Internal;
 using Xunit;
@@ -82,21 +81,6 @@ namespace SharpLab.Tests.Caching {
             client.Setup
                 .ExecuteAsync()
                 .ReturnsAsync(new ("", outputFailed: true));
-
-            // Act
-            await driver.SendSlowUpdateAsync();
-
-            // Assert
-            Assert.Empty(cache.Calls.StoreAsync());
-        }
-
-        [Fact]
-        public async Task SlowUpdate_DoesNotAddResultToCache_IfResultIsUsingLegacyExecutor() {
-            // Arrange
-            var cache = TestEnvironment.Container.Resolve<ResultCacheStoreMock>();
-            var driver = TestEnvironment.NewDriver().SetText("_ = 1;");
-            await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.Run);
-            driver.Session.SetContainerExperimentException(new());
 
             // Act
             await driver.SendSlowUpdateAsync();

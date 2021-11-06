@@ -13,9 +13,9 @@ public static class SharpLabObjectExtensions {
     public static void Inspect<T>(this T value, string? title = null) {
         Output.Write(new SimpleInspection(title ?? "Inspect", RuntimeServices.ValuePresenter.ToStringBuilder(value, ValuePresenterLimits.InspectValue)));
 
-        var lineNumber = Flow.GetLastReportedLineNumber();
+        /*var lineNumber = ContainerFlow.GetLastReportedLineNumber();
         if (lineNumber != null)
-            Flow.ReportValue(value, title, lineNumber.Value);
+            ContainerFlow.ReportValue(value, title, lineNumber.Value);*/
     }
 
     public static void Inspect<T>(this Span<T> value, string? title = null) {
@@ -25,8 +25,8 @@ public static class SharpLabObjectExtensions {
     public static void Inspect<T>(this ReadOnlySpan<T> value, string? title = null) {
         Output.Write(new SimpleInspection(title ?? "Inspect", RuntimeServices.ValuePresenter.ToStringBuilder(value, ValuePresenterLimits.InspectValue)));
 
-        var lineNumber = Flow.GetLastReportedLineNumber();
+        /*var lineNumber = ContainerFlow.GetLastReportedLineNumber();
         if (lineNumber != null)
-            Flow.ReportReadOnlySpanValue(value, title, lineNumber.Value);
+            ContainerFlow.ReportReadOnlySpanValue(value, title, lineNumber.Value);*/
     }
 }

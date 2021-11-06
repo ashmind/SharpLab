@@ -28,7 +28,6 @@ namespace SharpLab.Server.MirrorSharp {
         private readonly ICompiler _compiler;
         private readonly IReadOnlyDictionary<string, IDecompiler> _decompilers;
         private readonly IReadOnlyDictionary<string, IAstTarget> _astTargets;
-        private readonly IExecutor _executor;
         private readonly IContainerExecutor _containerExecutor;
         private readonly IExplainer _explainer;
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;
@@ -39,7 +38,6 @@ namespace SharpLab.Server.MirrorSharp {
             ICompiler compiler,
             IReadOnlyCollection<IDecompiler> decompilers,
             IReadOnlyCollection<IAstTarget> astTargets,
-            IExecutor executor,
             IContainerExecutor containerExecutor,
             IExplainer explainer,
             RecyclableMemoryStreamManager memoryStreamManager,
@@ -51,7 +49,6 @@ namespace SharpLab.Server.MirrorSharp {
             _astTargets = astTargets
                 .SelectMany(t => t.SupportedLanguageNames.Select(n => (target: t, languageName: n)))
                 .ToDictionary(x => x.languageName, x => x.target);
-            _executor = executor;
             _containerExecutor = containerExecutor;
             _memoryStreamManager = memoryStreamManager;
             _monitor = monitor;
@@ -113,28 +110,20 @@ namespace SharpLab.Server.MirrorSharp {
 
                 var streams = new CompilationStreamPair(assemblyStream, compiled.symbols ? symbolStream : null);
                 if (targetName == TargetNames.Run) {
-                    if (!session.HasContainerExperimentFailed()) {
-                        try {
-                            var result = await _containerExecutor.ExecuteAsync(streams, session, cancellationToken);
-                            if (compilationStopwatch != null) {
-                                // TODO: Prettify
-                                // output += $"\n  COMPILATION: {compilationStopwatch.ElapsedMilliseconds,15}ms";
-                            }
-                            streams.Dispose();
-                            _monitor.Metric(ContainerExperimentMetrics.ContainerRunCount, 1);
-                            return result;
+                    try {
+                        var result = await _containerExecutor.ExecuteAsync(streams, session, cancellationToken);
+                        if (compilationStopwatch != null) {
+                            // TODO: Prettify
+                            // output += $"\n  COMPILATION: {compilationStopwatch.ElapsedMilliseconds,15}ms";
                         }
-                        catch (Exception ex) {
-                            _monitor.Metric(ContainerExperimentMetrics.ContainerFailureCount, 1);
-                            _monitor.Exception(ex, session);
-                            session.SetContainerExperimentException(ex);
-                            assemblyStream.Seek(0, SeekOrigin.Begin);
-                            symbolStream?.Seek(0, SeekOrigin.Begin);
-                        }
+                        streams.Dispose();
+                        _monitor.Metric(ContainerExperimentMetrics.ContainerRunCount, 1);
+                        return result;
                     }
-
-                    _monitor.Metric(ContainerExperimentMetrics.LegacyRunCount, 1);
-                    return _executor.Execute(streams, session);
+                    catch {
+                        _monitor.Metric(ContainerExperimentMetrics.ContainerFailureCount, 1);
+                        throw;
+                    }
                 }
 
                 // it's fine not to Dispose() here -- MirrorSharp will dispose it after calling WriteResult()
@@ -173,12 +162,7 @@ namespace SharpLab.Server.MirrorSharp {
             }
 
             if (targetName == TargetNames.Run) {
-                if (result is ContainerExecutionResult { Output: var output }) {
-                    writer.WriteValue(output);
-                    return;
-                }
-
-                _executor.Serialize((ExecutionResult)result, writer, session);
+                writer.WriteValue(((ContainerExecutionResult)result).Output);
                 return;
             }
 
