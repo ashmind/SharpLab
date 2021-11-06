@@ -1,38 +1,30 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.IO;
 using Microsoft.Extensions.Logging.Mocks;
-using MirrorSharp;
 using MirrorSharp.Advanced;
-using MirrorSharp.Testing;
 using ProtoBuf;
 using SharpLab.Container;
 using SharpLab.Container.Manager.Internal;
 using SharpLab.Container.Protocol.Stdin;
 using SharpLab.Server.Common;
-using SharpLab.Server.Common.Internal;
 using SharpLab.Server.Compilation;
 using SharpLab.Server.Execution;
 using SharpLab.Server.Execution.Container;
+using SharpLab.Server.Execution.Container.Mocks;
 using SharpLab.Tests.Internal;
 using LanguageNames = SharpLab.Server.Common.LanguageNames;
 
 namespace SharpLab.Tests.Execution.Internal {
+    // TODO: Consolidate into standard SlowUpdate
     public class ContainerTestDriver {
-        private static readonly IReadOnlySet<Assembly> AssemblyReferences = new AssemblyReferenceCollector().SlowGetAllReferencedAssembliesRecursive(
-            typeof(object).Assembly,
-            typeof(SharpLabObjectExtensions).Assembly
-        );
-
         public static async Task<string> CompileAndExecuteAsync(string code, string languageName = LanguageNames.CSharp, OptimizationLevel optimizationLevel = OptimizationLevel.Debug) {
             var session = await PrepareWorkSessionAsync(code, languageName, optimizationLevel);
 
@@ -56,38 +48,15 @@ namespace SharpLab.Tests.Execution.Internal {
             return (await executor.ExecuteAsync(streams, session, CancellationToken.None)).Output;
         }
 
-        private static async Task<IWorkSession> PrepareWorkSessionAsync(string code, string languageName, OptimizationLevel optimizationLevel) {
-            var options = GetMirrorSharpOptions(languageName, optimizationLevel);
-
-            var mirrorsharp = MirrorSharpTestDriver.New(options, languageName).SetText(code);
+        private static async Task<IWorkSession> PrepareWorkSessionAsync(string code, string languageName, OptimizationLevel optimizationLevel) {            
+            var mirrorsharp = await TestDriverFactory.FromCodeAsync(
+                code, languageName, TargetNames.Run,
+                optimize: optimizationLevel == OptimizationLevel.Release ? "release" : "debug"
+            );
+            // forces mock to exist
+            TestEnvironment.Container.Resolve<ContainerClientMock>();
             await mirrorsharp.SendSlowUpdateAsync();
 
-            return mirrorsharp.Session;
-        }
-
-        private static MirrorSharpOptions GetMirrorSharpOptions(string languageName, OptimizationLevel optimizationLevel) {
-            return languageName switch {
-                LanguageNames.CSharp => new MirrorSharpOptions().SetupCSharp(c => {
-                    c.AddMetadataReferencesFromFiles(AssemblyReferences.Select(a => a.Location).ToArray());
-                    c.CompilationOptions = c.CompilationOptions
-                        .WithOptimizationLevel(optimizationLevel)
-                        .WithOutputKind(OutputKind.ConsoleApplication);
-                }),
-                LanguageNames.FSharp => new MirrorSharpOptions().DisableCSharp().EnableFSharp(o => {
-                    o.AssemblyReferencePaths = o.AssemblyReferencePaths.Add(typeof(Inspect).Assembly.Location);
-                    o.Optimize = optimizationLevel == OptimizationLevel.Release;
-                }),
-                LanguageNames.IL => new MirrorSharpOptions().DisableCSharp().EnableIL(),
-                _ => throw new NotSupportedException(languageName)
-            };
-        }
-
-        private static async Task<IWorkSession> PrepareNonRoslynSessionAsync(MirrorSharpOptions options, string code, OptimizationLevel optimizationLevel) {
-            var languageName = options.Languages.Keys.First();
-            var mirrorsharp = MirrorSharpTestDriver.New(options, languageName).SetText(code);
-            if (optimizationLevel == OptimizationLevel.Debug)
-                await mirrorsharp.SendSetOptionsAsync(languageName, TargetNames.Run, Optimize.Debug);
-            await mirrorsharp.SendSlowUpdateAsync();
             return mirrorsharp.Session;
         }
 
@@ -101,25 +70,6 @@ namespace SharpLab.Tests.Execution.Internal {
                        .InstancePerDependency();
             });
             return containerScope.Resolve<IContainerExecutor>();
-        }
-
-        private static Project GetProject(string code, OptimizationLevel optimizationLevel) {
-            var references = new AssemblyReferenceCollector().SlowGetAllReferencedAssembliesRecursive(
-                typeof(object).Assembly,
-                typeof(SharpLabObjectExtensions).Assembly
-            ).Select(a => MetadataReference.CreateFromFile(a.Location));
-
-            
-            var project = new AdhocWorkspace()
-                .AddProject("_", LanguageNames.CSharp)
-                .AddMetadataReferences(references)
-                .AddDocument("_", SourceText.From(code, Encoding.UTF8))
-                .Project;
-            project = project.WithCompilationOptions(
-                project.CompilationOptions!.WithOptimizationLevel(optimizationLevel)
-            );
-
-            return project;
         }
 
         private class TestContainerClient : IContainerClient {

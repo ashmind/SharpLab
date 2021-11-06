@@ -364,21 +364,6 @@ namespace SharpLab.Tests {
             Assert.Equal("Test\nReturn: 0", result.ExtensionResult?.GetOutputAsString());
         }
 
-        [Theory]
-        [InlineData("Regression.CertainLoop.cs")]
-        [InlineData("Regression.FSharpNestedLambda.fs", LanguageNames.FSharp)]
-        [InlineData("Regression.NestedAnonymousObject.cs")]
-        [InlineData("Regression.ReturnRef.cs")]
-        [InlineData("Regression.CatchWithNameSameLineAsClosingTryBracket.cs")]
-        [InlineData("Regression.MoreThanFourArguments.cs")]
-        [InlineData("Regression.InitOnlyProperty.cs")]
-        [InlineData("Regression.TopLevelLocalConstant.cs")]
-        public async Task SlowUpdate_DoesNotFail(string resourceName, string languageName = LanguageNames.CSharp) {
-            var driver = await NewTestDriverAsync(LoadCodeFromResource(resourceName), languageName);
-            var result = await driver.SendSlowUpdateAsync<ExecutionResultData>();
-            AssertIsSuccess(result);
-        }
-
         [Theory] // https://github.com/ashmind/SharpLab/issues/388
         [InlineData("void M(Span<int> s) {}", "M(new Span<int>())")]
         [InlineData("void M(ref Span<int> s) {}", "var s = new Span<int>(); M(ref s)")]
