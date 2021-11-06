@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Pedantic.IO;
 using SharpLab.Server.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -45,13 +44,6 @@ namespace SharpLab.Tests.Internal {
         public static async Task<TestCode> FromFileAsync(string relativePath, [CallerFilePath] string callerFilePath = "") {
             var content = await FromCodeOnlyFileAsync(relativePath, callerFilePath);
             var extension = Path.GetExtension(relativePath);
-
-            return FromContent(content, extension);
-        }
-
-        public static TestCode FromResource(string name) {
-            var content = EmbeddedResource.ReadAllText(typeof(ExecutionTests), "TestCode." + name);
-            var extension = Path.GetExtension(name);
 
             return FromContent(content, extension);
         }

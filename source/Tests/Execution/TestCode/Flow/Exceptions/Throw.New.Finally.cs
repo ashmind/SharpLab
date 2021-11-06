@@ -5,10 +5,10 @@ public class C
     {
         try
         {
-            throw new Exception();
+            throw new Exception(); // [exception: Exception]
         }
         finally
         {
-        }
+        } // [exception: Exception]
     }
 }

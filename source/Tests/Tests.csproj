@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>SharpLab.Tests</AssemblyName>
@@ -14,12 +14,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="TestCode\**\*.cs" />
-    <None Remove="TestCode\**\*.*" />
-    <EmbeddedResource Include="TestCode\**\*.*" />
 
     <None Remove="TestData\**\*.*" />
-    <EmbeddedResource Include="TestData\language-syntax-explanations\*.yml" />
+    <Content Include="TestData\language-syntax-explanations\*.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>      
+    </Content>
 
     <Compile Remove="Decompilation\TestCode\**\*.cs" />
     <None Remove="Decompilation\TestCode\**\*.*" />
@@ -38,7 +37,6 @@
     <PackageReference Include="AshMind.Extensions" Version="3.0.0-pre-20190808-01" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.7" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.0" />
-    <PackageReference Include="Pedantic.IO.EmbeddedResource" version="0.9.0-pre-02" />
     <PackageReference Include="SourceMock" Version="0.11.0" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />

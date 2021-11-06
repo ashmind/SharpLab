@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Loader;
 using SharpLab.Container.Protocol;
 using SharpLab.Container.Protocol.Stdin;
@@ -32,8 +33,11 @@ namespace SharpLab.Container.Execution {
             }
             catch (Exception ex) {
                 try {
-                    Output.Write(new SimpleInspection("Exception", ex.ToString()));
-                    ContainerFlow.ReportException(ex);
+                    var exceptionToReport = ex is TargetInvocationException { InnerException: {} inner }
+                        ? inner
+                        : ex;
+                    Output.Write(new SimpleInspection("Exception", exceptionToReport.ToString()));
+                    ContainerFlow.ReportException(exceptionToReport);
                     _flowWriter.FlushAndReset();
                 }
                 catch {

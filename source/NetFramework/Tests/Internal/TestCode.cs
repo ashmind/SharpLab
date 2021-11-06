@@ -76,7 +76,6 @@ namespace SharpLab.Tests.Internal {
             var fromTo = extension.TrimStart('.').Split('2').Select(x => LanguageAndTargetMap[x]).ToList();
 
             return new TestCode(code, expected, fromTo[0], fromTo[1]);
-
         }
 
         public void AssertIsExpected(string? result, ITestOutputHelper output) {

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,7 +50,7 @@ namespace SharpLab.Tests.Execution.Internal {
         private static async Task<IWorkSession> PrepareWorkSessionAsync(string code, string languageName, OptimizationLevel optimizationLevel) {            
             var mirrorsharp = await TestDriverFactory.FromCodeAsync(
                 code, languageName, TargetNames.Run,
-                optimize: optimizationLevel == OptimizationLevel.Release ? "release" : "debug"
+                optimize: optimizationLevel == OptimizationLevel.Release ? Optimize.Release : Optimize.Debug
             );
             // forces mock to exist
             TestEnvironment.Container.Resolve<ContainerClientMock>();

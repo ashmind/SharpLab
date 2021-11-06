@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Pedantic.IO;
 using SharpLab.Server.Caching.Internal;
 using SharpLab.Server.Caching.Internal.Mocks;
 using SharpLab.Server.Execution.Container;
@@ -54,18 +55,15 @@ namespace SharpLab.Tests.Internal {
         }
 
         private class TestDataMessageHandler : HttpMessageHandler {
-            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
                 if (request.RequestUri?.Authority != "testdata")
                     throw new NotSupportedException();
 
-                var resourcePath = "TestData" + request.RequestUri.LocalPath
-                    .Replace('/', '.')
-                    .Replace('-', '_');
-
-                var resourceText = EmbeddedResource.ReadAllText(typeof(ExecutionTests), resourcePath);
-                return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK) {
-                    Content = new StringContent(resourceText)
-                });
+                var fullPath = Path.Combine(AppContext.BaseDirectory, "TestData", request.RequestUri.LocalPath.TrimStart('/'));
+                var content = await File.ReadAllTextAsync(fullPath);
+                return new HttpResponseMessage(HttpStatusCode.OK) {
+                    Content = new StringContent(content)
+                };
             }
         }
     }
