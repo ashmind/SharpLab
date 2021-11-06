@@ -132,7 +132,10 @@ export default async function updateInBranchesJson(
         kind: 'roslyn',
         url: branch.url,
         ...(feature ? { feature } : {}),
-        commits: branch.commits
+        commits: branch.commits,
+        sharplab: {
+            supportsUnknownOptions: true
+        }
     };
 
     const branchesJsonArtifactPath = path.join(buildRoot, branchesJsonFileName);

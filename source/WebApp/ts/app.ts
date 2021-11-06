@@ -47,7 +47,7 @@ const setResult = (app: Pick<AppData, 'result' | 'lastResultOfType' | 'loadingDe
 };
 
 const setResultFromUpdate = (
-    app: Pick<AppData, 'result' | 'lastResultOfType' | 'loadingDelay' | 'loading'>,
+    app: Pick<AppData, 'result' | 'lastResultOfType' | 'firstResultWasCached' | 'loadingDelay' | 'loading'>,
     options: Pick<AppOptions, 'target'>,
     updateResult: MirrorSharpSlowUpdateResult<Result['value']> & {
         cached?: { date: Date }
@@ -83,6 +83,8 @@ const setResultFromUpdate = (
             partiallyMutable(result)<'value'>().value = parseOutput(result.value);
     }
 
+    if (updateResult.cached)
+        app.firstResultWasCached = true;
     setResult(app, result as NonErrorResult);
 };
 
@@ -163,6 +165,7 @@ async function createAppAsync() {
             warnings: []
         },
         lastResultOfType: { run: null, code: null, ast: null },
+        firstResultWasCached: false,
 
         highlightedCodeRange: null,
         gist: null
@@ -184,9 +187,14 @@ async function createAppAsync() {
         data,
         computed: {
             serverOptions(this: App): ServerOptions {
+                const { branch } = this.options;
+                const noCache = this.firstResultWasCached
+                    && (!branch || branch.sharplab?.supportsUnknownOptions);
+
                 return {
                     'x-optimize': this.options.release ? 'release' : 'debug',
-                    'x-target': this.options.target
+                    'x-target': this.options.target,
+                    ...(noCache ? { 'x-no-cache': true } : {})
                 };
             },
             status(this: App): AppStatus {

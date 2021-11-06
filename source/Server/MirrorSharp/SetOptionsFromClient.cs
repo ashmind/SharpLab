@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using MirrorSharp.Advanced;
+using SharpLab.Server.Caching;
 using SharpLab.Server.Common;
 
 namespace SharpLab.Server.MirrorSharp {
@@ -9,7 +11,7 @@ namespace SharpLab.Server.MirrorSharp {
     public class SetOptionsFromClient : ISetOptionsFromClientExtension {
         private const string Optimize = "x-optimize";
         private const string Target = "x-target";
-        private const string ContainerExperimentSeedKey = "x-container-experiment-seed";
+        private const string NoCache = "x-no-cache";
 
         private readonly IDictionary<string, ILanguageAdapter> _languages;
 
@@ -27,11 +29,19 @@ namespace SharpLab.Server.MirrorSharp {
                     session.SetTargetName(value);
                     _languages[session.LanguageName].SetOptionsForTarget(session, value);
                     return true;
-                case ContainerExperimentSeedKey:
-                    // TODO: remove once UI logic is removed
+                case NoCache:
+                    if (value != "true")
+                        throw new NotSupportedException("Option 'no-cache' can only be set to true.");
+                    // Mostly used to avoid caching on the first change after a cached result was loaded
+                    session.SetCachingDisabled(true);
                     return true;
                 default:
+                    #if !DEBUG
+                    // Need to allow unknown options for future compatibility
+                    return true;
+                    #else
                     return false;
+                    #endif
             }
         }
     }

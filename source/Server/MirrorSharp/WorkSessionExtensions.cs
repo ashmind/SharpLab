@@ -20,14 +20,6 @@ namespace SharpLab.Server.MirrorSharp {
             session.ExtensionData["Optimize"] = value;
         }
 
-        public static bool WasFirstSlowUpdateCached(this IWorkSession session) {
-            return (bool?)session.ExtensionData.GetValueOrDefault("FirstSlowUpdateCached") ?? false;
-        }
-
-        public static void SetFirstSlowUpdateCached(this IWorkSession session, bool value) {
-            session.ExtensionData["FirstSlowUpdateCached"] = value;
-        }
-
         public static bool ShouldReportPerformance(this IWorkSession session) {
             return (bool?)session.ExtensionData.GetValueOrDefault("DebugIncludePerformance") ?? false;
         }

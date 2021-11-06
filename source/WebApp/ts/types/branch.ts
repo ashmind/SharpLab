@@ -15,6 +15,10 @@ export interface Branch {
     };
 
     readonly commits?: ReadonlyArray<Readonly<BranchCommit>>;
+
+    readonly sharplab?: {
+        readonly supportsUnknownOptions: boolean;
+    }
 }
 
 export interface BranchCommit {

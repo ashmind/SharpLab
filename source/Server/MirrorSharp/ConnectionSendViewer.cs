@@ -20,6 +20,9 @@ namespace SharpLab.Server.MirrorSharp {
             if (messageTypeName != "slowUpdate")
                 return Task.CompletedTask;
 
+            if (session.IsCachingDisabled())
+                return Task.CompletedTask;
+
             if (session.WasFirstSlowUpdateCached())
                 return Task.CompletedTask;
 

@@ -7,7 +7,6 @@ using SharpLab.Server.Caching.Internal.Mocks;
 using SharpLab.Server.Common;
 using SharpLab.Server.Execution.Container;
 using SharpLab.Server.Execution.Container.Mocks;
-using SharpLab.Server.MirrorSharp;
 using SharpLab.Tests.Internal;
 using Xunit;
 
@@ -41,6 +40,21 @@ namespace SharpLab.Tests.Caching {
             Assert.NotNull(cached.Encrypted.Tag);
             Assert.NotNull(cached.Encrypted.IV);
             Assert.NotNull(cached.Encrypted.Data);
+        }
+
+        [Fact]
+        public async Task SlowUpdate_DoesNotAddResultToCache_IfCachingIsDisabled() {
+            // Arrange
+            var cache = TestEnvironment.Container.Resolve<ResultCacheStoreMock>();
+            var driver = TestEnvironment.NewDriver();
+            await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.IL);
+            await driver.SendSetOptionAsync("x-no-cache", "true");
+
+            // Act
+            await driver.SendSlowUpdateAsync();
+
+            // Assert
+            Assert.Empty(cache.Calls.StoreAsync());
         }
 
         [Fact]

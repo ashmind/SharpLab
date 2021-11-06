@@ -40,6 +40,7 @@ export interface AppData {
         explain?: ExplainResult | null;
         run: RunResult | null;
     };
+    firstResultWasCached: boolean;
 
     highlightedCodeRange: HighlightedRange|null;
 
