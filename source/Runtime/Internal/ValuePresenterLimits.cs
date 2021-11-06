@@ -1,11 +1,8 @@
-namespace SharpLab.Runtime.Internal
-{
-    public readonly struct ValuePresenterLimits
-    {
+namespace SharpLab.Runtime.Internal {
+    public readonly struct ValuePresenterLimits {
         public static ValuePresenterLimits InspectValue { get; } = new(maxValueLength: 100);
 
-        public ValuePresenterLimits(int maxValueLength, int maxEnumerableItemCount = 5)
-        {
+        public ValuePresenterLimits(int maxValueLength, int maxEnumerableItemCount = 5) {
             MaxValueLength = maxValueLength;
             MaxEnumerableItemCount = maxEnumerableItemCount;
             MaxDepth = 2; // Might be dropped/hardcoded later
