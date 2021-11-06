@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>SharpLab.Tests</AssemblyName>
@@ -26,30 +26,12 @@
     <Content Include="Decompilation\TestCode\**\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="Decompilation\TestCode\Cast.ExplicitOperatorOnNull.cs2cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\Condition.SimpleSwitch.cs2cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\Constructor.BaseCall.cs2cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\Finalizer.Exception.cs2il" />
-    <EmbeddedResource Include="Decompilation\TestCode\Goto.TryWhile.cs2cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\Lambda.CallInArray.cs2cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\Lock.Simple.cs2cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\Module.vb2cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\Nullable.OperatorLifting.cs2cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\NullPropagation.ToTernary.cs2cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\Parameters.Optional.Decimal.cs2cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\Preprocessor.IfDebug.cs2cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\Preprocessor.IfDebug.vb2cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\Property.InitOnly.cs2cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\Simple.cs2il" />
-    <EmbeddedResource Include="Decompilation\TestCode\Simple.vb2cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\StringInterpolation.Simple.cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\Switch.String.Large.cs2cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\Unsafe.FixedBuffer.cs2cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\Using.Simple.cs2cs" />
-    <EmbeddedResource Include="Decompilation\TestCode\Variable.FromArgumentToCall.cs2cs" />
+    <Compile Remove="Execution\TestCode\**\*.cs" />
+    <None Remove="Execution\TestCode\**\*.*" />
+    <Content Include="Execution\TestCode\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   
   <ItemGroup>

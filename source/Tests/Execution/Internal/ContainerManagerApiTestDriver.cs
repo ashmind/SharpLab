@@ -7,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 using SharpLab.Container.Manager;
 using SharpLab.Container.Manager.Internal;
 
-namespace SharpLab.Tests.Of.Container.Internal {
+namespace SharpLab.Tests.Execution.Internal {
     public class ContainerManagerApiTestDriver {
         private static readonly AsyncLocal<DateTimeOffset> _now = new();
         private readonly CustomWebApplicationFactory _factory = new();

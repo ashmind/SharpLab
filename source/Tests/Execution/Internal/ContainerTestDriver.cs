@@ -26,7 +26,7 @@ using SharpLab.Server.Execution.Container;
 using SharpLab.Tests.Internal;
 using LanguageNames = SharpLab.Server.Common.LanguageNames;
 
-namespace SharpLab.Tests.Of.Container.Internal {
+namespace SharpLab.Tests.Execution.Internal {
     public class ContainerTestDriver {
         private static readonly IReadOnlySet<Assembly> AssemblyReferences = new AssemblyReferenceCollector().SlowGetAllReferencedAssembliesRecursive(
             typeof(object).Assembly,

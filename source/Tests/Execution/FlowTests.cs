@@ -3,29 +3,28 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Pedantic.IO;
-using SharpLab.Tests.Internal;
-using SharpLab.Tests.Of.Container.Internal;
 using Xunit;
+using SharpLab.Tests.Execution.Internal;
+using SharpLab.Tests.Internal;
 
-namespace SharpLab.Tests.Of.Container {
+namespace SharpLab.Tests.Execution {
     [Collection(TestCollectionNames.Execution)]
     public class FlowTests {
         [Theory]
-        [InlineData("Values.Variable.AssignCall.cs")]
-        [InlineData("Values.Variable.ManyVariables.cs")]
-        [InlineData("Values.Return.Simple.cs")]
-        [InlineData("Values.Return.Ref.cs")]
-        [InlineData("Values.Return.Ref.Readonly.cs")]
-        [InlineData("Values.Loop.For.10Iterations.cs")]
-        [InlineData("Values.Variable.MultipleDeclarationsOnTheSameLine.cs")]
-        [InlineData("Values.Variable.LongName.cs")]
-        [InlineData("Values.Variable.LongValue.cs")]
-        [InlineData("Values.Variable.LongValue.UnicodeCharBreak.cs")]
-        [InlineData("Values.Regression.ToStringNull.cs")] // https://github.com/ashmind/SharpLab/issues/380
-        [InlineData("Values.Variable.Array.cs")]
-        public async Task Flow_IncludesExpectedValues(string resourceName) {
-            var code = LoadCodeFromResource(resourceName);
+        [InlineData("Variable.AssignCall.cs")]
+        [InlineData("Variable.ManyVariables.cs")]
+        [InlineData("Return.Simple.cs")]
+        [InlineData("Return.Ref.cs")]
+        [InlineData("Return.Ref.Readonly.cs")]
+        [InlineData("Loop.For.10Iterations.cs")]
+        [InlineData("Variable.MultipleDeclarationsOnTheSameLine.cs")]
+        [InlineData("Variable.LongName.cs")]
+        [InlineData("Variable.LongValue.cs")]
+        [InlineData("Variable.LongValue.UnicodeCharBreak.cs")]
+        [InlineData("Regression.ToStringNull.cs")] // https://github.com/ashmind/SharpLab/issues/380
+        [InlineData("Variable.Array.cs")]
+        public async Task Flow_IncludesExpectedValues(string codeFilePath) {
+            var code = await TestCode.FromCodeOnlyFileAsync("Flow/Values/" + codeFilePath);
             var cleanCodeLines = code.Split("\r\n")
                 .Select(line => Regex.Replace(line, @"//.+$", ""));
 
@@ -82,10 +81,6 @@ namespace SharpLab.Tests.Of.Container {
                     p => p.Key,
                     p => string.Join("; ", p.Value.Where(v => v.Any()).Select(v => string.Join(", ", v)))
                 );
-        }
-
-        private static string LoadCodeFromResource(string resourceName) {
-            return EmbeddedResource.ReadAllText(typeof(ExecutionTests), "TestCode.Container.Flow." + resourceName);
         }
     }
 }

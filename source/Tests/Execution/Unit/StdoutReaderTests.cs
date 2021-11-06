@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging.Mocks;
 using SharpLab.Container.Manager.Internal;
 using Xunit;
 
-namespace SharpLab.Tests.Of.Container.Unit {
+namespace SharpLab.Tests.Execution.Unit {
     public class StdoutReaderTests {
         [Theory]
         [InlineData(new[] { "START", "ABC", "END" }, "ABC")]

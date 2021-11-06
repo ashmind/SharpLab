@@ -5,7 +5,7 @@ using SharpLab.Container.Runtime;
 using SharpLab.Runtime.Internal;
 using Xunit;
 
-namespace SharpLab.Tests.Of.Container.Unit {
+namespace SharpLab.Tests.Execution.Unit {
     public class Utf8ValuePresenterTests {
         [Theory]
         [InlineData("1234", "1234")]

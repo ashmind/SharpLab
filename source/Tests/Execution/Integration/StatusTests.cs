@@ -1,11 +1,11 @@
 using System;
 using System.Threading.Tasks;
 using SharpLab.Container.Manager.Internal;
+using SharpLab.Tests.Execution.Internal;
 using SharpLab.Tests.Internal;
-using SharpLab.Tests.Of.Container.Internal;
 using Xunit;
 
-namespace SharpLab.Tests.Of.Container.Integration {
+namespace SharpLab.Tests.Execution.Integration {
     [Collection(TestCollectionNames.Execution)]
     public class StatusTests {
         [Fact(Skip = "Temporarily disabling flaky test")]

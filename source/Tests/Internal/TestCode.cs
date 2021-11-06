@@ -35,11 +35,15 @@ namespace SharpLab.Tests.Internal {
             _expected = expected;
         }
 
-        public static async Task<TestCode> FromFileAsync(string relativePath, [CallerFilePath] string callerFilePath = "") {
+        public static Task<string> FromCodeOnlyFileAsync(string relativePath, [CallerFilePath] string callerFilePath = "") {
             var testBasePath = Path.GetDirectoryName(callerFilePath)!;
             var fullPath = Path.Combine(AppContext.BaseDirectory, testBasePath, "TestCode", relativePath);
 
-            var content = await File.ReadAllTextAsync(fullPath);
+            return File.ReadAllTextAsync(fullPath);
+        }
+
+        public static async Task<TestCode> FromFileAsync(string relativePath, [CallerFilePath] string callerFilePath = "") {
+            var content = await FromCodeOnlyFileAsync(relativePath, callerFilePath);
             var extension = Path.GetExtension(relativePath);
 
             return FromContent(content, extension);

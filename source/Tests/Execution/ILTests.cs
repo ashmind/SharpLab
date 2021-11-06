@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
-using SharpLab.Server.Common;
-using SharpLab.Tests.Internal;
-using SharpLab.Tests.Of.Container.Internal;
 using Xunit;
+using SharpLab.Server.Common;
+using SharpLab.Tests.Execution.Internal;
+using SharpLab.Tests.Internal;
 
-namespace SharpLab.Tests.Of.Container {
+namespace SharpLab.Tests.Execution {
     [Collection(TestCollectionNames.Execution)]
     public class ILTests {
         [Fact]
