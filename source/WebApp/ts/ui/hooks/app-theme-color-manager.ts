@@ -104,10 +104,12 @@ allHooks.main.ready.push(vue => {
     let lastNonDarkColor = defaultColor;
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     vue.$watch(colorPropertyName, async (color: string) => {
+        if (lastNonDarkColor === color)
+            return; // might be true for the first call
         lastNonDarkColor = color;
         applyThemeColor(color);
         await applyFaviconColor(color);
-    });
+    }, { immediate: true });
     watchEffectiveTheme(t => {
         effectiveTheme = t;
         applyThemeColor(lastNonDarkColor);
