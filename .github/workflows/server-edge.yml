@@ -13,7 +13,7 @@ on:
 
 jobs:
   build-core:
-    name: 'Build (.NET 5)'
+    name: 'Build (.NET 6)'
     # https://github.community/t/duplicate-checks-on-push-and-pull-request-simultaneous-event/18012/5
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: windows-latest
@@ -39,9 +39,9 @@ jobs:
       - run: dotnet test source/Tests --no-build --configuration Release
       - run: dotnet publish source/Server --no-build --configuration Release
       - run: dotnet publish source/WebApp.Server --no-build --configuration Release
-      - run: Compress-Archive -Path 'source/Server/bin/Release/net5.0/publish/*' -DestinationPath 'Server.zip'
+      - run: Compress-Archive -Path 'source/Server/bin/Release/net6.0/publish/*' -DestinationPath 'Server.zip'
         shell: pwsh
-      - run: Compress-Archive -Path 'source/WebApp.Server/bin/Release/net5.0/publish/*' -DestinationPath 'WebApp.Server.zip'
+      - run: Compress-Archive -Path 'source/WebApp.Server/bin/Release/net6.0/publish/*' -DestinationPath 'WebApp.Server.zip'
         shell: pwsh
 
       - uses: actions/upload-artifact@v2

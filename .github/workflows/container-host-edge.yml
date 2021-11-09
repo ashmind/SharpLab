@@ -9,12 +9,12 @@ on:
       - 'source/Container.*/**'
       - 'source/Runtime/**'
       - 'source/#external/Fragile/**'
-  pull_request:  
+  pull_request:
   workflow_dispatch:
 
 jobs:
   build:
-    name: 'Build (.NET 5)'
+    name: 'Build (.NET 6)'
     # https://github.community/t/duplicate-checks-on-push-and-pull-request-simultaneous-event/18012/5
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: windows-latest
@@ -24,7 +24,7 @@ jobs:
           submodules: 'true'
       - uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 5.0.x
+          dotnet-version: 6.0.x
       - uses: microsoft/setup-msbuild@v1.0.2
 
       # https://github.com/actions/setup-dotnet/issues/155
@@ -37,7 +37,7 @@ jobs:
       - run: dotnet build source/Tests --configuration Release
       - run: dotnet test source/Tests --no-build --configuration Release
       - run: dotnet publish source/Container.Manager --no-build --configuration Release
-      - run: Compress-Archive -Path 'source/Container.Manager/bin/Release/net5.0/publish/*' -DestinationPath 'Container.Manager.zip'
+      - run: Compress-Archive -Path 'source/Container.Manager/bin/Release/net6.0/publish/*' -DestinationPath 'Container.Manager.zip'
         shell: pwsh
 
       - uses: actions/upload-artifact@v2

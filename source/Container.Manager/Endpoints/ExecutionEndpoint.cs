@@ -36,7 +36,7 @@ namespace SharpLab.Container.Manager.Endpoints {
             var includePerformance = context.Request.Headers["SL-Debug-Performance"].Count > 0;
             var contentLength = (int)context.Request.Headers.ContentLength!;
 
-            _logger.LogDebug("Processing Execute request", null);
+            _logger.LogDebug("Processing Execute request");
 
             var stopwatch = includePerformance ? Stopwatch.StartNew() : null;
 
@@ -91,7 +91,7 @@ namespace SharpLab.Container.Manager.Endpoints {
         private Task WriteErrorResponseAsync(HttpContext context, Exception exception) {
             context.Response.StatusCode = 500;
             context.Response.ContentType = "text/vnd.sharplab.error+plain";
-            _logger.LogError(exception, "Execution endpoint error", null);
+            _logger.LogError(exception, "Execution endpoint error");
             return context.Response.WriteAsync(exception.ToString(), context.RequestAborted);
         }
     }

@@ -37,7 +37,7 @@ namespace SharpLab.Container.Manager.Internal {
                 }
                 catch (OperationCanceledException) {
                     cancelled = true;
-                    _logger.LogDebug("Timeout at stream.ReadAsync", null);
+                    _logger.LogDebug("Timeout at stream.ReadAsync");
                     break;
                 }
 
