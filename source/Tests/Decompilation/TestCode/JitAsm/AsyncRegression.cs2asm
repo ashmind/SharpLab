@@ -18,13 +18,47 @@ static class C {
 ; Core CLR <IGNORE> on amd64
 
 C.M(Int32)
-    L0000: sub rsp, 0x28
-    L0004: add ecx, 0x12345
-    L000a: call C.Foo(Int32)
-    L000f: mov rcx, rax
-    L0012: cmp [rcx], ecx
-    L0014: add rsp, 0x28
-    L0018: jmp System.Threading.Tasks.Task`1[[System.Int32, System.Private.CoreLib]].get_Result()
+    L0000: push rdi
+    L0001: push rsi
+    L0002: sub rsp, 0x28
+    L0006: add ecx, 0x12345
+    L000c: call C.Foo(Int32)
+    L0011: mov rsi, rax
+    L0014: mov ecx, [rsi+0x34]
+    L0017: and ecx, 0x<IGNORE>
+    L001d: cmp ecx, 0x<IGNORE>
+    L0023: jne short L002a
+    L0025: mov eax, [rsi+0x38]
+    L0028: jmp short L0076
+    L002a: mov ecx, [rsi+0x34]
+    L002d: test ecx, 0x<IGNORE>
+    L0033: jne short L0045
+    L0035: mov rcx, rsi
+    L0038: xor r8d, r8d
+    L003b: mov edx, 0x<IGNORE>
+    L0040: call System.Threading.Tasks.Task.InternalWaitCore(Int32, System.Threading.CancellationToken)
+    L0045: mov rcx, rsi
+    L0048: call System.Threading.Tasks.Task.NotifyDebuggerOfWaitCompletionIfNecessary()
+    L004d: mov ecx, [rsi+0x34]
+    L0050: and ecx, 0x<IGNORE>
+    L0056: cmp ecx, 0x<IGNORE>
+    L005c: je short L0073
+    L005e: mov rcx, rsi
+    L0061: mov edx, 1
+    L0066: call System.Threading.Tasks.Task.GetExceptions(Boolean)
+    L006b: mov rdi, rax
+    L006e: test rdi, rdi
+    L0071: jne short L007d
+    L0073: mov eax, [rsi+0x38]
+    L0076: add rsp, 0x28
+    L007a: pop rsi
+    L007b: pop rdi
+    L007c: ret
+    L007d: mov rcx, rsi
+    L0080: call System.Threading.Tasks.Task.UpdateExceptionObservedStatus()
+    L0085: mov rcx, rdi
+    L0088: call 0x<IGNORE>
+    L008d: int3
 
 C.Foo(Int32)
     L0000: sub rsp, 0x38
@@ -39,12 +73,12 @@ C.Foo(Int32)
     L0028: call System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[[C+<Foo>d__1, _]](<Foo>d__1 ByRef)
     L002d: mov rax, [rsp+0x30]
     L0032: test rax, rax
-    L0035: jne short L0041
-    L0037: lea rcx, [rsp+0x30]
-    L003c: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, System.Private.CoreLib]].InitializeTaskAsPromise()
-    L0041: nop
-    L0042: add rsp, 0x38
-    L0046: ret
+    L0035: je short L003c
+    L0037: add rsp, 0x38
+    L003b: ret
+    L003c: lea rcx, [rsp+0x30]
+    L0041: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, System.Private.CoreLib]].InitializeTaskAsPromise()
+    L0046: jmp short L0037
 
 C+<Foo>d__1.MoveNext()
     L0000: push rbp
@@ -54,64 +88,58 @@ C+<Foo>d__1.MoveNext()
     L0007: lea rbp, [rsp+0x40]
     L000c: mov [rbp-0x20], rsp
     L0010: mov [rbp+0x10], rcx
-    L0014: mov rcx, [rbp+0x10]
-    L0018: mov esi, [rcx+4]
-    L001b: mov rcx, [rbp+0x10]
-    L001f: mov dword ptr [rcx], 0x<IGNORE>
-    L0025: mov rdi, [rbp+0x10]
-    L0029: add rdi, 8
-    L002d: mov rcx, [rdi]
-    L0030: test rcx, rcx
-    L0033: jne short L0085
-    L0035: mov ecx, esi
-    L0037: cmp ecx, 9
-    L003a: jge short L005f
-    L003c: cmp esi, 0x<IGNORE>
-    L003f: jl short L005f
-    L0041: mov rax, 0x<IGNORE>
-    L004b: mov rax, [rax]
-    L004e: inc ecx
-    L0050: cmp ecx, [rax+8]
-    L0053: jae short L0095
-    L0055: movsxd rcx, ecx
-    L0058: mov rdx, [rax+rcx*8+0x10]
-    L005d: jmp short L007b
-    L005f: mov rcx, 0x<IGNORE>
-    L0069: call 0x<IGNORE>
-    L006e: mov rdx, rax
-    L0071: mov dword ptr [rdx+0x34], 0x<IGNORE>
-    L0078: mov [rdx+0x38], esi
-    L007b: mov rcx, rdi
-    L007e: call 0x<IGNORE>
-    L0083: jmp short L008c
-    L0085: mov edx, esi
-    L0087: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, System.Private.CoreLib]].SetExistingTaskResult(System.Threading.Tasks.Task`1<Int32>, Int32)
-    L008c: nop
-    L008d: lea rsp, [rbp-0x10]
-    L0091: pop rsi
-    L0092: pop rdi
-    L0093: pop rbp
-    L0094: ret
-    L0095: call 0x<IGNORE>
-    L009a: int3
-    L009b: push rbp
-    L009c: push rdi
-    L009d: push rsi
-    L009e: sub rsp, 0x30
-    L00a2: mov rbp, [rcx+0x20]
-    L00a6: mov [rsp+0x20], rbp
-    L00ab: lea rbp, [rbp+0x40]
-    L00af: mov rcx, [rbp+0x10]
-    L00b3: mov dword ptr [rcx], 0x<IGNORE>
-    L00b9: mov rcx, [rbp+0x10]
-    L00bd: add rcx, 8
-    L00c1: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, System.Private.CoreLib]].SetException(System.Exception)
-    L00c6: lea rax, [L008c]
-    L00cd: add rsp, 0x30
-    L00d1: pop rsi
-    L00d2: pop rdi
-    L00d3: pop rbp
-    L00d4: ret
+    L0014: mov esi, [rcx+4]
+    L0017: mov dword ptr [rcx], 0x<IGNORE>
+    L001d: lea rdi, [rcx+8]
+    L0021: cmp qword ptr [rdi], 0
+    L0025: jne short L007a
+    L0027: mov eax, esi
+    L0029: inc eax
+    L002b: cmp eax, 0xa
+    L002e: jb short L0056
+    L0030: mov rcx, 0x<IGNORE>
+    L003a: call 0x<IGNORE>
+    L003f: mov rdx, rax
+    L0042: mov dword ptr [rdx+0x34], 0x<IGNORE>
+    L0049: mov [rdx+0x38], esi
+    L004c: mov rcx, rdi
+    L004f: call 0x<IGNORE>
+    L0054: jmp short L0072
+    L0056: mov rdx, 0x<IGNORE>
+    L0060: mov rdx, [rdx]
+    L0063: cmp eax, [rdx+8]
+    L0066: jae short L0086
+    L0068: movsxd rcx, eax
+    L006b: mov rdx, [rdx+rcx*8+0x10]
+    L0070: jmp short L004c
+    L0072: add rsp, 0x30
+    L0076: pop rsi
+    L0077: pop rdi
+    L0078: pop rbp
+    L0079: ret
+    L007a: mov rcx, [rdi]
+    L007d: mov edx, esi
+    L007f: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, System.Private.CoreLib]].SetExistingTaskResult(System.Threading.Tasks.Task`1<Int32>, Int32)
+    L0084: jmp short L0072
+    L0086: call 0x<IGNORE>
+    L008b: int3
+    L008c: push rbp
+    L008d: push rdi
+    L008e: push rsi
+    L008f: sub rsp, 0x30
+    L0093: mov rbp, [rcx+0x20]
+    L0097: mov [rsp+0x20], rbp
+    L009c: lea rbp, [rbp+0x40]
+    L00a0: mov rcx, [rbp+0x10]
+    L00a4: mov dword ptr [rcx], 0x<IGNORE>
+    L00aa: add rcx, 8
+    L00ae: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1[[System.Int32, System.Private.CoreLib]].SetException(System.Exception)
+    L00b3: lea rax, [L0072]
+    L00ba: add rsp, 0x30
+    L00be: pop rsi
+    L00bf: pop rdi
+    L00c0: pop rbp
+    L00c1: ret
 
 C+<Foo>d__1.SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)
     L0000: sub rsp, 0x28
@@ -123,7 +151,7 @@ C+<Foo>d__1.SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)
     L0013: jne short L0025
     L0015: add rsp, 0x28
     L0019: ret
-    L001a: mov ecx, 0x3c
+    L001a: mov ecx, 0x3d
     L001f: call System.ThrowHelper.ThrowArgumentNullException(System.ExceptionArgument)
     L0024: int3
     L0025: mov ecx, 0x25
