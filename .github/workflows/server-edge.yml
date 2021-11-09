@@ -38,7 +38,7 @@ jobs:
       - run: dotnet build source/WebApp.Server --configuration Release
       - run: dotnet test source/Tests --no-build --configuration Release
       - run: dotnet publish source/Server --no-build --configuration Release
-      - run: dotnet publish source/WebApp.Server --no-build --configuration Release
+      - run: dotnet publish source/WebApp.Server --no-build --configuration Release /p:ErrorOnDuplicatePublishOutputFiles=false
       - run: Compress-Archive -Path 'source/Server/bin/Release/net6.0/publish/*' -DestinationPath 'Server.zip'
         shell: pwsh
       - run: Compress-Archive -Path 'source/WebApp.Server/bin/Release/net6.0/publish/*' -DestinationPath 'WebApp.Server.zip'
