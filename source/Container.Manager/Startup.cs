@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Versioning;
 using Fragile;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -9,9 +10,11 @@ using SharpLab.Container.Manager.Endpoints;
 using SharpLab.Container.Manager.Internal;
 
 namespace SharpLab.Container.Manager {
+    [SupportedOSPlatform("windows")]
     public class Startup {
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+
         public void ConfigureServices(IServiceCollection services)
         {
             // TODO: proper DI, e.g. Autofac
@@ -23,7 +26,6 @@ namespace SharpLab.Container.Manager {
                 maximumCpuPercentage: 1
             ));
             services.AddSingleton<IProcessRunner, ProcessRunner>();
-
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
             services.AddSingleton<StatusEndpoint>();

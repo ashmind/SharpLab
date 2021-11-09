@@ -4,11 +4,10 @@ using System.Text;
 using SharpLab.Server.Common;
 
 namespace SharpLab.Server.Caching.Internal {
-    public class ResultCacheBuilder : IResultCacheBuilder, IDisposable {
+    public class ResultCacheBuilder : IResultCacheBuilder {
         private readonly string? _branchId;
         private readonly MemoryPoolSlim<byte> _byteMemoryPool;
         private readonly byte[] _branchIdBytes;
-        private readonly RNGCryptoServiceProvider _cryptoRandom = new();
 
         public ResultCacheBuilder(string? branchId, MemoryPoolSlim<byte> byteMemoryPool) {
             _branchId = branchId;
@@ -25,7 +24,7 @@ namespace SharpLab.Server.Caching.Internal {
             var encryptedData = default(MemoryLease<byte>);
             try {
                 iv = _byteMemoryPool.RentExact(12);
-                _cryptoRandom.GetBytes(iv.AsSpan());
+                RandomNumberGenerator.Fill(iv.AsSpan());
 
                 tag = _byteMemoryPool.RentExact(16);
 
@@ -91,10 +90,6 @@ namespace SharpLab.Server.Caching.Internal {
         private void WriteSeparator(Span<byte> keyBytesSpan, ref int position) {
             keyBytesSpan[position] = (byte)'|';
             position += 1;
-        }
-
-        public void Dispose() {
-            _cryptoRandom.Dispose();
         }
     }
 }

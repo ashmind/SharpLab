@@ -225,7 +225,7 @@ async function buildSharpLab(roslynPackagesRoot: string) {
     });
 
     return {
-        publishRoot: `${branchSourceRoot}/Server/bin/Release/net5.0/publish`
+        publishRoot: `${branchSourceRoot}/Server/bin/Release/net6.0/publish`
     };
 }
 

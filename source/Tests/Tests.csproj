@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>SharpLab.Tests</AssemblyName>
     <RootNamespace>SharpLab.Tests</RootNamespace>
     <IsPackable>false</IsPackable>

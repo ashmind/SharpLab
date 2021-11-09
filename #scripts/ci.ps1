@@ -11,7 +11,7 @@ git submodule update --recursive --init
 Write-Output 'dotnet publish source/Server/Server.csproj ...'
 dotnet publish source/Server/Server.csproj -c Release --no-build --no-restore
 if ($LastExitCode -ne 0) { throw "dotnet publish exited with code $LastExitCode" }
-$serverPublishRoot = 'source/Server/bin/Release/net5.0/publish'
+$serverPublishRoot = 'source/Server/bin/Release/net6.0/publish'
 Write-Output "Compress-Archive -Path $serverPublishRoot/* -DestinationPath $SolutionRoot/Server.zip"
 Compress-Archive -Path "$serverPublishRoot/*" -DestinationPath "$SolutionRoot/Server.zip"
 
@@ -25,6 +25,6 @@ Compress-Archive -Path "$netfxPublishRoot/*" -DestinationPath "$SolutionRoot/Ser
 Write-Output 'dotnet publish source/WebApp.Server/WebApp.Server.csproj ...'
 dotnet publish source/WebApp.Server/WebApp.Server.csproj -c Release --no-build --no-restore
 if ($LastExitCode -ne 0) { throw "dotnet publish exited with code $LastExitCode" }
-$webAppPublishRoot = 'source/WebApp.Server/bin/Release/net5.0/publish'
+$webAppPublishRoot = 'source/WebApp.Server/bin/Release/net6.0/publish'
 Write-Output "Compress-Archive -Path $webAppPublishRoot/* -DestinationPath $SolutionRoot/WebApp.Server.zip"
 Compress-Archive -Path "$webAppPublishRoot/*" -DestinationPath "$SolutionRoot/WebApp.Server.zip"

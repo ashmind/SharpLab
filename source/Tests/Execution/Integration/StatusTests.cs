@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using SharpLab.Container.Manager.Internal;
 using SharpLab.Tests.Execution.Internal;
@@ -6,6 +7,7 @@ using SharpLab.Tests.Internal;
 using Xunit;
 
 namespace SharpLab.Tests.Execution.Integration {
+    [SupportedOSPlatform("windows")]
     [Collection(TestCollectionNames.Execution)]
     public class StatusTests {
         [Fact(Skip = "Temporarily disabling flaky test")]
