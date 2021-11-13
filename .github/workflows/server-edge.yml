@@ -84,7 +84,7 @@ jobs:
       - name: "Run azure/CLI@v1: az webapp stop"
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.9.1
+          azcliversion: 2.30.0
           inlineScript: az webapp stop --name ${{ matrix.app }} --resource-group SharpLab
       # https://github.com/Azure/webapps-deploy/issues/100#issuecomment-754368190
       - run: Start-Sleep -Seconds 10
@@ -96,7 +96,7 @@ jobs:
       - name: "Run azure/CLI@v1: az webapp start"
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.9.1
+          azcliversion: 2.30.0
           inlineScript: az webapp start --name ${{ matrix.app }} --resource-group SharpLab
       - run: Invoke-RestMethod "${{ matrix.url }}" -MaximumRetryCount 10 -RetryIntervalSec 2
         shell: pwsh

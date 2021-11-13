@@ -15,7 +15,7 @@ jobs:
       - name: "Run azure/CLI@v1: az storage copy"
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.9.1
+          azcliversion: 2.30.0
           inlineScript: |
             az storage copy -s https://slpublic.blob.core.windows.net/assets/latest-edge -d https://slpublic.blob.core.windows.net/assets/latest-main
 
