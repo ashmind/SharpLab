@@ -83,8 +83,10 @@ const setResultFromUpdate = (
             partiallyMutable(result)<'value'>().value = parseOutput(result.value);
     }
 
-    if (updateResult.cached)
+    if (updateResult.cached) {
         app.firstResultWasCached = true;
+        trackFeature('Result Cache');
+    }
     setResult(app, result as NonErrorResult);
 };
 
