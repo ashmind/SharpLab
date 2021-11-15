@@ -29,7 +29,7 @@ b"
             "children": [
               {
                 "kind": "DebugPointAtBinding.Yes",
-                "property": "spInfo",
+                "property": "debugPoint",
                 "type": "node"
               },
               {
@@ -55,7 +55,7 @@ b"
             "children": [
               {
                 "kind": "DebugPointAtBinding.Yes",
-                "property": "spInfo",
+                "property": "debugPoint",
                 "type": "node"
               },
               {
@@ -81,7 +81,7 @@ b"
             "children": [
               {
                 "kind": "DebugPointAtBinding.Yes",
-                "property": "spInfo",
+                "property": "debugPoint",
                 "type": "node"
               },
               {

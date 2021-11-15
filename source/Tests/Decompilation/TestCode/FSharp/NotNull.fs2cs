@@ -20,11 +20,11 @@ public static class @_
     {
         public bool notNull<a>(a x) where a : class
         {
-            if (x != null)
+            if (x == null)
             {
-                return true;
+                return false;
             }
-            return false;
+            return true;
         }
     }
 }
