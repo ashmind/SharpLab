@@ -27,7 +27,7 @@ namespace SharpLab.Server.MirrorSharp {
                 return Task.CompletedTask;
 
             // if update should not be cached, we will still not want to cache or measure the next one
-            session.SetCachingHasSeenSlowUpdateBefore();
+            session.SetCachingHasSeenSlowUpdate();
 
             if (session.IsCachingDisabled()) {
                 _monitor.Metric(CachingMetrics.NoCacheRequestCount, 1);
