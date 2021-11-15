@@ -11,12 +11,12 @@ namespace SharpLab.Server.Caching {
             session.ExtensionData["CachingDisabled"] = value;
         }
 
-        public static bool WasFirstSlowUpdateCached(this IWorkSession session) {
-            return (bool?)session.ExtensionData.GetValueOrDefault("FirstSlowUpdateCached") ?? false;
+        public static bool HasCachingSeenSlowUpdateBefore(this IWorkSession session) {
+            return (bool?)session.ExtensionData.GetValueOrDefault("CachingHasSeenSlowUpdate") ?? false;
         }
 
-        public static void SetFirstSlowUpdateCached(this IWorkSession session, bool value) {
-            session.ExtensionData["FirstSlowUpdateCached"] = value;
+        public static void SetCachingHasSeenSlowUpdate(this IWorkSession session) {
+            session.ExtensionData["CachingHasSeenSlowUpdate"] = true;
         }
     }
 }

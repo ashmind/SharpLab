@@ -23,16 +23,17 @@ namespace SharpLab.Server.MirrorSharp {
             if (messageTypeName != "slowUpdate")
                 return Task.CompletedTask;
 
-            if (session.WasFirstSlowUpdateCached())
+            if (session.HasCachingSeenSlowUpdateBefore())
                 return Task.CompletedTask;
+
+            // if update should not be cached, we will still not want to cache or measure the next one
+            session.SetCachingHasSeenSlowUpdateBefore();
 
             if (session.IsCachingDisabled()) {
                 _monitor.Metric(CachingMetrics.NoCacheRequestCount, 1);
                 return Task.CompletedTask;
             }
 
-            // if update should not be cached, we will still not want to cache the next one
-            session.SetFirstSlowUpdateCached(true);
             if (!ShouldCache(session.GetLastSlowUpdateResult()))
                 return Task.CompletedTask;
 
