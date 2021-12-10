@@ -81,8 +81,15 @@ jobs:
             Expand-Archive -Path $ArtifactDownloadPath -DestinationPath $deploymentPath -Force
 
             Import-Module WebAdministration
-            Set-ItemProperty IIS:\Sites\$SiteName -name physicalPath -value $deploymentPath
-            Restart-WebAppPool (Get-Website -Name $SiteName).ApplicationPool
+            $website = (Get-Website -Name $SiteName)
+            if (!$website) {
+                $website = (New-Website -Name $SiteName -HostHeader '*' -PhysicalPath $deploymentPath)
+                Set-ItemProperty "IIS:\AppPools\$($website.ApplicationPool.Name)" -Name "processModel.loadUserProfile" -Value "True"
+            }
+            else {
+                Set-ItemProperty IIS:\Sites\$SiteName -Name physicalPath -Value $deploymentPath
+            }
+            Restart-WebAppPool $website.ApplicationPool
 
       - run: Invoke-RestMethod "http://sharplab-container-host.eastus.cloudapp.azure.com/status" -MaximumRetryCount 10 -RetryIntervalSec 2
         shell: pwsh
