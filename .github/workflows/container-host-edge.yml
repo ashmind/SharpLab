@@ -85,14 +85,13 @@ jobs:
             if (!$website) {
                 Stop-Website 'Default Web Site'
                 $appPool = (New-WebAppPool -Name $SiteName)
-                $website = (New-Website -Name $SiteName -HostHeader '*' -PhysicalPath $deploymentPath -ApplicationPool $($appPool.Name))
                 Set-ItemProperty "IIS:\AppPools\$($appPool.Name)" -Name "processModel.loadUserProfile" -Value "True"
+                $website = (New-Website -Name $SiteName -HostHeader '*' -PhysicalPath $deploymentPath -ApplicationPool $($appPool.Name))
             }
             else {
-                $appPool = $website.ApplicationPool
                 Set-ItemProperty IIS:\Sites\$SiteName -Name physicalPath -Value $deploymentPath
             }
-            Restart-WebAppPool $($appPool.Name)
+            Restart-WebAppPool ($website.ApplicationPool)
 
       - run: Invoke-RestMethod "http://sharplab-container-host.eastus.cloudapp.azure.com/status" -MaximumRetryCount 10 -RetryIntervalSec 2
         shell: pwsh
