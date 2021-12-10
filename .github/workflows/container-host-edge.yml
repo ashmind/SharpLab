@@ -92,7 +92,7 @@ jobs:
                 $appPool = $website.ApplicationPool
                 Set-ItemProperty IIS:\Sites\$SiteName -Name physicalPath -Value $deploymentPath
             }
-            Restart-WebAppPool $appPool
+            Restart-WebAppPool $($appPool.Name)
 
       - run: Invoke-RestMethod "http://sharplab-container-host.eastus.cloudapp.azure.com/status" -MaximumRetryCount 10 -RetryIntervalSec 2
         shell: pwsh
