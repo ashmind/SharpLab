@@ -83,13 +83,16 @@ jobs:
             Import-Module WebAdministration
             $website = (Get-Website -Name $SiteName)
             if (!$website) {
-                $website = (New-Website -Name $SiteName -HostHeader '*' -PhysicalPath $deploymentPath)
-                Set-ItemProperty "IIS:\AppPools\$($website.ApplicationPool.Name)" -Name "processModel.loadUserProfile" -Value "True"
+                Stop-Website 'Default Web Site'
+                $appPool = (New-WebAppPool -Name $SiteName)
+                $website = (New-Website -Name $SiteName -HostHeader '*' -PhysicalPath $deploymentPath -ApplicationPool $($appPool.Name))
+                Set-ItemProperty "IIS:\AppPools\$($appPool.Name)" -Name "processModel.loadUserProfile" -Value "True"
             }
             else {
+                $appPool = $website.ApplicationPool
                 Set-ItemProperty IIS:\Sites\$SiteName -Name physicalPath -Value $deploymentPath
             }
-            Restart-WebAppPool $website.ApplicationPool
+            Restart-WebAppPool $appPool
 
       - run: Invoke-RestMethod "http://sharplab-container-host.eastus.cloudapp.azure.com/status" -MaximumRetryCount 10 -RetryIntervalSec 2
         shell: pwsh
