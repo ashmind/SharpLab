@@ -22,7 +22,7 @@ namespace SharpLab.Container.Manager {
                 workingDirectoryPath: AppContext.BaseDirectory,
                 exeFileName: Container.Program.ExeFileName,
                 essentialAccessCapabilitySid: "S-1-15-3-1024-4233803318-1181731508-1220533431-3050556506-2713139869-1168708946-594703785-1824610955",
-                maximumMemorySize: 15 * 1024 * 1024,
+                maximumMemorySize: 30 * 1024 * 1024,
                 maximumCpuPercentage: 1
             ));
             services.AddSingleton<IProcessRunner, ProcessRunner>();
