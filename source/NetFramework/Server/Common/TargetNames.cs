@@ -1,7 +1,7 @@
 using Microsoft.CodeAnalysis;
 
 namespace SharpLab.Server.Common {
-    public static class TargetNames {
+    internal static class TargetNames {
         public const string CSharp = LanguageNames.CSharp;
         public const string IL = "IL";
         public const string Ast = "AST";

@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <AssemblyName>SharpLab.Embedded.NetFramework</AssemblyName>
+    <RootNamespace>SharpLab.Embedded</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Server\Common\ArgumentExtensions.cs" Link="Internal\Linked\ArgumentExtensions.cs" />
+    <Compile Include="..\Server\Common\CompilationStreamPair.cs" Link="Internal\Linked\CompilationStreamPair.cs" />
+    <Compile Include="..\Server\Common\CompilationStreamValuePair.cs" Link="Internal\Linked\CompilationStreamValuePair.cs" />
+    <Compile Include="..\Server\Common\TargetNames.cs" Link="Internal\Linked\TargetNames.cs" />
+    <Compile Include="..\Server\Decompilation\CSharpDecompiler.cs" Link="Internal\Linked\CSharpDecompiler.cs" />
+    <Compile Include="..\Server\Decompilation\IDecompiler.cs" Link="Internal\Linked\IDecompiler.cs" />
+    <Compile Include="..\Server\Decompilation\IEmbeddedDecompiler.cs" Link="Internal\Linked\IEmbeddedDecompiler.cs" />
+    <Compile Include="..\Server\Decompilation\Internal\IDisposableDebugInfoProvider.cs" Link="Internal\Linked\IDisposableDebugInfoProvider.cs" />
+    <Compile Include="..\Server\Decompilation\Internal\PortablePdbDebugInfoProvider.cs" Link="Internal\Linked\PortablePdbDebugInfoProvider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Argument" Version="1.3.1" />
+    <PackageReference Include="ICSharpCode.Decompiler" Version="7.1.0.6543" />
+    <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.10.0" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\#external\mirrorsharp\Common\Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Internal\Linked\" />
+  </ItemGroup>
+</Project>

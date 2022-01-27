@@ -7,7 +7,7 @@ using SharpLab.Server.Common;
 using SharpLab.Server.Decompilation.Internal;
 
 namespace SharpLab.Server.Decompilation {
-    public class CSharpDecompiler : IDecompiler {
+    internal class CSharpDecompiler : IDecompiler, IEmbeddedDecompiler {
         private static readonly CSharpFormattingOptions FormattingOptions = CreateFormattingOptions();
         private static readonly DecompilerSettings DecompilerSettings = new(ICSharpCode.Decompiler.CSharp.LanguageVersion.CSharp1) {
             ArrayInitializers = false,
@@ -36,15 +36,31 @@ namespace SharpLab.Server.Decompilation {
             Argument.NotNull(nameof(streams), streams);
             Argument.NotNull(nameof(codeWriter), codeWriter);
 
-            using (var assemblyFile = new PEFile("", streams.AssemblyStream))
-            using (var debugInfo = streams.SymbolStream != null ? _debugInfoFactory(streams.SymbolStream) : null) {
-                var decompiler = new ICSharpCode.Decompiler.CSharp.CSharpDecompiler(assemblyFile, _assemblyResolver, DecompilerSettings) {
-                    DebugInfoProvider = debugInfo
-                };
-                var syntaxTree = decompiler.DecompileWholeModuleAsSingleFile();
+            using var assemblyFile = new PEFile("", streams.AssemblyStream);
+            using var debugInfo = streams.SymbolStream != null ? _debugInfoFactory(streams.SymbolStream) : null;
 
-                new CSharpOutputVisitor(codeWriter, FormattingOptions).VisitSyntaxTree(syntaxTree);
-            }
+            var decompiler = new ICSharpCode.Decompiler.CSharp.CSharpDecompiler(assemblyFile, _assemblyResolver, DecompilerSettings) {
+                DebugInfoProvider = debugInfo
+            };
+            var syntaxTree = decompiler.DecompileWholeModuleAsSingleFile();
+
+            new CSharpOutputVisitor(codeWriter, FormattingOptions).VisitSyntaxTree(syntaxTree);
+        }
+
+        public void DecompileType(Stream assemblyStream, Stream? symbolStream, string reflectionTypeName, TextWriter codeWriter) {
+            Argument.NotNull(nameof(assemblyStream), assemblyStream);
+            Argument.NotNullOrEmpty(nameof(reflectionTypeName), reflectionTypeName);
+            Argument.NotNull(nameof(codeWriter), codeWriter);
+
+            using var assemblyFile = new PEFile("", assemblyStream);
+            using var debugInfo = symbolStream != null ? _debugInfoFactory(symbolStream) : null;
+
+            var decompiler = new ICSharpCode.Decompiler.CSharp.CSharpDecompiler(assemblyFile, _assemblyResolver, DecompilerSettings) {
+                DebugInfoProvider = debugInfo
+            };
+            var syntaxTree = decompiler.DecompileType(new ICSharpCode.Decompiler.TypeSystem.FullTypeName(reflectionTypeName));
+
+            new CSharpOutputVisitor(codeWriter, FormattingOptions).VisitSyntaxTree(syntaxTree);
         }
 
         public string LanguageName => TargetNames.CSharp;

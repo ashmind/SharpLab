@@ -5,7 +5,7 @@ using ICSharpCode.Decompiler.DebugInfo;
 using Decompiler = ICSharpCode.Decompiler;
 
 namespace SharpLab.Server.Decompilation.Internal {
-    public class PortablePdbDebugInfoProvider : IDisposableDebugInfoProvider {
+    internal class PortablePdbDebugInfoProvider : IDisposableDebugInfoProvider {
         private readonly MetadataReaderProvider _readerProvider;
         private readonly MetadataReader _reader;
 
