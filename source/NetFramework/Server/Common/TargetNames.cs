@@ -1,5 +1,3 @@
-using Microsoft.CodeAnalysis;
-
 namespace SharpLab.Server.Common {
     public static class TargetNames {
         public const string CSharp = LanguageNames.CSharp;
