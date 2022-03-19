@@ -218,5 +218,26 @@ namespace SharpLab.Tests.Decompilation {
                 result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
             );
         }
+
+        [Fact]
+        public async Task SlowUpdate_ReportsErrorDiagnostic_ForLocalListStartingWithComma() {
+            // Arrange
+            var driver = await TestDriverFactory.FromCodeAsync(@"
+                .method void M() cil managed
+                {
+                    .locals init ( ,int32 a )
+                    ret
+                }
+            ", LanguageNames.IL, TargetNames.IL);
+
+            // Act
+            var result = await driver.SendSlowUpdateAsync<string>();
+
+            // Assert
+            Assert.Equal(
+                new[] { ("error", "IL", "Unexpected syntax: missing first item") },
+                result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
+            );
+        }
     }
 }
