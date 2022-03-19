@@ -193,5 +193,30 @@ namespace SharpLab.Tests.Decompilation {
                 result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
             );
         }
+
+        [Theory]
+        [InlineData("ldc.r4 ()", "Byte array argument of ldc.r4 must include at least 4 bytes")]
+        [InlineData("ldc.r4 (01 02 03)", "Byte array argument of ldc.r4 must include at least 4 bytes")]
+        [InlineData("ldc.r8 ()", "Byte array argument of ldc.r8 must include at least 8 bytes")]
+        [InlineData("ldc.r8 (01 02 03 04 05 06 07)", "Byte array argument of ldc.r8 must include at least 8 bytes")]
+        public async Task SlowUpdate_ReportsErrorDiagnostic_ForLdcFloatBytesWithInsufficientLength(string ldc, string expectedError) {
+            // Arrange
+            var driver = await TestDriverFactory.FromCodeAsync(@"
+                .method void M() cil managed
+                {
+                    " + ldc + @"
+                    ret
+                }
+            ", LanguageNames.IL, TargetNames.IL);
+
+            // Act
+            var result = await driver.SendSlowUpdateAsync<string>();
+
+            // Assert
+            Assert.Equal(
+                new[] { ("error", "IL", expectedError) },
+                result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
+            );
+        }
     }
 }
