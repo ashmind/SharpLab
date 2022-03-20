@@ -256,7 +256,31 @@ namespace SharpLab.Tests.Decompilation {
 
             // Assert
             Assert.Equal(
-                new[] { ("error", "IL", "Unexpected instruction argument: expected BaseTypeRef, received String '['") },
+                new[] { ("error", "IL", "Failed to parse String '[' as BaseTypeRef") },
+                result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
+            );
+        }
+
+        [Fact]
+        public async Task SlowUpdate_ReportsErrorDiagnostic_ForIncorrectMethodCallSyntax() {
+            // Arrange
+            var driver = await TestDriverFactory.FromCodeAsync(@"
+                .method void M() cil managed
+                {
+                    call void [System.Console]::WriteLine(int32)
+                    ret
+                }
+            ", LanguageNames.IL, TargetNames.IL);
+
+            // Act
+            var result = await driver.SendSlowUpdateAsync<string>();
+
+            // Assert
+            Assert.Equal(
+                new[] {
+                    ("error", "IL", "Failed to parse String '[' as BaseTypeRef"),
+                    ("error", "IL", "Failed to parse CallConv 'Default' as BaseMethodRef")
+                },
                 result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
             );
         }
