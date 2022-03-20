@@ -17,6 +17,7 @@ function Invoke-JsonCommand($command) {
 }
 
 $ExceptionLabel = ":boom: exception"
+$CannotReproduceLabel = "✖ cannot reproduce"
 
 $query = "
   exceptions
@@ -62,7 +63,7 @@ $exceptions = (Invoke-JsonCommand {
 
 Write-Host 'Getting current issues from GitHub'
 $issues = @(Invoke-JsonCommand {
-    gh issue list --label $ExceptionLabel --json title,url,number --state all --limit 500
+    gh issue list --label $ExceptionLabel --json title,url,number,labels,state --state all --limit 500
 })
 
 Write-Host 'Processing exceptions'
@@ -96,6 +97,21 @@ $exceptions | % {
     else {
         Write-Host "    - found at $($existing.url)"
         $issueNumber = $existing.number
+        $isClosedAsNotReproducible = $existing.state -eq 'CLOSED' `
+            -and $existing.labels `
+            -and ($existing.labels | ? { $_.name -eq $CannotReproduceLabel })
+        if ($isClosedAsNotReproducible) {
+            Write-Host "    - reopening"
+            gh issue reopen $issueNumber
+            if ($LastExitCode -ne 0) {
+                Write-Error "Command exited with code $LastExitCode"
+            }
+            Write-Host "    - removing $CannotReproduceLabel"
+            gh issue edit $issueNumber --remove-label $CannotReproduceLabel
+            if ($LastExitCode -ne 0) {
+                Write-Error "Command exited with code $LastExitCode"
+            }
+        }
     }
 
     $comment = "| App | Count (last 24h) |`n| ------------- | ------------- |`n" +
