@@ -35,6 +35,8 @@ jobs:
 
       - run: msbuild source/Native.Profiler/Native.Profiler.vcxproj /p:SolutionName=SharpLab /p:Configuration=Release /p:Platform=x64
       - run: dotnet build source/Tests --configuration Release
+      # DEBUG
+      - run: tree /F
       # Tests do not reference that one yet
       - run: dotnet build source/WebApp.Server --configuration Release
       - run: dotnet test source/Tests --no-build --configuration Release
