@@ -31,20 +31,6 @@
     <Content Include="Execution\TestCode\**\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-
-    <!-- Temporary fix -->
-    <None Include="..\#external\mirrorsharp\Internal.Roslyn*\bin\Debug\netstandard2.0\MirrorSharp.Internal.Roslyn*.dll"
-          Link="%(Filename)%(Extension)"
-          Exclude="..\#external\mirrorsharp\Internal.Roslyn*\bin\Debug\netstandard2.0\MirrorSharp.Internal.RoslynInterfaces.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </None>
-    <None Include="..\#external\mirrorsharp\Internal.Roslyn*\bin\Debug\netstandard2.0\MirrorSharp.Internal.Roslyn*.pdb"
-          Link="%(Filename)%(Extension)"
-          Exclude="..\#external\mirrorsharp\Internal.Roslyn*\bin\Debug\netstandard2.0\MirrorSharp.Internal.RoslynInterfaces.pdb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </None>
   </ItemGroup>
   
   <ItemGroup>
