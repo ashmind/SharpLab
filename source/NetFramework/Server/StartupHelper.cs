@@ -23,7 +23,12 @@ namespace SharpLab.Server {
 
         public static MirrorSharpOptions CreateMirrorSharpOptions(ILifetimeScope container) {
             var options = new MirrorSharpOptions {
-                IncludeExceptionDetails = true
+                IncludeExceptionDetails = true,
+                StatusTestCommands = {
+                    ('O', "x-optimize=debug,x-target=C#,x-no-cache=true,language=C#"),
+                    ('R', "0:0:0::using System; public class C { public void M() { } }"),
+                    ('U', "")
+                }
             };
             var languages = container.Resolve<ILanguageAdapter[]>();
             foreach (var language in languages) {
