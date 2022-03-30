@@ -162,9 +162,13 @@ async function buildSharpLab(roslynPackagesRoot: string) {
     console.log('Updating Roslyn package versions in projects...');
     for await (const projectPathUntyped of globby.stream(['**/*.csproj'], { cwd: branchSourceRoot, absolute: true })) {
         // sigh: dotnet.exe should do this, but of course it does not
-
         const projectPath = projectPathUntyped as string;
         const projectName = path.basename(projectPath);
+        if (/mirrorsharp[/\\]Internal\.Roslyn/i.test(projectPath)) {
+            console.log(`  ${projectName}`);
+            console.log('    Skipping');
+            continue;
+        }
 
         let projectXml = await fs.readFile(projectPath, { encoding: 'utf-8' });
         let changed = false;
