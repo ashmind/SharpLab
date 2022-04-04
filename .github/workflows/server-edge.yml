@@ -114,12 +114,7 @@ jobs:
           submodules: 'true'
       - uses: actions/setup-dotnet@v1
         with:
-          # TODO: publish workaround has some issues on .NET 6, need to investigate later
-          dotnet-version: 5.0.x
-
-      # ensures we actually do use .NET 5 for this
-      - run: Remove-Item 'global.json'
-        shell: pwsh
+          dotnet-version: 6.0.x
 
       # https://github.com/actions/setup-dotnet/issues/155
       - run: dotnet nuget locals all --clear

@@ -93,7 +93,7 @@
       <ResolvedFileToPublish Remove="@(_ResolvedFileToIgnore)" />
 
       <_ResolvedFileToPublishToBin Include="@(ResolvedFileToPublish)">
-        <RelativePath>bin\%(FileName)%(Extension)</RelativePath>
+        <RelativePath>bin\%(RelativePath)</RelativePath>
       </_ResolvedFileToPublishToBin>
       <ResolvedFileToPublish Remove="@(_ResolvedFileToPublishToBin)" />
       <ResolvedFileToPublish Include="@(_ResolvedFileToPublishToBin)" />
