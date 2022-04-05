@@ -81,6 +81,7 @@ namespace SharpLab.Server.Common.Languages {
                 }
             );
             options.CSharp.MetadataReferences = _references;
+            options.CSharp.CompilationOptions.WithAllowUnsafe(true);
 
             // ReSharper restore HeapView.ObjectAllocation.Evident
         }
@@ -102,7 +103,7 @@ namespace SharpLab.Server.Common.Languages {
             var project = session.Roslyn.Project;
             var options = ((CSharpCompilationOptions)project.CompilationOptions!);
             session.Roslyn.Project = project.WithCompilationOptions(
-                options.WithOutputKind(outputKind).WithAllowUnsafe(true)
+                options.WithOutputKind(outputKind)
             );
 
             _topLevelProgramSupport.UpdateOutputKind(session);
