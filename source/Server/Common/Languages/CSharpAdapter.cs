@@ -78,7 +78,8 @@ namespace SharpLab.Server.Common.Languages {
                 specificDiagnosticOptions: new Dictionary<string, ReportDiagnostic> {
                     // CS1591: Missing XML comment for publicly visible type or member
                     { "CS1591", ReportDiagnostic.Suppress }
-                }
+                },
+                allowUnsafe: true
             );
             options.CSharp.MetadataReferences = _references;
 
@@ -98,12 +99,11 @@ namespace SharpLab.Server.Common.Languages {
             var outputKind = target != TargetNames.Run
                 ? OutputKind.DynamicallyLinkedLibrary
                 : OutputKind.ConsoleApplication;
-            var allowUnsafe = target != TargetNames.Run;
 
             var project = session.Roslyn.Project;
             var options = ((CSharpCompilationOptions)project.CompilationOptions!);
             session.Roslyn.Project = project.WithCompilationOptions(
-                options.WithOutputKind(outputKind).WithAllowUnsafe(allowUnsafe)
+                options.WithOutputKind(outputKind)
             );
 
             _topLevelProgramSupport.UpdateOutputKind(session);
