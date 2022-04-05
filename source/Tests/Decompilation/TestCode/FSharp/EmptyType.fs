@@ -24,7 +24,7 @@ type Empty = class end
     )
     // Nested Types
     .class nested public auto ansi serializable Empty
-        extends [System.Private.CoreLib]System.Object
+        extends [System.Runtime]System.Object
     {
         .custom instance void [FSharp.Core]Microsoft.FSharp.Core.CompilationMappingAttribute::.ctor(valuetype [FSharp.Core]Microsoft.FSharp.Core.SourceConstructFlags) = (
             01 00 03 00 00 00 00 00

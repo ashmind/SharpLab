@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
-using System.Web;
-using System.Xml.Linq;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MirrorSharp;
 using MirrorSharp.Advanced;
-using SharpLab.Runtime;
 using SharpLab.Server.Common.Internal;
 using SharpLab.Server.Compilation;
 using SharpLab.Server.Compilation.Internal;
-using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
 namespace SharpLab.Server.Common.Languages {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
@@ -32,32 +28,33 @@ namespace SharpLab.Server.Common.Languages {
         private readonly ICSharpTopLevelProgramSupport _topLevelProgramSupport;
 
         public CSharpAdapter(
-            IAssemblyReferenceCollector referenceCollector,
+            IAssemblyPathCollector assemblyPathCollector,
             IAssemblyDocumentationResolver documentationResolver,
             ICSharpTopLevelProgramSupport topLevelProgramSupport
         ) {
-            var referencedAssemblies = referenceCollector.SlowGetAllReferencedAssembliesRecursive(
+            var referencedAssemblyPaths = assemblyPathCollector.SlowGetAllAssemblyPathsIncludingReferences(
                 // Essential
-                NetFrameworkRuntime.AssemblyOfValueTask,
-                NetFrameworkRuntime.AssemblyOfValueTuple,
-                NetFrameworkRuntime.AssemblyOfSpan,
-                typeof(Binder).Assembly,
+                NetFrameworkRuntime.AssemblyOfValueTask.GetName().Name!,
+                NetFrameworkRuntime.AssemblyOfValueTuple.GetName().Name!,
+                NetFrameworkRuntime.AssemblyOfSpan.GetName().Name!,
+                "Microsoft.CSharp",
 
                 // Runtime
-                typeof(JitGenericAttribute).Assembly,
+                "SharpLab.Runtime",
 
                 // Requested
-                typeof(XDocument).Assembly, // System.Xml.Linq
-                typeof(IDataReader).Assembly, // System.Data
-                typeof(HttpUtility).Assembly // System.Web
+                "System.Data",
+                "System.Runtime.Intrinsics",
+                "System.Web.HttpUtility",
+                "System.Xml.Linq"
             ).ToImmutableList();
 
             var assemblyReferenceTaskSource = new AssemblyReferenceDiscoveryTaskSource();
-            assemblyReferenceTaskSource.Complete(referencedAssemblies.Select(a => a.Location).ToImmutableList());
+            assemblyReferenceTaskSource.Complete(referencedAssemblyPaths);
             AssemblyReferenceDiscoveryTask = assemblyReferenceTaskSource.Task;
 
-            _references = referencedAssemblies
-                .Select(a => (MetadataReference)MetadataReference.CreateFromFile(a.Location, documentation: documentationResolver.GetDocumentation(a)))
+            _references = referencedAssemblyPaths
+                .Select(path => (MetadataReference)MetadataReference.CreateFromFile(path, documentation: documentationResolver.GetDocumentation(path)))
                 .ToImmutableList();
             _topLevelProgramSupport = topLevelProgramSupport;
         }

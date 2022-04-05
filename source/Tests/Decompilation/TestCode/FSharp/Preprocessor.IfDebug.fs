@@ -4,7 +4,7 @@
     printfn "Release"
 #endif
 
-#=>
+(* cs
 
 using System;
 using System.Diagnostics;
@@ -47,3 +47,5 @@ namespace <StartupCode$_>
         }
     }
 }
+
+*)

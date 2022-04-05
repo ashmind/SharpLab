@@ -2,16 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Web;
-using System.Xml.Linq;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
-using Microsoft.VisualBasic.CompilerServices;
 using MirrorSharp;
 using MirrorSharp.Advanced;
-using SharpLab.Runtime;
 using SharpLab.Server.Common.Internal;
 using SharpLab.Server.Compilation.Internal;
 
@@ -21,12 +17,12 @@ namespace SharpLab.Server.Common.Languages {
         private static readonly ImmutableArray<KeyValuePair<string, object>> DebugPreprocessorSymbols = PreprocessorSymbols.Debug.Select(s => KeyValuePair.Create(s, (object)true)).ToImmutableArray();
         private static readonly ImmutableArray<KeyValuePair<string, object>> ReleasePreprocessorSymbols = PreprocessorSymbols.Release.Select(s => KeyValuePair.Create(s, (object)true)).ToImmutableArray();
 
-        private readonly IAssemblyReferenceCollector _referenceCollector;
+        private readonly IAssemblyPathCollector _assemblyPathCollector;
         private readonly AssemblyReferenceDiscoveryTaskSource _assemblyReferenceDiscoveryTaskSource = new();
         private readonly IAssemblyDocumentationResolver _documentationResolver;
 
-        public VisualBasicAdapter(IAssemblyReferenceCollector referenceCollector, IAssemblyDocumentationResolver documentationResolver) {
-            _referenceCollector = referenceCollector;
+        public VisualBasicAdapter(IAssemblyPathCollector assemblyPathCollector, IAssemblyDocumentationResolver documentationResolver) {
+            _assemblyPathCollector = assemblyPathCollector;
             _documentationResolver = documentationResolver;
         }
 
@@ -45,23 +41,25 @@ namespace SharpLab.Server.Common.Languages {
                     maxLanguageVersion,
                     documentationMode: DocumentationMode.Diagnose
                 );
-                var referencedAssemblies = _referenceCollector.SlowGetAllReferencedAssembliesRecursive(
+                var referencedAssemblies = _assemblyPathCollector.SlowGetAllAssemblyPathsIncludingReferences(
                     // Essential
-                    NetFrameworkRuntime.AssemblyOfValueTuple,
-                    NetFrameworkRuntime.AssemblyOfValueTask,
-                    NetFrameworkRuntime.AssemblyOfSpan,
-                    typeof(StandardModuleAttribute).Assembly,
+                    NetFrameworkRuntime.AssemblyOfValueTuple.GetName().Name!,
+                    NetFrameworkRuntime.AssemblyOfValueTask.GetName().Name!,
+                    NetFrameworkRuntime.AssemblyOfSpan.GetName().Name!,
+                    "Microsoft.VisualBasic",
 
                     // Runtime
-                    typeof(JitGenericAttribute).Assembly,
+                    "SharpLab.Runtime",
 
                     // Requested
-                    typeof(XDocument).Assembly, // System.Xml.Linq
-                    typeof(HttpUtility).Assembly // System.Web
+                    "System.Data",
+                    "System.Runtime.Intrinsics",
+                    "System.Web.HttpUtility",
+                    "System.Xml.Linq"
                 ).ToImmutableList();
-                _assemblyReferenceDiscoveryTaskSource.Complete(referencedAssemblies.Select(a => a.Location).ToImmutableList());
+                _assemblyReferenceDiscoveryTaskSource.Complete(referencedAssemblies);
                 o.MetadataReferences = referencedAssemblies
-                    .Select(a => (MetadataReference)MetadataReference.CreateFromFile(a.Location, documentation: _documentationResolver.GetDocumentation(a)))
+                    .Select(path => (MetadataReference)MetadataReference.CreateFromFile(path, documentation: _documentationResolver.GetDocumentation(path)))
                     .ToImmutableList();
             });
             // ReSharper restore HeapView.DelegateAllocation

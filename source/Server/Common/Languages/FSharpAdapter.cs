@@ -1,60 +1,46 @@
 using System.Collections.Immutable;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Xml.Linq;
 using JetBrains.Annotations;
-using Microsoft.FSharp.Core;
 using MirrorSharp;
 using MirrorSharp.Advanced;
 using MirrorSharp.FSharp.Advanced;
-using SharpLab.Runtime;
 using SharpLab.Server.Common.Internal;
-using SharpLab.Server.Compilation.Internal;
 
 namespace SharpLab.Server.Common.Languages {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class FSharpAdapter : ILanguageAdapter {
         private readonly AssemblyReferenceDiscoveryTaskSource _referencedAssembliesTaskSource = new();
-        private readonly IAssemblyReferenceCollector _referenceCollector;
+        private readonly IAssemblyPathCollector _assemblyPathCollector;
 
         public string LanguageName => LanguageNames.FSharp;
         public AssemblyReferenceDiscoveryTask AssemblyReferenceDiscoveryTask => _referencedAssembliesTaskSource.Task;
 
-        public FSharpAdapter(IAssemblyReferenceCollector referenceCollector) {
-            _referenceCollector = referenceCollector;
+        public FSharpAdapter(IAssemblyPathCollector assemblyPathCollector) {
+            _assemblyPathCollector = assemblyPathCollector;
         }
 
         public void SlowSetup(MirrorSharpOptions options) {
             options.EnableFSharp(o => {
                 o.LangVersion = "preview";
 
-                var assemblyOfObject = typeof(object).Assembly;
-                var referencedAssemblies = _referenceCollector.SlowGetAllReferencedAssembliesRecursive(
+                var referencedAssemblyPaths = _assemblyPathCollector.SlowGetAllAssemblyPathsIncludingReferences(
                     // Essential
-                    assemblyOfObject,
-                    NetFrameworkRuntime.AssemblyOfValueTask,
-                    typeof(TaskExtensions).Assembly,
-                    typeof(FSharpOption<>).Assembly,
+                    "netstandard",
+                    "System.Runtime",
+                    "FSharp.Core",
 
                     // Runtime
-                    typeof(JitGenericAttribute).Assembly,
+                    "SharpLab.Runtime",
 
                     // Requested
-                    typeof(XDocument).Assembly, // System.Xml.Linq
-                    typeof(IDataReader).Assembly, // System.Data
-                    typeof(HttpUtility).Assembly // System.Web
-                );
-
-                var referencedAssemblyPaths = referencedAssemblies.Select(a => a.Location).ToImmutableArray();
-                if (assemblyOfObject.GetName().Name != "mscorlib") {
-                    var mscorlibPath = Path.Combine(Path.GetDirectoryName(assemblyOfObject.Location)!, "mscorlib.dll");
-                    referencedAssemblyPaths = referencedAssemblyPaths.Add(mscorlibPath);
-                }
+                    "System.Data",
+                    "System.Runtime.Intrinsics",
+                    "System.Web.HttpUtility",
+                    "System.Xml.Linq"
+                ).ToImmutableArray();
                 _referencedAssembliesTaskSource.Complete(referencedAssemblyPaths);
+
                 o.AssemblyReferencePaths = referencedAssemblyPaths;
+                o.TargetProfile = "netstandard";
             });
         }
 

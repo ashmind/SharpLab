@@ -16,8 +16,8 @@ namespace SharpLab.Server.Common {
 
             builder.RegisterInstance(MemoryPoolSlim<byte>.Shared);
 
-            builder.RegisterType<AssemblyReferenceCollector>()
-                   .As<IAssemblyReferenceCollector>()
+            builder.RegisterType<AssemblyPathCollector>()
+                   .As<IAssemblyPathCollector>()
                    .SingleInstance();
 
             builder.RegisterType<PreCachedAssemblyResolver>()

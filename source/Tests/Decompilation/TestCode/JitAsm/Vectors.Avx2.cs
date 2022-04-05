@@ -10,7 +10,7 @@ public class C
     }
 }
 
-#=>
+/* asm
 
 ; Core CLR <IGNORE> on amd64
 
@@ -26,3 +26,5 @@ C.M(System.Runtime.Intrinsics.Vector256`1<Int32>)
     L0015: vmovd eax, xmm0
     L0019: vzeroupper
     L001c: ret
+
+*/

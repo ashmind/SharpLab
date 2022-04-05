@@ -33,7 +33,7 @@ namespace SharpLab.Tests.Decompilation {
         [InlineData("JitAsm/Generic.Nested.AttributeOnTop.cs")]
         [InlineData("JitAsm/Generic.Nested.AttributeOnNested.cs")]
         [InlineData("JitAsm/Generic.Nested.AttributeOnBoth.cs")]
-        [InlineData("JitAsm/Vectors.Avx2.cs2asm")]
+        [InlineData("JitAsm/Vectors.Avx2.cs")]
         [InlineData("JitAsm/Math.FusedMultiplyAdd.Fma.cs2asm")]
         [InlineData("JitAsm/DllImport.cs")] // https://github.com/ashmind/SharpLab/issues/666
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string codeFilePath) {

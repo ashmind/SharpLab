@@ -75,7 +75,7 @@ namespace SharpLab.Server.Compilation {
             using (var virtualAssemblyFile = FSharpFileSystem.RegisterVirtualFile(assemblyStream)) {
                 var compiled = await FSharpAsync.StartAsTask(fsharp.Checker.Compile(
                     FSharpList<ParsedInput>.Cons(parsed.ParseTree, FSharpList<ParsedInput>.Empty),
-                    "_", virtualAssemblyFile.Name,
+                    "_", virtualAssemblyFile.Path,
                     fsharp.AssemblyReferencePathsAsFSharpList,
                     pdbFile: null,
                     executable: false, //fsharp.ProjectOptions.OtherOptions.Contains("--target:exe"),
@@ -88,7 +88,7 @@ namespace SharpLab.Server.Compilation {
                         diagnostics.Add(fsharp.ConvertToDiagnostic(diagnostic));
                 }
 
-                return virtualAssemblyFile.Stream.Length > 0;
+                return assemblyStream.Length > 0;
             }
         }
 

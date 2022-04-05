@@ -32,14 +32,14 @@ namespace SharpLab.Tests.Decompilation {
         [Theory]
         [InlineData("Constructor.BaseCall.cs2cs")]
         [InlineData("NullPropagation.ToTernary.cs2cs")]
-        [InlineData("Simple.cs2il")]
+        [InlineData("Simple.cs")]
         [InlineData("Simple.vb2cs")]
         [InlineData("Module.vb2cs")]
         [InlineData("Lambda.CallInArray.cs2cs")] // https://github.com/ashmind/SharpLab/issues/9
         [InlineData("Cast.ExplicitOperatorOnNull.cs2cs")] // https://github.com/ashmind/SharpLab/issues/20
         [InlineData("Goto.TryWhile.cs2cs")] // https://github.com/ashmind/SharpLab/issues/123
         [InlineData("Nullable.OperatorLifting.cs2cs")] // https://github.com/ashmind/SharpLab/issues/159
-        [InlineData("Finalizer.Exception.cs2il")] // https://github.com/ashmind/SharpLab/issues/205
+        [InlineData("Finalizer.Exception.cs")] // https://github.com/ashmind/SharpLab/issues/205
         [InlineData("Parameters.Optional.Decimal.cs2cs")] // https://github.com/ashmind/SharpLab/issues/316
         [InlineData("Unsafe.FixedBuffer.cs2cs")] // https://github.com/ashmind/SharpLab/issues/398
         [InlineData("Switch.String.Large.cs2cs")]
@@ -58,12 +58,12 @@ namespace SharpLab.Tests.Decompilation {
         }
 
         [Theory]
-        [InlineData("Condition.SimpleSwitch.cs2cs")] // https://github.com/ashmind/SharpLab/issues/25
+        [InlineData("Condition.SimpleSwitch.cs")] // https://github.com/ashmind/SharpLab/issues/25
         //[InlineData("Variable.FromArgumentToCall.cs2cs")] // https://github.com/ashmind/SharpLab/issues/128
-        [InlineData("Preprocessor.IfDebug.cs2cs")] // https://github.com/ashmind/SharpLab/issues/161
+        [InlineData("Preprocessor.IfDebug.cs")] // https://github.com/ashmind/SharpLab/issues/161
         [InlineData("Preprocessor.IfDebug.vb2cs")] // https://github.com/ashmind/SharpLab/issues/161
-        [InlineData("FSharp/Preprocessor.IfDebug.fs2cs")] // https://github.com/ashmind/SharpLab/issues/161
-        [InlineData("Using.Simple.cs2cs")] // https://github.com/ashmind/SharpLab/issues/185
+        [InlineData("FSharp/Preprocessor.IfDebug.fs")] // https://github.com/ashmind/SharpLab/issues/161
+        [InlineData("Using.Simple.cs")] // https://github.com/ashmind/SharpLab/issues/185
         [InlineData("StringInterpolation.Simple.cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_InDebug(string codeFilePath) {
             var data = await TestCode.FromFileAsync(codeFilePath);
