@@ -98,12 +98,11 @@ namespace SharpLab.Server.Common.Languages {
             var outputKind = target != TargetNames.Run
                 ? OutputKind.DynamicallyLinkedLibrary
                 : OutputKind.ConsoleApplication;
-            var allowUnsafe = target != TargetNames.Run;
 
             var project = session.Roslyn.Project;
             var options = ((CSharpCompilationOptions)project.CompilationOptions!);
             session.Roslyn.Project = project.WithCompilationOptions(
-                options.WithOutputKind(outputKind).WithAllowUnsafe(allowUnsafe)
+                options.WithOutputKind(outputKind).WithAllowUnsafe(true)
             );
 
             _topLevelProgramSupport.UpdateOutputKind(session);
