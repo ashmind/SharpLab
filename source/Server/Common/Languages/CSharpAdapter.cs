@@ -78,10 +78,10 @@ namespace SharpLab.Server.Common.Languages {
                 specificDiagnosticOptions: new Dictionary<string, ReportDiagnostic> {
                     // CS1591: Missing XML comment for publicly visible type or member
                     { "CS1591", ReportDiagnostic.Suppress }
-                }
+                },
+                allowUnsafe: true
             );
             options.CSharp.MetadataReferences = _references;
-            options.CSharp.CompilationOptions.WithAllowUnsafe(true);
 
             // ReSharper restore HeapView.ObjectAllocation.Evident
         }
