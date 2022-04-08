@@ -24,9 +24,7 @@ jobs:
 
       - uses: actions/setup-node@v1
         with:
-          node-version: '12.16.1'
-
-      - run: npm install -g npm@6.14.11
+          node-version: '16.14.2'
 
       - run: 'git show ${{ github.sha }} --format="::set-output name=version_number::%cd" --date=format:%Y-%m-%d-%H%M --no-patch'
         id: version

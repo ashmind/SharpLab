@@ -45,7 +45,7 @@ async function setupRequestInterception(page: Page) {
         cachedRequests.add(request);
         // eslint-disable-next-line no-sync
         const json = JSON.parse(fs.readFileSync(cachePath, { encoding: 'utf-8' })) as {
-            readonly headers: puppeteer.Headers;
+            readonly headers: Record<string, string>;
             readonly body: string;
         };
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
