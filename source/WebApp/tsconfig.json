@@ -9,12 +9,15 @@
         "strict": true,
         "importsNotUsedAsValues": "error",
         "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "baseUrl": "."
     },
     "include": [
-        "*",
         "ts",
         "components",
         "scripts"
+    ],
+    "references": [
+        { "path": "./tsconfig.scripts.json" },
     ]
 }
