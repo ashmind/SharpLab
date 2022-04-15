@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "build": "ts-node-script ./scripts.ts build",
-    "tmp-build-ts": "ts-node-script ./scripts.ts ts:main",
     "lint": "ts-node-script ./scripts.ts ts:lint",
     "test": "jest --maxWorkers=1",
     "test:skip-render": "cross-env TEST_SKIP_RENDER=true jest --testPathIgnorePatterns rendering --maxWorkers=1",
@@ -18,16 +17,16 @@
     "maxConcurrency": 10,
     "globals": {
       "ts-jest": {
-        "tsConfig": "<rootDir>/tests/tsconfig.json"
+        "tsconfig": "<rootDir>/tests/tsconfig.json"
       }
     },
     "testEnvironment": "jsdom",
     "transform": {
       "\\.ts$": "ts-jest",
-      "(node_modules[/\\\\]mirrorsharp|mirrorsharp.+dist)": "./tests/transform-esm-in-node-modules.cjs"
+      "(node_modules[/\\\\]|mirrorsharp.+dist)": "./tests/transform-esm-in-node-modules.cjs"
     },
     "transformIgnorePatterns": [
-      "/node_modules/(?!mirrorsharp/)"
+      "/node_modules/(?!(?:mirrorsharp|node-fetch|data-uri-to-buffer|fetch-blob|formdata-polyfill))"
     ],
     "setupFiles": [
       "<rootDir>/ts/polyfills/index.ts"

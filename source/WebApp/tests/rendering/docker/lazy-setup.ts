@@ -9,9 +9,11 @@ import { setContainerIdFromSetup } from './container-id';
 
 type RenderSetupState = 'none' | 'pending' | 'ready';
 function setSetupState(state: RenderSetupState) {
+    // console.log('setSetupState', state);
     process.env.TEST_DOCKER_SETUP_STATE = state;
 }
 function getSetupState() {
+    // console.log('getSetupState', process.env.TEST_DOCKER_SETUP_STATE);
     return (process.env.TEST_DOCKER_SETUP_STATE as RenderSetupState|undefined) ?? 'none';
 }
 function setPort(port: string) {
@@ -32,6 +34,7 @@ async function waitFor(ready: () => Promise<boolean>|boolean, error: () => Error
 }
 
 export default async (): Promise<{ port: string }> => {
+    // console.log('lazySetup()');
     if (shouldSkipRender)
         throw new Error('Setup should not be called if we are skipping render.');
 

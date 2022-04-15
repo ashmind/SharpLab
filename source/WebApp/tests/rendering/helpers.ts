@@ -42,10 +42,11 @@ export function loadComponentTemplate(id: string, subDirectory = '') {
 
 type RenderOptions = Parameters<typeof render>[0];
 
-export function renderComponent(view: Vue, options: {
+export async function renderComponent(view: Vue, options: {
     wrap?: (html: string) => string;
     allowEmpty?: boolean;
 } & Omit<RenderOptions, 'html'> = {}) {
+    // console.log(`renderComponent() starting`);
     let html = view.$el.outerHTML as string|undefined;
     if (!html) {
         if (!options.allowEmpty) {
@@ -59,5 +60,7 @@ export function renderComponent(view: Vue, options: {
     if (wrap)
         html = wrap(html);
 
-    return render({ html, styles, ...renderOptions });
+    const result = await render({ html, styles, ...renderOptions });
+    // console.log(`renderComponent() completed`);
+    return result;
 }

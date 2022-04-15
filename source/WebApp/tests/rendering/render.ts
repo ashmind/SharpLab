@@ -14,9 +14,11 @@ function isDataRequest(url: string) {
 async function setupRequestInterception(page: Page) {
     await page.setRequestInterception(true);
 
-    const cachedRequests = new Set();
-    const unfinishedRequests = new Set();
+    const cachedRequests = new Set<puppeteer.HTTPRequest>();
+    const startedRequests = new Set<puppeteer.HTTPRequest>();
+    const finishedRequests = new Set<puppeteer.HTTPRequest>();
     page.on('request', request => {
+        // console.log(`request ${request.method()} ${request.url()}`);
         const method = request.method();
         const url = request.url();
         if (method !== 'GET') {
@@ -25,7 +27,7 @@ async function setupRequestInterception(page: Page) {
             return;
         }
 
-        unfinishedRequests.add(request);
+        startedRequests.add(request);
         if (isDataRequest(url)) {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             request.continue();
@@ -56,10 +58,11 @@ async function setupRequestInterception(page: Page) {
     });
 
     page.on('requestfinished', request => {
+        // console.log(`requestfinished ${request.method()} ${request.url()}`);
         const method = request.method();
         const url = request.url();
 
-        unfinishedRequests.delete(request);
+        finishedRequests.add(request);
 
         if (cachedRequests.has(request) || method !== 'GET' || isDataRequest(url))
             return;
@@ -84,7 +87,8 @@ async function setupRequestInterception(page: Page) {
 
     return {
         async waitForUnfinishedRequests() {
-            while (unfinishedRequests.size > 0) {
+            while ([...startedRequests].some(r => !finishedRequests.has(r))) {
+                //console.log(`waitForUnfinishedRequests(): ${unfinishedRequests.size} unfinished request(s). List: \n${[...unfinishedRequests].map(r => `- ${r.method()} ${r.url()}`).join('\n')}`);
                 await new Promise(resolve => setTimeout(resolve, 100));
             }
         }
@@ -108,29 +112,43 @@ export default async function render({
     height?: number;
     debug?: boolean;
 }) {
+    // console.log(`render() starting`);
     const content = `<!DOCTYPE html><html><head></head><body class="${bodyClass}">${html}</body></html>`;
 
+    // console.log(`render(): await lazyRenderSetup()`);
     const { port } = await lazyRenderSetup();
 
+    // console.log(`render(): await puppeteer.connect()`);
     const browser = await puppeteer.connect({ browserURL: `http://localhost:${port}` });
+    // console.log(`render(): await browser.newPage()`);
     const page = await browser.newPage();
 
+    // console.log(`render(): await setupRequestInterception()`);
     const { waitForUnfinishedRequests } = await setupRequestInterception(page);
 
+    // console.log(`render(): await page.setViewport()`);
     await page.setViewport({ width, height });
+    // console.log(`render(): await page.setContent()`);
     await page.setContent(content);
     for (const style of styles) {
+        // console.log(`render(): await page.addStyleTag()`);
         await page.addStyleTag(style);
     }
+    // console.log(`render(): await waitForUnfinishedRequests()`);
     await waitForUnfinishedRequests();
+    // console.log(`render(): await page.evaluate()`);
     await page.evaluate(() => document.fonts.ready);
 
+    // console.log(`render(): await page.screenshot()`);
     const screenshot = await page.screenshot();
     if (debug)
         debugger; // eslint-disable-line no-debugger
 
+    // console.log(`render(): await page.close()`);
     await page.close();
+    // console.log(`render(): browser.disconnect()`);
     browser.disconnect();
 
+    // console.log(`render() completed`);
     return screenshot;
 }
