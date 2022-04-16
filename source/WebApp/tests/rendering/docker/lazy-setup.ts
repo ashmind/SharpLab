@@ -2,16 +2,20 @@ import execa from 'execa';
 import fetch from 'node-fetch';
 import { shouldSkipRender } from '../should-skip';
 import { waitFor } from '../wait-for';
-import { handleContainerState } from './container-state';
+import { readContainerState, handleContainerState } from './container-state';
 
 export default async (): Promise<{ port: string }> => {
     // console.log('lazySetup()');
     if (shouldSkipRender)
         throw new Error('Setup should not be called if we are skipping render.');
 
-    const { port } = await handleContainerState(async (state, writeState) => {
-        if (state)
-            return state;
+    let state = await readContainerState();
+    if (state)
+        return { port: state.port };
+
+    state = await handleContainerState(async (currentState, writeState) => {
+        if (currentState)
+            return currentState;
 
         const chromeContainerId = (await execa('docker', [
             'container',
@@ -48,5 +52,5 @@ export default async (): Promise<{ port: string }> => {
         return newState;
     });
 
-    return { port };
+    return { port: state.port };
 };
