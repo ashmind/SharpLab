@@ -1,17 +1,20 @@
 import execa from 'execa';
 import { shouldSkipRender } from '../should-skip';
-import { getContainerId } from './container-id';
+import { handleContainerState } from './container-state';
 
 export default async () => {
     if (shouldSkipRender)
         return;
 
-    const chromeContainerId = getContainerId();
-    if (!chromeContainerId)
-        return;
-    await execa('docker', [
-        'stop',
-        chromeContainerId
-    ]);
-    console.log('Stopped Chrome container', chromeContainerId);
+    await handleContainerState(async (state, writeState) => {
+        if (!state)
+            return;
+
+        await execa('docker', [
+            'stop',
+            state.id
+        ]);
+        console.log('Stopped Chrome container', state.id);
+        await writeState(null);
+    });
 };

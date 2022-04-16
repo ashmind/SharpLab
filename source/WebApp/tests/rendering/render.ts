@@ -87,9 +87,17 @@ async function setupRequestInterception(page: Page) {
 
     return {
         async waitForUnfinishedRequests() {
-            while ([...startedRequests].some(r => !finishedRequests.has(r))) {
+            const getUnfinishedRequests = () => [...startedRequests].filter(r => !finishedRequests.has(r));
+            let unfinishedRequests = getUnfinishedRequests();
+            let remainingRetryCount = 100;
+            while (unfinishedRequests.length > 0) {
                 //console.log(`waitForUnfinishedRequests(): ${unfinishedRequests.size} unfinished request(s). List: \n${[...unfinishedRequests].map(r => `- ${r.method()} ${r.url()}`).join('\n')}`);
                 await new Promise(resolve => setTimeout(resolve, 100));
+
+                remainingRetryCount -= 1;
+                if (remainingRetryCount === 0)
+                    throw new Error(`Timed out while waiting for unfinished requests: \n${[...unfinishedRequests].map(r => `- ${r.method()} ${r.url()}`).join('\n')}`);
+                unfinishedRequests = getUnfinishedRequests();
             }
         }
     };
