@@ -2,16 +2,6 @@ import path from 'path';
 import { task, exec, build as run } from 'oldowan';
 import execa from 'execa';
 import jetpack from 'fs-jetpack';
-import lessRender from 'less';
-import postcss from 'postcss';
-import autoprefixer from 'autoprefixer';
-// @ts-expect-error (no typings)
-import csso from 'postcss-csso';
-import sharp from 'sharp';
-import htmlMinifier from 'html-minifier';
-import AdmZip from 'adm-zip';
-// @ts-expect-error (no typings)
-import regexCombiner from 'regex-combiner';
 
 const dirname = __dirname;
 
@@ -34,8 +24,14 @@ const iconSizes = [
 
 const depsCheckDuplicates = task('deps:check-duplicates', async () => {
     const output = (await execa('npm', ['find-dupes'])).stdout;
-    if (output.length > 0)
-        throw new Error(`npm find-duplicates has discovered duplicates:\n${output}`);
+    // https://github.com/npm/cli/issues/2687
+    const potentialDuplicatesOutput = output
+        .replace(/added \d+ packages in \d+s/, '')
+        .replace(/\d+ packages are looking for funding/, '')
+        .replace(/run `npm fund` for details/, '')
+        .trim();
+    if (potentialDuplicatesOutput.length > 0)
+        throw new Error(`npm find-duplicates has discovered duplicates:\n${potentialDuplicatesOutput}`);
 });
 
 const deps = task('deps', () => Promise.all([
@@ -43,6 +39,13 @@ const deps = task('deps', () => Promise.all([
 ]));
 
 const less = task('less', async () => {
+    const lessRender = (await import('less')).default;
+    const postcss = (await import('postcss')).default;
+    // @ts-expect-error (no typings)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const csso = (await import('postcss-csso')).default;
+    const autoprefixer = (await import('autoprefixer')).default;
+
     const sourcePath = `${dirname}/less/app.less`;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const content = (await jetpack.readAsync(sourcePath))!;
@@ -75,13 +78,23 @@ const less = task('less', async () => {
 }, { watch: [`${dirname}/less/**/*.less`] });
 
 const tsLint = task('ts:lint', () => exec('eslint . --max-warnings 0 --ext .js,.ts'));
+const tsInputPath = `${dirname}/ts/app.ts`;
 const jsOutputPath = `${outputVersionRoot}/app.min.js`;
-const tsMain = task('ts:main', () => exec2('rollup', ['-c', '-o', jsOutputPath]), {
-    watch: () => exec2('rollup', ['-c', '-w', '-o', jsOutputPath])
+const esbuildArgs = [
+    tsInputPath,
+    '--bundle', '--minify', '--sourcemap',
+    `--outfile=${jsOutputPath}`,
+    `--tsconfig=${dirname}/tsconfig.build.json`
+];
+const tsMain = task('ts:main', () => exec2('esbuild', esbuildArgs), {
+    watch: () => exec2('esbuild', [...esbuildArgs, '--watch'])
 });
 
 const asmSourcePath = `${dirname}/components/internal/codemirror/mode-asm-instructions.txt`;
 const tsAsmRegex = task('ts:asm-regex', async () => {
+    // @ts-expect-error (no typings)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const regexCombiner = (await import('regex-combiner')).default;
     const asmOutputPath = `${dirname}/components/internal/codemirror/mode-asm-instructions.ts`;
 
     // read list file as array of lines
@@ -102,14 +115,18 @@ const tsAsmRegex = task('ts:asm-regex', async () => {
 
 const ts = task('ts', async () => {
     await tsAsmRegex();
-    await tsLint();
-    await tsMain();
+    await Promise.all([
+        tsLint(),
+        tsMain()
+    ]);
 });
 
 const iconSvgSourcePath = `${dirname}/icon.svg`;
 const icons = task('icons', async () => {
+    const sharp = (await import('sharp')).default;
+
     await jetpack.dirAsync(outputVersionRoot);
-    
+
     await jetpack.copyAsync(iconSvgSourcePath, `${outputVersionRoot}/icon.svg`, { overwrite: true });
     // Not parallelizing with Promise.all as sharp seems to be prone to timeouts when running in parallel
     for (const size of iconSizes) {
@@ -148,8 +165,10 @@ const manifest = task('manifest', async () => {
 const htmlSourcePath = `${dirname}/index.html`;
 const htmlOutputPath = `${outputVersionRoot}/index.html`;
 const html = task('html', async () => {
+    const htmlMinifier = (await import('html-minifier')).default;
+
     const iconDataUrl = await getIconDataUrl();
-    const templates = await getCombinedTemplates();
+    const templates = await getCombinedTemplates(htmlMinifier);
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     let html = (await jetpack.readAsync(htmlSourcePath))!;
@@ -190,7 +209,9 @@ task('start', () => build(), {
 });
 
 // Assumes we already ran the build
-const zip = task('zip', () => {
+const zip = task('zip', async () => {
+    const AdmZip = (await import('adm-zip')).default;
+
     const zip = new AdmZip();
     zip.addLocalFolder(outputSharedRoot);
     zip.writeZip(`${dirname}/WebApp.zip`);
@@ -218,7 +239,9 @@ async function getIconDataUrl() {
         .replace(/\s+/g, ' ');
 }
 
-async function getCombinedTemplates() {
+async function getCombinedTemplates(
+    htmlMinifier: typeof import('html-minifier')
+) {
     const basePath = `${dirname}/components`;
     const htmlPaths = await jetpack.findAsync(basePath, { matching: '*.html' });
     const htmlPromises = htmlPaths.map(async htmlPath => {

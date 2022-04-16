@@ -14,6 +14,7 @@ import {
 } from './helpers';
 
 beforeEach(() => {
+    // console.log('beforeEach() starting');
     loadComponentTemplate('app-modal', 'internal');
     loadComponentTemplate('app-select-language');
     loadComponentTemplate('app-select-branch');
@@ -21,17 +22,21 @@ beforeEach(() => {
     loadComponentTemplate('app-select-target');
     loadComponentTemplate('app-cm6-preview-manager');
     loadComponentTemplate('app-mobile-settings');
+    // console.log('beforeEach() completed');
 });
 
 test.each(themeAndStatusCases)('button%s', async (_, bodyClass) => {
+    // console.log(`button${_} starting`);
     const settings = createSettings({ options: fromPartial({}) });
 
     const rendered = await renderComponent(settings, { bodyClass, ...mobilePortraitSize });
 
     expect(rendered).toMatchImageSnapshot();
+    // console.log(`button${_} completed`);
 });
 
 test.each(themeCases)('modal open%s', async (_, bodyClass) => {
+    // console.log(`modal open${_} starting`);
     const PortalTarget = (Vue as unknown as { options: { components: { PortalTarget: VueConstructor } } }).options.components.PortalTarget;
     const options: AppOptions = {
         language: languages.csharp,
@@ -57,6 +62,7 @@ test.each(themeCases)('modal open%s', async (_, bodyClass) => {
 
     parent.$destroy();
     expect(rendered).toMatchImageSnapshot();
+    // console.log(`modal open${_} completed`);
 });
 
 function createSettings({ options }: PickPropTypes<typeof MobileSettings, 'options'>) {

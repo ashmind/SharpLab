@@ -1,0 +1,11 @@
+{
+    "extends": "./tsconfig",
+    "compilerOptions": {
+        "composite": true,
+        "noEmit": false,
+        "module": "ES2020"
+    },
+    "include": [
+        "scripts.ts"
+    ]
+}

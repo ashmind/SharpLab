@@ -1,4 +1,4 @@
-import marked from 'marked';
+import { marked } from 'marked';
 import Vue from 'vue';
 
 Vue.mixin({
