@@ -133,6 +133,7 @@
         "tryroslyn",
         "typeof",
         "ungrouped",
+        "vuera",
         "wwwroot"
     ],
     "eslint.lintTask.enable": true,

@@ -1,4 +1,5 @@
 import './setup/scrollbar-size';
+import './setup/react-bridge';
 import Vue from 'vue';
 import type { AppDefinition, AppData } from '../types/app';
 import './mixins/format-date';
