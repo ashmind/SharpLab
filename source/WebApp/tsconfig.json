@@ -14,12 +14,12 @@
         "jsx": "react"
     },
     "include": [
+        "app",
         "ts",
         "components",
         "scripts"
     ],
     "references": [
-        { "path": "./app/tsconfig.json" },
         { "path": "./tsconfig.scripts.json" },
     ]
 }

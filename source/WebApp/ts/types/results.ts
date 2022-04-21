@@ -11,6 +11,11 @@ export interface ServerError {
 }
 
 export interface AstItem {
+    readonly type: 'node'|'token'|'value'|'trivia'|'operation'|string;
+    readonly kind?: string;
+    readonly property?: string;
+    readonly value?: string;
+
     readonly range?: string;
     readonly properties?: { [key: string]: string };
     readonly children?: ReadonlyArray<AstItem>;

@@ -5,5 +5,5 @@ type Props = {
 };
 
 export const VerifyView: React.FC<Props> = ({ message }) => {
-    return <div class="result-content">{message}</div>;
+    return <div className="result-content">{message}</div>;
 };

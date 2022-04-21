@@ -1,36 +1,11 @@
 import Vue from 'vue';
-
-function renderValue(value: null|string|unknown, type: 'trivia'|unknown) {
-    if (value === null)
-        return 'null';
-
-    if (typeof value !== 'string')
-        return value;
-
-    if (type === 'trivia')
-        return escapeTrivia(value);
-
-    return escapeCommon(value);
-}
-
-function escapeCommon(value: string) {
-    return value
-        .replace('\r', '\\r')
-        .replace('\n', '\\n')
-        .replace('\t', '\\t');
-}
-
-function escapeTrivia(value: string) {
-    return escapeCommon(value)
-        .replace(/(^ +| +$)/g, (_, $1: string) => $1.length > 1 ? `<space:${$1.length}>` : '<space>');
-}
+import { AstNode } from 'app/results/ast/AstNode';
 
 export default Vue.extend({
     props: {
         item: {}
     },
-    methods: {
-        renderValue
-    },
-    template: '#app-ast-view-item'
+    template: `<react-ast-node v-bind:item="item" />`,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    components: { 'react-ast-node': AstNode as any }
 });

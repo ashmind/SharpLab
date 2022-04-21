@@ -82,7 +82,9 @@ const tsInputPath = `${dirname}/ts/app.ts`;
 const jsOutputPath = `${outputVersionRoot}/app.min.js`;
 const esbuildArgs = [
     tsInputPath,
-    '--bundle', '--minify', '--sourcemap',
+    '--bundle',
+    ...(process.env.NODE_ENV === 'ci' ? ['--minify'] : []),
+    '--sourcemap',
     `--outfile=${jsOutputPath}`,
     `--tsconfig=${dirname}/tsconfig.build.json`
 ];

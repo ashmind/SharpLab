@@ -6,5 +6,6 @@ export default Vue.component('app-verify-view', {
         value: String
     },
     template: `<react-verify-view v-bind:message="value" />`,
-    components: { 'react-verify-view': VerifyView }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    components: { 'react-verify-view': VerifyView as any }
 });
