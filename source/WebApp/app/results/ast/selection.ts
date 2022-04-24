@@ -15,7 +15,7 @@ export type SelectionAction = {
 };
 
 export type SelectionState = {
-    selectionMode: 'not-ready'|'hover'|'click';
+    selectionMode: 'hover'|'click';
     selectedItem: AstItem | null;
     // only applies if selection comes from outside of the component, e.g. selectedOffset
     expansionPath: ReadonlySet<AstItem>;
@@ -23,7 +23,7 @@ export type SelectionState = {
 };
 
 export const DEFAULT_SELECTION_STATE: SelectionState = {
-    selectionMode: 'not-ready',
+    selectionMode: 'click',
     selectedItem: null,
     expansionPath: new Set(),
     expansionPersistent: false
