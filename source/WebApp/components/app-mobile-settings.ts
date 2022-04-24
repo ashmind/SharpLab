@@ -11,7 +11,7 @@ import './app-select-branch';
 import './app-section-branch-details';
 import './app-select-target';
 import './app-select-mode';
-import './app-cm6-preview-manager';
+import { EditorSwitch } from 'app/footer/EditorSwitch';
 
 export default withRefsType<{
     modal: InstanceType<typeof AppModal>;
@@ -29,5 +29,9 @@ export default withRefsType<{
             this.$refs.modal.open();
         }
     },
-    template: '#app-mobile-settings'
+    template: '#app-mobile-settings',
+    components: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        'react-editor-switch': EditorSwitch as any
+    }
 });
