@@ -20,7 +20,7 @@ const AstView = Vue.component('app-ast-view', {
             this.selectedOffset = offset;
         }
     },
-    template: `<react-ast-view v-bind:roots="roots" v-bind:selectedOffset="selectedOffset" v-on:onSelect="select" />`,
+    template: `<react-ast-view v-bind:roots="roots" v-bind:selectedOffset="selectedOffset" v-on:onSelect="select"></react-ast-view>`,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     components: { 'react-ast-view': ReactAstView as any }
 });

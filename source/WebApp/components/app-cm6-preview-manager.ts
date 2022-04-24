@@ -1,22 +1,8 @@
 import Vue from 'vue';
-import { uid } from '../ts/ui/helpers/uid';
-import { cm6PreviewEnabled, setCM6PreviewEnabled } from './state/cm6-preview';
+import { EditorSwitch } from 'app/footer/EditorSwitch';
 
 export default Vue.component('app-cm6-preview-manager', {
-    data: () => ({
-        enabled: cm6PreviewEnabled,
-        // eslint-disable-next-line no-plusplus
-        id: uid()
-    }),
-    computed: {
-        editorName() {
-            return this.enabled.value ? 'Preview' : 'Default';
-        }
-    },
-    methods: {
-        toggle() {
-            setCM6PreviewEnabled(!this.enabled.value);
-        }
-    },
-    template: '#app-cm6-preview-manager'
+    template: `<react-editor-switch></react-editor-switch>`,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    components: { 'react-editor-switch': EditorSwitch as any }
 });
