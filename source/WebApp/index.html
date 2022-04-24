@@ -104,9 +104,10 @@
                           v-show="result.type === 'ast'"
                           v-bind:roots="lastResultOfType.ast.value"
                           v-on:item-select="applyAstSelect"></app-ast-view>
-            <app-verify-view v-if="lastResultOfType.verify"
-                             v-show="result.type === 'verify'"
-                             v-bind:value="lastResultOfType.verify.value"></app-verify-view>
+            <react-verify-view class="temp-react-wrapper"
+                               v-if="lastResultOfType.verify"
+                               v-show="result.type === 'verify'"
+                               v-bind:message="lastResultOfType.verify.value"></react-verify-view>
             <app-explain-view v-if="lastResultOfType.explain"
                               v-show="result.type === 'explain'"
                               v-bind:explanations="lastResultOfType.explain.value"></app-explain-view>
