@@ -108,9 +108,10 @@
                                v-if="lastResultOfType.verify"
                                v-show="result.type === 'verify'"
                                v-bind:message="lastResultOfType.verify.value"></react-verify-view>
-            <app-explain-view v-if="lastResultOfType.explain"
-                              v-show="result.type === 'explain'"
-                              v-bind:explanations="lastResultOfType.explain.value"></app-explain-view>
+            <react-explain-view class="temp-react-wrapper"
+                                v-if="lastResultOfType.explain"
+                                v-show="result.type === 'explain'"
+                                v-bind:explanations="lastResultOfType.explain.value"></react-explain-view>
             <app-output-view v-if="lastResultOfType.run"
                              v-show="result.type === 'run'"
                              v-bind:output="lastResultOfType.run.value ? lastResultOfType.run.value.output : []"></app-output-view>

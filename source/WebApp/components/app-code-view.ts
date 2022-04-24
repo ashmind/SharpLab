@@ -18,7 +18,7 @@ export default Vue.component('app-code-view', {
         }
     },
 
-    template: '<react-code-view v-bind:code="value" v-bind:language="language" v-bind:ranges="ranges" v-on:onRangeSelect="selectRange"></react-code-view>',
+    template: '<react-code-view class="temp-react-wrapper" v-bind:code="value" v-bind:language="language" v-bind:ranges="ranges" v-on:onRangeSelect="selectRange"></react-code-view>',
 
     components: {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
