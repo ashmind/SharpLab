@@ -5,7 +5,8 @@ import type { AppDefinition, AppData } from '../types/app';
 import './mixins/format-date';
 import './mixins/markdown';
 import { allHooks, Hooks } from './hooks/registry';
-import '../../components/index';
+// eslint-disable-next-line import/order
+import { reactComponents } from  '../../components/index';
 import './directives/app-class-toggle';
 import './hooks/app-cloak';
 import './hooks/app-mobile-codemirror-fullscreen';
@@ -48,7 +49,8 @@ function createTopLevelUIComponentAsync(app: AppDefinition, selector: string, ho
                         }
                         resolve(wrap(this));
                     });
-                }
+                },
+                components: reactComponents
             });
         }
         catch (e) {

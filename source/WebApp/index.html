@@ -125,13 +125,13 @@
             <div class="loader"></div>
             <ul>
               <li v-for="error in result.errors">
-                <app-diagnostic v-bind:model="error" severity="error"></app-diagnostic>
+                <react-diagnostic class="temp-react-wrapper" v-bind:data="error"></react-diagnostic>
               </li>
             </ul>
           </div>
         </section>
 
-        <app-section-warnings class="top-section collapsed" v-bind:warnings="result.warnings"></app-section-warnings>
+        <react-warnings-section class="temp-react-wrapper" v-bind:class-name="'top-section'" v-bind:warnings="result.warnings" v-bind:expanded="false"></react-warnings-section>
       </div>
 
       <portal-target name="modals" multiple class="fragment"></portal-target>
