@@ -13,14 +13,16 @@
     },
     "plugins": [
         "@typescript-eslint",
-        "import"
+        "import",
+        "react-hooks"
     ],
     "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:import/errors",
-        "plugin:import/warnings"
+        "plugin:import/warnings",
+        "plugin:react-hooks/recommended"
     ],
     "env": {
         "node": true
@@ -74,6 +76,7 @@
         "@typescript-eslint/quotes": ["error", "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
         "@typescript-eslint/brace-style": ["warn", "stroustrup", { "allowSingleLine": true }],
         "@typescript-eslint/semi": ["error"],
+        "@typescript-eslint/member-delimiter-style": "warn",
         "@typescript-eslint/restrict-template-expressions": ["error", { "allowBoolean": true, "allowNumber": true }],
         "@typescript-eslint/array-type": ["error", { "default": "generic" }],
         "@typescript-eslint/prefer-readonly": "warn",

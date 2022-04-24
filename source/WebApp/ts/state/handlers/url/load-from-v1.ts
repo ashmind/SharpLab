@@ -8,12 +8,12 @@ import {
 
 export type LoadStateFromUrlV1Result = {
     readonly options: {
-        readonly branchId: string,
-        readonly language: LanguageName | undefined,
-        readonly target: TargetName | undefined,
-        readonly release: boolean
-    },
-    readonly code: string
+        readonly branchId: string;
+        readonly language: LanguageName | undefined;
+        readonly target: TargetName | undefined;
+        readonly release: boolean;
+    };
+    readonly code: string;
 } | null;
 
 export const loadFromLegacyV1 = (hash: string): LoadStateFromUrlV1Result => {

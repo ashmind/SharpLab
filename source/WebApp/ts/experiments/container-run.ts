@@ -7,7 +7,7 @@ const [containerRunActive, setContainerRunActive] = defineState<boolean>(false);
 export { containerRunActive, containerRunException };
 
 export type ContainerExperimentFallbackRunValue = {
-    readonly containerExperimentException?: string
+    readonly containerExperimentException?: string;
 };
 
 export function updateContainerExperimentStateFromRunResult(result: RunResult) {

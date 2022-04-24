@@ -4,7 +4,7 @@ import jetpack from 'fs-jetpack';
 import { waitFor } from '../wait-for';
 
 const CONTAINER_STATE_PATH = path.join(__dirname, '.container');
-type ContainerState = { id: string, port: string };
+type ContainerState = { id: string; port: string };
 
 export const readContainerState = async () => {
     try {

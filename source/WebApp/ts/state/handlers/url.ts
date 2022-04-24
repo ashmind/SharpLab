@@ -67,12 +67,12 @@ function saveHash(hash: string) {
 
 export type LoadStateFromUrlV2Result = {
     readonly options: {
-        readonly branchId: string | undefined,
-        readonly language: LanguageName,
-        readonly target: TargetName,
-        readonly release: boolean
-    },
-    readonly code: string
+        readonly branchId: string | undefined;
+        readonly language: LanguageName;
+        readonly target: TargetName;
+        readonly release: boolean;
+    };
+    readonly code: string;
 } | null;
 
 export type LoadStateFromUrlResult =

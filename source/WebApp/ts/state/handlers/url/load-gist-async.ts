@@ -17,7 +17,7 @@ export type LoadStateFromGistResult = {
         readonly target: TargetName;
         readonly release: boolean;
         readonly branchId: string | null;
-    },
+    };
     readonly code: string;
 } | {
     readonly options: {
