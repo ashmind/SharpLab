@@ -35,7 +35,7 @@ export const ResultsSection: FC<Props> = ({ options, result, selectedCodeOffset,
     // Code is special since CodeMirror is slow to set up, so we hide it instead of destroying it
     useEffect(() => {
         if (result.type === 'code')
-            setLastCodeState({ value: result.value, language: options.target as TargetLanguageName });
+            setLastCodeState({ ...result, language: options.target as TargetLanguageName });
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [result]);
     const codeResult = lastCodeState && <div hidden={result.type !== 'code'}>
