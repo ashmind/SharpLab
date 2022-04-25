@@ -82,42 +82,13 @@
       </div>
 
       <div class="top-section-group top-section-group-results" v-bind:class="{ loading: loading }">
-        <section class="top-section result">
-          <header>
-            <h1>Results</h1>
-            <app-select-target v-model="options.target" tabindex="4"></app-select-target>
-            <small v-if="result.cached" class="result-cached-indicator" title="Note: This output is cached and might not represent the latest behavior">
-              Cached: {{formatDate(result.cached.date, 'd mmm yyyy')}}
-            </small>
-            <app-select-mode v-model="options.release" tabindex="5"></app-select-mode>
-          </header>
-          <div class="content">
-            <div class="loader"></div>
-            <app-code-view v-if="lastResultOfType.code"
-                           v-show="result.type === 'code'"
-                           v-bind:value="lastResultOfType.code.value"
-                           v-bind:ranges="lastResultOfType.code.ranges"
-                           v-bind:language="options.target"
-                           v-on:range-active="applyCodeViewRange"></app-code-view>
-            <app-ast-view ref="astView"
-                          v-if="lastResultOfType.ast"
-                          v-show="result.type === 'ast'"
-                          v-bind:roots="lastResultOfType.ast.value"
-                          v-on:item-select="applyAstSelect"></app-ast-view>
-            <react-verify-view class="temp-react-wrapper"
-                               v-if="lastResultOfType.verify"
-                               v-show="result.type === 'verify'"
-                               v-bind:message="lastResultOfType.verify.value"></react-verify-view>
-            <react-explain-view class="temp-react-wrapper"
-                                v-if="lastResultOfType.explain"
-                                v-show="result.type === 'explain'"
-                                v-bind:explanations="lastResultOfType.explain.value"></react-explain-view>
-            <react-output-view class="temp-react-wrapper"
-                               v-if="lastResultOfType.run"
-                               v-show="result.type === 'run'"
-                               v-bind:output="lastResultOfType.run.value ? lastResultOfType.run.value.output : []"></react-output-view>
-          </div>
-        </section>
+        <app-results-section
+            v-bind:options="options"
+            v-bind:result="result"
+            ref="astView"
+            v-on:code-range-active="applyCodeViewRange"
+            v-on:ast-item-select="applyAstSelect"
+        ></app-results-section>
 
         <section class="top-section errors" v-show="result.errors.length > 0">
           <header>

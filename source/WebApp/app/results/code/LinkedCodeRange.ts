@@ -1,6 +1,6 @@
 import type { CodeRange } from 'ts/types/code-range';
 
-export type LinkedRange = {
+export type LinkedCodeRange = {
     readonly source: CodeRange;
     readonly result: CodeRange;
 };

@@ -12,3 +12,4 @@ export const targets = Object.freeze({
 } as const);
 
 export type TargetName = typeof targets[keyof typeof targets];
+export type TargetLanguageName = typeof targets.csharp | typeof targets.vb | typeof targets.il | typeof targets.asm;

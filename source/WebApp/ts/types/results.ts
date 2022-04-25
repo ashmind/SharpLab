@@ -143,11 +143,11 @@ export interface ErrorResult extends ResultBase {
     readonly value?: undefined;
 }
 
-export type NonErrorResult = CodeResult|AstResult|ExplainResult|RunResult;
-export type Result = (NonErrorResult|ErrorResult) & {
+export type NonErrorResult = CodeResult|AstResult|ExplainResult|VerifyResult|RunResult;
+export type Result = Cacheable<NonErrorResult|ErrorResult>;
+
+export type Cacheable<T> = T & {
     cached?: { date: Date };
 };
 
-export type CachedUpdateResult = MirrorSharpSlowUpdateResult<Result['value']> & {
-    cached?: { date: Date };
-};
+export type CachedUpdateResult = Cacheable<MirrorSharpSlowUpdateResult<Result['value']>>;

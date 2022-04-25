@@ -8,7 +8,7 @@ type Props = {
     warnings: ReadonlyArray<DiagnosticWarning>;
 };
 
-export const WarningSection: FC<Props> = ({ className, warnings }) => {
+export const WarningsSection: FC<Props> = ({ className, warnings }) => {
     const { applyExpanderToClassName, ExpanderButton } = useExpander();
 
     if (warnings.length === 0)

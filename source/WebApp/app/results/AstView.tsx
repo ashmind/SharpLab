@@ -8,7 +8,7 @@ import { DEFAULT_SELECTION_STATE, selectionReducer } from './ast/selection';
 type Props = {
     roots: ReadonlyArray<AstItem>;
     onSelect: (item: AstItem | null) => void;
-    selectedOffset: number;
+    selectedOffset?: number;
 };
 
 export const AstView: FC<Props> = ({ roots, onSelect, selectedOffset }) => {

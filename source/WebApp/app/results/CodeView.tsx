@@ -6,18 +6,17 @@ import 'codemirror/mode/vb/vb';
 import 'components/internal/codemirror/mode-cil';
 import 'components/internal/codemirror/mode-asm';
 import 'components/internal/codemirror/addon-cil-infotip';
-import { targets } from 'ts/helpers/targets';
-import type { LinkedRange } from './code/LinkedRange';
+import { TargetLanguageName, targets } from 'ts/helpers/targets';
+import type { LinkedCodeRange } from './code/LinkedCodeRange';
 import { findRange } from './code/findRange';
-
-type TargetLanguageName = typeof targets.csharp|typeof targets.vb|typeof targets.il|typeof targets.asm;
 
 type Props = {
     code: string;
     language: TargetLanguageName;
-    ranges: ReadonlyArray<LinkedRange> | undefined;
-    onRangeSelect: (range: LinkedRange | null) => void;
+    ranges: ReadonlyArray<LinkedCodeRange> | undefined;
+    onRangeSelect: (range: LinkedCodeRange | null) => void;
 };
+export { LinkedCodeRange };
 
 const modeMap = {
     [targets.csharp]: 'text/x-csharp',
@@ -31,9 +30,9 @@ export const CodeView: FC<Props> = ({ code, language, ranges, onRangeSelect }) =
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const [cursorPosition, setCursorPosition] = useState<CodeMirror.Position>();
-    const [cursorRange, setCursorRange] = useState<LinkedRange | null>(null);
+    const [cursorRange, setCursorRange] = useState<LinkedCodeRange | null>(null);
     const [hoverPosition, setHoverPosition] = useState<CodeMirror.Position>();
-    const [hoverRange, setHoverRange] = useState<LinkedRange | null>(null);
+    const [hoverRange, setHoverRange] = useState<LinkedCodeRange | null>(null);
 
     const selectedRange = cursorRange ?? hoverRange;
     const selectedRangeMarkerRef = useRef<CodeMirror.TextMarker>();
@@ -86,7 +85,7 @@ export const CodeView: FC<Props> = ({ code, language, ranges, onRangeSelect }) =
     }, [code]);
 
     const tryFindRange = useCallback((location: CodeMirror.Position | undefined) =>
-        ranges && location ? findRange(ranges, location) : null,
+        (ranges && location) ? findRange(ranges, location) : null,
     [ranges]);
     useEffect(() => setCursorRange(tryFindRange(cursorPosition)), [tryFindRange, cursorPosition]);
     useEffect(() => setHoverRange(tryFindRange(hoverPosition)), [tryFindRange, hoverPosition]);

@@ -1,4 +1,4 @@
-import type { LinkedRange } from './LinkedRange';
+import type { LinkedCodeRange } from './LinkedCodeRange';
 
 const isLocationBetween = (location: CodeMirror.Position, start: CodeMirror.Position, end: CodeMirror.Position) => {
     if (location.line < start.line)
@@ -12,6 +12,6 @@ const isLocationBetween = (location: CodeMirror.Position, start: CodeMirror.Posi
     return true;
 };
 
-export const findRange = (ranges: ReadonlyArray<LinkedRange>, location: CodeMirror.Position) => ranges.find(
+export const findRange = (ranges: ReadonlyArray<LinkedCodeRange>, location: CodeMirror.Position) => ranges.find(
     r => isLocationBetween(location, r.result.start, r.result.end)
 ) ?? null;
