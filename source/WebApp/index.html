@@ -26,20 +26,19 @@
       'root-status-offline': !status.online,
       'root-status-error':   status.error
     }">
-      <app-mobile-settings
+      <react-mobile-settings
+          class="temp-react-wrapper"
           v-bind:options="options"
           v-bind:branches="branches"
           v-bind:gist="gist"
-          v-bind:button-props="{ tabindex: 1 }">
-        <template v-slot:gist-manager>
-          <app-gist-manager v-bind:gist="gist"
-                            v-bind:code="code"
-                            v-bind:options="options"
-                            v-bind:result="result"
-                            v-bind:use-label="true"
-                            v-on:save="applyGistSave"></app-gist-manager>
-        </template>
-      </app-mobile-settings>
+          v-bind:button-props="{ tabIndex: 1 }">
+        <app-gist-manager v-bind:gist="gist"
+                          v-bind:code="code"
+                          v-bind:options="options"
+                          v-bind:result="result"
+                          v-bind:use-label="true"
+                          v-on:save="applyGistSave"></app-gist-manager>
+      </react-mobile-settings>
       <div class="mobile-offline-notice">connection lost, reconnecting…</div>
 
       <div class="top-section-group top-section-group-code">
