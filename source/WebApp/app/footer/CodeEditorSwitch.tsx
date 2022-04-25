@@ -4,7 +4,7 @@ import { useIds } from 'app/helpers/useIds';
 
 const calculateCurrentLabel = () => cm6PreviewEnabled.value ? 'Preview' : 'Default';
 
-export const EditorSwitch: FC = () => {
+export const CodeEditorSwitch: FC = () => {
     const [currentLabel, setCurrentLabel] = useState<'Default' | 'Preview'>(calculateCurrentLabel());
     const ids = useIds(['toggle']);
 

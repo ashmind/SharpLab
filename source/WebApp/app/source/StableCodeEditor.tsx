@@ -27,6 +27,7 @@ type Props = {
     onCursorMove: (getOffset: () => number) => void;
     onServerError: (message: string) => void;
 };
+export { Props as CodeEditorProps };
 
 const useUpdatingRef = <T, >(value: T) => {
     const ref = useRef<T>(value);

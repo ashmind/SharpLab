@@ -3,7 +3,7 @@ import { useIds } from 'app/helpers/useIds';
 import { TargetSelect } from 'app/header/TargetSelect';
 import type { AppOptions } from 'ts/types/app';
 import { ModeSelect } from 'app/header/ModeSelect';
-import { EditorSwitch } from 'app/footer/EditorSwitch';
+import { CodeEditorSwitch } from 'app/footer/CodeEditorSwitch';
 import { LanguageSelect } from 'app/header/LanguageSelect';
 import type { Branch } from 'ts/types/branch';
 import { BranchSelect } from 'app/header/BranchSelect';
@@ -60,7 +60,7 @@ export const SettingsForm: FC<Props> = ({ options, branches, gistManager }) => {
                 {gistManager}
             </div>
             <div className="form-line">
-                <EditorSwitch />
+                <CodeEditorSwitch />
             </div>
         </fieldset>
     </form>;

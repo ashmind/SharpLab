@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
-import { EditorSwitch } from './footer/EditorSwitch';
+import { CodeEditorSwitch } from './footer/CodeEditorSwitch';
 import { MobileFontSizeSwitch } from './footer/MobileFontSizeSwitch';
 import { ThemeSwitch } from './footer/ThemeSwitch';
 
 export const Footer: FC = () => {
     return <footer>
-        <EditorSwitch />
+        <CodeEditorSwitch />
         <MobileFontSizeSwitch />
         <ThemeSwitch />
         <span className="footer-author-full">
