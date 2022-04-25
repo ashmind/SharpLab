@@ -37,6 +37,7 @@
     ],
     "globalTeardown": "<rootDir>/tests/rendering/docker/global-teardown.ts",
     "testMatch": [
+      "<rootDir>/app/**/*.tests.ts",
       "<rootDir>/tests/**/*.tests.ts"
     ],
     "moduleNameMapper": {

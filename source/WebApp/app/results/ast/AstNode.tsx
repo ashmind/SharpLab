@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { AstItem } from 'ts/types/results';
 import { AstNodeList } from './AstNodeList';
 import { AstSelectionContext } from './AstSelectionContext';
@@ -26,7 +26,7 @@ const renderValue = (value: string, type: string) =>{
     return escapeCommon(value);
 };
 
-export const AstNode: React.FC<Props> = ({ item }) => {
+export const AstNode: FC<Props> = ({ item }) => {
     const elementRef = useRef<HTMLLIElement>(null);
     const [expanded, setExpanded] = useState<boolean>(false);
     const { selectionState, dispatchSelectionAction } = useContext(AstSelectionContext);

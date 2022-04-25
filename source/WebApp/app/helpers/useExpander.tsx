@@ -1,10 +1,10 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 
 type Props = {
     setExpanded: (set: (expanded: boolean) => boolean) => void;
 };
 
-const ExpanderButton: React.FC<Props> = ({ setExpanded }) => {
+const ExpanderButton: FC<Props> = ({ setExpanded }) => {
     return <button className="expander" onClick={() => setExpanded(e => !e)}></button>;
 };
 

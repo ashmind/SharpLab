@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { EditorSwitch } from './footer/EditorSwitch';
 import { MobileFontSizeSwitch } from './footer/MobileFontSizeSwitch';
 import { ThemeSwitch } from './footer/ThemeSwitch';
 
-export const Footer: React.FC = () => {
+export const Footer: FC = () => {
     return <footer>
         <EditorSwitch />
         <MobileFontSizeSwitch />

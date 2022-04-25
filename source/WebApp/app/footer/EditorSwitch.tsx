@@ -1,11 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { cm6PreviewEnabled, setCM6PreviewEnabled } from 'components/state/cm6-preview';
 import { uid } from 'ts/ui/helpers/uid';
 
 const calculateCurrentLabel = () => cm6PreviewEnabled.value ? 'Preview' : 'Default';
 
-export const EditorSwitch: React.FC = () => {
-    const [currentLabel, setCurrentLabel] = React.useState<'Default' | 'Preview'>(calculateCurrentLabel());
+export const EditorSwitch: FC = () => {
+    const [currentLabel, setCurrentLabel] = useState<'Default' | 'Preview'>(calculateCurrentLabel());
     const id = useMemo(() => uid(), []);
 
     const onClick = () => {

@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { EditorSwitch } from 'app/footer/EditorSwitch';
 import type { AppOptions } from '../ts/types/app';
 import type { Branch } from '../ts/types/branch';
 import withRefsType from '../ts/helpers/with-refs-type';
@@ -11,7 +12,6 @@ import './app-select-branch';
 import './app-section-branch-details';
 import './app-select-target';
 import './app-select-mode';
-import { EditorSwitch } from 'app/footer/EditorSwitch';
 
 export default withRefsType<{
     modal: InstanceType<typeof AppModal>;

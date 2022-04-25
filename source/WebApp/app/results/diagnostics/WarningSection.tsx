@@ -1,5 +1,5 @@
 import { useExpander } from 'app/helpers/useExpander';
-import React from 'react';
+import React, { FC } from 'react';
 import type { DiagnosticWarning } from 'ts/types/results';
 import { Diagnostic } from './Diagnostic';
 
@@ -8,7 +8,7 @@ type Props = {
     warnings: ReadonlyArray<DiagnosticWarning>;
 };
 
-export const WarningSection: React.FC<Props> = ({ className, warnings }) => {
+export const WarningSection: FC<Props> = ({ className, warnings }) => {
     const { applyExpanderToClassName, ExpanderButton } = useExpander();
 
     if (warnings.length === 0)

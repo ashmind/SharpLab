@@ -112,9 +112,10 @@
                                 v-if="lastResultOfType.explain"
                                 v-show="result.type === 'explain'"
                                 v-bind:explanations="lastResultOfType.explain.value"></react-explain-view>
-            <app-output-view v-if="lastResultOfType.run"
-                             v-show="result.type === 'run'"
-                             v-bind:output="lastResultOfType.run.value ? lastResultOfType.run.value.output : []"></app-output-view>
+            <react-output-view class="temp-react-wrapper"
+                               v-if="lastResultOfType.run"
+                               v-show="result.type === 'run'"
+                               v-bind:output="lastResultOfType.run.value ? lastResultOfType.run.value.output : []"></react-output-view>
           </div>
         </section>
 

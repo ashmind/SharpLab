@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { uid } from 'ts/ui/helpers/uid';
 import { MobileFontSize, mobileFontSize, setMobileFontSize } from '../../components/state/mobile-font-size';
 
@@ -11,8 +11,8 @@ const applyBodyClass = (size: MobileFontSize) => {
     document.body.classList.toggle(`mobile-font-size-large`, size === 'large');
 };
 
-export const MobileFontSizeSwitch: React.FC = () => {
-    const [currentLabel, setCurrentLabel] = React.useState<'M' | 'L'>(calculateCurrentLabel());
+export const MobileFontSizeSwitch: FC = () => {
+    const [currentLabel, setCurrentLabel] = useState<'M' | 'L'>(calculateCurrentLabel());
     const id = useMemo(() => uid(), []);
 
     const onClick = () => {

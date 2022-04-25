@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { debounce } from 'throttle-debounce';
 import CodeMirror from 'codemirror';
 import 'codemirror/mode/clike/clike';
@@ -26,7 +26,7 @@ const modeMap = {
     [targets.asm]:    'text/x-asm'
 };
 
-export const CodeView: React.FC<Props> = ({ code, language, ranges, onRangeSelect }) => {
+export const CodeView: FC<Props> = ({ code, language, ranges, onRangeSelect }) => {
     const cmRef = useRef<CodeMirror.EditorFromTextArea | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 

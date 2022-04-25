@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import asLookup from 'ts/helpers/as-lookup';
 import { getUserTheme, setUserTheme } from 'ts/helpers/theme';
 import type { AppTheme } from 'ts/types/app';
@@ -23,8 +23,8 @@ const applyBodyClass = (theme: AppTheme) => {
         body.classList.add(newClassName);
 };
 
-export const ThemeSwitch: React.FC = () => {
-    const [currentLabel, setCurrentLabel] = React.useState<'Auto' | 'Dark' | 'Light'>(calculateCurrentLabel());
+export const ThemeSwitch: FC = () => {
+    const [currentLabel, setCurrentLabel] = useState<'Auto' | 'Dark' | 'Light'>(calculateCurrentLabel());
     const id = useMemo(() => uid(), []);
 
     const onClick = () => {

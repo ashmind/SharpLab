@@ -1,1 +1,0 @@
-export const shouldSkipRender = !!process.env.TEST_SKIP_RENDER;

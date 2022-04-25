@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useReducer } from 'react';
 import type { AstItem } from 'ts/types/results';
 import { AstNodeList } from './ast/AstNodeList';
 import { AstSelectionContext } from './ast/AstSelectionContext';
@@ -11,7 +11,7 @@ type Props = {
     selectedOffset: number;
 };
 
-export const AstView: React.FC<Props> = ({ roots, onSelect, selectedOffset }) => {
+export const AstView: FC<Props> = ({ roots, onSelect, selectedOffset }) => {
     const [selectionState, dispatchSelectionAction] = useReducer(selectionReducer, DEFAULT_SELECTION_STATE);
 
     useEffect(() => onSelect(selectionState.selectedItem), [selectionState.selectedItem, onSelect]);
