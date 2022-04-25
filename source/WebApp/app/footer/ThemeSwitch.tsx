@@ -1,8 +1,9 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import { useIds } from 'app/helpers/useIds';
+import React, { FC, useEffect, useState } from 'react';
 import asLookup from 'ts/helpers/as-lookup';
 import { getUserTheme, setUserTheme } from 'ts/helpers/theme';
 import type { AppTheme } from 'ts/types/app';
-import { uid } from 'ts/ui/helpers/uid';
+import { isDataView } from 'util/types';
 
 const calculateCurrentLabel = () => ({
     auto:  'Auto',
@@ -25,7 +26,7 @@ const applyBodyClass = (theme: AppTheme) => {
 
 export const ThemeSwitch: FC = () => {
     const [currentLabel, setCurrentLabel] = useState<'Auto' | 'Dark' | 'Light'>(calculateCurrentLabel());
-    const id = useMemo(() => uid(), []);
+    const ids = useIds(['toggle']);
 
     const onClick = () => {
         const nextTheme = ({
@@ -41,9 +42,9 @@ export const ThemeSwitch: FC = () => {
     useEffect(() => applyBodyClass(getUserTheme()), []);
 
     return <div className="theme-manager block-with-label">
-        <label htmlFor={`theme-toggle-${id}`}>Theme:</label>
+        <label htmlFor={ids.toggle}>Theme:</label>
         <button onClick={onClick}
-            id={`theme-toggle-${id}`}
+            id={ids.toggle}
             aria-label={`Theme Toggle, Current: ${currentLabel}`}>{currentLabel}</button>
     </div>;
 };

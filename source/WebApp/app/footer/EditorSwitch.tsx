@@ -1,12 +1,12 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { cm6PreviewEnabled, setCM6PreviewEnabled } from 'components/state/cm6-preview';
-import { uid } from 'ts/ui/helpers/uid';
+import { useIds } from 'app/helpers/useIds';
 
 const calculateCurrentLabel = () => cm6PreviewEnabled.value ? 'Preview' : 'Default';
 
 export const EditorSwitch: FC = () => {
     const [currentLabel, setCurrentLabel] = useState<'Default' | 'Preview'>(calculateCurrentLabel());
-    const id = useMemo(() => uid(), []);
+    const ids = useIds(['toggle']);
 
     const onClick = () => {
         setCM6PreviewEnabled(!cm6PreviewEnabled.value);
@@ -14,8 +14,8 @@ export const EditorSwitch: FC = () => {
     };
 
     return <div className="cm6-preview-manager block-with-label">
-        <label htmlFor={`editor-toggle-${id}`}>Editor:</label>
-        <button id={`editor-toggle-${id}`}
+        <label htmlFor={ids.toggle}>Editor:</label>
+        <button id={ids.toggle}
             onClick={onClick}
             aria-label={`Editor Toggle, Current: ${currentLabel}`}>{currentLabel}</button>
     </div>;
