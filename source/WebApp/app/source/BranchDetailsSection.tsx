@@ -3,6 +3,7 @@ import React, { FC } from 'react';
 import type { Branch } from 'ts/types/branch';
 
 type Props = {
+    className?: string;
     branch: Branch;
     headerless?: boolean;
 };

@@ -3,7 +3,6 @@ import React, { FC, useEffect, useState } from 'react';
 import asLookup from 'ts/helpers/as-lookup';
 import { getUserTheme, setUserTheme } from 'ts/helpers/theme';
 import type { AppTheme } from 'ts/types/app';
-import { isDataView } from 'util/types';
 
 const calculateCurrentLabel = () => ({
     auto:  'Auto',
