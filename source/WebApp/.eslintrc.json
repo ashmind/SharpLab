@@ -92,7 +92,10 @@
         "import/named": "off",
         "import/extensions": ["error", "never"],
         "import/order": ["warn", { "newlines-between": "never" }],
-        "import/newline-after-import": "warn"
+        "import/newline-after-import": "warn",
 
+        "react-hooks/exhaustive-deps": ["warn", {
+            "additionalHooks": "useAsync"
+        }]
     }
 }

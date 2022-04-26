@@ -6,7 +6,7 @@ export const useIds = <T extends Array<string>>(names: [...T]): IdMap<T> => {
     const id = useMemo(() => uid(), []);
     const result = {} as IdMap<T>;
     for (const name of names) {
-        result[name] = 'uid-' + id + '-' + name;
+        result[name] = `c-${id}-${name}`;
     }
     return result;
 };
