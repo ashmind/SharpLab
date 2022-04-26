@@ -42,52 +42,32 @@
       <div class="mobile-offline-notice">connection lost, reconnecting…</div>
 
       <div class="top-section-group top-section-group-code">
-        <section class="top-section code">
-          <header>
-            <h1>Code</h1>
-            <app-select-language v-model="options.language" tabindex="1"></app-select-language>
-            <app-gist-manager class="header-block"
-                              v-bind:button-props="{ class: 'header-text-button', tabindex: 2 }"
-                              v-bind:gist="gist"
-                              v-bind:code="code"
-                              v-bind:options="options"
-                              v-bind:result="result"
-                              v-on:save="applyGistSave"></app-gist-manager>
-            <div class="offline-only">[connection lost, reconnecting…]</div>
-
-            <app-select-branch v-model="options.branch"
-                               v-bind:branches="branches"
-                               v-bind:language="options.language"
-                               tabindex="3"></app-select-branch>
-          </header>
-          <div class="content">
-            <app-code-edit v-bind:initial-text="lastLoadedCode"
-                           v-bind:initial-cached="result.cached"
-                           v-bind:service-url="serviceUrl"
-                           v-bind:language="options.language"
-                           v-bind:server-options="serverOptions"
-                           v-bind:highlighted-range="highlightedCodeRange"
-                           v-bind:execution-flow="result.type === 'run' && result.value ? result.value.flow : null"
-                           v-on:text-change="code = arguments[0]()"
-                           v-on:cursor-move="applyCursorMove"
-                           v-on:slow-update-wait="applyUpdateWait"
-                           v-on:slow-update-result="applyUpdateResult"
-                           v-on:server-error="applyServerError"
-                           v-on:connection-change="applyConnectionChange"></app-code-edit>
-          </div>
-        </section>
-
+        <app-section-code v-bind:initial-code="lastLoadedCode"
+                          v-bind:options="options"
+                          v-bind:branches="branches"
+                          v-bind:result="result"
+                          v-bind:gist="gist"
+                          v-bind:code-editor-props="{
+                            serverOptions: serverOptions,
+                            codeRange: highlightedCodeRange
+                          }"
+                          v-on:cursor-move="applyCursorMove"
+                          v-on:slow-update-wait="applyUpdateWait"
+                          v-on:slow-update-result="applyUpdateResult"
+                          v-on:server-error="applyServerError"
+                          v-on:connection-change="applyConnectionChange">
+        </app-section-code>
         <app-section-branch-details v-bind:branch="options.branch" class="top-section"></app-section-branch-details>
       </div>
 
       <div class="top-section-group top-section-group-results" v-bind:class="{ loading: loading }">
-        <app-results-section
+        <app-section-results
             v-bind:options="options"
             v-bind:result="result"
             ref="astView"
             v-on:code-range-active="applyCodeViewRange"
             v-on:ast-item-select="applyAstSelect"
-        ></app-results-section>
+        ></app-section-results>
 
         <section class="top-section errors" v-show="result.errors.length > 0">
           <header>

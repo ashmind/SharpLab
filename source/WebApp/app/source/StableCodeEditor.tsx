@@ -12,7 +12,7 @@ import 'components/internal/codemirror/addon-jump-arrows';
 type ResultData = Result['value'];
 
 type Props = {
-    initialText: string;
+    initialCode: string;
     initialCached: boolean;
     serviceUrl: string;
     language: LanguageName;
@@ -23,7 +23,7 @@ type Props = {
     onSlowUpdateWait: () => void;
     onSlowUpdateResult: (value: MirrorSharpSlowUpdateResult<ResultData>) => void;
     onConnectionChange: (state: MirrorSharpConnectionState) => void;
-    onTextChange: (getText: () => string) => void;
+    onCodeChange: (getCode: () => string) => void;
     onCursorMove: (getOffset: () => number) => void;
     onServerError: (message: string) => void;
 };
@@ -36,7 +36,7 @@ const useUpdatingRef = <T, >(value: T) => {
 };
 
 export const StableCodeEditor: FC<Props> = ({
-    initialText,
+    initialCode,
     initialCached,
     serviceUrl,
     language,
@@ -47,12 +47,12 @@ export const StableCodeEditor: FC<Props> = ({
     onSlowUpdateWait,
     onSlowUpdateResult,
     onConnectionChange,
-    onTextChange,
+    onCodeChange,
     onCursorMove,
     onServerError
 }) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const lastInitialTextRef = useRef<string>();
+    const lastInitialCodeRef = useRef<string>();
 
     const onSlowUpdateWaitRef = useUpdatingRef(onSlowUpdateWait);
     const onSlowUpdateResultRef = useUpdatingRef(onSlowUpdateResult);
@@ -72,10 +72,10 @@ export const StableCodeEditor: FC<Props> = ({
         initialConnectionRequestedRef.current = true;
     });
 
-    const onTextChangeRef = useUpdatingRef(useCallback((getText: () => string) => {
+    const onCodeChangeRef = useUpdatingRef(useCallback((getCode: () => string) => {
         connectIfInitialWasCachedRef.current();
-        onTextChange(getText);
-    }, [onTextChange]));
+        onCodeChange(getCode);
+    }, [onCodeChange]));
 
     const optionsRef = useRef<MirrorSharpOptions<ServerOptions, ResultData>>({
         serviceUrl,
@@ -86,7 +86,7 @@ export const StableCodeEditor: FC<Props> = ({
             slowUpdateWait: () => onSlowUpdateWaitRef.current(),
             slowUpdateResult: r => onSlowUpdateResultRef.current(r),
             connectionChange: s => onConnectionChangeRef.current(s),
-            textChange: t => onTextChangeRef.current(t),
+            textChange: t => onCodeChangeRef.current(t),
             serverError: e => onServerErrorRef.current(e)
         }
     });
@@ -94,8 +94,8 @@ export const StableCodeEditor: FC<Props> = ({
     useLayoutEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const textarea = textareaRef.current!;
-        textarea.value = initialText;
-        lastInitialTextRef.current = initialText;
+        textarea.value = initialCode;
+        lastInitialCodeRef.current = initialCode;
 
         const instance = mirrorsharp(textarea, optionsRef.current);
         instanceRef.current = instance;
@@ -123,11 +123,11 @@ export const StableCodeEditor: FC<Props> = ({
     useEffect(() => {
         if (!instanceRef.current)
             return;
-        if (lastInitialTextRef.current === initialText)
+        if (lastInitialCodeRef.current === initialCode)
             return;
-        lastInitialTextRef.current = initialText;
-        instanceRef.current.setText(initialText);
-    }, [initialText]);
+        lastInitialCodeRef.current = initialCode;
+        instanceRef.current.setText(initialCode);
+    }, [initialCode]);
 
     useEffect(() => {
         if (!instanceRef.current)

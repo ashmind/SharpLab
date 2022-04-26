@@ -1,9 +1,7 @@
-import './app-code-edit';
 import './app-gist-manager';
+import './app-section-code';
 import './app-section-branch-details';
-import './app-select-branch';
-import './app-select-language';
-import './app-results-section';
+import './app-section-results';
 import { WarningsSection } from 'app/results/diagnostics/WarningsSection';
 import { Diagnostic } from 'app/results/diagnostics/Diagnostic';
 import { Footer } from 'app/Footer';

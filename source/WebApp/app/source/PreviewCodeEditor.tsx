@@ -7,7 +7,7 @@ import type { ServerOptions } from 'ts/types/server-options';
 type ResultData = Result['value'];
 
 type Props = {
-    initialText: string;
+    initialCode: string;
     serviceUrl: string;
     language: LanguageName;
     serverOptions: ServerOptions;
@@ -15,7 +15,7 @@ type Props = {
     onSlowUpdateWait: () => void;
     onSlowUpdateResult: (value: MirrorSharpSlowUpdateResult<ResultData>) => void;
     onConnectionChange: (state: MirrorSharpConnectionState) => void;
-    onTextChange: (getText: () => string) => void;
+    onCodeChange: (getCode: () => string) => void;
     onServerError: (message: string) => void;
 };
 
@@ -26,7 +26,7 @@ const useUpdatingRef = <T, >(value: T) => {
 };
 
 export const PreviewCodeEditor: FC<Props> = ({
-    initialText,
+    initialCode,
     serviceUrl,
     language,
     serverOptions,
@@ -34,7 +34,7 @@ export const PreviewCodeEditor: FC<Props> = ({
     onSlowUpdateWait,
     onSlowUpdateResult,
     onConnectionChange,
-    onTextChange,
+    onCodeChange,
     onServerError
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -42,7 +42,7 @@ export const PreviewCodeEditor: FC<Props> = ({
     const onSlowUpdateWaitRef = useUpdatingRef(onSlowUpdateWait);
     const onSlowUpdateResultRef = useUpdatingRef(onSlowUpdateResult);
     const onConnectionChangeRef = useUpdatingRef(onConnectionChange);
-    const onTextChangeRef = useUpdatingRef(onTextChange);
+    const onCodeChangeRef = useUpdatingRef(onCodeChange);
     const onServerErrorRef = useUpdatingRef(onServerError);
 
     const instanceRef = useRef<MirrorSharpInstance<ServerOptions>>();
@@ -50,13 +50,13 @@ export const PreviewCodeEditor: FC<Props> = ({
     const optionsRef = useRef<MirrorSharpOptions<ServerOptions, ResultData>>({
         serviceUrl,
         language,
-        initialText,
+        initialText: initialCode,
         initialServerOptions: serverOptions,
         on: {
             slowUpdateWait: () => onSlowUpdateWaitRef.current(),
             slowUpdateResult: r => onSlowUpdateResultRef.current(r),
             connectionChange: s => onConnectionChangeRef.current(s),
-            textChange: t => onTextChangeRef.current(t),
+            textChange: t => onCodeChangeRef.current(t),
             serverError: e => onServerErrorRef.current(e)
         }
     });

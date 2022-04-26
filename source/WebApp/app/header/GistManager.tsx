@@ -6,8 +6,9 @@ import githubAuth from 'ts/helpers/github/auth';
 import { GistSaveContext, GistSaveModal } from './gist-manager/GistSaveModal';
 
 type Props = {
+    className?: string;
     gist: Gist | null;
-    useLabel: boolean;
+    useLabel?: boolean;
     context: GistSaveContext;
     onSave: (gist: Gist) => void;
 
@@ -19,7 +20,7 @@ export { GistSaveContext };
 // multiple app-gist-managers are created
 let postGitHubAuthRedirectModalOpened = false;
 
-export const GistManager: FC<Props> = ({ gist, useLabel, context, onSave, buttonProps }) => {
+export const GistManager: FC<Props> = ({ className, gist, useLabel, context, onSave, buttonProps }) => {
     const ids = useIds(['action']);
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -58,10 +59,10 @@ export const GistManager: FC<Props> = ({ gist, useLabel, context, onSave, button
             onClick={onCreateClick}>{useLabel ? 'Create' : 'Create Gist'}</button>;
     };
 
-    const panel = <>
+    const panel = <div className={className}>
         {useLabel && <label htmlFor={ids.action}>Gist:</label>}
         {renderOpenOrCreate()}
-    </>;
+    </div>;
 
     const onModalSave = (gist: Gist) => {
         setModalOpen(false);

@@ -33,7 +33,7 @@ export const BranchSelect: FC<Props> = ({ allBranches, language, branch, onSelec
     }, [allBranches, language]);
 
     return <Select<string>
-        className="option-language option online-only"
+        className="option-branch option"
         value={branch?.id ?? ''}
         options={options}
         onSelect={id => onSelect(allBranches.find(b => b.id === id) ?? null)}

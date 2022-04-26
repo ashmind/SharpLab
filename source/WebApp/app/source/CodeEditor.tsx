@@ -4,6 +4,7 @@ import { CodeEditorProps, StableCodeEditor } from './StableCodeEditor';
 import { PreviewCodeEditor } from './PreviewCodeEditor';
 
 type Props = CodeEditorProps;
+export { CodeEditorProps };
 
 export const CodeEditor: FC<Props> = props => {
     return cm6PreviewEnabled.value
