@@ -2,8 +2,8 @@ import type { MirrorSharpDiagnostic, MirrorSharpSlowUpdateResult } from 'mirrors
 import type { ContainerExperimentFallbackRunValue } from '../experiments/container-run';
 import type { CodeRange } from './code-range';
 
-export type DiagnosticWarning = Pick<MirrorSharpDiagnostic, 'id'|'message'> & { severity: 'warning' };
-export type DiagnosticError = Pick<MirrorSharpDiagnostic, 'id'|'message'> & { severity: 'error' };
+export type DiagnosticWarning = Pick<MirrorSharpDiagnostic, 'id'|'message'> & { readonly severity: 'warning' };
+export type DiagnosticError = Pick<MirrorSharpDiagnostic, 'id'|'message'> & { readonly severity: 'error' };
 export type Diagnostic = DiagnosticWarning | DiagnosticError;
 
 export interface ServerError {
@@ -17,7 +17,7 @@ export interface AstItem {
     readonly value?: string;
 
     readonly range?: string;
-    readonly properties?: { [key: string]: string };
+    readonly properties?: { readonly [key: string]: string };
     readonly children?: ReadonlyArray<AstItem>;
 }
 
@@ -101,8 +101,8 @@ export interface Explanation {
 
 interface ResultBase {
     readonly success: boolean;
-    readonly errors: Array<DiagnosticError>|[ServerError];
-    readonly warnings: Array<DiagnosticWarning>;
+    readonly errors: ReadonlyArray<DiagnosticError>|readonly [ServerError];
+    readonly warnings: ReadonlyArray<DiagnosticWarning>;
 }
 
 export interface CodeResult extends ResultBase {

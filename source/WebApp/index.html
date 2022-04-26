@@ -80,7 +80,8 @@
           </div>
         </section>
 
-        <react-warnings-section class="temp-react-wrapper" v-bind:class-name="'top-section'" v-bind:warnings="result.warnings" v-bind:expanded="false"></react-warnings-section>
+        <react-errors-section class="temp-react-wrapper" v-bind:class-name="'top-section'" v-bind:errors="result.errors"></react-errors-section>
+        <react-warnings-section class="temp-react-wrapper" v-bind:class-name="'top-section'" v-bind:warnings="result.warnings"></react-warnings-section>
       </div>
 
       <portal-target name="modals" multiple class="fragment"></portal-target>

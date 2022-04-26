@@ -8,8 +8,8 @@ const ExpanderButton: FC<Props> = ({ setExpanded }) => {
     return <button className="expander" onClick={() => setExpanded(e => !e)}></button>;
 };
 
-export const useExpander = () => {
-    const [expanded, setExpanded] = useState(false);
+export const useExpander = ({ initialExpanded = false }: { initialExpanded?: boolean } = {}) => {
+    const [expanded, setExpanded] = useState(initialExpanded);
     const BoundExpanderButton = useMemo(() => () => <ExpanderButton setExpanded={setExpanded} />, []);
 
     return {
