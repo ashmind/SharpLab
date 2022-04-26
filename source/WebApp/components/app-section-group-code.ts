@@ -6,9 +6,9 @@ import type { Gist } from 'ts/types/gist';
 import type { MirrorSharpConnectionState, MirrorSharpSlowUpdateResult } from 'mirrorsharp';
 import type { ServerOptions } from 'ts/types/server-options';
 import type { HighlightedRange } from 'ts/types/highlighted-range';
-import { CodeTopSection } from 'app/CodeTopSection';
+import { CodeTopSectionGroup } from 'app/CodeTopSectionGroup';
 
-export default Vue.component('app-section-code', {
+export default Vue.component('app-section-group-code', {
     props: {
         options: Object as () => AppOptions,
         branches: Array as () => ReadonlyArray<Branch>,
@@ -35,7 +35,7 @@ export default Vue.component('app-section-code', {
         }
     },
 
-    template: `<react-code-top-section
+    template: `<react-code-top-section-group
         class="temp-react-wrapper"
         v-bind:options="options"
         v-bind:branches="branches"
@@ -43,10 +43,10 @@ export default Vue.component('app-section-code', {
         v-bind:initialCode="initialCode"
         v-bind:codeEditorProps="fullCodeEditorProps"
         v-bind:gist="gist"
-    ></react-code-top-section>`,
+    ></react-code-top-section-group>`,
 
     components: {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        'react-code-top-section': CodeTopSection as any
+        'react-code-top-section-group': CodeTopSectionGroup as any
     }
 });

@@ -1,3 +1,4 @@
+import { classNames } from 'app/helpers/classNames';
 import { useExpander } from 'app/helpers/useExpander';
 import React, { FC } from 'react';
 import type { Branch } from 'ts/types/branch';
@@ -8,14 +9,18 @@ type Props = {
     headerless?: boolean;
 };
 
-export const BranchDetailsSection: FC<Props> = ({ branch, headerless }) => {
-    const { applyExpanderToClassName, ExpanderButton } = useExpander();
+export const BranchDetailsSection: FC<Props> = ({ className, branch, headerless }) => {
+    const { expandedClassName, ExpanderButton } = useExpander();
 
     if (!branch.commits)
         return null;
 
-    const className = applyExpanderToClassName('details-only branch-details non-code block-section');
-    return <section className={className}>
+    const fullClassName = classNames(
+        className,
+        'details-only branch-details non-code block-section',
+        expandedClassName
+    );
+    return <section className={fullClassName}>
         {!headerless && <header v-if="header">
             <ExpanderButton />
             <h1>Branch {branch.displayName}</h1>

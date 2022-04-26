@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 
 type Props = {
     setExpanded: (set: (expanded: boolean) => boolean) => void;
@@ -10,11 +10,10 @@ const ExpanderButton: FC<Props> = ({ setExpanded }) => {
 
 export const useExpander = () => {
     const [expanded, setExpanded] = useState(false);
-    const applyClassName = useCallback((className: string) => className + (expanded ? '' : ' collapsed'), [expanded]);
     const BoundExpanderButton = useMemo(() => () => <ExpanderButton setExpanded={setExpanded} />, []);
 
     return {
-        applyExpanderToClassName: applyClassName,
+        expandedClassName: expanded ? null : 'collapsed',
         ExpanderButton: BoundExpanderButton
     };
 };

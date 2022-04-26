@@ -7,7 +7,7 @@ import { CodeEditorSwitch } from 'app/footer/CodeEditorSwitch';
 import { LanguageSelect } from 'app/header/LanguageSelect';
 import type { Branch } from 'ts/types/branch';
 import { BranchSelect } from 'app/header/BranchSelect';
-import { BranchDetailsSection } from 'app/source/BranchDetailsSection';
+import { BranchDetailsSection } from 'app/code/BranchDetailsSection';
 
 type Props = {
     options: AppOptions;

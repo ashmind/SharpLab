@@ -1,6 +1,5 @@
 import './app-gist-manager';
-import './app-section-code';
-import './app-section-branch-details';
+import './app-section-group-code';
 import './app-section-results';
 import { WarningsSection } from 'app/results/diagnostics/WarningsSection';
 import { Diagnostic } from 'app/results/diagnostics/Diagnostic';

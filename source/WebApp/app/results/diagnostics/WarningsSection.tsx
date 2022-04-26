@@ -1,3 +1,4 @@
+import { classNames } from 'app/helpers/classNames';
 import { useExpander } from 'app/helpers/useExpander';
 import React, { FC } from 'react';
 import type { DiagnosticWarning } from 'ts/types/results';
@@ -9,12 +10,16 @@ type Props = {
 };
 
 export const WarningsSection: FC<Props> = ({ className, warnings }) => {
-    const { applyExpanderToClassName, ExpanderButton } = useExpander();
+    const { expandedClassName, ExpanderButton } = useExpander();
 
     if (warnings.length === 0)
         return null;
 
-    const fullClassName = applyExpanderToClassName(className + ' ' + 'warnings block-section');
+    const fullClassName = classNames(
+        className,
+        'warnings block-section',
+        expandedClassName
+    );
     return <section className={fullClassName}>
         <header>
             <ExpanderButton />

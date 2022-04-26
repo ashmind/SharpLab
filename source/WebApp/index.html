@@ -41,24 +41,20 @@
       </react-mobile-settings>
       <div class="mobile-offline-notice">connection lost, reconnecting…</div>
 
-      <div class="top-section-group top-section-group-code">
-        <app-section-code v-bind:initial-code="lastLoadedCode"
-                          v-bind:options="options"
-                          v-bind:branches="branches"
-                          v-bind:result="result"
-                          v-bind:gist="gist"
-                          v-bind:code-editor-props="{
-                            serverOptions: serverOptions,
-                            codeRange: highlightedCodeRange
-                          }"
-                          v-on:cursor-move="applyCursorMove"
-                          v-on:slow-update-wait="applyUpdateWait"
-                          v-on:slow-update-result="applyUpdateResult"
-                          v-on:server-error="applyServerError"
-                          v-on:connection-change="applyConnectionChange">
-        </app-section-code>
-        <app-section-branch-details v-bind:branch="options.branch" class="top-section"></app-section-branch-details>
-      </div>
+      <app-section-group-code v-bind:initial-code="lastLoadedCode"
+                              v-bind:options="options"
+                              v-bind:branches="branches"
+                              v-bind:result="result"
+                              v-bind:gist="gist"
+                              v-bind:code-editor-props="{
+                                serverOptions: serverOptions,
+                                codeRange: highlightedCodeRange
+                              }"
+                              v-on:cursor-move="applyCursorMove"
+                              v-on:slow-update-wait="applyUpdateWait"
+                              v-on:slow-update-result="applyUpdateResult"
+                              v-on:server-error="applyServerError"
+                              v-on:connection-change="applyConnectionChange"></app-section-group-code>
 
       <div class="top-section-group top-section-group-results" v-bind:class="{ loading: loading }">
         <app-section-results

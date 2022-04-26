@@ -6,7 +6,7 @@ import type { ParsedResult } from 'ts/types/results';
 import { BranchSelect } from './header/BranchSelect';
 import { GistManager } from './header/GistManager';
 import { LanguageSelect } from './header/LanguageSelect';
-import { CodeEditor, CodeEditorProps } from './source/CodeEditor';
+import { CodeEditor, CodeEditorProps } from './code/CodeEditor';
 
 type Props = {
     options: AppOptions;
@@ -22,6 +22,7 @@ type Props = {
     gist: Gist;
     onGistSave: (gist: Gist) => void;
 };
+export { Props as CodeTopSectionProps };
 
 export const getServiceUrl = (branch: Branch|null) => {
     const httpRoot = branch ? branch.url : window.location.origin;
