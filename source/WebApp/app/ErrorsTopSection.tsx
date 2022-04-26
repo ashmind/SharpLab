@@ -3,25 +3,20 @@ import { useExpander } from 'app/helpers/useExpander';
 import { Loader } from 'app/shared/Loader';
 import React, { FC } from 'react';
 import type { Result } from 'ts/types/results';
-import { Diagnostic } from './diagnostics/Diagnostic';
+import { Diagnostic } from './results/Diagnostic';
 
 type Props = {
-    className: string;
     errors: Result['errors'];
 };
 
-export const ErrorsSection: FC<Props> = ({ className, errors }) => {
+export const ErrorsTopSection: FC<Props> = ({ errors }) => {
     const { expandedClassName, ExpanderButton } = useExpander({ initialExpanded: true });
 
     if (errors.length === 0)
         return null;
 
-    const fullClassName = classNames(
-        className,
-        'errors',
-        expandedClassName
-    );
-    return <section className={fullClassName}>
+    const className = classNames('errors top-section', expandedClassName);
+    return <section className={className}>
         <header>
             <ExpanderButton />
             <h1>Errors</h1>

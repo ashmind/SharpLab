@@ -2,25 +2,20 @@ import { classNames } from 'app/helpers/classNames';
 import { useExpander } from 'app/helpers/useExpander';
 import React, { FC } from 'react';
 import type { DiagnosticWarning } from 'ts/types/results';
-import { Diagnostic } from './diagnostics/Diagnostic';
+import { Diagnostic } from './results/Diagnostic';
 
 type Props = {
-    className: string;
     warnings: ReadonlyArray<DiagnosticWarning>;
 };
 
-export const WarningsSection: FC<Props> = ({ className, warnings }) => {
+export const WarningsTopSection: FC<Props> = ({ warnings }) => {
     const { expandedClassName, ExpanderButton } = useExpander();
 
     if (warnings.length === 0)
         return null;
 
-    const fullClassName = classNames(
-        className,
-        'warnings block-section',
-        expandedClassName
-    );
-    return <section className={fullClassName}>
+    const className = classNames('warnings top-section block-section', expandedClassName);
+    return <section className={className}>
         <header>
             <ExpanderButton />
             <h1>Warnings</h1>

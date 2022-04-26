@@ -56,33 +56,12 @@
                               v-on:server-error="applyServerError"
                               v-on:connection-change="applyConnectionChange"></app-section-group-code>
 
-      <div class="top-section-group top-section-group-results" v-bind:class="{ loading: loading }">
-        <app-section-results
-            v-bind:options="options"
-            v-bind:result="result"
-            ref="astView"
-            v-on:code-range-active="applyCodeViewRange"
-            v-on:ast-item-select="applyAstSelect"
-        ></app-section-results>
-
-        <section class="top-section errors" v-show="result.errors.length > 0">
-          <header>
-            <button class="expander" v-app-class-toggle="{ target: '.errors', class: 'collapsed' }"></button>
-            <h1>Errors</h1>
-          </header>
-          <div class="content">
-            <div class="loader"></div>
-            <ul>
-              <li v-for="error in result.errors">
-                <react-diagnostic class="temp-react-wrapper" v-bind:data="error"></react-diagnostic>
-              </li>
-            </ul>
-          </div>
-        </section>
-
-        <react-errors-section class="temp-react-wrapper" v-bind:class-name="'top-section'" v-bind:errors="result.errors"></react-errors-section>
-        <react-warnings-section class="temp-react-wrapper" v-bind:class-name="'top-section'" v-bind:warnings="result.warnings"></react-warnings-section>
-      </div>
+       <app-section-group-results v-bind:options="options"
+                                  v-bind:loading="loading"
+                                  v-bind:result="result"
+                                  ref="astView"
+                                  v-on:code-range-active="applyCodeViewRange"
+                                  v-on:ast-item-select="applyAstSelect"></app-section-group-results>
 
       <portal-target name="modals" multiple class="fragment"></portal-target>
     </main>

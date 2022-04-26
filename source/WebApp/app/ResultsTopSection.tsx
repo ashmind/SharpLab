@@ -20,6 +20,7 @@ type Props = {
     onAstSelect: (item: AstItem | null) => void;
     onCodeRangeSelect: (range: LinkedCodeRange | null) => void;
 };
+export { Props as ResultsTopSectionProps };
 
 type CodeState = Pick<CodeResult, 'value'|'ranges'> & { language: TargetLanguageName };
 
