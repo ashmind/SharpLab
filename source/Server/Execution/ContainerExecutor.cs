@@ -8,6 +8,7 @@ using MirrorSharp.Advanced;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using SharpLab.Server.Common;
+using SharpLab.Server.Common.Diagnostics;
 using SharpLab.Server.Execution.Container;
 using SharpLab.Server.Execution.Internal;
 using SharpLab.Server.MirrorSharp;
@@ -49,6 +50,8 @@ namespace SharpLab.Server.Execution {
             foreach (var rewriter in _rewriters) {
                 rewriter.Rewrite(definition, session);
             }
+
+            AssemblyLog.Log("2.WithFlow", definition);
 
             using var rewrittenStream = _memoryStreamManager.GetStream();
             definition.Write(rewrittenStream);
