@@ -1,15 +1,15 @@
 import React, { FC, useMemo } from 'react';
 import { Select, SelectHTMLProps } from 'app/shared/Select';
 import { TargetName, targets } from 'ts/helpers/targets';
+import { useAndSetOption } from 'app/shared/useOption';
 
 type Props = {
-    target: TargetName;
-    onSelect: (target: TargetName) => void;
     useAriaLabel?: boolean;
-    htmlProps?: Omit<SelectHTMLProps, 'aria-label'>;
-};
+} & Omit<SelectHTMLProps, 'aria-label'>;
 
-export const TargetSelect: FC<Props> = ({ target, onSelect, useAriaLabel }) => {
+export const TargetSelect: FC<Props> = ({ useAriaLabel, ...htmlProps }) => {
+    const [target, setTarget] = useAndSetOption('target');
+
     const options = useMemo(() => [
         {
             groupLabel: 'Decompile',
@@ -40,10 +40,9 @@ export const TargetSelect: FC<Props> = ({ target, onSelect, useAriaLabel }) => {
         className="option-target option online-only"
         value={target}
         options={options}
-        onSelect={onSelect}
-        htmlProps={{
-            // eslint-disable-next-line no-undefined
-            'aria-label': useAriaLabel ? 'Output Mode' : undefined
-        }}
+        onSelect={setTarget}
+        // eslint-disable-next-line no-undefined
+        aria-label={useAriaLabel ? 'Output Mode' : undefined}
+        {...htmlProps}
     />;
 };

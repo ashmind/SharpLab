@@ -5,33 +5,37 @@ import { Modal } from 'app/shared/Modal';
 import type { Gist } from 'ts/types/gist';
 import { useAsync } from 'app/helpers/useAsync';
 import { createGistAsync } from 'ts/helpers/github/gists';
-import type { AppOptions } from 'ts/types/app';
 import toRawOptions from 'ts/helpers/to-raw-options';
-import type { Result } from 'ts/types/results';
-
-export type GistSaveContext = {
-    readonly code: string;
-    readonly options: AppOptions;
-    readonly result: Result;
-};
+import { useOption } from 'app/shared/useOption';
+import { useResult } from 'app/shared/useResult';
+import { useCode } from 'app/shared/useCode';
 
 type Props = {
-    context: GistSaveContext;
     onSave: (gist: Gist) => void;
     onCancel: () => void;
 };
 
-export const GistSaveModal: FC<Props> = ({ context, onSave, onCancel }) => {
+export const GistSaveModal: FC<Props> = ({ onSave, onCancel }) => {
     const ids = useIds(['name']);
     const [name, setName] = useState('');
+    const code = useCode();
+    const [language, target, release, branch] = [
+        useOption('language'),
+        useOption('target'),
+        useOption('release'),
+        useOption('branch')
+    ];
+    const result = useResult();
     const [save, saved, error, saving] = useAsync(async () => {
+        if (!result) throw new Error(`Cannot save gist before receiving initial result`);
         return await createGistAsync({
             name,
-            code: context.code,
-            options: toRawOptions(context.options),
-            result: context.result
+            code,
+            options: toRawOptions({ language, target, release, branch }),
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            result
         });
-    }, [name, context]);
+    }, [name, code, language, target, release, branch, result]);
     const canSave = name && !saving;
     const errorMessage = error && ((error as { message?: string }).message ?? error);
 

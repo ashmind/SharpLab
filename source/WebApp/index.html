@@ -20,54 +20,8 @@
     <link rel="stylesheet" href="{build:css}">
     <link rel="manifest" href="manifest.json">
   </head>
-  <body data-mobile-codemirror-fullscreen-class="mobile-editor-focus" class="loading" data-cloak="loading">
-    <main v-bind:class="{
-      'root-status-default': status.online && !status.error,
-      'root-status-offline': !status.online,
-      'root-status-error':   status.error
-    }">
-      <react-mobile-settings
-          class="temp-react-wrapper"
-          v-bind:options="options"
-          v-bind:branches="branches"
-          v-bind:gist="gist"
-          v-bind:button-props="{ tabIndex: 1 }">
-        <app-gist-manager v-bind:gist="gist"
-                          v-bind:code="code"
-                          v-bind:options="options"
-                          v-bind:result="result"
-                          v-bind:use-label="true"
-                          v-on:save="applyGistSave"></app-gist-manager>
-      </react-mobile-settings>
-      <div class="mobile-offline-notice">connection lost, reconnecting…</div>
-
-      <app-section-group-code v-bind:initial-code="lastLoadedCode"
-                              v-bind:options="options"
-                              v-bind:branches="branches"
-                              v-bind:result="result"
-                              v-bind:gist="gist"
-                              v-bind:code-editor-props="{
-                                serverOptions: serverOptions,
-                                codeRange: highlightedCodeRange
-                              }"
-                              v-on:cursor-move="applyCursorMove"
-                              v-on:slow-update-wait="applyUpdateWait"
-                              v-on:slow-update-result="applyUpdateResult"
-                              v-on:server-error="applyServerError"
-                              v-on:connection-change="applyConnectionChange"></app-section-group-code>
-
-       <app-section-group-results v-bind:options="options"
-                                  v-bind:loading="loading"
-                                  v-bind:result="result"
-                                  ref="astView"
-                                  v-on:code-range-active="applyCodeViewRange"
-                                  v-on:ast-item-select="applyAstSelect"></app-section-group-results>
-
-      <portal-target name="modals" multiple class="fragment"></portal-target>
-    </main>
-    <react-footer class="temp-react-wrapper"></react-footer>
-
-    {build:templates}
+  <body data-mobile-codemirror-fullscreen-class="mobile-editor-focus">
+    <div id="app"></div>
 
     <script type="text/javascript">
       (function() {

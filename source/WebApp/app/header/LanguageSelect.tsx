@@ -1,13 +1,11 @@
 import React, { FC } from 'react';
 import { Select, SelectHTMLProps } from 'app/shared/Select';
 import { LanguageName, languages } from 'ts/helpers/languages';
+import { useAndSetOption } from 'app/shared/useOption';
 
 type Props = {
-    language: LanguageName;
-    onSelect: (language: LanguageName) => void;
     useAriaLabel?: boolean;
-    htmlProps?: Omit<SelectHTMLProps, 'aria-label'>;
-};
+} & Omit<SelectHTMLProps, 'aria-label'>;
 
 const options = [
     { label: 'C#', value: languages.csharp },
@@ -16,15 +14,16 @@ const options = [
     { label: 'IL', value: languages.il }
 ] as const;
 
-export const LanguageSelect: FC<Props> = ({ language, onSelect, useAriaLabel }) => {
+export const LanguageSelect: FC<Props> = ({ useAriaLabel, ...htmlProps }) => {
+    const [language, setLanguage] = useAndSetOption('language');
+
     return <Select<LanguageName>
         className="option-language option online-only"
         value={language}
         options={options}
-        onSelect={onSelect}
-        htmlProps={{
-            // eslint-disable-next-line no-undefined
-            'aria-label': useAriaLabel ? 'Code Language' : undefined
-        }}
+        onSelect={setLanguage}
+        // eslint-disable-next-line no-undefined
+        aria-label={useAriaLabel ? 'Code Language' : undefined}
+        {...htmlProps}
     />;
 };

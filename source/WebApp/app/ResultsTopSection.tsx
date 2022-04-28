@@ -1,53 +1,48 @@
 import React, { FC, useEffect, useState } from 'react';
 import dateFormat from 'dateformat';
-import type { AppOptions } from 'ts/types/app';
-import type { AstItem, CodeResult, OutputItem, ParsedResult } from 'ts/types/results';
+import type { CodeResult, OutputItem } from 'ts/types/results';
 import type { TargetLanguageName } from 'ts/helpers/targets';
 import { TargetSelect } from './header/TargetSelect';
 import { ModeSelect } from './header/ModeSelect';
 import { Loader } from './shared/Loader';
-import { CodeView, LinkedCodeRange } from './results/CodeView';
+import { CodeView } from './results/CodeView';
 import { AstView } from './results/AstView';
 import { VerifyView } from './results/VerifyView';
 import { ExplainView } from './results/ExplainView';
 import { OutputView } from './results/OutputView';
-
-type Props = {
-    options: AppOptions;
-    result: ParsedResult;
-    selectedCodeOffset?: number;
-    // TODO: Consolidate
-    onAstSelect: (item: AstItem | null) => void;
-    onCodeRangeSelect: (range: LinkedCodeRange | null) => void;
-};
-export { Props as ResultsTopSectionProps };
+import { useOption } from './shared/useOption';
+import { useResult } from './shared/useResult';
 
 type CodeState = Pick<CodeResult, 'value'|'ranges'> & { language: TargetLanguageName };
 
 const EMPTY_OUTPUT = [] as ReadonlyArray<OutputItem>;
-export const ResultsTopSection: FC<Props> = ({ options, result, selectedCodeOffset, onAstSelect, onCodeRangeSelect }) => {
+export const ResultsTopSection: FC = () => {
     const [lastCodeState, setLastCodeState] = useState<CodeState>();
+    const target = useOption('target');
+    const result = useResult();
 
     // Code is special since CodeMirror is slow to set up, so we hide it instead of destroying it
     useEffect(() => {
-        if (result.type === 'code')
-            setLastCodeState({ ...result, language: options.target as TargetLanguageName });
+        if (result?.type === 'code')
+            setLastCodeState({ ...result, language: target as TargetLanguageName });
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [result]);
-    const codeResult = lastCodeState && <div hidden={result.type !== 'code'}>
+    const codeResult = lastCodeState && <div hidden={result?.type !== 'code'}>
         <CodeView
             code={lastCodeState.value ?? ''}
             ranges={lastCodeState.ranges}
-            language={lastCodeState.language}
-            onRangeSelect={onCodeRangeSelect} />
+            language={lastCodeState.language} />
     </div>;
 
     const renderNonCodeResult = () => {
+        if (!result)
+            return null;
+
         switch (result.type) {
             case 'code':
                 return null;
             case 'ast':
-                return <AstView roots={result.value} onSelect={onAstSelect} selectedOffset={selectedCodeOffset} />;
+                return <AstView roots={result.value} />;
             case 'verify':
                 return <VerifyView message={result.value ?? ''} />;
             case 'explain':
@@ -60,19 +55,11 @@ export const ResultsTopSection: FC<Props> = ({ options, result, selectedCodeOffs
     return <section className="top-section result">
         <header>
             <h1>Results</h1>
-            <TargetSelect
-                target={options.target}
-                onSelect={t => options.target = t}
-                htmlProps={{ tabIndex: 4 }}
-            />
-            {result.cached && <small className="result-cached-indicator" title="Note: This output is cached and might not represent the latest behavior">
+            <TargetSelect tabIndex={4} useAriaLabel />
+            {result?.cached && <small className="result-cached-indicator" title="Note: This output is cached and might not represent the latest behavior">
                 Cached: {dateFormat(result.cached.date, 'd mmm yyyy')}
             </small>}
-            <ModeSelect
-                mode={options.release ? 'release' : 'debug'}
-                onSelect={m => options.release = (m === 'release')}
-                htmlProps={{ tabIndex: 5 }}
-            />
+            <ModeSelect tabIndex={5} useAriaLabel />
         </header>
         <div className="content">
             <Loader />

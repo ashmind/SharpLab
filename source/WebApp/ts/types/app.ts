@@ -1,4 +1,3 @@
-import type { VueConstructor } from 'vue';
 import type { MirrorSharpSlowUpdateResult, MirrorSharpConnectionState } from 'mirrorsharp';
 import type { TargetName } from '../helpers/targets';
 import type { LanguageName } from '../helpers/languages';
@@ -84,4 +83,3 @@ export type App = AppData
     & { readonly [TKey in keyof AppComputed]: ReturnType<AppComputed[TKey]> }
     & AppMethods
     & { readonly $refs: AppRefs };
-export type AppVue = Omit<App, '$refs'> & InstanceType<VueConstructor>;

@@ -8,7 +8,7 @@ import defaults from './handlers/defaults';
 import lastUsed from './handlers/last-used';
 import { saveStateToUrl, loadStateFromUrlAsync } from './handlers/url';
 
-type AppStateData = Pick<AppData, 'options' | 'code' | 'gist'>;
+export type AppStateData = Pick<AppData, 'options' | 'code' | 'gist'>;
 
 export const saveState = (state: AppStateData) => {
     const { code, options, gist } = state;

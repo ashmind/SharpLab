@@ -1,4 +1,4 @@
-import type { MirrorSharpSlowUpdateResult, MirrorSharpConnectionState } from 'mirrorsharp';
+/*import type { MirrorSharpSlowUpdateResult, MirrorSharpConnectionState } from 'mirrorsharp';
 import type { Branch } from './types/branch';
 import type { CodeRange } from './types/code-range';
 import type { AstItem, CodeResult, NonErrorResult, Result, DiagnosticError, DiagnosticWarning, RunResult } from './types/results';
@@ -268,4 +268,4 @@ async function createAppAsync() {
         });
         data.lastLoadedCode = data.code;
     });
-})();
+})();*/

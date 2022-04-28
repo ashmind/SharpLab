@@ -1,4 +1,4 @@
-import { allHooks } from './registry';
+/*import { allHooks } from './registry';
 
 allHooks.main.ready.push(() => {
     const body = document.getElementsByTagName('body')[0];
@@ -22,4 +22,4 @@ allHooks.main.ready.push(() => {
         }
         return ancestors;
     }
-});
+});*/

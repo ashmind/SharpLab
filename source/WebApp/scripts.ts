@@ -1,4 +1,3 @@
-import path from 'path';
 import { task, exec, build as run } from 'oldowan';
 import execa from 'execa';
 import jetpack from 'fs-jetpack';
@@ -78,7 +77,7 @@ const less = task('less', async () => {
 }, { watch: [`${dirname}/less/**/*.less`] });
 
 const tsLint = task('ts:lint', () => exec('eslint . --max-warnings 0 --ext .js,.ts'));
-const tsInputPath = `${dirname}/ts/app.ts`;
+const tsInputPath = `${dirname}/app/index.tsx`;
 const jsOutputPath = `${outputVersionRoot}/app.min.js`;
 const esbuildArgs = [
     tsInputPath,
@@ -169,22 +168,18 @@ const htmlSourcePath = `${dirname}/index.html`;
 const htmlOutputPath = `${outputVersionRoot}/index.html`;
 const html = task('html', async () => {
     const htmlMinifier = (await import('html-minifier')).default;
-
     const iconDataUrl = await getIconDataUrl();
-    const templates = await getCombinedTemplates(htmlMinifier);
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     let html = (await jetpack.readAsync(htmlSourcePath))!;
     html = html
         .replace('{build:js}', 'app.min.js')
         .replace('{build:css}', 'app.min.css')
-        .replace('{build:templates}', templates)
         .replace('{build:favicon-svg}', iconDataUrl);
     html = htmlMinifier.minify(html, { collapseWhitespace: true });
     await jetpack.writeAsync(htmlOutputPath, html);
 }, {
     watch: [
-        `${dirname}/components/**/*.html`,
         htmlSourcePath,
         iconSvgSourcePath
     ]
@@ -240,20 +235,6 @@ async function getIconDataUrl() {
         .replace(/</g, '%3C')
         .replace(/>/g, '%3E')
         .replace(/\s+/g, ' ');
-}
-
-async function getCombinedTemplates(
-    htmlMinifier: typeof import('html-minifier')
-) {
-    const basePath = `${dirname}/components`;
-    const htmlPaths = await jetpack.findAsync(basePath, { matching: '*.html' });
-    const htmlPromises = htmlPaths.map(async htmlPath => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const template = (await jetpack.readAsync(htmlPath))!;
-        const minified = htmlMinifier.minify(template, { collapseWhitespace: true });
-        return `<script type="text/x-template" id="${path.basename(htmlPath, '.html')}">${minified}</script>`;
-    });
-    return (await Promise.all(htmlPromises)).join('\r\n');
 }
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

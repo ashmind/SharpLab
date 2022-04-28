@@ -7,6 +7,7 @@ import 'components/internal/codemirror/mode-cil';
 import 'components/internal/codemirror/mode-asm';
 import 'components/internal/codemirror/addon-cil-infotip';
 import { TargetLanguageName, targets } from 'ts/helpers/targets';
+import { useCodeRangeSync } from 'app/shared/useCodeRangeSync';
 import type { LinkedCodeRange } from './code/LinkedCodeRange';
 import { findRange } from './code/findRange';
 
@@ -14,7 +15,6 @@ type Props = {
     code: string;
     language: TargetLanguageName;
     ranges: ReadonlyArray<LinkedCodeRange> | undefined;
-    onRangeSelect: (range: LinkedCodeRange | null) => void;
 };
 export { LinkedCodeRange };
 
@@ -25,7 +25,9 @@ const modeMap = {
     [targets.asm]:    'text/x-asm'
 };
 
-export const CodeView: FC<Props> = ({ code, language, ranges, onRangeSelect }) => {
+export const CodeView: FC<Props> = ({ code, language, ranges }) => {
+    const [, setSourceRange] = useCodeRangeSync('source');
+
     const cmRef = useRef<CodeMirror.EditorFromTextArea | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -100,7 +102,10 @@ export const CodeView: FC<Props> = ({ code, language, ranges, onRangeSelect }) =
         );
     }, [selectedRange]);
 
-    useEffect(() => onRangeSelect(selectedRange), [onRangeSelect, selectedRange]);
+    useEffect(
+        () => setSourceRange(selectedRange?.source ?? null),
+        [selectedRange, setSourceRange]
+    );
 
     return <div>
         <textarea ref={textareaRef}></textarea>

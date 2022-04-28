@@ -1,16 +1,15 @@
 import React, { FC, useEffect, useLayoutEffect, useRef } from 'react';
-import type { LanguageName } from 'ts/helpers/languages';
 import type { Result } from 'ts/types/results';
 import mirrorsharp, { MirrorSharpOptions, MirrorSharpConnectionState, MirrorSharpInstance, MirrorSharpSlowUpdateResult } from 'mirrorsharp-codemirror-6-preview';
 import type { ServerOptions } from 'ts/types/server-options';
+import { useOption } from 'app/shared/useOption';
+import { useServerOptions } from './code-editor/useServerOptions';
+import { useServiceUrl } from './code-editor/useServiceUrl';
 
 type ResultData = Result['value'];
 
 type Props = {
     initialCode: string;
-    serviceUrl: string;
-    language: LanguageName;
-    serverOptions: ServerOptions;
 
     onSlowUpdateWait: () => void;
     onSlowUpdateResult: (value: MirrorSharpSlowUpdateResult<ResultData>) => void;
@@ -27,9 +26,6 @@ const useUpdatingRef = <T, >(value: T) => {
 
 export const PreviewCodeEditor: FC<Props> = ({
     initialCode,
-    serviceUrl,
-    language,
-    serverOptions,
 
     onSlowUpdateWait,
     onSlowUpdateResult,
@@ -37,6 +33,9 @@ export const PreviewCodeEditor: FC<Props> = ({
     onCodeChange,
     onServerError
 }) => {
+    const language = useOption('language');
+    const serviceUrl = useServiceUrl();
+    const serverOptions = useServerOptions({ initialCached: true });
     const containerRef = useRef<HTMLDivElement>(null);
 
     const onSlowUpdateWaitRef = useUpdatingRef(onSlowUpdateWait);

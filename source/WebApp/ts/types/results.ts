@@ -144,17 +144,17 @@ export interface ErrorResult extends ResultBase {
 }
 
 export type NonErrorResult = CodeResult|AstResult|ExplainResult|VerifyResult|RunResult;
-export type Result = MaybeCached<NonErrorResult|ErrorResult>;
+export type Result = NonErrorResult|ErrorResult;
 
-type ParsedRunResult = MaybeCached<Omit<RunResult, 'value'> & {
+type ParsedRunResult = Omit<RunResult, 'value'> & {
     value: Exclude<RunResult['value'], string>;
-}>;
-export type ParsedResult = Exclude<Result, RunResult>|ParsedRunResult;
-
-export type MaybeCached<T> = T & {
-    cached?: { date: Date };
 };
+export type ParsedNonErrorResult = Exclude<Result, RunResult|ErrorResult>|ParsedRunResult;
+export type ParsedResult = ParsedNonErrorResult|ErrorResult;
 
-export type CachedUpdateResult = MirrorSharpSlowUpdateResult<Result['value']> & {
-    cached: { date: Date };
-};
+export type UpdateResult = MirrorSharpSlowUpdateResult<Result['value']>;
+export type NonErrorUpdateResult = MirrorSharpSlowUpdateResult<NonErrorResult['value']>;
+
+export type MaybeCached<T> = T & { cached?: { date: Date } };
+
+export type CachedUpdateResult = NonErrorUpdateResult & { cached: { date: Date } };

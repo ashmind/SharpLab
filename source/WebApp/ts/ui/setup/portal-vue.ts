@@ -1,4 +1,4 @@
-import Vue from 'vue';
+/*import Vue from 'vue';
 import PortalVue from 'portal-vue';
 
-Vue.use(PortalVue);
+Vue.use(PortalVue);*/

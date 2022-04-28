@@ -1,18 +1,13 @@
 import React, { FC, HTMLAttributes, ReactElement, useState } from 'react';
-import type { AppOptions } from 'ts/types/app';
-import type { Branch } from 'ts/types/branch';
 import { Modal } from '../shared/Modal';
 import { SettingsForm } from './settings/SettingsForm';
 
 type Props = {
-    options: AppOptions;
-    branches: ReadonlyArray<Branch>;
-    // TEMP: Vue compatibility
-    'button-props': HTMLAttributes<HTMLButtonElement>;
-    children: ReactElement;
+    buttonProps: Omit<HTMLAttributes<HTMLButtonElement>, 'className'|'onClick'|'aria-label'>;
+    gistManager: ReactElement;
 };
 
-export const MobileSettings: FC<Props> = ({ options, branches, ['button-props']: buttonProps, children: gistManager }) => {
+export const MobileSettings: FC<Props> = ({ buttonProps, gistManager }) => {
     const [modalOpen, setModalOpen] = useState(false);
 
     const button = <button
@@ -22,7 +17,7 @@ export const MobileSettings: FC<Props> = ({ options, branches, ['button-props']:
         {...buttonProps}></button>;
 
     const modal = modalOpen && <Modal title="Settings" onClose={() => setModalOpen(false)}>
-        <SettingsForm options={options} branches={branches} gistManager={gistManager} />
+        <SettingsForm gistManager={gistManager} />
     </Modal>;
 
     return <>

@@ -1,56 +1,40 @@
-import React, { FC, ReactNode } from 'react';
+import React, { FC, ReactElement } from 'react';
 import { useIds } from 'app/helpers/useIds';
 import { TargetSelect } from 'app/header/TargetSelect';
-import type { AppOptions } from 'ts/types/app';
 import { ModeSelect } from 'app/header/ModeSelect';
 import { CodeEditorSwitch } from 'app/footer/CodeEditorSwitch';
 import { LanguageSelect } from 'app/header/LanguageSelect';
-import type { Branch } from 'ts/types/branch';
 import { BranchSelect } from 'app/header/BranchSelect';
 import { BranchDetailsSection } from 'app/code/BranchDetailsSection';
+import { useOption } from 'app/shared/useOption';
 
 type Props = {
-    options: AppOptions;
-    branches: ReadonlyArray<Branch>;
-    gistManager: ReactNode;
+    gistManager: ReactElement;
 };
 
-export const SettingsForm: FC<Props> = ({ options, branches, gistManager }) => {
+export const SettingsForm: FC<Props> = ({ gistManager }) => {
     const ids = useIds(['language', 'branch', 'target', 'mode']);
+    const branch = useOption('branch');
 
     return <form className="modal-body form-aligned" onSubmit={e => e.preventDefault()}>
         <fieldset>
             <legend>Main</legend>
             <div className="form-line">
                 <label htmlFor={ids.language}>Language:</label>
-                <LanguageSelect
-                    language={options.language}
-                    onSelect={l => options.language = l}
-                    htmlProps={{ id: ids.language }} />
+                <LanguageSelect id={ids.language} />
             </div>
             <div className="form-line">
                 <label htmlFor={ids.branch}>Branch:</label>
-                <BranchSelect
-                    allBranches={branches}
-                    language={options.language}
-                    branch={options.branch}
-                    onSelect={b => options.branch = b}
-                    htmlProps={{ id: ids.branch }} />
+                <BranchSelect id={ids.branch} />
             </div>
-            {options.branch && <BranchDetailsSection branch={options.branch} headerless />}
+            {branch && <BranchDetailsSection branch={branch} headerless />}
             <div className="form-line">
                 <label htmlFor={ids.target}>Output:</label>
-                <TargetSelect
-                    target={options.target}
-                    onSelect={t => options.target = t}
-                    htmlProps={{ id: ids.target }} />
+                <TargetSelect id={ids.target} />
             </div>
             <div className="form-line">
                 <label htmlFor={ids.mode}>Build:</label>
-                <ModeSelect
-                    mode={options.release ? 'release' : 'debug'}
-                    onSelect={m => options.release = m === 'release'}
-                    htmlProps={{ id: ids.mode }} />
+                <ModeSelect id={ids.mode} />
             </div>
         </fieldset>
 

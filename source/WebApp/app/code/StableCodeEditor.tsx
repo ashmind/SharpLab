@@ -1,30 +1,26 @@
 import React, { FC, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
-import type { LanguageName } from 'ts/helpers/languages';
-import type { HighlightedRange } from 'ts/types/highlighted-range';
 import type { FlowStep, Result } from 'ts/types/results';
 import mirrorsharp, { MirrorSharpConnectionState, MirrorSharpInstance, MirrorSharpOptions, MirrorSharpSlowUpdateResult } from 'mirrorsharp';
 import 'codemirror/mode/mllike/mllike';
-import type { ServerOptions } from 'ts/types/server-options';
-import { useSyncHighlightedRangeToMarker } from './code-editor/useSyncHighlightedRangeToMarker';
-import { useRenderExecutionFlow } from './code-editor/useRenderExecutionFlow';
 import 'components/internal/codemirror/addon-jump-arrows';
+import type { ServerOptions } from 'ts/types/server-options';
+import { useOption } from 'app/shared/useOption';
+import { useRenderExecutionFlow } from './code-editor/useRenderExecutionFlow';
+import { useServerOptions } from './code-editor/useServerOptions';
+import { useServiceUrl } from './code-editor/useServiceUrl';
+import { useEditorCodeRangeSync } from './code-editor/useEditorCodeRangeSync';
 
 type ResultData = Result['value'];
 
 type Props = {
     initialCode: string;
     initialCached: boolean;
-    serviceUrl: string;
-    language: LanguageName;
-    serverOptions: ServerOptions;
-    highlightedRange: HighlightedRange | null;
     executionFlow: ReadonlyArray<FlowStep> | null;
 
     onSlowUpdateWait: () => void;
     onSlowUpdateResult: (value: MirrorSharpSlowUpdateResult<ResultData>) => void;
     onConnectionChange: (state: MirrorSharpConnectionState) => void;
     onCodeChange: (getCode: () => string) => void;
-    onCursorMove: (getOffset: () => number) => void;
     onServerError: (message: string) => void;
 };
 export { Props as CodeEditorProps };
@@ -38,26 +34,24 @@ const useUpdatingRef = <T, >(value: T) => {
 export const StableCodeEditor: FC<Props> = ({
     initialCode,
     initialCached,
-    serviceUrl,
-    language,
-    serverOptions,
-    highlightedRange,
     executionFlow,
 
     onSlowUpdateWait,
     onSlowUpdateResult,
     onConnectionChange,
     onCodeChange,
-    onCursorMove,
     onServerError
 }) => {
+    const language = useOption('language');
+    const serviceUrl = useServiceUrl();
+    const serverOptions = useServerOptions({ initialCached });
+
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const lastInitialCodeRef = useRef<string>();
 
     const onSlowUpdateWaitRef = useUpdatingRef(onSlowUpdateWait);
     const onSlowUpdateResultRef = useUpdatingRef(onSlowUpdateResult);
     const onConnectionChangeRef = useUpdatingRef(onConnectionChange);
-    const onCursorMoveRef = useUpdatingRef(onCursorMove);
     const onServerErrorRef = useUpdatingRef(onServerError);
 
     const instanceRef = useRef<MirrorSharpInstance<ServerOptions>>();
@@ -106,9 +100,6 @@ export const StableCodeEditor: FC<Props> = ({
             .querySelector('[contentEditable=true]');
         if (contentEditable)
             contentEditable.setAttribute('autocomplete', 'off');
-
-        const getCursorOffset = () => cm.indexFromPos(cm.getCursor());
-        cm.on('cursorActivity', () => onCursorMoveRef.current(getCursorOffset));
 
         return () => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -165,7 +156,7 @@ export const StableCodeEditor: FC<Props> = ({
     }, [serviceUrl]);
 
     const cm = instanceRef.current?.getCodeMirror();
-    useSyncHighlightedRangeToMarker(highlightedRange, cm);
+    useEditorCodeRangeSync(cm);
     useRenderExecutionFlow(executionFlow, cm);
 
     return <textarea ref={textareaRef}></textarea>;

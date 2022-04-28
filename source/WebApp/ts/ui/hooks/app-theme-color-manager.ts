@@ -1,4 +1,4 @@
-﻿import { getEffectiveTheme, watchEffectiveTheme } from '../../helpers/theme';
+﻿/*import { getEffectiveTheme, watchEffectiveTheme } from '../../helpers/theme';
 import { allHooks } from './registry';
 
 allHooks.main.ready.push(vue => {
@@ -114,4 +114,4 @@ allHooks.main.ready.push(vue => {
         effectiveTheme = t;
         applyThemeColor(lastNonDarkColor);
     });
-});
+});*/
