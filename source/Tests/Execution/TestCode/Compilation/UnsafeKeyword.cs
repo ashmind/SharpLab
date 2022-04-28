@@ -2,6 +2,7 @@ public static class Program {
     public static void Main() {
         unsafe {
             var node = new Node();
+            Node* a = &node;
         }
     }
 

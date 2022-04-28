@@ -200,6 +200,9 @@ namespace SharpLab.Server.Execution.Internal {
             ReportMethods flow,
             ref int index
         ) {
+            if (valueType.IsPointer)
+                return;
+
             il.InsertBeforeAndRetargetAll(instruction, getValue);
             il.InsertBefore(instruction, valueName != null ? il.Create(OpCodes.Ldstr, valueName) : il.Create(OpCodes.Ldnull));
             il.InsertBefore(instruction, il.CreateLdcI4Best(line));
