@@ -127,7 +127,7 @@ export const StableCodeEditor: FC<Props> = ({
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         instance.setLanguage(language);
         connectIfInitialWasCached();
-    }, [instance, language]);
+    }, [connectIfInitialWasCached, instance, language]);
 
     useEffect(() => {
         if (!instance || serverOptions === optionsRef.current.initialServerOptions)
