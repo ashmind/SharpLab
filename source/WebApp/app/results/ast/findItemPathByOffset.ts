@@ -1,4 +1,4 @@
-import type { AstItem } from 'ts/types/results';
+import type { AstItem } from '../../../ts/types/results';
 
 const matchesOffset = (item: AstItem, offset: number) => {
     if (!item.range)

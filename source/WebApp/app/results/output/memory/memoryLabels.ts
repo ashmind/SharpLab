@@ -1,4 +1,4 @@
-import type { MemoryInspectionLabel } from 'ts/types/results';
+import type { MemoryInspectionLabel } from '../../../../ts/types/results';
 
 type InterimLabel = MemoryInspectionLabel & {
     levelSpan?: number;

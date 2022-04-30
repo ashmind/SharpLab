@@ -1,4 +1,4 @@
-import type { AstItem } from 'ts/types/results';
+import type { AstItem } from '../../../ts/types/results';
 
 export const parseRangeFromItem = (item: AstItem | null) => {
     if (!item || !item.range)

@@ -1,5 +1,5 @@
-import type { ResultUpdateAction } from 'app/shared/contexts/ResultContext';
-import type { ParsedResult } from 'ts/types/results';
+import type { ParsedResult } from '../../../ts/types/results';
+import type { ResultUpdateAction } from '../../shared/contexts/ResultContext';
 import { convertFromUpdateResult } from './convertFromUpdateResult';
 
 export const resultReducer = (_: ParsedResult | undefined, action: ResultUpdateAction): ParsedResult | undefined => {

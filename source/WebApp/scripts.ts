@@ -91,12 +91,12 @@ const tsMain = task('ts:main', () => exec2('esbuild', esbuildArgs), {
     watch: () => exec2('esbuild', [...esbuildArgs, '--watch'])
 });
 
-const asmSourcePath = `${dirname}/components/internal/codemirror/mode-asm-instructions.txt`;
+const asmSourcePath = `${dirname}/app/shared/codemirror/mode-asm-instructions.txt`;
 const tsAsmRegex = task('ts:asm-regex', async () => {
     // @ts-expect-error (no typings)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const regexCombiner = (await import('regex-combiner')).default;
-    const asmOutputPath = `${dirname}/components/internal/codemirror/mode-asm-instructions.ts`;
+    const asmOutputPath = `${dirname}/app/shared/codemirror/mode-asm-instructions.ts`;
 
     // read list file as array of lines
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

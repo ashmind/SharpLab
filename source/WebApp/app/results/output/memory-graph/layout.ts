@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/default
 import type { SimulationLinkDatum } from 'd3';
 import * as d3 from 'd3';
-import type { MemoryGraphInspection, MemoryGraphNode } from 'ts/types/results';
+import type { MemoryGraphInspection, MemoryGraphNode } from '../../../../ts/types/results';
 import { convertToD3NodesAndLinks } from './convertToD3NodesAndLinks';
 import { forceBindNested } from './d3/forceBindNested';
 import { forceRepealBoundary } from './d3/forceRepealBoundary';

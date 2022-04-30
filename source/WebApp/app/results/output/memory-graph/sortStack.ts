@@ -1,4 +1,4 @@
-import type { MemoryGraphStackNode } from 'ts/types/results';
+import type { MemoryGraphStackNode } from '../../../../ts/types/results';
 
 export type SortedStackNode = (MemoryGraphStackNode & { isSeparator?: undefined }) | {
     isSeparator: true;

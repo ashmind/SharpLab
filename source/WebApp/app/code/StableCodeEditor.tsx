@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import mirrorsharp, { MirrorSharpConnectionState, MirrorSharpInstance, MirrorSharpOptions, MirrorSharpSlowUpdateResult } from 'mirrorsharp';
 import 'codemirror/mode/mllike/mllike';
-import '../../components/internal/codemirror/addon-jump-arrows';
+import '../shared/codemirror/addon-jump-arrows';
 import type { Result, FlowStep } from '../../ts/types/results';
 import { useOption } from '../shared/useOption';
 import type { ServerOptions } from '../../ts/types/server-options';

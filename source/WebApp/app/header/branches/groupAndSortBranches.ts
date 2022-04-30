@@ -1,5 +1,5 @@
-import type { PartiallyMutable } from 'ts/helpers/partially-mutable';
-import type { Branch } from 'ts/types/branch';
+import type { PartiallyMutable } from '../../../ts/helpers/partially-mutable';
+import type { Branch } from '../../../ts/types/branch';
 
 type BranchGroup = {
     readonly name: string;
