@@ -12,7 +12,7 @@ sessionStorage.removeItem(redirectingKey);
 
 export { token };
 
-export default Object.freeze({
+export const githubAuth = Object.freeze({
     redirectIfRequiredAsync() {
         if (token)
             return Promise.resolve();

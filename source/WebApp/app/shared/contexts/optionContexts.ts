@@ -1,7 +1,7 @@
 import { Context, createContext } from 'react';
-import type { LanguageName } from 'ts/helpers/languages';
-import type { TargetName } from 'ts/helpers/targets';
-import type { Branch } from 'ts/types/branch';
+import type { LanguageName } from '../../../ts/helpers/languages';
+import type { TargetName } from '../../../ts/helpers/targets';
+import type { Branch } from '../../../ts/types/branch';
 import type { MutableContextValue } from './MutableContextValue';
 
 export type OptionTypeMap = {

@@ -1,8 +1,8 @@
 import { createGistAsync, getGistAsync } from '../ts/helpers/github/gists';
-import * as auth from '../ts/helpers/github/auth';
+import * as githubAuthModule from '../ts/helpers/github/githubAuth';
 import { fromPartial, asMutable } from './helpers';
 
-asMutable(auth).token = '_';
+asMutable(githubAuthModule).token = '_';
 
 describe('getGistAsync', () => {
     test('roundtrips options from createGistAsync', async () => {

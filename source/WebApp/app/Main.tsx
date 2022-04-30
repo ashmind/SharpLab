@@ -1,6 +1,6 @@
-import React, { FC, useMemo, useState } from 'react';
-import type { Gist } from 'ts/types/gist';
-import type { Result, UpdateResult } from 'ts/types/results';
+import React, { FC, useContext, useState } from 'react';
+import type { Result, UpdateResult } from '../ts/types/results';
+import type { Gist } from '../ts/types/gist';
 import { CodeEditor } from './code/CodeEditor';
 import { GistManager, GistManagerProps } from './header/GistManager';
 import { MobileSettings } from './mobile/MobileSettings';
@@ -11,11 +11,11 @@ import { ErrorsTopSection } from './ErrorsTopSection';
 import { ResultsTopSection } from './ResultsTopSection';
 import { WarningsTopSection } from './WarningsTopSection';
 import { BranchDetailsSection } from './code/BranchDetailsSection';
-import { CodeTopSection } from './CodeTopSection';
-import { AppStateProvider } from './main/AppStateProvider';
 import { useAndSetCode } from './shared/useCode';
 import { CodeRangeSyncProvider } from './main/CodeRangeSyncProvider';
 import { useLoadingWait } from './main/useLoadingWait';
+import { InitialCodeContext } from './main/AppStateManager';
+import { CodeTopSection } from './CodeTopSection';
 
 const getStatus = (online: boolean, result: Result | undefined) => {
     if (!online)
@@ -27,9 +27,8 @@ const getStatus = (online: boolean, result: Result | undefined) => {
 
 const EMPTY_ARRAY = [] as ReadonlyArray<never>;
 export const Main: FC = () => {
-    const [code, setCode] = useAndSetCode();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const initialCode = useMemo(() => code, []);
+    const initialCode = useContext(InitialCodeContext);
+    const [, setCode] = useAndSetCode();
     const branch = useOption('branch');
     const target = useOption('target');
     const [online, setOnline] = useState(true);

@@ -1,6 +1,6 @@
 import React, { FC, Fragment } from 'react';
 import { marked } from 'marked';
-import type { Explanation } from 'ts/types/results';
+import type { Explanation } from '../../ts/types/results';
 
 type Props = {
     explanations: ReadonlyArray<Explanation>;

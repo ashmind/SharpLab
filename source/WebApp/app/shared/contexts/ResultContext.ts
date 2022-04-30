@@ -1,6 +1,6 @@
 import { createContext } from 'react';
-import type { TargetName } from 'ts/helpers/targets';
-import type { UpdateResult, ParsedResult, MaybeCached, CachedUpdateResult } from 'ts/types/results';
+import type { TargetName } from '../../../ts/helpers/targets';
+import type { UpdateResult, ParsedResult, MaybeCached, CachedUpdateResult } from '../../../ts/types/results';
 
 export type ResultUpdateAction = {
     type: 'updateResult';

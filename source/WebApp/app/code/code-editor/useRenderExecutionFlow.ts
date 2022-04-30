@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import groupToMap from 'ts/helpers/group-to-map';
-import type { FlowStep } from 'ts/types/results';
+import groupToMap from '../../../ts/helpers/group-to-map';
+import type { FlowStep } from '../../../ts/types/results';
 
 const escapeNewLines = (text: string) => {
     return text

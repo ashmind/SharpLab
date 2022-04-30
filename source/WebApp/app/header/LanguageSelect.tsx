@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
-import { Select, SelectHTMLProps } from 'app/shared/Select';
-import { LanguageName, languages } from 'ts/helpers/languages';
-import { useAndSetOption } from 'app/shared/useOption';
+import { languages, LanguageName } from '../../ts/helpers/languages';
+import { SelectHTMLProps, Select } from '../shared/Select';
+import { useAndSetOption } from '../shared/useOption';
 
 type Props = {
     useAriaLabel?: boolean;

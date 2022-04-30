@@ -1,5 +1,5 @@
-import { useCodeRangeSync } from 'app/shared/useCodeRangeSync';
 import { useEffect, useRef } from 'react';
+import { useCodeRangeSync } from '../../shared/useCodeRangeSync';
 
 export const useEditorCodeRangeSync = (cm: CodeMirror.Editor | undefined) => {
     const [range] = useCodeRangeSync('source');

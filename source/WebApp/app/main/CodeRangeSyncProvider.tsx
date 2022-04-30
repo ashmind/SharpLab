@@ -1,5 +1,5 @@
 import React, { FC, ReactNode, useState } from 'react';
-import { SourceRange, SourceRangeContext, TargetOffset, TargetOffsetContext } from 'app/shared/contexts/codeRangeSyncContexts';
+import { SourceRange, SourceRangeContext, TargetOffset, TargetOffsetContext } from '../shared/contexts/codeRangeSyncContexts';
 import { MutableValueProvider } from './state/MutableValueProvider';
 
 type Props = {

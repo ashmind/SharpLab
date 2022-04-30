@@ -1,21 +1,25 @@
-import { useAsync } from 'app/helpers/useAsync';
-import { ResultContext } from 'app/shared/contexts/ResultContext';
-import { optionContexts, OptionName } from 'app/shared/contexts/optionContexts';
-import React, { ReactNode, useEffect, useMemo, useReducer, useState } from 'react';
-import getBranchesAsync from 'ts/server/get-branches-async';
-import { AppStateData, loadStateAsync } from 'ts/state/state';
-import type { AppOptions } from 'ts/types/app';
-import { resolveBranchAsync } from 'ts/ui/branches';
-import { CodeContext } from 'app/shared/contexts/CodeContext';
-import { BranchesContext } from 'app/shared/contexts/BranchesContext';
-import type { Branch } from 'ts/types/branch';
-import type { CachedUpdateResult } from 'ts/types/results';
+import React, { createContext, ReactNode, useEffect, useMemo, useReducer, useState } from 'react';
+import getBranchesAsync from '../../ts/server/get-branches-async';
+import defaults from '../../ts/state/handlers/defaults';
+import { AppStateData, loadStateAsync } from '../../ts/state/state';
+import type { AppOptions } from '../../ts/types/app';
+import type { Branch } from '../../ts/types/branch';
+import type { CachedUpdateResult } from '../../ts/types/results';
+import { resolveBranchAsync } from '../../ts/ui/branches';
+import { useAsync } from '../helpers/useAsync';
+import { BranchesContext } from '../shared/contexts/BranchesContext';
+import { CodeContext } from '../shared/contexts/CodeContext';
+import { OptionName, optionContexts } from '../shared/contexts/optionContexts';
+import { ResultContext } from '../shared/contexts/ResultContext';
 import { MutableValueProvider } from './state/MutableValueProvider';
 import { resultReducer } from './state/resultReducer';
 
+export const InitialCodeContext = createContext<string>('');
+
 const EMPTY_BRANCHES = [] as ReadonlyArray<Branch>;
-export const AppStateProvider = ({ children }: { children: ReactNode }) => {
+export const AppStateManager = ({ children }: { children: ReactNode }) => {
     const [options, setOptions] = useState<AppOptions>();
+    const [initialCode, setInitialCode] = useState<string>('');
     const [code, setCode] = useState<string>('');
     // eslint-disable-next-line no-undefined
     const [result, dispatchResultAction] = useReducer(resultReducer, undefined);
@@ -42,8 +46,17 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
         if (!loadedState)
             return;
         setOptions(loadedState.options);
-        setCode(loadedState.code);
+        setInitialCode(loadedState.code);
     }, [loadedState]);
+
+    useEffect(() => {
+        if (!options)
+            return;
+        const { language, target } = options;
+        const loaded = loadedState?.options;
+        if (language !== loaded?.language || target !== loaded.target)
+            setInitialCode(defaults.getCode(language, target));
+    }, [loadedState, options]);
 
     if (!options)
         return null;
@@ -59,11 +72,13 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
         >{children}</MutableValueProvider>, children);
     };
 
-    return <MutableValueProvider context={CodeContext} value={code} setValue={setCode}>
-        <BranchesContext.Provider value={branches ?? EMPTY_BRANCHES}>
-            {renderOptionProviders(<ResultContext.Provider value={resultContext}>
-                {children}
-            </ResultContext.Provider>)}
-        </BranchesContext.Provider>
-    </MutableValueProvider>;
+    return <InitialCodeContext.Provider value={initialCode}>
+        <MutableValueProvider context={CodeContext} value={code} setValue={setCode}>
+            <BranchesContext.Provider value={branches ?? EMPTY_BRANCHES}>
+                {renderOptionProviders(<ResultContext.Provider value={resultContext}>
+                    {children}
+                </ResultContext.Provider>)}
+            </BranchesContext.Provider>
+        </MutableValueProvider>
+    </InitialCodeContext.Provider>;
 };

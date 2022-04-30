@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import type { Diagnostic as DiagnosticItem, ServerError } from 'ts/types/results';
+import type { Diagnostic as DiagnosticItem, ServerError } from '../../ts/types/results';
 
 type Props = {
     data: DiagnosticItem|ServerError;

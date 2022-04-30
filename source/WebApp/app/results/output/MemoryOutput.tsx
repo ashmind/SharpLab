@@ -1,7 +1,7 @@
 import React, { FC, useMemo, useState } from 'react';
-import { Select } from 'app/shared/Select';
-import asLookup from 'ts/helpers/as-lookup';
-import type { MemoryInspection } from 'ts/types/results';
+import asLookup from '../../../ts/helpers/as-lookup';
+import type { MemoryInspection } from '../../../ts/types/results';
+import { Select } from '../../shared/Select';
 import { calculateLabelLevels, FinalLabel } from './memory/memoryLabels';
 
 type Props = {

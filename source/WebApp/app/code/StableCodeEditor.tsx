@@ -1,10 +1,10 @@
-import React, { FC, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
-import type { FlowStep, Result } from 'ts/types/results';
+import React, { FC, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import mirrorsharp, { MirrorSharpConnectionState, MirrorSharpInstance, MirrorSharpOptions, MirrorSharpSlowUpdateResult } from 'mirrorsharp';
 import 'codemirror/mode/mllike/mllike';
-import 'components/internal/codemirror/addon-jump-arrows';
-import type { ServerOptions } from 'ts/types/server-options';
-import { useOption } from 'app/shared/useOption';
+import '../../components/internal/codemirror/addon-jump-arrows';
+import type { Result, FlowStep } from '../../ts/types/results';
+import { useOption } from '../shared/useOption';
+import type { ServerOptions } from '../../ts/types/server-options';
 import { useRenderExecutionFlow } from './code-editor/useRenderExecutionFlow';
 import { useServerOptions } from './code-editor/useServerOptions';
 import { useServiceUrl } from './code-editor/useServiceUrl';
@@ -54,22 +54,23 @@ export const StableCodeEditor: FC<Props> = ({
     const onConnectionChangeRef = useUpdatingRef(onConnectionChange);
     const onServerErrorRef = useUpdatingRef(onServerError);
 
-    const instanceRef = useRef<MirrorSharpInstance<ServerOptions>>();
+    const [instance, setInstance] = useState<MirrorSharpInstance<ServerOptions>>();
+    const instanceRef = useUpdatingRef(instance);
 
     const initialConnectionRequestedRef = useRef(!initialCached);
 
-    const connectIfInitialWasCachedRef = useRef(() => {
+    const connectIfInitialWasCached = useCallback(() => {
         if (initialConnectionRequestedRef.current)
             return;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         instanceRef.current!.connect();
         initialConnectionRequestedRef.current = true;
-    });
+    }, [instanceRef]);
 
     const onCodeChangeRef = useUpdatingRef(useCallback((getCode: () => string) => {
-        connectIfInitialWasCachedRef.current();
+        connectIfInitialWasCached();
         onCodeChange(getCode);
-    }, [onCodeChange]));
+    }, [connectIfInitialWasCached, onCodeChange]));
 
     const optionsRef = useRef<MirrorSharpOptions<ServerOptions, ResultData>>({
         serviceUrl,
@@ -92,7 +93,7 @@ export const StableCodeEditor: FC<Props> = ({
         lastInitialCodeRef.current = initialCode;
 
         const instance = mirrorsharp(textarea, optionsRef.current);
-        instanceRef.current = instance;
+        setInstance(instance);
 
         const cm = instance.getCodeMirror();
         const contentEditable = cm
@@ -103,7 +104,7 @@ export const StableCodeEditor: FC<Props> = ({
 
         return () => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            instanceRef.current!.destroy({ keepCodeMirror: true });
+            instance.destroy({ keepCodeMirror: true });
             const wrapper = cm.getWrapperElement();
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             wrapper.parentElement!.removeChild(wrapper);
@@ -112,50 +113,43 @@ export const StableCodeEditor: FC<Props> = ({
     }, []);
 
     useEffect(() => {
-        if (!instanceRef.current)
+        if (!instance || lastInitialCodeRef.current === initialCode)
             return;
-        if (lastInitialCodeRef.current === initialCode)
-            return;
+        if (instance.getCodeMirror().getValue() === lastInitialCodeRef.current)
+            instance.setText(initialCode);
         lastInitialCodeRef.current = initialCode;
-        instanceRef.current.setText(initialCode);
-    }, [initialCode]);
+    }, [instance, initialCode]);
 
     useEffect(() => {
-        if (!instanceRef.current)
-            return;
-        if (language === optionsRef.current.language)
+        if (!instance || language === optionsRef.current.language)
             return;
         optionsRef.current = { ...optionsRef.current, language };
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        instanceRef.current.setLanguage(language);
-        connectIfInitialWasCachedRef.current();
-    }, [language]);
+        instance.setLanguage(language);
+        connectIfInitialWasCached();
+    }, [instance, language]);
 
     useEffect(() => {
-        if (!instanceRef.current)
-            return;
-        if (serverOptions === optionsRef.current.initialServerOptions)
+        if (!instance || serverOptions === optionsRef.current.initialServerOptions)
             return;
         optionsRef.current = { ...optionsRef.current, initialServerOptions: serverOptions };
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        instanceRef.current.setServerOptions(serverOptions);
-        connectIfInitialWasCachedRef.current();
-    }, [serverOptions]);
+        instance.setServerOptions(serverOptions);
+        connectIfInitialWasCached();
+    }, [instance, serverOptions, connectIfInitialWasCached]);
 
     useEffect(() => {
-        if (!instanceRef.current)
-            return;
-        if (serviceUrl === optionsRef.current.serviceUrl)
+        if (!instance || serviceUrl === optionsRef.current.serviceUrl)
             return;
         optionsRef.current = { ...optionsRef.current, serviceUrl, noInitialConnection: false };
-        instanceRef.current.destroy({ keepCodeMirror: true });
+        instance.destroy({ keepCodeMirror: true });
 
         initialConnectionRequestedRef.current = true;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        instanceRef.current = mirrorsharp(textareaRef.current!, optionsRef.current);
-    }, [serviceUrl]);
+        setInstance(mirrorsharp(textareaRef.current!, optionsRef.current));
+    }, [instance, serviceUrl]);
 
-    const cm = instanceRef.current?.getCodeMirror();
+    const cm = instance?.getCodeMirror();
     useEditorCodeRangeSync(cm);
     useRenderExecutionFlow(executionFlow, cm);
 

@@ -1,8 +1,7 @@
-import React, { FC, HTMLAttributes, useEffect, useState } from 'react';
-import { classNames } from 'app/helpers/classNames';
-import { useIds } from 'app/helpers/useIds';
-import type { Gist } from 'ts/types/gist';
-import githubAuth from 'ts/helpers/github/auth';
+import React, { FC, HTMLAttributes, useEffect, useId, useState } from 'react';
+import { githubAuth } from '../../ts/helpers/github/githubAuth';
+import type { Gist } from '../../ts/types/gist';
+import { classNames } from '../helpers/classNames';
 import { GistSaveModal } from './gist-manager/GistSaveModal';
 
 type Props = {
@@ -20,7 +19,7 @@ export { Props as GistManagerProps };
 let postGitHubAuthRedirectModalOpened = false;
 
 export const GistManager: FC<Props> = ({ className, gist, useLabel, onSave, buttonProps }) => {
-    const ids = useIds(['action']);
+    const actionId = useId();
     const [modalOpen, setModalOpen] = useState(false);
 
     const onCreateClick = () => {
@@ -44,7 +43,7 @@ export const GistManager: FC<Props> = ({ className, gist, useLabel, onSave, butt
         if (gist) {
             return <a
                 className="gist-link"
-                id={ids.action}
+                id={actionId}
                 href={gist.url}
                 title={`Gist: ${gist.name}`}
                 target="_blank"
@@ -53,13 +52,13 @@ export const GistManager: FC<Props> = ({ className, gist, useLabel, onSave, butt
 
         return <button
             {...buttonProps}
-            id={ids.action}
+            id={actionId}
             className={buttonClassName}
             onClick={onCreateClick}>{useLabel ? 'Create' : 'Create Gist'}</button>;
     };
 
     const panel = <div className={className}>
-        {useLabel && <label htmlFor={ids.action}>Gist:</label>}
+        {useLabel && <label htmlFor={actionId}>Gist:</label>}
         {renderOpenOrCreate()}
     </div>;
 

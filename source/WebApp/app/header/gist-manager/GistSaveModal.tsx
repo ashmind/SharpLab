@@ -1,14 +1,13 @@
-import React, { FC, FormEvent, useEffect, useState } from 'react';
-import { useIds } from 'app/helpers/useIds';
-import { Loader } from 'app/shared/Loader';
-import { Modal } from 'app/shared/Modal';
-import type { Gist } from 'ts/types/gist';
-import { useAsync } from 'app/helpers/useAsync';
-import { createGistAsync } from 'ts/helpers/github/gists';
-import toRawOptions from 'ts/helpers/to-raw-options';
-import { useOption } from 'app/shared/useOption';
-import { useResult } from 'app/shared/useResult';
-import { useCode } from 'app/shared/useCode';
+import React, { FC, FormEvent, useEffect, useId, useState } from 'react';
+import { createGistAsync } from '../../../ts/helpers/github/gists';
+import toRawOptions from '../../../ts/helpers/to-raw-options';
+import type { Gist } from '../../../ts/types/gist';
+import { useAsync } from '../../helpers/useAsync';
+import { Loader } from '../../shared/Loader';
+import { Modal } from '../../shared/Modal';
+import { useCode } from '../../shared/useCode';
+import { useOption } from '../../shared/useOption';
+import { useResult } from '../../shared/useResult';
 
 type Props = {
     onSave: (gist: Gist) => void;
@@ -16,7 +15,7 @@ type Props = {
 };
 
 export const GistSaveModal: FC<Props> = ({ onSave, onCancel }) => {
-    const ids = useIds(['name']);
+    const nameId = useId();
     const [name, setName] = useState('');
     const code = useCode();
     const [language, target, release, branch] = [
@@ -56,8 +55,8 @@ export const GistSaveModal: FC<Props> = ({ onSave, onCancel }) => {
         </small>
         <form className="modal-body" onSubmit={onFormSubmit}>
             <div className="form-line">
-                <label htmlFor={ids.name}>Name:</label>
-                <input id={ids.name} onChange={e => setName(e.target.value)} type="text" required autoFocus />
+                <label htmlFor={nameId}>Name:</label>
+                <input id={nameId} onChange={e => setName(e.target.value)} type="text" required autoFocus />
             </div>
 
             <div className="form-line form-errors">{errorMessage as string}</div>

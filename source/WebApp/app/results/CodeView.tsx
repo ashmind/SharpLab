@@ -3,11 +3,11 @@ import { debounce } from 'throttle-debounce';
 import CodeMirror from 'codemirror';
 import 'codemirror/mode/clike/clike';
 import 'codemirror/mode/vb/vb';
-import 'components/internal/codemirror/mode-cil';
-import 'components/internal/codemirror/mode-asm';
-import 'components/internal/codemirror/addon-cil-infotip';
-import { TargetLanguageName, targets } from 'ts/helpers/targets';
-import { useCodeRangeSync } from 'app/shared/useCodeRangeSync';
+import '../../components/internal/codemirror/mode-cil';
+import '../../components/internal/codemirror/mode-asm';
+import '../../components/internal/codemirror/addon-cil-infotip';
+import { TargetLanguageName, targets } from '../../ts/helpers/targets';
+import { useCodeRangeSync } from '../shared/useCodeRangeSync';
 import type { LinkedCodeRange } from './code/LinkedCodeRange';
 import { findRange } from './code/findRange';
 

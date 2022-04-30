@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { cm6PreviewEnabled } from 'components/state/cm6-preview';
+import { cm6PreviewEnabled } from '../../components/state/cm6-preview';
 import { CodeEditorProps, StableCodeEditor } from './StableCodeEditor';
 import { PreviewCodeEditor } from './PreviewCodeEditor';
 

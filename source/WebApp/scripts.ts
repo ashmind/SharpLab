@@ -85,8 +85,7 @@ const esbuildArgs = [
     '--bundle',
     ...(process.env.NODE_ENV === 'ci' ? ['--minify'] : []),
     '--sourcemap',
-    `--outfile=${jsOutputPath}`,
-    `--tsconfig=${dirname}/tsconfig.build.json`
+    `--outfile=${jsOutputPath}`
 ];
 const tsMain = task('ts:main', () => exec2('esbuild', esbuildArgs), {
     watch: () => exec2('esbuild', [...esbuildArgs, '--watch'])

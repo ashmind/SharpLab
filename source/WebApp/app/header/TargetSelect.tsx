@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react';
-import { Select, SelectHTMLProps } from 'app/shared/Select';
-import { TargetName, targets } from 'ts/helpers/targets';
-import { useAndSetOption } from 'app/shared/useOption';
+import { targets, TargetName } from '../../ts/helpers/targets';
+import { SelectHTMLProps, Select } from '../shared/Select';
+import { useAndSetOption } from '../shared/useOption';
 
 type Props = {
     useAriaLabel?: boolean;

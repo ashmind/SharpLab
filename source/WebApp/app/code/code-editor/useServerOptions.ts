@@ -1,6 +1,6 @@
-import { useOption } from 'app/shared/useOption';
 import { useEffect, useMemo, useState } from 'react';
-import type { ServerOptions } from 'ts/types/server-options';
+import type { ServerOptions } from '../../../ts/types/server-options';
+import { useOption } from '../../shared/useOption';
 
 export const useServerOptions = ({ initialCached }: { initialCached: boolean }): ServerOptions => {
     const branch = useOption('branch');

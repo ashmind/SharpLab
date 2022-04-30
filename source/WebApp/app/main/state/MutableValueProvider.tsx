@@ -1,5 +1,5 @@
-import type { MutableContextValue } from 'app/shared/contexts/MutableContextValue';
 import React, { Context, ReactNode, useMemo } from 'react';
+import type { MutableContextValue } from '../../shared/contexts/MutableContextValue';
 
 type Props<TValue> = {
     context: Context<MutableContextValue<TValue>>;

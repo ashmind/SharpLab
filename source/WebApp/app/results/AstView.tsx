@@ -1,6 +1,6 @@
-import { useCodeRangeSync } from 'app/shared/useCodeRangeSync';
 import React, { FC, useCallback, useEffect, useMemo, useReducer } from 'react';
-import type { AstItem } from 'ts/types/results';
+import type { AstItem } from '../../ts/types/results';
+import { useCodeRangeSync } from '../shared/useCodeRangeSync';
 import { AstNodeList } from './ast/AstNodeList';
 import { AstSelectionContext } from './ast/AstSelectionContext';
 import { findItemPathByOffset } from './ast/findItemPathByOffset';

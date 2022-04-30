@@ -10,7 +10,6 @@
         "importsNotUsedAsValues": "error",
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
-        "baseUrl": ".",
         "jsx": "react"
     },
     "include": [

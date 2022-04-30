@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import type { OutputItem } from 'ts/types/results';
+import type { OutputItem } from '../../ts/types/results';
 import { SimpleOutput } from './output/SimpleOutput';
 import { MemoryOutput } from './output/MemoryOutput';
 import { MemoryGraphOutput } from './output/MemoryGraphOutput';

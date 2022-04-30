@@ -1,8 +1,7 @@
-import { useIds } from 'app/helpers/useIds';
-import React, { FC, useEffect, useState } from 'react';
-import asLookup from 'ts/helpers/as-lookup';
-import { getUserTheme, setUserTheme } from 'ts/helpers/theme';
-import type { AppTheme } from 'ts/types/app';
+import React, { FC, useEffect, useId, useState } from 'react';
+import asLookup from '../../ts/helpers/as-lookup';
+import { getUserTheme, setUserTheme } from '../../ts/helpers/theme';
+import type { AppTheme } from '../../ts/types/app';
 
 const calculateCurrentLabel = () => ({
     auto:  'Auto',
@@ -25,7 +24,7 @@ const applyBodyClass = (theme: AppTheme) => {
 
 export const ThemeSwitch: FC = () => {
     const [currentLabel, setCurrentLabel] = useState<'Auto' | 'Dark' | 'Light'>(calculateCurrentLabel());
-    const ids = useIds(['toggle']);
+    const toggleId = useId();
 
     const onClick = () => {
         const nextTheme = ({
@@ -41,9 +40,9 @@ export const ThemeSwitch: FC = () => {
     useEffect(() => applyBodyClass(getUserTheme()), []);
 
     return <div className="theme-manager block-with-label">
-        <label htmlFor={ids.toggle}>Theme:</label>
+        <label htmlFor={toggleId}>Theme:</label>
         <button onClick={onClick}
-            id={ids.toggle}
+            id={toggleId}
             aria-label={`Theme Toggle, Current: ${currentLabel}`}>{currentLabel}</button>
     </div>;
 };

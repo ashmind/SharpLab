@@ -1,16 +1,16 @@
-import extractRangesFromIL from 'ts/helpers/extract-ranges-from-il';
-import parseOutput from 'ts/helpers/parse-output';
-import { TargetName, targets } from 'ts/helpers/targets';
+import extractRangesFromIL from '../../../ts/helpers/extract-ranges-from-il';
+import parseOutput from '../../../ts/helpers/parse-output';
+import { TargetName, targets } from '../../../ts/helpers/targets';
 import type {
-    AstItem,
     DiagnosticError,
     DiagnosticWarning,
-    Explanation,
     MaybeCached,
-    UpdateResult,
     ParsedNonErrorResult,
-    RunResult
-} from 'ts/types/results';
+    AstItem,
+    Explanation,
+    RunResult,
+    UpdateResult
+} from '../../../ts/types/results';
 
 const collectErrorsAndWarnings = (target: TargetName, diagnostics: UpdateResult['diagnostics']) => {
     const errors = [];

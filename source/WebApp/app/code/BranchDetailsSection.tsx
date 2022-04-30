@@ -1,7 +1,7 @@
-import { classNames } from 'app/helpers/classNames';
-import { useExpander } from 'app/helpers/useExpander';
 import React, { FC } from 'react';
-import type { Branch } from 'ts/types/branch';
+import type { Branch } from '../../ts/types/branch';
+import { classNames } from '../helpers/classNames';
+import { useExpander } from '../helpers/useExpander';
 
 type Props = {
     className?: string;

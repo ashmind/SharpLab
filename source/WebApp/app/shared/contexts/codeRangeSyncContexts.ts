@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import type { CodeRange } from 'ts/types/code-range';
+import type { CodeRange } from '../../../ts/types/code-range';
 import type { MutableContextValue } from './MutableContextValue';
 
 export type SourceRange = CodeRange | {

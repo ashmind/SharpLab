@@ -1,5 +1,5 @@
-import { useOption } from 'app/shared/useOption';
 import { useMemo } from 'react';
+import { useOption } from '../../shared/useOption';
 
 export const useServiceUrl = () => {
     const branch = useOption('branch');

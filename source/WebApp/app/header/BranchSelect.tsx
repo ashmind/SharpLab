@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react';
-import { Select, SelectHTMLProps } from 'app/shared/Select';
-import { useAndSetOption, useOption } from 'app/shared/useOption';
-import { useBranches } from 'app/shared/useBranches';
+import { Select, SelectHTMLProps } from '../shared/Select';
+import { useBranches } from '../shared/useBranches';
+import { useOption, useAndSetOption } from '../shared/useOption';
 import { groupAndSortBranches } from './branches/groupAndSortBranches';
 
 type Props = {

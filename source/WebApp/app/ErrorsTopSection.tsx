@@ -1,8 +1,8 @@
-import { classNames } from 'app/helpers/classNames';
-import { useExpander } from 'app/helpers/useExpander';
-import { Loader } from 'app/shared/Loader';
 import React, { FC } from 'react';
-import type { Result } from 'ts/types/results';
+import { classNames } from './helpers/classNames';
+import { useExpander } from './helpers/useExpander';
+import { Loader } from './shared/Loader';
+import type { Result } from '../ts/types/results';
 import { Diagnostic } from './results/Diagnostic';
 
 type Props = {

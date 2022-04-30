@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
-import { Select, SelectHTMLProps } from 'app/shared/Select';
-import { useAndSetOption } from 'app/shared/useOption';
+import { SelectHTMLProps, Select } from '../shared/Select';
+import { useAndSetOption } from '../shared/useOption';
 
 type Mode = 'debug'|'release';
 

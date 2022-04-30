@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import dateFormat from 'dateformat';
-import type { CodeResult, OutputItem } from 'ts/types/results';
-import type { TargetLanguageName } from 'ts/helpers/targets';
+import type { CodeResult, OutputItem } from '../ts/types/results';
+import type { TargetLanguageName } from '../ts/helpers/targets';
 import { TargetSelect } from './header/TargetSelect';
 import { ModeSelect } from './header/ModeSelect';
 import { Loader } from './shared/Loader';

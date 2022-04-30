@@ -5,7 +5,7 @@ import { languages, LanguageName } from '../languages';
 import { TargetName, targets } from '../targets';
 import asLookup from '../as-lookup';
 import { targetMap } from '../../state/handlers/helpers/language-and-target-maps';
-import { token } from './auth';
+import { token } from './githubAuth';
 import renderOutputToText from './internal/render-output-to-text';
 
 type TargetResultMap = {

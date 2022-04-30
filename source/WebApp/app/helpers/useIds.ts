@@ -1,12 +1,12 @@
-import { useMemo } from 'react';
-import { uid } from 'ts/ui/helpers/uid';
+import { useId } from 'react';
 
 type IdMap<T extends Array<string>> = { [TKey in T[number]]: string };
-export const useIds = <T extends Array<string>>(names: [...T]): IdMap<T> => {
-    const id = useMemo(() => uid(), []);
-    const result = {} as IdMap<T>;
+export const useIds = <T extends [string, string, ...Array<string>]>(names: [...T]): IdMap<T> => {
+    const id = useId();
+
+    const ids = {} as IdMap<T>;
     for (const name of names) {
-        result[name] = `c-${id}-${name}`;
+        ids[name] = `${id}-${name}`;
     }
-    return result;
+    return ids;
 };

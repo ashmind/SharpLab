@@ -1,5 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
-import { useIds } from 'app/helpers/useIds';
+import React, { FC, useEffect, useId, useState } from 'react';
 import { MobileFontSize, mobileFontSize, setMobileFontSize } from '../../components/state/mobile-font-size';
 
 const calculateCurrentLabel = () => ({
@@ -13,7 +12,7 @@ const applyBodyClass = (size: MobileFontSize) => {
 
 export const MobileFontSizeSwitch: FC = () => {
     const [currentLabel, setCurrentLabel] = useState<'M' | 'L'>(calculateCurrentLabel());
-    const ids = useIds(['toggle']);
+    const toggleId = useId();
 
     const onClick = () => {
         const newSize = mobileFontSize.value === 'default' ? 'large' : 'default';
@@ -25,9 +24,9 @@ export const MobileFontSizeSwitch: FC = () => {
     useEffect(() => applyBodyClass(mobileFontSize.value), []);
 
     return <div className="mobile-font-size-manager block-with-label">
-        <label htmlFor={ids.toggle}>Font Size:</label>
+        <label htmlFor={toggleId}>Font Size:</label>
         <button onClick={onClick}
-            id={ids.toggle}
+            id={toggleId}
             aria-label={`Font Size Toggle, Current: ${currentLabel}`}>{currentLabel}</button>
     </div>;
 };

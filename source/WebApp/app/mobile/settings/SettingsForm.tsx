@@ -1,12 +1,12 @@
 import React, { FC, ReactElement } from 'react';
-import { useIds } from 'app/helpers/useIds';
-import { TargetSelect } from 'app/header/TargetSelect';
-import { ModeSelect } from 'app/header/ModeSelect';
-import { CodeEditorSwitch } from 'app/footer/CodeEditorSwitch';
-import { LanguageSelect } from 'app/header/LanguageSelect';
-import { BranchSelect } from 'app/header/BranchSelect';
-import { BranchDetailsSection } from 'app/code/BranchDetailsSection';
-import { useOption } from 'app/shared/useOption';
+import { BranchDetailsSection } from '../../code/BranchDetailsSection';
+import { CodeEditorSwitch } from '../../footer/CodeEditorSwitch';
+import { BranchSelect } from '../../header/BranchSelect';
+import { LanguageSelect } from '../../header/LanguageSelect';
+import { ModeSelect } from '../../header/ModeSelect';
+import { TargetSelect } from '../../header/TargetSelect';
+import { useIds } from '../../helpers/useIds';
+import { useOption } from '../../shared/useOption';
 
 type Props = {
     gistManager: ReactElement;
