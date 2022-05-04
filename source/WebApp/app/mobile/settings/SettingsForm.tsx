@@ -1,6 +1,6 @@
 import React, { FC, ReactElement } from 'react';
 import { BranchDetailsSection } from '../../code/BranchDetailsSection';
-import { CodeEditorSwitch } from '../../footer/CodeEditorSwitch';
+import { CodeEditorSwitch } from '../../features/cm6-preview/CodeEditorPreviewSwitch';
 import { BranchSelect } from '../../header/BranchSelect';
 import { LanguageSelect } from '../../header/LanguageSelect';
 import { ModeSelect } from '../../header/ModeSelect';

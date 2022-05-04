@@ -15,7 +15,6 @@
     "include": [
         "app",
         "ts",
-        "components",
         "scripts"
     ],
     "references": [

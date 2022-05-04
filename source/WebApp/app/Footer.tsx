@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { CodeEditorSwitch } from './footer/CodeEditorSwitch';
+import { CodeEditorSwitch } from './features/cm6-preview/CodeEditorPreviewSwitch';
 import { MobileFontSizeSwitch } from './footer/MobileFontSizeSwitch';
 import { ThemeSwitch } from './footer/ThemeSwitch';
 

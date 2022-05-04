@@ -110,6 +110,7 @@
     "normalize.css": "8.0.1",
     "react": "18.0.0",
     "react-dom": "18.0.0",
+    "recoil": "0.7.2",
     "resize-observer-polyfill": "1.5.1",
     "throttle-debounce": "1.0.1"
   }

@@ -1,32 +1,26 @@
-import React, { FC, useEffect, useId, useState } from 'react';
-import { MobileFontSize, mobileFontSize, setMobileFontSize } from '../../components/state/mobile-font-size';
+import React, { FC, useEffect, useId } from 'react';
+import { useStoredState } from '../shared/useStoredState';
 
-const calculateCurrentLabel = () => ({
-    default: 'M',
-    large: 'L'
-} as const)[mobileFontSize.value];
+export type FontSize = 'default'|'large';
 
-const applyBodyClass = (size: MobileFontSize) => {
+const applyBodyClass = (size: FontSize) => {
     document.body.classList.toggle(`mobile-font-size-large`, size === 'large');
 };
 
 export const MobileFontSizeSwitch: FC = () => {
-    const [currentLabel, setCurrentLabel] = useState<'M' | 'L'>(calculateCurrentLabel());
+    const [fontSize, setFontSize] = useStoredState<FontSize>('sharplab.settings.mobile-font-size', 'default');
     const toggleId = useId();
 
     const onClick = () => {
-        const newSize = mobileFontSize.value === 'default' ? 'large' : 'default';
-
-        setMobileFontSize(newSize);
-        setCurrentLabel(calculateCurrentLabel());
-        applyBodyClass(newSize);
+        setFontSize(s => s === 'default' ? 'large' : 'default');
     };
-    useEffect(() => applyBodyClass(mobileFontSize.value), []);
+    useEffect(() => applyBodyClass(fontSize), [fontSize]);
 
+    const label = fontSize === 'default' ? 'M' : 'L';
     return <div className="mobile-font-size-manager block-with-label">
         <label htmlFor={toggleId}>Font Size:</label>
         <button onClick={onClick}
             id={toggleId}
-            aria-label={`Font Size Toggle, Current: ${currentLabel}`}>{currentLabel}</button>
+            aria-label={`Font Size Toggle, Current: ${label}`}>{label}</button>
     </div>;
 };
