@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { CodeEditorSwitch } from './features/cm6-preview/CodeEditorPreviewSwitch';
-import { MobileFontSizeSwitch } from './footer/MobileFontSizeSwitch';
+import { MobileFontSizeSwitch } from './features/mobile-font-size/MobileFontSizeSwitch';
 import { ThemeSwitch } from './footer/ThemeSwitch';
 
 export const Footer: FC = () => {

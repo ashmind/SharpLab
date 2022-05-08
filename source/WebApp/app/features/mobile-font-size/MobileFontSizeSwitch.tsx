@@ -1,14 +1,13 @@
 import React, { FC, useEffect, useId } from 'react';
-import { useStoredState } from '../shared/useStoredState';
+import { useRecoilState } from 'recoil';
+import { fontSizeState, MobileFontSize } from './fontSizeState';
 
-export type FontSize = 'default'|'large';
-
-const applyBodyClass = (size: FontSize) => {
+const applyBodyClass = (size: MobileFontSize) => {
     document.body.classList.toggle(`mobile-font-size-large`, size === 'large');
 };
 
 export const MobileFontSizeSwitch: FC = () => {
-    const [fontSize, setFontSize] = useStoredState<FontSize>('sharplab.settings.mobile-font-size', 'default');
+    const [fontSize, setFontSize] = useRecoilState(fontSizeState);
     const toggleId = useId();
 
     const onClick = () => {
