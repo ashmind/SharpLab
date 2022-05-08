@@ -1,13 +1,13 @@
 import React, { FC, FormEvent, useEffect, useId, useState } from 'react';
-import { createGistAsync } from '../../../ts/helpers/github/gists';
 import toRawOptions from '../../../ts/helpers/to-raw-options';
-import type { Gist } from '../../../ts/types/gist';
 import { useAsync } from '../../helpers/useAsync';
 import { Loader } from '../../shared/Loader';
 import { Modal } from '../../shared/Modal';
 import { useCode } from '../../shared/useCode';
 import { useOption } from '../../shared/useOption';
 import { useResult } from '../../shared/useResult';
+import type { Gist } from './Gist';
+import { createGistAsync } from './github-client/gists';
 
 type Props = {
     onSave: (gist: Gist) => void;

@@ -1,8 +1,8 @@
-import { getGistAsync } from '../../../helpers/github/gists';
-import { targetMapReverse } from '../helpers/language-and-target-maps';
-import type { LanguageName } from '../../../helpers/languages';
-import type { TargetName } from '../../../helpers/targets';
-import type { Gist } from '../../../types/gist';
+import type { LanguageName } from '../../../ts/helpers/languages';
+import type { TargetName } from '../../../ts/helpers/targets';
+import { targetMapReverse } from '../../../ts/state/handlers/helpers/language-and-target-maps';
+import type { Gist } from './gist';
+import { getGistAsync } from './github-client/gists';
 
 interface Overrides {
     readonly target: TargetName | undefined;
@@ -33,7 +33,7 @@ function getIsRelease(options: { release: boolean|null|undefined }, overrides: O
     return options.release;
 }
 
-export default async function loadGistAsync(hash: string): Promise<LoadStateFromGistResult> {
+export default async function loadGistFromUrlHashAsync(hash: string): Promise<LoadStateFromGistResult> {
     const parts = hash.replace(/^gist:/, '').split('/');
     const id = parts[0];
     let gist;

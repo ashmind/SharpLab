@@ -1,8 +1,6 @@
 import React, { FC, useContext, useState } from 'react';
 import type { Result, UpdateResult } from '../ts/types/results';
-import type { Gist } from '../ts/types/gist';
 import { CodeEditor } from './code/CodeEditor';
-import { GistManager, GistManagerProps } from './header/GistManager';
 import { MobileSettings } from './mobile/MobileSettings';
 import { useOption } from './shared/useOption';
 import { useResult, useDispatchResultUpdate } from './shared/useResult';
@@ -35,15 +33,8 @@ export const Main: FC = () => {
     const { loading, onWait, endWait } = useLoadingWait();
     const dispatchResultUpdate = useDispatchResultUpdate();
     const result = useResult();
-    const [gist, setGist] = useState<Gist | null>(null);
 
     const status = getStatus(online, result);
-
-    const getGistManager = (props: Omit<GistManagerProps, 'context'|'gist'|'onSave'> = {}) => <GistManager
-        gist={gist}
-        onSave={setGist}
-        {...props}
-    />;
 
     const onServerError = (message: string) => dispatchResultUpdate({ type: 'serverError', message });
     const onSlowUpdateResult = (updateResult: UpdateResult) => {
@@ -65,14 +56,12 @@ export const Main: FC = () => {
 
     const className = `root-status-${status}` as const;
     return <main className={className}>
-        <MobileSettings
-            buttonProps={{ tabIndex: 1 }}
-            gistManager={getGistManager({ useLabel: true })} />
+        <MobileSettings buttonProps={{ tabIndex: 1 }} />
         <div className="mobile-offline-notice">connection lost, reconnecting…</div>
 
         <CodeRangeSyncProvider>
             <div className="top-section-group top-section-group-code">
-                <CodeTopSection codeEditor={codeEditor} getGistManager={getGistManager} />
+                <CodeTopSection codeEditor={codeEditor} />
                 {branch && <BranchDetailsSection branch={branch} className="top-section" />}
             </div>
             <div className={classNames('top-section-group top-section-group-results', loading && 'loading')}>

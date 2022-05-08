@@ -1,4 +1,5 @@
 import React, { createContext, ReactNode, useEffect, useMemo, useReducer, useState } from 'react';
+import { useRecoilState } from 'recoil';
 import getBranchesAsync from '../../ts/server/get-branches-async';
 import defaults from '../../ts/state/handlers/defaults';
 import { AppStateData, loadStateAsync } from '../../ts/state/state';
@@ -6,6 +7,7 @@ import type { AppOptions } from '../../ts/types/app';
 import type { Branch } from '../../ts/types/branch';
 import type { CachedUpdateResult } from '../../ts/types/results';
 import { resolveBranchAsync } from '../../ts/ui/branches';
+import { gistState } from '../features/save-as-gist/gistState';
 import { useAsync } from '../helpers/useAsync';
 import { BranchesContext } from '../shared/contexts/BranchesContext';
 import { CodeContext } from '../shared/contexts/CodeContext';
@@ -21,6 +23,8 @@ export const AppStateManager = ({ children }: { children: ReactNode }) => {
     const [options, setOptions] = useState<AppOptions>();
     const [initialCode, setInitialCode] = useState<string>('');
     const [code, setCode] = useState<string>('');
+    // TODO: This should be moved into the Gist feature for clearer responsibility split
+    const [, setGist] = useRecoilState(gistState);
     // eslint-disable-next-line no-undefined
     const [result, dispatchResultAction] = useReducer(resultReducer, undefined);
     const resultContext = useMemo(() => [result, dispatchResultAction] as const, [result]);
@@ -47,7 +51,9 @@ export const AppStateManager = ({ children }: { children: ReactNode }) => {
             return;
         setOptions(loadedState.options);
         setInitialCode(loadedState.code);
-    }, [loadedState]);
+        setCode(loadedState.code);
+        setGist(loadedState.gist);
+    }, [loadedState, setGist]);
 
     useEffect(() => {
         if (!options)

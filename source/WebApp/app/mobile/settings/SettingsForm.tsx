@@ -1,6 +1,7 @@
-import React, { FC, ReactElement } from 'react';
+import React, { FC } from 'react';
 import { BranchDetailsSection } from '../../code/BranchDetailsSection';
 import { CodeEditorSwitch } from '../../features/cm6-preview/CodeEditorPreviewSwitch';
+import { GistManager } from '../../features/save-as-gist/GistManager';
 import { BranchSelect } from '../../header/BranchSelect';
 import { LanguageSelect } from '../../header/LanguageSelect';
 import { ModeSelect } from '../../header/ModeSelect';
@@ -8,11 +9,9 @@ import { TargetSelect } from '../../header/TargetSelect';
 import { useIds } from '../../helpers/useIds';
 import { useOption } from '../../shared/useOption';
 
-type Props = {
-    gistManager: ReactElement;
-};
+type Props = Record<string, never>;
 
-export const SettingsForm: FC<Props> = ({ gistManager }) => {
+export const SettingsForm: FC<Props> = () => {
     const ids = useIds(['language', 'branch', 'target', 'mode']);
     const branch = useOption('branch');
 
@@ -41,7 +40,7 @@ export const SettingsForm: FC<Props> = ({ gistManager }) => {
         <fieldset>
             <legend>Other</legend>
             <div className="form-line">
-                {gistManager}
+                <GistManager useLabel />
             </div>
             <div className="form-line">
                 <CodeEditorSwitch />

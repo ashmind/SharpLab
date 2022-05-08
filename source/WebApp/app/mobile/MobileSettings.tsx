@@ -1,13 +1,12 @@
-import React, { FC, HTMLAttributes, ReactElement, useState } from 'react';
+import React, { FC, HTMLAttributes, useState } from 'react';
 import { Modal } from '../shared/Modal';
 import { SettingsForm } from './settings/SettingsForm';
 
 type Props = {
     buttonProps: Omit<HTMLAttributes<HTMLButtonElement>, 'className'|'onClick'|'aria-label'>;
-    gistManager: ReactElement;
 };
 
-export const MobileSettings: FC<Props> = ({ buttonProps, gistManager }) => {
+export const MobileSettings: FC<Props> = ({ buttonProps }) => {
     const [modalOpen, setModalOpen] = useState(false);
 
     const button = <button
@@ -17,7 +16,7 @@ export const MobileSettings: FC<Props> = ({ buttonProps, gistManager }) => {
         {...buttonProps}></button>;
 
     const modal = modalOpen && <Modal title="Settings" onClose={() => setModalOpen(false)}>
-        <SettingsForm gistManager={gistManager} />
+        <SettingsForm />
     </Modal>;
 
     return <>

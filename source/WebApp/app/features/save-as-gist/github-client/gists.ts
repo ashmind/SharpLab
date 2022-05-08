@@ -1,10 +1,10 @@
-import type { CodeResult, AstResult, RunResult, VerifyResult, ExplainResult, ErrorResult, Result } from '../../types/results';
-import type { Gist } from '../../types/gist';
-import extendType from '../extend-type';
-import { languages, LanguageName } from '../languages';
-import { TargetName, targets } from '../targets';
-import asLookup from '../as-lookup';
-import { targetMap } from '../../state/handlers/helpers/language-and-target-maps';
+import asLookup from '../../../../ts/helpers/as-lookup';
+import extendType from '../../../../ts/helpers/extend-type';
+import { languages, LanguageName } from '../../../../ts/helpers/languages';
+import { targets, TargetName } from '../../../../ts/helpers/targets';
+import { targetMap } from '../../../../ts/state/handlers/helpers/language-and-target-maps';
+import type { CodeResult, AstResult, RunResult, VerifyResult, ExplainResult, ErrorResult, Result } from '../../../../ts/types/results';
+import type { Gist } from '../gist';
 import { token } from './githubAuth';
 import renderOutputToText from './internal/render-output-to-text';
 

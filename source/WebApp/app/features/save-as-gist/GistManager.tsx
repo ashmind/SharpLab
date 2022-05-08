@@ -1,14 +1,14 @@
 import React, { FC, HTMLAttributes, useEffect, useId, useState } from 'react';
-import { githubAuth } from '../../ts/helpers/github/githubAuth';
-import type { Gist } from '../../ts/types/gist';
-import { classNames } from '../helpers/classNames';
-import { GistSaveModal } from './gist-manager/GistSaveModal';
+import { useRecoilState } from 'recoil';
+import { classNames } from '../../helpers/classNames';
+import type { Gist } from './gist';
+import { GistSaveModal } from './GistSaveModal';
+import { gistState } from './gistState';
+import { githubAuth } from './github-client/githubAuth';
 
 type Props = {
     className?: string;
-    gist: Gist | null;
     useLabel?: boolean;
-    onSave: (gist: Gist) => void;
 
     buttonProps?: Omit<HTMLAttributes<HTMLButtonElement>, 'id'|'onClick'>;
 };
@@ -18,9 +18,10 @@ export { Props as GistManagerProps };
 // multiple app-gist-managers are created
 let postGitHubAuthRedirectModalOpened = false;
 
-export const GistManager: FC<Props> = ({ className, gist, useLabel, onSave, buttonProps }) => {
+export const GistManager: FC<Props> = ({ className, useLabel, buttonProps }) => {
     const actionId = useId();
     const [modalOpen, setModalOpen] = useState(false);
+    const [gist, setGist] = useRecoilState(gistState);
 
     const onCreateClick = () => {
         if (githubAuth.redirectIfRequired())
@@ -57,14 +58,14 @@ export const GistManager: FC<Props> = ({ className, gist, useLabel, onSave, butt
             onClick={onCreateClick}>{useLabel ? 'Create' : 'Create Gist'}</button>;
     };
 
-    const panel = <div className={className}>
+    const panel = <div className="gist-manager">
         {useLabel && <label htmlFor={actionId}>Gist:</label>}
         {renderOpenOrCreate()}
     </div>;
 
     const onModalSave = (gist: Gist) => {
         setModalOpen(false);
-        onSave(gist);
+        setGist(gist);
     };
 
     const modal = modalOpen && <GistSaveModal

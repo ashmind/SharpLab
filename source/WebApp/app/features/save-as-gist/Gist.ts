@@ -1,5 +1,5 @@
-import type { LanguageName } from '../helpers/languages';
-import type { TargetName } from '../helpers/targets';
+import type { LanguageName } from '../../../ts/helpers/languages';
+import type { TargetName } from '../../../ts/helpers/targets';
 
 export type Gist = {
     readonly id: string;

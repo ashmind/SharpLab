@@ -1,10 +1,11 @@
 ﻿import LZString from 'lz-string';
 import type { RawOptions } from '../../types/raw-options';
-import type { Gist } from '../../types/gist';
 import { LanguageName, languages } from '../../helpers/languages';
 import { TargetName, targets } from '../../helpers/targets';
 import warn from '../../helpers/warn';
 import throwError from '../../helpers/throw-error';
+import loadGistFromUrlHashAsync, { LoadStateFromGistResult } from '../../../app/features/save-as-gist/loadGistFromUrlHashAsync';
+import type { Gist } from '../../../app/features/save-as-gist/gist';
 import {
     languageMap,
     languageMapReverse,
@@ -12,7 +13,6 @@ import {
     targetMapReverse
 } from './helpers/language-and-target-maps';
 import precompressor from './url/precompressor';
-import loadGistAsync, { LoadStateFromGistResult } from './url/load-gist-async';
 import { loadFromLegacyV1, LoadStateFromUrlV1Result } from './url/load-from-v1';
 
 let lastHash: string|undefined;
@@ -87,7 +87,7 @@ export const loadStateFromUrlAsync = async (): Promise<LoadStateFromUrlResult> =
 
     lastHash = hash;
     if (hash.startsWith('gist:'))
-        return loadGistAsync(hash);
+        return loadGistFromUrlHashAsync(hash);
 
     if (!/^v\d:/.test(hash))
         return loadFromLegacyV1(hash);
