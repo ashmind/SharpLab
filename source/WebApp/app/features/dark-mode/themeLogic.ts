@@ -1,7 +1,7 @@
-import type { AppTheme } from '../types/app';
-import { save, load } from '../../ts/state/theme';
-import trackFeature from './track-feature';
+import trackFeature from '../../../ts/helpers/track-feature';
+import type { Theme } from './Theme';
 
+const LOCAL_STORAGE_KEY = 'sharplab.theme';
 type EffectiveTheme = 'light'|'dark';
 
 const watches = [] as Array<(value: EffectiveTheme) => void>;
@@ -10,7 +10,7 @@ const systemDarkThemeQuery = window.matchMedia
                           && window.matchMedia('(prefers-color-scheme: dark)') as MediaQueryList|undefined;
 /* eslint-enable @typescript-eslint/no-unnecessary-condition */
 
-let userTheme = load() ?? 'auto';
+let userTheme = (localStorage[LOCAL_STORAGE_KEY] as Theme|undefined) ?? 'auto';
 
 function getEffectiveTheme(): EffectiveTheme {
     if (userTheme === 'auto')
@@ -58,13 +58,13 @@ if (systemDarkThemeQuery) {
     });
 }
 
-export function setUserTheme(theme: AppTheme) {
+export function setUserTheme(theme: Theme) {
     if (userTheme === theme)
         return;
 
     const oldEffectiveTheme = getEffectiveTheme();
     userTheme = theme;
-    save(theme);
+    localStorage[LOCAL_STORAGE_KEY] = theme;
 
     const newEffectiveTheme = getEffectiveTheme();
     if (newEffectiveTheme !== oldEffectiveTheme)

@@ -18,7 +18,7 @@ export { Props as GistManagerProps };
 // multiple app-gist-managers are created
 let postGitHubAuthRedirectModalOpened = false;
 
-export const GistManager: FC<Props> = ({ className, useLabel, buttonProps }) => {
+export const GistManager: FC<Props> = ({ useLabel, buttonProps }) => {
     const actionId = useId();
     const [modalOpen, setModalOpen] = useState(false);
     const [gist, setGist] = useRecoilState(gistState);
