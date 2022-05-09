@@ -1,7 +1,6 @@
 import React, { FC, useContext, useState } from 'react';
 import type { Result, UpdateResult } from '../ts/types/results';
 import { CodeEditor } from './code/CodeEditor';
-import { MobileSettings } from './mobile/MobileSettings';
 import { useOption } from './shared/useOption';
 import { useResult, useDispatchResultUpdate } from './shared/useResult';
 import { classNames } from './helpers/classNames';
@@ -14,6 +13,7 @@ import { CodeRangeSyncProvider } from './main/CodeRangeSyncProvider';
 import { useLoadingWait } from './main/useLoadingWait';
 import { InitialCodeContext } from './main/AppStateManager';
 import { CodeTopSection } from './CodeTopSection';
+import { MobileSettings } from './features/mobile-settings/MobileSettings';
 
 const getStatus = (online: boolean, result: Result | undefined) => {
     if (!online)

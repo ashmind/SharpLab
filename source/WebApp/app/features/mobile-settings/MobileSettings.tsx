@@ -1,6 +1,6 @@
 import React, { FC, HTMLAttributes, useState } from 'react';
-import { Modal } from '../shared/Modal';
-import { SettingsForm } from './settings/SettingsForm';
+import { Modal } from '../../shared/Modal';
+import { SettingsForm } from './SettingsForm';
 
 type Props = {
     buttonProps: Omit<HTMLAttributes<HTMLButtonElement>, 'className'|'onClick'|'aria-label'>;
