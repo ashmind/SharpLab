@@ -6,7 +6,7 @@ export const useServerOptions = ({ initialCached }: { initialCached: boolean }):
     const branch = useOption('branch');
     const release = useOption('release');
     const target = useOption('target');
-    const [wasCached, setWasCached] = useState(false);
+    const [wasCached, setWasCached] = useState(initialCached);
 
     useEffect(() => {
         // can only happen to first result
