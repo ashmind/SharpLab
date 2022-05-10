@@ -1,14 +1,19 @@
-import type { AppData, AppOptions } from '../types/app';
+import type { AppOptions } from '../types/app';
 import type { Branch } from '../types/branch';
 import toRawOptions from '../helpers/to-raw-options';
-import { CacheKeyData, loadResultFromCacheAsync } from '../cache/result-cache';
 import warn from '../helpers/warn';
-import type { CachedUpdateResult } from '../types/results';
+import type { Gist } from '../../app/features/save-as-gist/Gist';
+import { CacheKeyData, loadResultFromCacheAsync } from '../../app/features/result-cache/cacheLogic';
+import type { CachedUpdateResult } from '../../app/features/result-cache/types';
 import defaults from './handlers/defaults';
 import lastUsed from './handlers/last-used';
 import { saveStateToUrl, loadStateFromUrlAsync } from './handlers/url';
 
-export type AppStateData = Pick<AppData, 'options' | 'code' | 'gist'>;
+export type AppStateData = {
+    options: AppOptions;
+    code: string;
+    gist: Gist | null;
+};
 
 export const saveState = (state: AppStateData) => {
     const { code, options, gist } = state;

@@ -154,7 +154,3 @@ export type ParsedResult = ParsedNonErrorResult|ErrorResult;
 
 export type UpdateResult = MirrorSharpSlowUpdateResult<Result['value']>;
 export type NonErrorUpdateResult = MirrorSharpSlowUpdateResult<NonErrorResult['value']>;
-
-export type MaybeCached<T> = T & { cached?: { date: Date } };
-
-export type CachedUpdateResult = NonErrorUpdateResult & { cached: { date: Date } };

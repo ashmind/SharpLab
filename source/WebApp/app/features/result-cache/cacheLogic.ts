@@ -1,6 +1,6 @@
-import { decodeArrayBufferFromBase64 } from '../helpers/array-buffer';
-import asLookup from '../helpers/as-lookup';
-import type { CachedUpdateResult } from '../types/results';
+import { decodeArrayBufferFromBase64 } from '../../../ts/helpers/array-buffer';
+import asLookup from '../../../ts/helpers/as-lookup';
+import type { CachedUpdateResult } from './types';
 
 const [cacheEnvironment, cacheCdnBaseUrl] = (() => {
     const main = ['main', 'https://slpublic.azureedge.net/cache/main'] as const;
