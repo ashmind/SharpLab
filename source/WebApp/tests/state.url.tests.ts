@@ -1,4 +1,4 @@
-import * as gists from '../ts/helpers/github/gists';
+import * as gists from '../app/features/save-as-gist/github-client/gists';
 import { languages, LanguageName } from '../ts/helpers/languages';
 import { targets } from '../ts/helpers/targets';
 import { loadStateFromUrlAsync, saveStateToUrl } from '../ts/state/handlers/url';

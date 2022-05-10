@@ -1,6 +1,6 @@
 import CodeMirror from 'codemirror';
-import '../components/internal/codemirror/mode-asm';
-import { fromPartial } from './helpers';
+import { fromPartial } from '../../helpers/testing/fromPartial';
+import './mode-asm';
 
 test.each([
     [ 'vmovdqa', `L0011: vmovdqa [rbp-0x30], xmm4
