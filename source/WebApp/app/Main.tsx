@@ -1,4 +1,5 @@
 import React, { FC, useContext, useState } from 'react';
+import { useSetRecoilState } from 'recoil';
 import type { Result, UpdateResult } from '../ts/types/results';
 import { CodeEditor } from './code/CodeEditor';
 import { useOption } from './shared/useOption';
@@ -8,12 +9,12 @@ import { ErrorsTopSection } from './ErrorsTopSection';
 import { ResultsTopSection } from './ResultsTopSection';
 import { WarningsTopSection } from './WarningsTopSection';
 import { BranchDetailsSection } from './code/BranchDetailsSection';
-import { useAndSetCode } from './shared/useCode';
 import { CodeRangeSyncProvider } from './main/CodeRangeSyncProvider';
 import { useLoadingWait } from './main/useLoadingWait';
 import { InitialCodeContext } from './main/AppStateManager';
 import { CodeTopSection } from './CodeTopSection';
 import { MobileSettings } from './features/mobile-settings/MobileSettings';
+import { codeState } from './shared/state/codeState';
 
 const getStatus = (online: boolean, result: Result | undefined) => {
     if (!online)
@@ -26,7 +27,7 @@ const getStatus = (online: boolean, result: Result | undefined) => {
 const EMPTY_ARRAY = [] as ReadonlyArray<never>;
 export const Main: FC = () => {
     const initialCode = useContext(InitialCodeContext);
-    const [, setCode] = useAndSetCode();
+    const setCode = useSetRecoilState(codeState);
     const branch = useOption('branch');
     const target = useOption('target');
     const [online, setOnline] = useState(true);

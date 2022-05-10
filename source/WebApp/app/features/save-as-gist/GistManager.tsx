@@ -1,6 +1,7 @@
 import React, { FC, HTMLAttributes, useEffect, useId, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { classNames } from '../../helpers/classNames';
+import { codeState } from '../../shared/state/codeState';
 import type { Gist } from './gist';
 import { GistSaveModal } from './GistSaveModal';
 import { gistState } from './gistState';
@@ -21,7 +22,13 @@ let postGitHubAuthRedirectModalOpened = false;
 export const GistManager: FC<Props> = ({ useLabel, buttonProps }) => {
     const actionId = useId();
     const [modalOpen, setModalOpen] = useState(false);
+    const code = useRecoilValue(codeState);
     const [gist, setGist] = useRecoilState(gistState);
+
+    useEffect(() => {
+        if (gist && code !== gist.code)
+            setGist(null);
+    }, [gist, setGist, code]);
 
     const onCreateClick = () => {
         if (githubAuth.redirectIfRequired())

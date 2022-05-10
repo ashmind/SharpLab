@@ -2,7 +2,7 @@ import React, { createContext, ReactNode, useEffect, useMemo, useReducer, useSta
 import { useRecoilState } from 'recoil';
 import getBranchesAsync from '../../ts/server/get-branches-async';
 import defaults from '../../ts/state/handlers/defaults';
-import { AppStateData, loadStateAsync } from '../../ts/state/state';
+import { AppStateData, loadStateAsync, saveState } from '../../ts/state/state';
 import type { AppOptions } from '../../ts/types/app';
 import type { Branch } from '../../ts/types/branch';
 import { resolveBranchAsync } from '../../ts/ui/branches';
@@ -10,9 +10,9 @@ import type { CachedUpdateResult } from '../features/result-cache/types';
 import { gistState } from '../features/save-as-gist/gistState';
 import { useAsync } from '../helpers/useAsync';
 import { BranchesContext } from '../shared/contexts/BranchesContext';
-import { CodeContext } from '../shared/contexts/CodeContext';
 import { OptionName, optionContexts } from '../shared/contexts/optionContexts';
 import { ResultContext } from '../shared/contexts/ResultContext';
+import { codeState } from '../shared/state/codeState';
 import { MutableValueProvider } from './state/MutableValueProvider';
 import { resultReducer } from './state/resultReducer';
 
@@ -22,9 +22,9 @@ const EMPTY_BRANCHES = [] as ReadonlyArray<Branch>;
 export const AppStateManager = ({ children }: { children: ReactNode }) => {
     const [options, setOptions] = useState<AppOptions>();
     const [initialCode, setInitialCode] = useState<string>('');
-    const [code, setCode] = useState<string>('');
+    const [code, setCode] = useRecoilState(codeState);
     // TODO: This should be moved into the Gist feature for clearer responsibility split
-    const [, setGist] = useRecoilState(gistState);
+    const [gist, setGist] = useRecoilState(gistState);
     // eslint-disable-next-line no-undefined
     const [result, dispatchResultAction] = useReducer(resultReducer, undefined);
     const resultContext = useMemo(() => [result, dispatchResultAction] as const, [result]);
@@ -53,7 +53,7 @@ export const AppStateManager = ({ children }: { children: ReactNode }) => {
         setInitialCode(loadedState.code);
         setCode(loadedState.code);
         setGist(loadedState.gist);
-    }, [loadedState, setGist]);
+    }, [loadedState, setCode, setGist]);
 
     useEffect(() => {
         if (!options)
@@ -63,6 +63,14 @@ export const AppStateManager = ({ children }: { children: ReactNode }) => {
         if (language !== loaded?.language || target !== loaded.target)
             setInitialCode(defaults.getCode(language, target));
     }, [loadedState, options]);
+
+    useEffect(() => {
+        if (!loadedState || !options)
+            return;
+        if (code === loadedState.code && options === loadedState.options && gist === loadedState.gist)
+            return;
+        saveState({ code, options, gist });
+    }, [loadedState, code, options, gist]);
 
     if (!options)
         return null;
@@ -79,12 +87,10 @@ export const AppStateManager = ({ children }: { children: ReactNode }) => {
     };
 
     return <InitialCodeContext.Provider value={initialCode}>
-        <MutableValueProvider context={CodeContext} value={code} setValue={setCode}>
-            <BranchesContext.Provider value={branches ?? EMPTY_BRANCHES}>
-                {renderOptionProviders(<ResultContext.Provider value={resultContext}>
-                    {children}
-                </ResultContext.Provider>)}
-            </BranchesContext.Provider>
-        </MutableValueProvider>
+        <BranchesContext.Provider value={branches ?? EMPTY_BRANCHES}>
+            {renderOptionProviders(<ResultContext.Provider value={resultContext}>
+                {children}
+            </ResultContext.Provider>)}
+        </BranchesContext.Provider>
     </InitialCodeContext.Provider>;
 };

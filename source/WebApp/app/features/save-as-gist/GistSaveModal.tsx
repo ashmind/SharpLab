@@ -1,9 +1,10 @@
 import React, { FC, FormEvent, useEffect, useId, useState } from 'react';
+import { useRecoilValue } from 'recoil';
 import toRawOptions from '../../../ts/helpers/to-raw-options';
 import { useAsync } from '../../helpers/useAsync';
 import { Loader } from '../../shared/Loader';
 import { Modal } from '../../shared/Modal';
-import { useCode } from '../../shared/useCode';
+import { codeState } from '../../shared/state/codeState';
 import { useOption } from '../../shared/useOption';
 import { useResult } from '../../shared/useResult';
 import type { Gist } from './Gist';
@@ -17,7 +18,7 @@ type Props = {
 export const GistSaveModal: FC<Props> = ({ onSave, onCancel }) => {
     const nameId = useId();
     const [name, setName] = useState('');
-    const code = useCode();
+    const code = useRecoilValue(codeState);
     const [language, target, release, branch] = [
         useOption('language'),
         useOption('target'),
