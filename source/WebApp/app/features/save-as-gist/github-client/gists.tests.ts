@@ -1,6 +1,6 @@
-import { createGistAsync, getGistAsync } from '../ts/helpers/github/gists';
-import * as githubAuthModule from '../ts/helpers/github/githubAuth';
-import { fromPartial, asMutable } from './helpers';
+import { fromPartial, asMutable } from '../../../../tests/helpers';
+import { createGistAsync, getGistAsync } from './gists';
+import * as githubAuthModule from './githubAuth';
 
 asMutable(githubAuthModule).token = '_';
 

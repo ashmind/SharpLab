@@ -8,7 +8,7 @@ test('calculateLabelLevels calculates padding correctly', async () => {
 
     expect(levels).toMatchObject([[
         { name: 'A',  length: 1 },
-        { name: null, length: 3 },
+        { length: 3 },
         { name: 'B',  length: 4 }
     ]]);
 });

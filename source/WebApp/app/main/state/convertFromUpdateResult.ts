@@ -4,13 +4,13 @@ import { TargetName, targets } from '../../../ts/helpers/targets';
 import type {
     DiagnosticError,
     DiagnosticWarning,
-    MaybeCached,
     ParsedNonErrorResult,
     AstItem,
     Explanation,
     RunResult,
     UpdateResult
 } from '../../../ts/types/results';
+import type { MaybeCached } from '../../features/result-cache/types';
 
 const collectErrorsAndWarnings = (target: TargetName, diagnostics: UpdateResult['diagnostics']) => {
     const errors = [];
