@@ -1,8 +1,8 @@
-import { languages } from '../../../helpers/languages';
 import { targets } from '../../../helpers/targets';
 import mapObject from '../../../helpers/map-object';
 import asLookup from '../../../helpers/as-lookup';
 import { assertType } from '../../../helpers/assert-type';
+import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../../../app/shared/languages';
 
 function reverseMap<TMap extends { [key: string]: string }>(map: TMap) {
     type KeyFromValue<T, V> = { [K in keyof T]: V extends T[K] ? K : never }[keyof T];
@@ -12,12 +12,12 @@ function reverseMap<TMap extends { [key: string]: string }>(map: TMap) {
 }
 
 const languageMap = {
-    [languages.csharp]: 'cs',
-    [languages.vb]:     'vb',
-    [languages.fsharp]: 'fs',
-    [languages.il]:     'il'
+    [LANGUAGE_CSHARP]: 'cs',
+    [LANGUAGE_VB]:     'vb',
+    [LANGUAGE_FSHARP]: 'fs',
+    [LANGUAGE_IL]:     'il'
 } as const;
-assertType<{ [K in typeof languages[keyof typeof languages]]: string }>(languageMap);
+assertType<{ [K in LanguageName]: string }>(languageMap);
 
 const languageMapReverse = reverseMap(languageMap);
 
@@ -29,8 +29,8 @@ export {
 };
 
 const targetMap = {
-    [targets.csharp]:  languageMap[languages.csharp],
-    [targets.vb]:      languageMap[languages.vb],
+    [targets.csharp]:  languageMap[LANGUAGE_CSHARP],
+    [targets.vb]:      languageMap[LANGUAGE_VB],
     [targets.il]:      'il',
     [targets.asm]:     'asm',
     [targets.ast]:     'ast',

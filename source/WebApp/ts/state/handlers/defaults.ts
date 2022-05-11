@@ -1,7 +1,7 @@
-import { languages, LanguageName } from '../../helpers/languages';
 import { targets, TargetName } from '../../helpers/targets';
 import help from '../../helpers/help';
 import asLookup from '../../helpers/as-lookup';
+import { LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB, LanguageName } from '../../../app/shared/languages';
 
 const normalize = (code: string) => {
     // 8 spaces must match the layout below
@@ -12,10 +12,10 @@ const normalize = (code: string) => {
 };
 
 const code = asLookup({
-    [languages.csharp]: 'using System;\r\npublic class C {\r\n    public void M() {\r\n    }\r\n}',
-    [languages.vb]: 'Imports System\r\nPublic Class C\r\n    Public Sub M()\r\n    End Sub\r\nEnd Class',
-    [languages.fsharp]: 'open System\r\ntype C() =\r\n    member _.M() = ()',
-    [languages.il]: normalize(`
+    [LANGUAGE_CSHARP]: 'using System;\r\npublic class C {\r\n    public void M() {\r\n    }\r\n}',
+    [LANGUAGE_VB]: 'Imports System\r\nPublic Class C\r\n    Public Sub M()\r\n    End Sub\r\nEnd Class',
+    [LANGUAGE_FSHARP]: 'open System\r\ntype C() =\r\n    member _.M() = ()',
+    [LANGUAGE_IL]: normalize(`
         .assembly A
         {
         }
@@ -33,10 +33,10 @@ const code = asLookup({
         }
     `),
 
-    [`${languages.csharp}.run`]: `${help.run.csharp}\r\nusing System;\r\n\r\nConsole.WriteLine("🌄");`,
-    [`${languages.vb}.run`]: 'Imports System\r\nPublic Module Program\r\n    Public Sub Main()\r\n        Console.WriteLine("🌄")\r\n    End Sub\r\nEnd Module',
-    [`${languages.fsharp}.run`]: 'printfn "🌄"',
-    [`${languages.il}.run`]: normalize(`
+    [`${LANGUAGE_CSHARP}.run`]: `${help.run.csharp}\r\nusing System;\r\n\r\nConsole.WriteLine("🌄");`,
+    [`${LANGUAGE_VB}.run`]: 'Imports System\r\nPublic Module Program\r\n    Public Sub Main()\r\n        Console.WriteLine("🌄")\r\n    End Sub\r\nEnd Module',
+    [`${LANGUAGE_FSHARP}.run`]: 'printfn "🌄"',
+    [`${LANGUAGE_IL}.run`]: normalize(`
         .assembly ConsoleApp
         {
         }
@@ -60,10 +60,10 @@ const code = asLookup({
 
 export default {
     getOptions: () => ({
-        language:   languages.csharp,
-        target:     languages.csharp,
+        language:   LANGUAGE_CSHARP,
+        target:     LANGUAGE_CSHARP,
         release:    false
-    }),
+    } as const),
 
     getCode: (language: LanguageName|undefined, target: TargetName|string|undefined) => code[
         (target === targets.run ? language + '.run' : language) as string

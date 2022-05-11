@@ -1,5 +1,7 @@
 import React, { FC, useMemo } from 'react';
+import { useRecoilValue } from 'recoil';
 import { Select, SelectHTMLProps } from '../shared/Select';
+import { languageOptionState } from '../shared/state/languageOptionState';
 import { useBranches } from '../shared/useBranches';
 import { useOption, useAndSetOption } from '../shared/useOption';
 import { groupAndSortBranches } from './branches/groupAndSortBranches';
@@ -10,7 +12,7 @@ type Props = {
 
 export const BranchSelect: FC<Props> = ({ useAriaLabel, ...htmlProps }) => {
     const allBranches = useBranches();
-    const language = useOption('language');
+    const language = useRecoilValue(languageOptionState);
     const [branch, setBranch] = useAndSetOption('branch');
 
     const options = useMemo(() => {

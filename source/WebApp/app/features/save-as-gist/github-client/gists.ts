@@ -1,9 +1,10 @@
 import asLookup from '../../../../ts/helpers/as-lookup';
+import { assertType } from '../../../../ts/helpers/assert-type';
 import extendType from '../../../../ts/helpers/extend-type';
-import { languages, LanguageName } from '../../../../ts/helpers/languages';
 import { targets, TargetName } from '../../../../ts/helpers/targets';
 import { targetMap } from '../../../../ts/state/handlers/helpers/language-and-target-maps';
 import type { CodeResult, AstResult, RunResult, VerifyResult, ExplainResult, ErrorResult, Result } from '../../../../ts/types/results';
+import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../../shared/languages';
 import type { Gist } from '../gist';
 import { token } from './githubAuth';
 import renderOutputToText from './internal/render-output-to-text';
@@ -25,10 +26,12 @@ const sortWeight = '\u200B';
 const optionsFileName = sortWeight + sortWeight + '.sharplab.json';
 
 const extensionMap = {
-    [languages.csharp]: '.cs',
-    [languages.vb]:     '.vb',
-    [languages.fsharp]: '.fs'
+    [LANGUAGE_CSHARP]: '.cs',
+    [LANGUAGE_VB]:     '.vb',
+    [LANGUAGE_FSHARP]: '.fs',
+    [LANGUAGE_IL]:     '.il'
 } as const;
+assertType<{ [L in LanguageName]: `.${string}` }>(extensionMap);
 
 async function validateResponseAndParseJsonAsync(response: Response) {
     if (!response.ok) {
@@ -89,7 +92,7 @@ export async function getGistAsync(id: string): Promise<Gist> {
     const language = (
         Object.entries(extensionMap).find(
             ([, value]) => codeFileName.endsWith(value)
-        ) ?? [languages.csharp] as const
+        ) ?? [LANGUAGE_CSHARP] as const
     )[0] as LanguageName;
 
     const optionsFile = gist.files[optionsFileName];

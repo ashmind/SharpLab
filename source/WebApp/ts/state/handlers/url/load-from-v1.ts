@@ -1,5 +1,5 @@
 import LZString from 'lz-string';
-import type { LanguageName } from '../../../helpers/languages';
+import type { LanguageName } from '../../../../app/shared/languages';
 import type { TargetName } from '../../../helpers/targets';
 import {
     languageMapReverse,

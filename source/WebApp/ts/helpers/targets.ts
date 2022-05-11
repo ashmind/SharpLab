@@ -1,8 +1,8 @@
-import { languages } from './languages';
+import { LANGUAGE_CSHARP, LANGUAGE_VB } from '../../app/shared/languages';
 
 export const targets = Object.freeze({
-    csharp:  languages.csharp,
-    vb:      languages.vb, // no longer supported, just a placeholder
+    csharp:  LANGUAGE_CSHARP,
+    vb:      LANGUAGE_VB, // no longer supported, just a placeholder
     il:      'IL',
     asm:     'JIT ASM',
     ast:     'AST',

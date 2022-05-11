@@ -1,5 +1,5 @@
+import type { LanguageName } from '../../app/shared/languages';
 import type { TargetName } from '../helpers/targets';
-import type { LanguageName } from '../helpers/languages';
 import type { Branch } from './branch';
 
 export interface AppOptions {

@@ -1,9 +1,9 @@
-import { languages, LanguageName } from '../../../helpers/languages';
 import help from '../../../helpers/help';
 import asLookup from '../../../helpers/as-lookup';
+import { LANGUAGE_CSHARP, LanguageName, LANGUAGE_IL } from '../../../../app/shared/languages';
 
 const dictionaries = asLookup({
-    [languages.csharp]: build(
+    [LANGUAGE_CSHARP]: build(
         'using',
         'System',
         'class',
@@ -32,7 +32,7 @@ const dictionaries = asLookup({
         'Inspect.MemoryGraph('
     ),
 
-    [languages.il]: build(
+    [LANGUAGE_IL]: build(
         'Main ()',
         'Program',
         'ConsoleApp',

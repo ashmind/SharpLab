@@ -13,14 +13,17 @@ import { BranchesContext } from '../shared/contexts/BranchesContext';
 import { OptionName, optionContexts } from '../shared/contexts/optionContexts';
 import { ResultContext } from '../shared/contexts/ResultContext';
 import { codeState } from '../shared/state/codeState';
+import { languageOptionState } from '../shared/state/languageOptionState';
 import { MutableValueProvider } from './state/MutableValueProvider';
 import { resultReducer } from './state/resultReducer';
 
 export const InitialCodeContext = createContext<string>('');
+type LegacyOptions = Pick<AppOptions, 'branch'|'target'|'release'>;
 
 const EMPTY_BRANCHES = [] as ReadonlyArray<Branch>;
 export const AppStateManager = ({ children }: { children: ReactNode }) => {
-    const [options, setOptions] = useState<AppOptions>();
+    const [options, setOptions] = useState<LegacyOptions>();
+    const [language, setLanguage] = useRecoilState(languageOptionState);
     const [initialCode, setInitialCode] = useState<string>('');
     const [code, setCode] = useRecoilState(codeState);
     // TODO: This should be moved into the Gist feature for clearer responsibility split
@@ -50,33 +53,34 @@ export const AppStateManager = ({ children }: { children: ReactNode }) => {
         if (!loadedState)
             return;
         setOptions(loadedState.options);
+        setLanguage(loadedState.options.language);
         setInitialCode(loadedState.code);
         setCode(loadedState.code);
         setGist(loadedState.gist);
-    }, [loadedState, setCode, setGist]);
+    }, [loadedState, setLanguage, setCode, setGist]);
 
     useEffect(() => {
         if (!options)
             return;
-        const { language, target } = options;
+        const { target } = options;
         const loaded = loadedState?.options;
         if (language !== loaded?.language || target !== loaded.target)
             setInitialCode(defaults.getCode(language, target));
-    }, [loadedState, options]);
+    }, [loadedState, language, options]);
 
     useEffect(() => {
         if (!loadedState || !options)
             return;
         if (code === loadedState.code && options === loadedState.options && gist === loadedState.gist)
             return;
-        saveState({ code, options, gist });
-    }, [loadedState, code, options, gist]);
+        saveState({ code, options: { ...options, language }, gist });
+    }, [loadedState, language, options, code,  gist]);
 
     if (!options)
         return null;
 
     const renderOptionProviders = (children: ReactNode) => {
-        const optionNames = Object.keys(options) as ReadonlyArray<(keyof typeof options)>;
+        const optionNames = ['branch', 'target', 'release'] as const;
 
         return optionNames.reduce(<TName extends OptionName>(children: ReactNode, name: TName) => <MutableValueProvider
             context={optionContexts[name]}

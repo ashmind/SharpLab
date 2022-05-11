@@ -1,6 +1,6 @@
-import type { LanguageName } from '../../../ts/helpers/languages';
 import type { TargetName } from '../../../ts/helpers/targets';
 import { targetMapReverse } from '../../../ts/state/handlers/helpers/language-and-target-maps';
+import type { LanguageName } from '../../shared/languages';
 import type { Gist } from './gist';
 import { getGistAsync } from './github-client/gists';
 

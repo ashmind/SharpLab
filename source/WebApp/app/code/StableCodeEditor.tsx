@@ -2,9 +2,10 @@ import React, { FC, useCallback, useEffect, useLayoutEffect, useRef, useState } 
 import mirrorsharp, { MirrorSharpConnectionState, MirrorSharpInstance, MirrorSharpOptions, MirrorSharpSlowUpdateResult } from 'mirrorsharp';
 import 'codemirror/mode/mllike/mllike';
 import '../shared/codemirror/addon-jump-arrows';
+import { useRecoilValue } from 'recoil';
 import type { Result, FlowStep } from '../../ts/types/results';
-import { useOption } from '../shared/useOption';
 import type { ServerOptions } from '../../ts/types/server-options';
+import { languageOptionState } from '../shared/state/languageOptionState';
 import { useRenderExecutionFlow } from './code-editor/useRenderExecutionFlow';
 import { useServerOptions } from './code-editor/useServerOptions';
 import { useServiceUrl } from './code-editor/useServiceUrl';
@@ -42,7 +43,7 @@ export const StableCodeEditor: FC<Props> = ({
     onCodeChange,
     onServerError
 }) => {
-    const language = useOption('language');
+    const language = useRecoilValue(languageOptionState);
     const serviceUrl = useServiceUrl();
     const serverOptions = useServerOptions({ initialCached });
 

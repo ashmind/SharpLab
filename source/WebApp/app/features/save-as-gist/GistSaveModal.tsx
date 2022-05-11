@@ -5,6 +5,7 @@ import { useAsync } from '../../helpers/useAsync';
 import { Loader } from '../../shared/Loader';
 import { Modal } from '../../shared/Modal';
 import { codeState } from '../../shared/state/codeState';
+import { languageOptionState } from '../../shared/state/languageOptionState';
 import { useOption } from '../../shared/useOption';
 import { useResult } from '../../shared/useResult';
 import type { Gist } from './Gist';
@@ -20,7 +21,7 @@ export const GistSaveModal: FC<Props> = ({ onSave, onCancel }) => {
     const [name, setName] = useState('');
     const code = useRecoilValue(codeState);
     const [language, target, release, branch] = [
-        useOption('language'),
+        useRecoilValue(languageOptionState),
         useOption('target'),
         useOption('release'),
         useOption('branch')

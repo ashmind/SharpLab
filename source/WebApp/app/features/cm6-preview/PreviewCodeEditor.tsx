@@ -5,6 +5,8 @@ import type { Result } from '../../../ts/types/results';
 import { useServerOptions } from '../../code/code-editor/useServerOptions';
 import { useServiceUrl } from '../../code/code-editor/useServiceUrl';
 import { useOption } from '../../shared/useOption';
+import { useRecoilValue } from 'recoil';
+import { languageOptionState } from '../../shared/state/languageOptionState';
 
 type ResultData = Result['value'];
 
@@ -33,7 +35,7 @@ export const PreviewCodeEditor: FC<Props> = ({
     onCodeChange,
     onServerError
 }) => {
-    const language = useOption('language');
+    const language = useRecoilValue(languageOptionState);
     const serviceUrl = useServiceUrl();
     const serverOptions = useServerOptions({ initialCached: true });
     const containerRef = useRef<HTMLDivElement>(null);
