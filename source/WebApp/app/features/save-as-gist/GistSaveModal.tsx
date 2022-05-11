@@ -4,6 +4,7 @@ import toRawOptions from '../../../ts/helpers/to-raw-options';
 import { useAsync } from '../../helpers/useAsync';
 import { Loader } from '../../shared/Loader';
 import { Modal } from '../../shared/Modal';
+import { branchOptionState } from '../../shared/state/branchOptionState';
 import { codeState } from '../../shared/state/codeState';
 import { languageOptionState } from '../../shared/state/languageOptionState';
 import { useOption } from '../../shared/useOption';
@@ -20,11 +21,11 @@ export const GistSaveModal: FC<Props> = ({ onSave, onCancel }) => {
     const nameId = useId();
     const [name, setName] = useState('');
     const code = useRecoilValue(codeState);
-    const [language, target, release, branch] = [
-        useRecoilValue(languageOptionState),
+    const language = useRecoilValue(languageOptionState);
+    const branch = useRecoilValue(branchOptionState);
+    const [target, release] = [
         useOption('target'),
-        useOption('release'),
-        useOption('branch')
+        useOption('release')
     ];
     const result = useResult();
     const [save, saved, error, saving] = useAsync(async () => {

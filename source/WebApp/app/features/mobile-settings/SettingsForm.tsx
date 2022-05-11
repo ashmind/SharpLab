@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { useRecoilValue } from 'recoil';
 import { BranchDetailsSection } from '../../code/BranchDetailsSection';
 import { CodeEditorSwitch } from '../../features/cm6-preview/CodeEditorPreviewSwitch';
 import { GistManager } from '../../features/save-as-gist/GistManager';
@@ -7,13 +8,13 @@ import { LanguageSelect } from '../../header/LanguageSelect';
 import { ModeSelect } from '../../header/ModeSelect';
 import { TargetSelect } from '../../header/TargetSelect';
 import { useIds } from '../../helpers/useIds';
-import { useOption } from '../../shared/useOption';
+import { branchOptionState } from '../../shared/state/branchOptionState';
 
 type Props = Record<string, never>;
 
 export const SettingsForm: FC<Props> = () => {
     const ids = useIds(['language', 'branch', 'target', 'mode']);
-    const branch = useOption('branch');
+    const branch = useRecoilValue(branchOptionState);
 
     return <form className="modal-body form-aligned" onSubmit={e => e.preventDefault()}>
         <fieldset>

@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useRecoilValue } from 'recoil';
 import type { ServerOptions } from '../../../ts/types/server-options';
+import { branchOptionState } from '../../shared/state/branchOptionState';
 import { useOption } from '../../shared/useOption';
 
 export const useServerOptions = ({ initialCached }: { initialCached: boolean }): ServerOptions => {
-    const branch = useOption('branch');
+    const branch = useRecoilValue(branchOptionState);
     const release = useOption('release');
     const target = useOption('target');
     const [wasCached, setWasCached] = useState(initialCached);

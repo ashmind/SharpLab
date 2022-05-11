@@ -1,10 +1,10 @@
 import type { AppOptions } from '../types/app';
-import type { Branch } from '../types/branch';
 import toRawOptions from '../helpers/to-raw-options';
 import warn from '../helpers/warn';
 import type { Gist } from '../../app/features/save-as-gist/Gist';
 import { CacheKeyData, loadResultFromCacheAsync } from '../../app/features/result-cache/cacheLogic';
 import type { CachedUpdateResult } from '../../app/features/result-cache/types';
+import type { Branch } from '../../app/shared/types/Branch';
 import defaults from './handlers/defaults';
 import lastUsed from './handlers/last-used';
 import { saveStateToUrl, loadStateFromUrlAsync } from './handlers/url';

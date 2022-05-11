@@ -1,5 +1,5 @@
 import React, { FC, useContext, useState } from 'react';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import type { Result, UpdateResult } from '../ts/types/results';
 import { CodeEditor } from './code/CodeEditor';
 import { useOption } from './shared/useOption';
@@ -15,6 +15,7 @@ import { InitialCodeContext } from './main/AppStateManager';
 import { CodeTopSection } from './CodeTopSection';
 import { MobileSettings } from './features/mobile-settings/MobileSettings';
 import { codeState } from './shared/state/codeState';
+import { branchOptionState } from './shared/state/branchOptionState';
 
 const getStatus = (online: boolean, result: Result | undefined) => {
     if (!online)
@@ -28,7 +29,7 @@ const EMPTY_ARRAY = [] as ReadonlyArray<never>;
 export const Main: FC = () => {
     const initialCode = useContext(InitialCodeContext);
     const setCode = useSetRecoilState(codeState);
-    const branch = useOption('branch');
+    const branch = useRecoilValue(branchOptionState);
     const target = useOption('target');
     const [online, setOnline] = useState(true);
     const { loading, onWait, endWait } = useLoadingWait();

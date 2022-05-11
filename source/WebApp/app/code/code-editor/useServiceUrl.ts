@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
-import { useOption } from '../../shared/useOption';
+import { useRecoilValue } from 'recoil';
+import { branchOptionState } from '../../shared/state/branchOptionState';
 
 export const useServiceUrl = () => {
-    const branch = useOption('branch');
+    const branch = useRecoilValue(branchOptionState);
     return useMemo(() => {
         const httpRoot = branch ? branch.url : window.location.origin;
         return `${httpRoot.replace(/^http/, 'ws')}/mirrorsharp`;

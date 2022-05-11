@@ -4,7 +4,6 @@ import getBranchesAsync from '../../ts/server/get-branches-async';
 import defaults from '../../ts/state/handlers/defaults';
 import { AppStateData, loadStateAsync, saveState } from '../../ts/state/state';
 import type { AppOptions } from '../../ts/types/app';
-import type { Branch } from '../../ts/types/branch';
 import { resolveBranchAsync } from '../../ts/ui/branches';
 import type { CachedUpdateResult } from '../features/result-cache/types';
 import { gistState } from '../features/save-as-gist/gistState';
@@ -12,18 +11,21 @@ import { useAsync } from '../helpers/useAsync';
 import { BranchesContext } from '../shared/contexts/BranchesContext';
 import { OptionName, optionContexts } from '../shared/contexts/optionContexts';
 import { ResultContext } from '../shared/contexts/ResultContext';
+import { branchOptionState } from '../shared/state/branchOptionState';
 import { codeState } from '../shared/state/codeState';
 import { languageOptionState } from '../shared/state/languageOptionState';
+import type { Branch } from '../shared/types/Branch';
 import { MutableValueProvider } from './state/MutableValueProvider';
 import { resultReducer } from './state/resultReducer';
 
 export const InitialCodeContext = createContext<string>('');
-type LegacyOptions = Pick<AppOptions, 'branch'|'target'|'release'>;
+type LegacyOptions = Pick<AppOptions, 'target'|'release'>;
 
 const EMPTY_BRANCHES = [] as ReadonlyArray<Branch>;
 export const AppStateManager = ({ children }: { children: ReactNode }) => {
     const [options, setOptions] = useState<LegacyOptions>();
     const [language, setLanguage] = useRecoilState(languageOptionState);
+    const [branch, setBranch] = useRecoilState(branchOptionState);
     const [initialCode, setInitialCode] = useState<string>('');
     const [code, setCode] = useRecoilState(codeState);
     // TODO: This should be moved into the Gist feature for clearer responsibility split
@@ -54,10 +56,11 @@ export const AppStateManager = ({ children }: { children: ReactNode }) => {
             return;
         setOptions(loadedState.options);
         setLanguage(loadedState.options.language);
+        setBranch(loadedState.options.branch);
         setInitialCode(loadedState.code);
         setCode(loadedState.code);
         setGist(loadedState.gist);
-    }, [loadedState, setLanguage, setCode, setGist]);
+    }, [loadedState, setLanguage, setBranch, setCode, setGist]);
 
     useEffect(() => {
         if (!options)
@@ -73,14 +76,14 @@ export const AppStateManager = ({ children }: { children: ReactNode }) => {
             return;
         if (code === loadedState.code && options === loadedState.options && gist === loadedState.gist)
             return;
-        saveState({ code, options: { ...options, language }, gist });
-    }, [loadedState, language, options, code,  gist]);
+        saveState({ code, options: { ...options, language, branch }, gist });
+    }, [loadedState, language, branch, options, code,  gist]);
 
     if (!options)
         return null;
 
     const renderOptionProviders = (children: ReactNode) => {
-        const optionNames = ['branch', 'target', 'release'] as const;
+        const optionNames = ['target', 'release'] as const;
 
         return optionNames.reduce(<TName extends OptionName>(children: ReactNode, name: TName) => <MutableValueProvider
             context={optionContexts[name]}
