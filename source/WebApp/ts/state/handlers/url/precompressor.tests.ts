@@ -1,6 +1,6 @@
-import { languages } from '../ts/helpers/languages';
-import help from '../ts/helpers/help';
-import precompressor from '../ts/state/handlers/url/precompressor';
+import { LANGUAGE_CSHARP } from '../../../../app/shared/languages';
+import help from '../../../helpers/help';
+import precompressor from './precompressor';
 
 describe('precompressor', () => {
     for (const [code, expected] of [
@@ -8,7 +8,7 @@ describe('precompressor', () => {
         ['public class C() {}', '@3 @2 C() {}']
     ] as const) {
         test(`compresses C# code ${code} to ${expected}`, () => {
-            const compressed = precompressor.compress(code, languages.csharp);
+            const compressed = precompressor.compress(code, LANGUAGE_CSHARP);
             expect(compressed).toBe(expected);
         });
     }

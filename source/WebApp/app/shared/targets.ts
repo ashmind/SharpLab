@@ -1,0 +1,23 @@
+import { LANGUAGE_CSHARP, LANGUAGE_VB } from '../../app/shared/languages';
+
+export const TARGET_CSHARP = LANGUAGE_CSHARP;
+export const TARGET_VB = LANGUAGE_VB; // no longer supported, just a placeholder
+export const TARGET_IL = 'IL';
+export const TARGET_ASM = 'JIT ASM';
+export const TARGET_AST = 'AST';
+export const TARGET_VERIFY = 'Verify';
+export const TARGET_EXPLAIN = 'Explain';
+export const TARGET_RUN = 'Run';
+
+export type TargetName = typeof TARGET_CSHARP
+                       | typeof TARGET_VB
+                       | typeof TARGET_IL
+                       | typeof TARGET_ASM
+                       | typeof TARGET_AST
+                       | typeof TARGET_VERIFY
+                       | typeof TARGET_EXPLAIN
+                       | typeof TARGET_RUN;
+export type TargetLanguageName = typeof TARGET_CSHARP
+                               | typeof TARGET_VB
+                               | typeof TARGET_IL
+                               | typeof TARGET_ASM;

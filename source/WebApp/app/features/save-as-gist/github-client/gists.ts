@@ -1,24 +1,24 @@
 import asLookup from '../../../../ts/helpers/as-lookup';
 import { assertType } from '../../../../ts/helpers/assert-type';
 import extendType from '../../../../ts/helpers/extend-type';
-import { targets, TargetName } from '../../../../ts/helpers/targets';
 import { targetMap } from '../../../../ts/state/handlers/helpers/language-and-target-maps';
 import type { CodeResult, AstResult, RunResult, VerifyResult, ExplainResult, ErrorResult, Result } from '../../../../ts/types/results';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../../shared/languages';
+import { TargetName, TARGET_ASM, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_IL, TARGET_RUN, TARGET_VB, TARGET_VERIFY } from '../../../shared/targets';
 import type { Gist } from '../gist';
 import { token } from './githubAuth';
 import renderOutputToText from './internal/render-output-to-text';
 
 type TargetResultMap = {
-    [targets.csharp]: CodeResult;
-    [targets.il]: CodeResult;
-    [targets.asm]: CodeResult;
-    [targets.ast]: AstResult;
-    [targets.run]: RunResult;
-    [targets.verify]: VerifyResult;
-    [targets.explain]: ExplainResult;
+    [TARGET_CSHARP]: CodeResult;
+    [TARGET_IL]: CodeResult;
+    [TARGET_ASM]: CodeResult;
+    [TARGET_AST]: AstResult;
+    [TARGET_RUN]: RunResult;
+    [TARGET_VERIFY]: VerifyResult;
+    [TARGET_EXPLAIN]: ExplainResult;
     // not actually supported anymore, but needed for completeness
-    [targets.vb]: CodeResult;
+    [TARGET_VB]: CodeResult;
 };
 
 // Zero-width space (\u200B) is invisible, but ensures that these will be sorted after other files
@@ -65,19 +65,19 @@ function prepareResultForGist(target: string, result: Result): {
 };
 function prepareResultForGist(target: string, result: Result) {
     switch (target) {
-        case targets.csharp:
+        case TARGET_CSHARP:
             return { suffix: '.decompiled.cs', content: result.value };
-        case targets.il:
+        case TARGET_IL:
             return { suffix: '.il', content: result.value };
-        case targets.asm:
+        case TARGET_ASM:
             return { suffix: '.jit.asm', content: result.value };
-        case targets.ast:
+        case TARGET_AST:
             return { suffix: '.ast.json', content: readableJson(result.value) };
-        case targets.run:
+        case TARGET_RUN:
             return { suffix: '.output.txt', content: renderOutputToText((result as unknown as RunResult).value) };
-        case targets.verify:
+        case TARGET_VERIFY:
             return { suffix: '.verify.txt', content: result.value };
-        case targets.explain:
+        case TARGET_EXPLAIN:
             return { suffix: '.explained.json', content: readableJson(result.value) };
         default:
             return { suffix: '.processed.json', content: readableJson(result.value) };
@@ -103,7 +103,7 @@ export async function getGistAsync(id: string): Promise<Gist> {
     } : {};
     const target = gistOptions.target && targetMap[gistOptions.target]
         ? gistOptions.target as TargetName
-        : targets.csharp;
+        : TARGET_CSHARP;
 
     return {
         id,

@@ -7,6 +7,7 @@ import { Modal } from '../../shared/Modal';
 import { branchOptionState } from '../../shared/state/branchOptionState';
 import { codeState } from '../../shared/state/codeState';
 import { languageOptionState } from '../../shared/state/languageOptionState';
+import { targetOptionState } from '../../shared/state/targetOptionState';
 import { useOption } from '../../shared/useOption';
 import { useResult } from '../../shared/useResult';
 import type { Gist } from './Gist';
@@ -23,10 +24,8 @@ export const GistSaveModal: FC<Props> = ({ onSave, onCancel }) => {
     const code = useRecoilValue(codeState);
     const language = useRecoilValue(languageOptionState);
     const branch = useRecoilValue(branchOptionState);
-    const [target, release] = [
-        useOption('target'),
-        useOption('release')
-    ];
+    const target = useRecoilValue(targetOptionState);
+    const release = useOption('release');
     const result = useResult();
     const [save, saved, error, saving] = useAsync(async () => {
         if (!result) throw new Error(`Cannot save gist before receiving initial result`);

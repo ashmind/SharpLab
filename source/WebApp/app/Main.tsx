@@ -2,7 +2,6 @@ import React, { FC, useContext, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import type { Result, UpdateResult } from '../ts/types/results';
 import { CodeEditor } from './code/CodeEditor';
-import { useOption } from './shared/useOption';
 import { useResult, useDispatchResultUpdate } from './shared/useResult';
 import { classNames } from './helpers/classNames';
 import { ErrorsTopSection } from './ErrorsTopSection';
@@ -16,6 +15,7 @@ import { CodeTopSection } from './CodeTopSection';
 import { MobileSettings } from './features/mobile-settings/MobileSettings';
 import { codeState } from './shared/state/codeState';
 import { branchOptionState } from './shared/state/branchOptionState';
+import { targetOptionState } from './shared/state/targetOptionState';
 
 const getStatus = (online: boolean, result: Result | undefined) => {
     if (!online)
@@ -30,7 +30,7 @@ export const Main: FC = () => {
     const initialCode = useContext(InitialCodeContext);
     const setCode = useSetRecoilState(codeState);
     const branch = useRecoilValue(branchOptionState);
-    const target = useOption('target');
+    const target = useRecoilValue(targetOptionState);
     const [online, setOnline] = useState(true);
     const { loading, onWait, endWait } = useLoadingWait();
     const dispatchResultUpdate = useDispatchResultUpdate();

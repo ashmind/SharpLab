@@ -1,7 +1,7 @@
-import { targets, TargetName } from '../../helpers/targets';
 import help from '../../helpers/help';
 import asLookup from '../../helpers/as-lookup';
 import { LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB, LanguageName } from '../../../app/shared/languages';
+import { TargetName, TARGET_RUN } from '../../../app/shared/targets';
 
 const normalize = (code: string) => {
     // 8 spaces must match the layout below
@@ -66,6 +66,6 @@ export default {
     } as const),
 
     getCode: (language: LanguageName|undefined, target: TargetName|string|undefined) => code[
-        (target === targets.run ? language + '.run' : language) as string
+        (target === TARGET_RUN ? language + '.run' : language) as string
     ] ?? ''
 };

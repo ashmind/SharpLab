@@ -1,11 +1,11 @@
 ﻿import LZString from 'lz-string';
 import type { RawOptions } from '../../types/raw-options';
-import { TargetName, targets } from '../../helpers/targets';
 import warn from '../../helpers/warn';
 import throwError from '../../helpers/throw-error';
 import loadGistFromUrlHashAsync, { LoadStateFromGistResult } from '../../../app/features/save-as-gist/loadGistFromUrlHashAsync';
 import type { Gist } from '../../../app/features/save-as-gist/gist';
 import { LanguageName, LANGUAGE_CSHARP } from '../../../app/shared/languages';
+import { TargetName, TARGET_CSHARP } from '../../../app/shared/targets';
 import {
     languageMap,
     languageMapReverse,
@@ -31,7 +31,7 @@ export const saveStateToUrl = (
     const optionsPacked = {
         b: options.branchId,
         l: options.language !== LANGUAGE_CSHARP ? languageMap[options.language] : null,
-        t: options.target !== targets.csharp ? targetMap[options.target] : null,
+        t: options.target !== TARGET_CSHARP ? targetMap[options.target] : null,
         d: options.release ? '' : '+'
     };
     const optionsPackedString = Object

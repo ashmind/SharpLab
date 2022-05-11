@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import dateFormat from 'dateformat';
+import { useRecoilValue } from 'recoil';
 import type { CodeResult, OutputItem } from '../ts/types/results';
-import type { TargetLanguageName } from '../ts/helpers/targets';
 import { TargetSelect } from './header/TargetSelect';
 import { ModeSelect } from './header/ModeSelect';
 import { Loader } from './shared/Loader';
@@ -10,15 +10,16 @@ import { AstView } from './results/AstView';
 import { VerifyView } from './results/VerifyView';
 import { ExplainView } from './results/ExplainView';
 import { OutputView } from './results/OutputView';
-import { useOption } from './shared/useOption';
 import { useResult } from './shared/useResult';
+import { targetOptionState } from './shared/state/targetOptionState';
+import type { TargetLanguageName } from './shared/targets';
 
 type CodeState = Pick<CodeResult, 'value'|'ranges'> & { language: TargetLanguageName };
 
 const EMPTY_OUTPUT = [] as ReadonlyArray<OutputItem>;
 export const ResultsTopSection: FC = () => {
     const [lastCodeState, setLastCodeState] = useState<CodeState>();
-    const target = useOption('target');
+    const target = useRecoilValue(targetOptionState);
     const result = useResult();
 
     // Code is special since CodeMirror is slow to set up, so we hide it instead of destroying it

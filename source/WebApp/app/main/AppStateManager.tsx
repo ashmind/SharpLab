@@ -14,18 +14,20 @@ import { ResultContext } from '../shared/contexts/ResultContext';
 import { branchOptionState } from '../shared/state/branchOptionState';
 import { codeState } from '../shared/state/codeState';
 import { languageOptionState } from '../shared/state/languageOptionState';
+import { targetOptionState } from '../shared/state/targetOptionState';
 import type { Branch } from '../shared/types/Branch';
 import { MutableValueProvider } from './state/MutableValueProvider';
 import { resultReducer } from './state/resultReducer';
 
 export const InitialCodeContext = createContext<string>('');
-type LegacyOptions = Pick<AppOptions, 'target'|'release'>;
+type LegacyOptions = Pick<AppOptions, 'release'>;
 
 const EMPTY_BRANCHES = [] as ReadonlyArray<Branch>;
 export const AppStateManager = ({ children }: { children: ReactNode }) => {
     const [options, setOptions] = useState<LegacyOptions>();
     const [language, setLanguage] = useRecoilState(languageOptionState);
     const [branch, setBranch] = useRecoilState(branchOptionState);
+    const [target, setTarget] = useRecoilState(targetOptionState);
     const [initialCode, setInitialCode] = useState<string>('');
     const [code, setCode] = useRecoilState(codeState);
     // TODO: This should be moved into the Gist feature for clearer responsibility split
@@ -57,33 +59,42 @@ export const AppStateManager = ({ children }: { children: ReactNode }) => {
         setOptions(loadedState.options);
         setLanguage(loadedState.options.language);
         setBranch(loadedState.options.branch);
+        setTarget(loadedState.options.target);
         setInitialCode(loadedState.code);
         setCode(loadedState.code);
         setGist(loadedState.gist);
-    }, [loadedState, setLanguage, setBranch, setCode, setGist]);
+    }, [loadedState, setLanguage, setBranch, setTarget, setCode, setGist]);
 
     useEffect(() => {
         if (!options)
             return;
-        const { target } = options;
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (!language || !target)
+            return;
         const loaded = loadedState?.options;
         if (language !== loaded?.language || target !== loaded.target)
             setInitialCode(defaults.getCode(language, target));
-    }, [loadedState, language, options]);
+    }, [loadedState, language, target, options]);
 
     useEffect(() => {
         if (!loadedState || !options)
             return;
-        if (code === loadedState.code && options === loadedState.options && gist === loadedState.gist)
+        const sameAsLoaded = language === loadedState.options.language
+            && branch === loadedState.options.branch
+            && target === loadedState.options.target
+            && options.release === loadedState.options.release
+            && code === loadedState.code
+            && gist === loadedState.gist;
+        if (sameAsLoaded)
             return;
-        saveState({ code, options: { ...options, language, branch }, gist });
-    }, [loadedState, language, branch, options, code,  gist]);
+        saveState({ code, options: { ...options, language, branch, target }, gist });
+    }, [loadedState, language, branch, target, options, code, gist]);
 
     if (!options)
         return null;
 
     const renderOptionProviders = (children: ReactNode) => {
-        const optionNames = ['target', 'release'] as const;
+        const optionNames = ['release'] as const;
 
         return optionNames.reduce(<TName extends OptionName>(children: ReactNode, name: TName) => <MutableValueProvider
             context={optionContexts[name]}

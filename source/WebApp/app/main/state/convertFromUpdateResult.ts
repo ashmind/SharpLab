@@ -1,6 +1,5 @@
 import extractRangesFromIL from '../../../ts/helpers/extract-ranges-from-il';
 import parseOutput from '../../../ts/helpers/parse-output';
-import { TargetName, targets } from '../../../ts/helpers/targets';
 import type {
     DiagnosticError,
     DiagnosticWarning,
@@ -11,6 +10,7 @@ import type {
     UpdateResult
 } from '../../../ts/types/results';
 import type { MaybeCached } from '../../features/result-cache/types';
+import { TargetName, TARGET_AST, TARGET_EXPLAIN, TARGET_IL, TARGET_RUN, TARGET_VERIFY } from '../../shared/targets';
 
 const collectErrorsAndWarnings = (target: TargetName, diagnostics: UpdateResult['diagnostics']) => {
     const errors = [];
@@ -21,7 +21,7 @@ const collectErrorsAndWarnings = (target: TargetName, diagnostics: UpdateResult[
             case 'warning': warnings.push(diagnostic as DiagnosticWarning); break;
         }
     }
-    const success = (target === targets.ast || target === targets.explain)
+    const success = (target === TARGET_AST || target === TARGET_EXPLAIN)
         || errors.length === 0;
 
     return { success, errors, warnings } as const;
@@ -35,19 +35,19 @@ export const convertFromUpdateResult = (
 
     const rest = { ...collectErrorsAndWarnings(target, diagnostics), cached };
     switch (target) {
-        case targets.verify:
+        case TARGET_VERIFY:
             return { type: 'verify', value: (x ?? null) as string | null, ...rest };
-        case targets.ast:
+        case TARGET_AST:
             return { type: 'ast', value: (x ?? []) as ReadonlyArray<AstItem>, ...rest };
-        case targets.explain:
+        case TARGET_EXPLAIN:
             return { type: 'explain', value: (x ?? []) as ReadonlyArray<Explanation>, ...rest };
-        case targets.run: {
+        case TARGET_RUN: {
             const value = (typeof x === 'string')
                 ? parseOutput(x)
                 : x as Exclude<RunResult['value'], string>;
             return { type: 'run', value, ...rest };
         }
-        case targets.il: {
+        case TARGET_IL: {
             const { code: value, ranges } = x
                 ? extractRangesFromIL(x as string)
                 : { code: x } as { code: typeof x; ranges: undefined };

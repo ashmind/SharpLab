@@ -1,8 +1,8 @@
-import { targets } from '../../../helpers/targets';
 import mapObject from '../../../helpers/map-object';
 import asLookup from '../../../helpers/as-lookup';
 import { assertType } from '../../../helpers/assert-type';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../../../app/shared/languages';
+import { TargetName, TARGET_ASM, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_IL, TARGET_RUN, TARGET_VB, TARGET_VERIFY } from '../../../../app/shared/targets';
 
 function reverseMap<TMap extends { [key: string]: string }>(map: TMap) {
     type KeyFromValue<T, V> = { [K in keyof T]: V extends T[K] ? K : never }[keyof T];
@@ -29,16 +29,16 @@ export {
 };
 
 const targetMap = {
-    [targets.csharp]:  languageMap[LANGUAGE_CSHARP],
-    [targets.vb]:      languageMap[LANGUAGE_VB],
-    [targets.il]:      'il',
-    [targets.asm]:     'asm',
-    [targets.ast]:     'ast',
-    [targets.run]:     'run',
-    [targets.verify]:  'verify',
-    [targets.explain]: 'explain'
+    [TARGET_CSHARP]:  languageMap[LANGUAGE_CSHARP],
+    [TARGET_VB]:      languageMap[LANGUAGE_VB],
+    [TARGET_IL]:      'il',
+    [TARGET_ASM]:     'asm',
+    [TARGET_AST]:     'ast',
+    [TARGET_RUN]:     'run',
+    [TARGET_VERIFY]:  'verify',
+    [TARGET_EXPLAIN]: 'explain'
 } as const;
-assertType<{ [K in typeof targets[keyof typeof targets]]: string }>(targetMap);
+assertType<{ [K in TargetName]: string }>(targetMap);
 
 const targetMapReverse = reverseMap(targetMap);
 const targetMapAsLookup = asLookup(targetMap);
@@ -48,4 +48,4 @@ export {
     targetMapReverseAsLookup as targetMapReverse
 };
 
-export const targetMapReverseV1 = mapObject(targetMapReverseAsLookup, (key, value) => ['>' + key, value]); // eslint-disable-line prefer-template
+export const targetMapReverseV1 = mapObject(targetMapReverseAsLookup, (key, value) => ['>' + key, value] as const); // eslint-disable-line prefer-template

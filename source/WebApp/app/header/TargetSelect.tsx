@@ -1,40 +1,41 @@
 import React, { FC, useMemo } from 'react';
-import { targets, TargetName } from '../../ts/helpers/targets';
+import { useRecoilState } from 'recoil';
 import { SelectHTMLProps, Select } from '../shared/Select';
-import { useAndSetOption } from '../shared/useOption';
+import { targetOptionState } from '../shared/state/targetOptionState';
+import { TargetName, TARGET_ASM, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_IL, TARGET_RUN, TARGET_VB, TARGET_VERIFY } from '../shared/targets';
 
 type Props = {
     useAriaLabel?: boolean;
 } & Omit<SelectHTMLProps, 'aria-label'>;
 
 export const TargetSelect: FC<Props> = ({ useAriaLabel, ...htmlProps }) => {
-    const [target, setTarget] = useAndSetOption('target');
+    const [target, setTarget] = useRecoilState(targetOptionState);
 
     const options = useMemo(() => [
         {
             groupLabel: 'Decompile',
             options: [
-                { label: 'C#', value: targets.csharp },
-                ...(target === targets.vb ? [{ label: 'Visual Basic', value: targets.vb }] : []),
-                { label: 'IL', value: targets.il },
-                { label: 'JIT Asm', value: targets.asm }
+                { label: 'C#', value: TARGET_CSHARP },
+                ...(target === TARGET_VB ? [{ label: 'Visual Basic', value: TARGET_VB } as const] : []),
+                { label: 'IL', value: TARGET_IL },
+                { label: 'JIT Asm', value: TARGET_ASM }
             ]
         },
         {
             groupLabel: 'Other',
             options: [
-                { label: 'Syntax Tree', value: targets.ast },
-                { label: 'Verify Only', value: targets.verify },
-                { label: 'Explain', value: targets.explain }
+                { label: 'Syntax Tree', value: TARGET_AST },
+                { label: 'Verify Only', value: TARGET_VERIFY },
+                { label: 'Explain', value: TARGET_EXPLAIN }
             ]
         },
         {
             groupLabel: 'Experimental',
             options: [
-                { label: 'Run', value: targets.run }
+                { label: 'Run', value: TARGET_RUN }
             ]
         }
-    ], [target]);
+    ] as const, [target]);
 
     return <Select<TargetName>
         className="option-target option online-only"

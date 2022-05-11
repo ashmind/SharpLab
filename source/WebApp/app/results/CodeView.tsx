@@ -6,8 +6,9 @@ import 'codemirror/mode/vb/vb';
 import '../shared/codemirror/mode-cil';
 import '../shared/codemirror/mode-asm';
 import '../shared/codemirror/addon-cil-infotip';
-import { TargetLanguageName, targets } from '../../ts/helpers/targets';
 import { useCodeRangeSync } from '../shared/useCodeRangeSync';
+import { TargetLanguageName, TARGET_ASM, TARGET_CSHARP, TARGET_IL, TARGET_VB } from '../shared/targets';
+import { assertType } from '../../ts/helpers/assert-type';
 import type { LinkedCodeRange } from './code/LinkedCodeRange';
 import { findRange } from './code/findRange';
 
@@ -19,11 +20,12 @@ type Props = {
 export { LinkedCodeRange };
 
 const modeMap = {
-    [targets.csharp]: 'text/x-csharp',
-    [targets.vb]:     'text/x-vb',
-    [targets.il]:     'text/x-cil',
-    [targets.asm]:    'text/x-asm'
+    [TARGET_CSHARP]: 'text/x-csharp',
+    [TARGET_VB]:     'text/x-vb',
+    [TARGET_IL]:     'text/x-cil',
+    [TARGET_ASM]:    'text/x-asm'
 };
+assertType<{ [K in TargetLanguageName]: string }>(modeMap);
 
 export const CodeView: FC<Props> = ({ code, language, ranges }) => {
     const [, setSourceRange] = useCodeRangeSync('source');
