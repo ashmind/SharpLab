@@ -1,18 +1,19 @@
 import React, { FC } from 'react';
-import type { Branch } from '../../ts/types/branch';
-import { classNames } from '../helpers/classNames';
-import { useExpander } from '../helpers/useExpander';
+import { useRecoilValue } from 'recoil';
+import { classNames } from '../../helpers/classNames';
+import { useExpander } from '../../helpers/useExpander';
+import { branchOptionState } from './branchOptionState';
 
 type Props = {
     className?: string;
-    branch: Branch;
     headerless?: boolean;
 };
 
-export const BranchDetailsSection: FC<Props> = ({ className, branch, headerless }) => {
+export const BranchDetailsSection: FC<Props> = ({ className, headerless }) => {
+    const branch = useRecoilValue(branchOptionState);
     const { expandedClassName, ExpanderButton } = useExpander();
 
-    if (!branch.commits)
+    if (!branch?.commits)
         return null;
 
     const fullClassName = classNames(

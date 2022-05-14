@@ -1,4 +1,4 @@
-import { fromPartial } from './helpers';
+import { fromPartial } from '../../../helpers/testing/fromPartial';
 
 describe('get-branches-async', () => {
     test.each([
@@ -25,7 +25,7 @@ describe('get-branches-async', () => {
 
         jest.resetModules();
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        const getBranchesAsync = (await import('../ts/server/get-branches-async')).default;
+        const { getBranchesAsync } = (await import('./getBranchesAsync'));
 
         await getBranchesAsync();
 

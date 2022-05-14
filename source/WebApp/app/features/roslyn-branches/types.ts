@@ -1,8 +1,10 @@
+export type BranchKind = 'roslyn'|'platform';
+
 export interface Branch {
     readonly id: string;
     readonly name: string;
     readonly group: string;
-    readonly kind: 'roslyn'|'platform';
+    readonly kind: BranchKind;
     readonly url: string;
 
     // not received from server, set in code

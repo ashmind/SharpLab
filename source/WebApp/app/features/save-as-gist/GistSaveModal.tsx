@@ -4,12 +4,12 @@ import toRawOptions from '../../../ts/helpers/to-raw-options';
 import { useAsync } from '../../helpers/useAsync';
 import { Loader } from '../../shared/Loader';
 import { Modal } from '../../shared/Modal';
-import { branchOptionState } from '../../shared/state/branchOptionState';
 import { codeState } from '../../shared/state/codeState';
 import { languageOptionState } from '../../shared/state/languageOptionState';
+import { releaseOptionState } from '../../shared/state/releaseOptionState';
 import { targetOptionState } from '../../shared/state/targetOptionState';
-import { useOption } from '../../shared/useOption';
 import { useResult } from '../../shared/useResult';
+import { branchOptionState } from '../roslyn-branches/branchOptionState';
 import type { Gist } from './Gist';
 import { createGistAsync } from './github-client/gists';
 
@@ -25,7 +25,7 @@ export const GistSaveModal: FC<Props> = ({ onSave, onCancel }) => {
     const language = useRecoilValue(languageOptionState);
     const branch = useRecoilValue(branchOptionState);
     const target = useRecoilValue(targetOptionState);
-    const release = useOption('release');
+    const release = useRecoilValue(releaseOptionState);
     const result = useResult();
     const [save, saved, error, saving] = useAsync(async () => {
         if (!result) throw new Error(`Cannot save gist before receiving initial result`);

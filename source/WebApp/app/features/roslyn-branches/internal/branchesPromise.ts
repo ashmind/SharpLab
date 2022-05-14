@@ -1,7 +1,7 @@
 import dateFormat from 'dateformat';
-import type { PartiallyMutable } from '../helpers/partially-mutable';
-import type { Branch } from '../types/branch';
-import getBranchesAsync from '../server/get-branches-async';
+import type { PartiallyMutable } from '../../../helpers/partiallyMutable';
+import type { Branch } from '../types';
+import { getBranchesAsync } from './getBranchesAsync';
 
 function getBranchDisplayName(branch: Branch) {
     const feature = branch.feature;
@@ -21,8 +21,3 @@ export const branchesPromise = (async () => {
     }
     return branches;
 })();
-
-export async function resolveBranchAsync(branchId: string) {
-    const branches = await branchesPromise;
-    return branches.find(b => b.id === branchId) ?? null;
-}

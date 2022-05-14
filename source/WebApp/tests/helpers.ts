@@ -1,5 +1,4 @@
 import { createMockProxy } from 'jest-mock-proxy';
-import type { PartiallyMutable } from '../ts/helpers/partially-mutable';
 
 // eslint-disable-next-line max-statements-per-line
 class MockProxyTypeProvider<T> { infer() { return createMockProxy<T>(); } }
@@ -16,6 +15,10 @@ export function fromPartial<T, U extends T = T>(partial: DeepPartial<U>): T {
     return partial as T;
 }
 
+type Mutable<T> = {
+    -readonly[TKey in keyof T]: T[TKey];
+};
+
 export function asMutable<T>(value: T) {
-    return value as PartiallyMutable<T, keyof T>;
+    return value as Mutable<T>;
 }

@@ -1,6 +1,6 @@
 import React, { FC, ReactElement } from 'react';
+import { BranchSelect } from './features/roslyn-branches/BranchSelect';
 import { GistManager } from './features/save-as-gist/GistManager';
-import { BranchSelect } from './header/BranchSelect';
 import { LanguageSelect } from './header/LanguageSelect';
 
 type Props = {

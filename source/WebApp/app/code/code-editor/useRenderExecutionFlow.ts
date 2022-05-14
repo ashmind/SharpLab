@@ -46,7 +46,10 @@ const renderExecutionFlow = (steps: ReadonlyArray<FlowStep|number>, cm: CodeMirr
     const bookmarks = [];
     for (const [lineNumber, details] of detailsByLine) {
         const cmLineNumber = lineNumber - 1;
-        const end = cm.getLine(cmLineNumber).length;
+        const line = cm.getLine(cmLineNumber);
+        if (!line)
+            continue;
+        const end = line.length;
         for (const partName of ['notes', 'exception'] as const) {
             const parts = details.map(s => s[partName]).filter(p => p) as ReadonlyArray<string>;
             if (!parts.length)

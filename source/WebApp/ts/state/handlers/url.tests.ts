@@ -1,8 +1,11 @@
-import * as gists from '../app/features/save-as-gist/github-client/gists';
-import { languages, LanguageName } from '../ts/helpers/languages';
-import { targets } from '../ts/helpers/targets';
-import { loadStateFromUrlAsync, saveStateToUrl } from '../ts/state/handlers/url';
-import { fromPartial, asMutable } from './helpers';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import * as gists from '../../../app/features/save-as-gist/github-client/gists';
+import * as languages from '../../../app/shared/languages';
+import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../../app/shared/languages';
+import * as targets from '../../../app/shared/targets';
+import { TARGET_CSHARP, TARGET_IL } from '../../../app/shared/targets';
+import { asMutable, fromPartial } from '../../../tests/helpers';
+import { loadStateFromUrlAsync, saveStateToUrl } from './url';
 
 describe('v2', () => {
     for (const [name, value] of ([
@@ -25,7 +28,7 @@ describe('v2', () => {
         'void Func13() {}'
     ] as const) {
         test(`save/load preserves code '${code}'`, async () => {
-            saveStateToUrl(code, fromPartial({ language: languages.csharp }));
+            saveStateToUrl(code, fromPartial({ language: LANGUAGE_CSHARP }));
             const { code: loaded } = (await loadStateFromUrlAsync())!;
             expect(loaded).toBe(code);
         });
@@ -36,8 +39,8 @@ describe('v2', () => {
         const loaded = await loadStateFromUrlAsync()!;
         expect(loaded).toEqual({
             options: {
-                language: languages.csharp,
-                target: targets.il,
+                language: LANGUAGE_CSHARP,
+                target: LANGUAGE_IL,
                 release: true,
                 branchId: 'main'
             },
@@ -50,7 +53,7 @@ describe('v1', () => {
     test('loads language as csharp if empty', async () => {
         window.location.hash = '#/';
         const { options } = (await loadStateFromUrlAsync())!;
-        expect(options.language).toBe(languages.csharp);
+        expect(options.language).toBe(LANGUAGE_CSHARP);
     });
 });
 
@@ -109,8 +112,8 @@ describe('gist', () => {
     }
 
     for (const [key, gistValue, newValue] of [
-        ['language', targets.csharp, targets.vb],
-        ['target',   targets.csharp, targets.vb],
+        ['language', LANGUAGE_CSHARP, LANGUAGE_VB],
+        ['target',   TARGET_CSHARP, TARGET_IL],
         ['branchId', null, 'branch'],
         ['branchId', 'branch', null],
         ['release',  false, true],

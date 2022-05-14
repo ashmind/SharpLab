@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import type { ServerOptions } from '../../../ts/types/server-options';
-import { branchOptionState } from '../../shared/state/branchOptionState';
+import { branchOptionState } from '../../features/roslyn-branches/branchOptionState';
+import { releaseOptionState } from '../../shared/state/releaseOptionState';
 import { targetOptionState } from '../../shared/state/targetOptionState';
-import { useOption } from '../../shared/useOption';
 
 export const useServerOptions = ({ initialCached }: { initialCached: boolean }): ServerOptions => {
     const branch = useRecoilValue(branchOptionState);
-    const release = useOption('release');
     const target = useRecoilValue(targetOptionState);
+    const release = useRecoilValue(releaseOptionState);
     const [wasCached, setWasCached] = useState(initialCached);
 
     useEffect(() => {

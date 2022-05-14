@@ -1,6 +1,6 @@
+import type { Branch } from '../../app/features/roslyn-branches/types';
 import type { LanguageName } from '../../app/shared/languages';
-import type { Branch } from '../../app/shared/types/Branch';
-import type { TargetName } from '../helpers/targets';
+import type { TargetName } from '../../app/shared/targets';
 
 export interface AppOptions {
     language: LanguageName;

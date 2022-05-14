@@ -7,15 +7,14 @@ import { classNames } from './helpers/classNames';
 import { ErrorsTopSection } from './ErrorsTopSection';
 import { ResultsTopSection } from './ResultsTopSection';
 import { WarningsTopSection } from './WarningsTopSection';
-import { BranchDetailsSection } from './code/BranchDetailsSection';
 import { CodeRangeSyncProvider } from './main/CodeRangeSyncProvider';
 import { useLoadingWait } from './main/useLoadingWait';
 import { InitialCodeContext } from './main/AppStateManager';
 import { CodeTopSection } from './CodeTopSection';
 import { MobileSettings } from './features/mobile-settings/MobileSettings';
 import { codeState } from './shared/state/codeState';
-import { branchOptionState } from './shared/state/branchOptionState';
 import { targetOptionState } from './shared/state/targetOptionState';
+import { BranchDetailsSection } from './features/roslyn-branches/BranchDetailsSection';
 
 const getStatus = (online: boolean, result: Result | undefined) => {
     if (!online)
@@ -29,7 +28,6 @@ const EMPTY_ARRAY = [] as ReadonlyArray<never>;
 export const Main: FC = () => {
     const initialCode = useContext(InitialCodeContext);
     const setCode = useSetRecoilState(codeState);
-    const branch = useRecoilValue(branchOptionState);
     const target = useRecoilValue(targetOptionState);
     const [online, setOnline] = useState(true);
     const { loading, onWait, endWait } = useLoadingWait();
@@ -64,7 +62,7 @@ export const Main: FC = () => {
         <CodeRangeSyncProvider>
             <div className="top-section-group top-section-group-code">
                 <CodeTopSection codeEditor={codeEditor} />
-                {branch && <BranchDetailsSection branch={branch} className="top-section" />}
+                <BranchDetailsSection className="top-section" />
             </div>
             <div className={classNames('top-section-group top-section-group-results', loading && 'loading')}>
                 <ResultsTopSection />

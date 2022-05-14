@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
+import { useRecoilState } from 'recoil';
 import { SelectHTMLProps, Select } from '../shared/Select';
-import { useAndSetOption } from '../shared/useOption';
+import { releaseOptionState } from '../shared/state/releaseOptionState';
 
 type Mode = 'debug'|'release';
 
@@ -14,7 +15,7 @@ const options = [
 ] as const;
 
 export const ModeSelect: FC<Props> = ({ useAriaLabel, ...htmlProps }) => {
-    const [release, setRelease] = useAndSetOption('release');
+    const [release, setRelease] = useRecoilState(releaseOptionState);
 
     return <Select<Mode>
         className="option-optimizations option online-only"

@@ -1,6 +1,5 @@
-import type { PartiallyMutable } from '../helpers/partially-mutable';
-import type { Branch, BranchCommit } from '../types/branch';
-import asLookup from '../helpers/as-lookup';
+import type { PartiallyMutable } from '../../../helpers/partiallyMutable';
+import type { Branch, BranchCommit } from '../types';
 
 const branchesUrl = (() => {
     const mainUrl = 'https://slbs.azureedge.net/public/branches.json';
@@ -17,11 +16,11 @@ const branchesUrl = (() => {
         case 'edge.sharplab.io':
             return override === 'main' ? mainUrl : edgeUrl;
         default:
-            return asLookup({ main: mainUrl, edge: edgeUrl })[override] ?? '!branches.json';
+            return { main: mainUrl, edge: edgeUrl }[override] ?? '!branches.json';
     }
 })();
 
-export default async function getBranchesAsync(): Promise<ReadonlyArray<Branch>> {
+export async function getBranchesAsync(): Promise<ReadonlyArray<Branch>> {
     try {
         const branches = await (await fetch(branchesUrl)).json() as ReadonlyArray<Omit<Branch, 'commits'> & {
             commits?: ReadonlyArray<Omit<BranchCommit, 'date'> & { date: string }>;
