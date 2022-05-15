@@ -1,7 +1,7 @@
-import asLookup from '../../../helpers/as-lookup';
 import { assertType } from '../../../helpers/assert-type';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../../../app/shared/languages';
 import { TargetName, TARGET_ASM, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_IL, TARGET_RUN, TARGET_VB, TARGET_VERIFY } from '../../../../app/shared/targets';
+import { asLookup } from '../../../../app/helpers/asLookup';
 
 const mapFromObject = <TObject, TNewKey extends string, TNewValue>(
     object: TObject,

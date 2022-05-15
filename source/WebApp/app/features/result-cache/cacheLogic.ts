@@ -1,4 +1,3 @@
-import asLookup from '../../../ts/helpers/as-lookup';
 import { decodeArrayBufferFromBase64 } from './internal/arrayBuffer';
 import type { CachedUpdateResult } from './types';
 
@@ -18,7 +17,7 @@ const [cacheEnvironment, cacheCdnBaseUrl] = (() => {
         case 'edge.sharplab.io':
             return override === 'main' ? main : edge;
         default:
-            return asLookup({ main, edge })[override] ?? local;
+            return { main, edge }[override] ?? local;
     }
 })();
 

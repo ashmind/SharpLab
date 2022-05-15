@@ -1,6 +1,6 @@
 import help from '../../../helpers/help';
-import asLookup from '../../../helpers/as-lookup';
 import { LANGUAGE_CSHARP, LanguageName, LANGUAGE_IL } from '../../../../app/shared/languages';
+import { asLookup } from '../../../../app/helpers/asLookup';
 
 const dictionaries = asLookup({
     [LANGUAGE_CSHARP]: build(

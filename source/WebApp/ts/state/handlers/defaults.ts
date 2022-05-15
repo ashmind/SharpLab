@@ -1,7 +1,7 @@
 import help from '../../helpers/help';
-import asLookup from '../../helpers/as-lookup';
 import { LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB, LanguageName } from '../../../app/shared/languages';
 import { TargetName, TARGET_RUN } from '../../../app/shared/targets';
+import { asLookup } from '../../../app/helpers/asLookup';
 
 const normalize = (code: string) => {
     // 8 spaces must match the layout below

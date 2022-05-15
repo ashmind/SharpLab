@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useId, useState } from 'react';
-import asLookup from '../../../ts/helpers/as-lookup';
+import { asLookup } from '../../helpers/asLookup';
 import type { Theme } from './Theme';
 import { getUserTheme, setUserTheme } from './themeLogic';
 

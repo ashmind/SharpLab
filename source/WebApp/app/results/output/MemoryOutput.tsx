@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useState } from 'react';
-import asLookup from '../../../ts/helpers/as-lookup';
 import type { MemoryInspection } from '../../../ts/types/results';
+import { asLookup } from '../../helpers/asLookup';
 import { Select } from '../../shared/Select';
 import { calculateLabelLevels, FinalLabel } from './memory/memoryLabels';
 
