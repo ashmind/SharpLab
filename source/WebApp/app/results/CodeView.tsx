@@ -8,10 +8,10 @@ import '../shared/codemirror/mode-asm';
 import '../shared/codemirror/addon-cil-infotip';
 import { useSetRecoilState } from 'recoil';
 import { TargetLanguageName, TARGET_ASM, TARGET_CSHARP, TARGET_IL, TARGET_VB } from '../shared/targets';
-import { assertType } from '../../ts/helpers/assert-type';
 import { codeRangeSyncSourceState } from '../features/code-range-sync/codeRangeSyncSourceState';
 import type { LinkedCodeRange } from '../features/code-range-sync/LinkedCodeRange';
 import { findRangeByTargetPosition } from '../features/code-range-sync/findRangeByTargetPosition';
+import { assertType } from '../helpers/assertType';
 
 type Props = {
     code: string;
