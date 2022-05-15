@@ -7,7 +7,6 @@ import { classNames } from './helpers/classNames';
 import { ErrorsTopSection } from './ErrorsTopSection';
 import { ResultsTopSection } from './ResultsTopSection';
 import { WarningsTopSection } from './WarningsTopSection';
-import { CodeRangeSyncProvider } from './main/CodeRangeSyncProvider';
 import { useLoadingWait } from './main/useLoadingWait';
 import { InitialCodeContext } from './main/AppStateManager';
 import { CodeTopSection } from './CodeTopSection';
@@ -59,16 +58,14 @@ export const Main: FC = () => {
         <MobileSettings buttonProps={{ tabIndex: 1 }} />
         <div className="mobile-offline-notice">connection lost, reconnecting…</div>
 
-        <CodeRangeSyncProvider>
-            <div className="top-section-group top-section-group-code">
-                <CodeTopSection codeEditor={codeEditor} />
-                <BranchDetailsSection className="top-section" />
-            </div>
-            <div className={classNames('top-section-group top-section-group-results', loading && 'loading')}>
-                <ResultsTopSection />
-                <ErrorsTopSection errors={result?.errors ?? EMPTY_ARRAY} />
-                <WarningsTopSection warnings={result?.warnings ?? EMPTY_ARRAY} />
-            </div>
-        </CodeRangeSyncProvider>
+        <div className="top-section-group top-section-group-code">
+            <CodeTopSection codeEditor={codeEditor} />
+            <BranchDetailsSection className="top-section" />
+        </div>
+        <div className={classNames('top-section-group top-section-group-results', loading && 'loading')}>
+            <ResultsTopSection />
+            <ErrorsTopSection errors={result?.errors ?? EMPTY_ARRAY} />
+            <WarningsTopSection warnings={result?.warnings ?? EMPTY_ARRAY} />
+        </div>
     </main>;
 };

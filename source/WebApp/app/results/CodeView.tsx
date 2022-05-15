@@ -6,11 +6,12 @@ import 'codemirror/mode/vb/vb';
 import '../shared/codemirror/mode-cil';
 import '../shared/codemirror/mode-asm';
 import '../shared/codemirror/addon-cil-infotip';
-import { useCodeRangeSync } from '../shared/useCodeRangeSync';
+import { useSetRecoilState } from 'recoil';
 import { TargetLanguageName, TARGET_ASM, TARGET_CSHARP, TARGET_IL, TARGET_VB } from '../shared/targets';
 import { assertType } from '../../ts/helpers/assert-type';
-import type { LinkedCodeRange } from './code/LinkedCodeRange';
-import { findRange } from './code/findRange';
+import { codeRangeSyncSourceState } from '../features/code-range-sync/codeRangeSyncSourceState';
+import type { LinkedCodeRange } from '../features/code-range-sync/LinkedCodeRange';
+import { findRangeByTargetPosition } from '../features/code-range-sync/findRangeByTargetPosition';
 
 type Props = {
     code: string;
@@ -28,7 +29,7 @@ const modeMap = {
 assertType<{ [K in TargetLanguageName]: string }>(modeMap);
 
 export const CodeView: FC<Props> = ({ code, language, ranges }) => {
-    const [, setSourceRange] = useCodeRangeSync('source');
+    const setSourceRange = useSetRecoilState(codeRangeSyncSourceState);
 
     const cmRef = useRef<CodeMirror.EditorFromTextArea | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -89,7 +90,7 @@ export const CodeView: FC<Props> = ({ code, language, ranges }) => {
     }, [code]);
 
     const tryFindRange = useCallback((location: CodeMirror.Position | undefined) =>
-        (ranges && location) ? findRange(ranges, location) : null,
+        (ranges && location) ? findRangeByTargetPosition(ranges, location) : null,
     [ranges]);
     useEffect(() => setCursorRange(tryFindRange(cursorPosition)), [tryFindRange, cursorPosition]);
     useEffect(() => setHoverRange(tryFindRange(hoverPosition)), [tryFindRange, hoverPosition]);

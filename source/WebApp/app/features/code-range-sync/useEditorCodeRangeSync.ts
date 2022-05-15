@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
-import { useCodeRangeSync } from '../../shared/useCodeRangeSync';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { codeRangeSyncSourceState } from './codeRangeSyncSourceState';
+import { codeRangeSyncTargetState } from './codeRangeSyncTargetState';
 
 export const useEditorCodeRangeSync = (cm: CodeMirror.Editor | undefined) => {
-    const [range] = useCodeRangeSync('source');
-    const [, setTargetOffset] = useCodeRangeSync('target');
+    const range = useRecoilValue(codeRangeSyncSourceState);
+    const setTargetOffset = useSetRecoilState(codeRangeSyncTargetState);
 
     useEffect(() => {
         if (!cm)

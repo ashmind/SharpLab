@@ -9,6 +9,4 @@ export type SourceRange = CodeRange | {
 export type TargetOffset = number | null;
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-export const SourceRangeContext = createContext<MutableContextValue<SourceRange>>(null!);
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 export const TargetOffsetContext = createContext<MutableContextValue<TargetOffset>>(null!);

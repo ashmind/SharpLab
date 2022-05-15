@@ -1,6 +1,8 @@
 import React, { FC, useCallback, useEffect, useMemo, useReducer } from 'react';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import type { AstItem } from '../../ts/types/results';
-import { useCodeRangeSync } from '../shared/useCodeRangeSync';
+import { codeRangeSyncSourceState } from '../features/code-range-sync/codeRangeSyncSourceState';
+import { codeRangeSyncTargetState } from '../features/code-range-sync/codeRangeSyncTargetState';
 import { AstNodeList } from './ast/AstNodeList';
 import { AstSelectionContext } from './ast/AstSelectionContext';
 import { findItemPathByOffset } from './ast/findItemPathByOffset';
@@ -12,8 +14,8 @@ type Props = {
 };
 
 export const AstView: FC<Props> = ({ roots }) => {
-    const [, setSourceRange] = useCodeRangeSync('source');
-    const [targetOffset] = useCodeRangeSync('target');
+    const setSourceRange = useSetRecoilState(codeRangeSyncSourceState);
+    const targetOffset = useRecoilValue(codeRangeSyncTargetState);
 
     const [selectionState, dispatchSelectionAction] = useReducer(selectionReducer, DEFAULT_SELECTION_STATE);
 

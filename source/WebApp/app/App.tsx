@@ -7,10 +7,10 @@ import { ScrollBarSizeStyleSetup } from './main/ScrollBarSizeStyleSetup';
 
 export const App: FC = () => {
     return <RecoilRoot>
-        <ScrollBarSizeStyleSetup />
         <AppStateManager>
             <Main />
             <Footer />
         </AppStateManager>
+        <ScrollBarSizeStyleSetup />
     </RecoilRoot>;
 };

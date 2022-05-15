@@ -6,10 +6,10 @@ import { useRecoilValue } from 'recoil';
 import type { Result, FlowStep } from '../../ts/types/results';
 import type { ServerOptions } from '../../ts/types/server-options';
 import { languageOptionState } from '../shared/state/languageOptionState';
+import { useEditorCodeRangeSync } from '../features/code-range-sync/useEditorCodeRangeSync';
 import { useRenderExecutionFlow } from './code-editor/useRenderExecutionFlow';
 import { useServerOptions } from './code-editor/useServerOptions';
 import { useServiceUrl } from './code-editor/useServiceUrl';
-import { useEditorCodeRangeSync } from './code-editor/useEditorCodeRangeSync';
 
 type ResultData = Result['value'];
 
