@@ -1,4 +1,4 @@
-export default Object.freeze({
+export default {
     run: {
         csharp: [
             '/*',
@@ -10,4 +10,4 @@ export default Object.freeze({
             '*/'
         ].join('\r\n')
     }
-});
+} as const;

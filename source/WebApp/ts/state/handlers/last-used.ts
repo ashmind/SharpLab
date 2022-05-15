@@ -1,8 +1,11 @@
-﻿import extendType from '../../helpers/extend-type';
-import warn from '../../helpers/warn';
-import type { RawOptions } from '../../types/raw-options';
+﻿import type { RawOptions } from '../../types/raw-options';
 
-const version = 3;
+const version = 3 as const;
+type OptionsV3 = {
+    version: 3;
+    options: RawOptions;
+};
+
 export default {
     loadOptions() {
         const loaded = localStorage['sharplab.options'] || localStorage['tryroslyn.options'];
@@ -10,13 +13,13 @@ export default {
             return null;
 
         try {
-            const parsed = JSON.parse(loaded) as { version?: number };
+            const parsed = JSON.parse(loaded) as OptionsV3 | { version?: 1|2 };
             if (parsed.version !== version)
                 return null;
-            return (extendType(parsed)<{ options: RawOptions }>()).options;
+            return parsed.options;
         }
         catch (ex) {
-            warn('Failed to load options:', ex);
+            console.warn('Failed to load options:', ex);
             return null;
         }
     },
@@ -26,7 +29,7 @@ export default {
             localStorage['sharplab.options'] = JSON.stringify({ version, options });
         }
         catch (ex) {
-            warn('Failed to save options:', ex);
+            console.warn('Failed to save options:', ex);
         }
     }
 };

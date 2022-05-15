@@ -1,5 +1,4 @@
 import toRawOptions from '../helpers/to-raw-options';
-import warn from '../helpers/warn';
 import type { Gist } from '../../app/features/save-as-gist/Gist';
 import { CacheKeyData, loadResultFromCacheAsync } from '../../app/features/result-cache/cacheLogic';
 import { resolveBranchAsync } from '../../app/features/roslyn-branches/resolveBranchAsync';
@@ -62,7 +61,7 @@ const loadResultFromCacheSafeAsync = async (cacheKey: CacheKeyData) => {
         return await loadResultFromCacheAsync(cacheKey);
     }
     catch (e) {
-        warn('Failed to load cached result: ', e);
+        console.warn('Failed to load cached result: ', e);
         return null;
     }
 };

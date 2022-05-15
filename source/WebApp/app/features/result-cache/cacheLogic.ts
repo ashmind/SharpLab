@@ -1,5 +1,5 @@
-import { decodeArrayBufferFromBase64 } from '../../../ts/helpers/array-buffer';
 import asLookup from '../../../ts/helpers/as-lookup';
+import { decodeArrayBufferFromBase64 } from './internal/arrayBuffer';
 import type { CachedUpdateResult } from './types';
 
 const [cacheEnvironment, cacheCdnBaseUrl] = (() => {

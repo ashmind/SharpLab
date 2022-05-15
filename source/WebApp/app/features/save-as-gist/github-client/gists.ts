@@ -1,6 +1,5 @@
 import asLookup from '../../../../ts/helpers/as-lookup';
 import { assertType } from '../../../../ts/helpers/assert-type';
-import extendType from '../../../../ts/helpers/extend-type';
 import { targetMap } from '../../../../ts/state/handlers/helpers/language-and-target-maps';
 import type { CodeResult, AstResult, RunResult, VerifyResult, ExplainResult, ErrorResult, Result } from '../../../../ts/types/results';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../../shared/languages';
@@ -133,13 +132,12 @@ export async function createGistAsync({ name, code, options, result }: CreateGis
 
     const codeFileName = name + extension;
 
-    const gistOptions = extendType({
+    const gistOptions = {
         version: 1,
         target: options.target,
-        mode: options.release ? 'Release' : 'Debug'
-    } as const)<{ branch?: string }>();
-    if (options.branchId)
-        gistOptions.branch = options.branchId;
+        mode: options.release ? 'Release' : 'Debug',
+        ...(options.branchId ? { branch: options.branchId } : {})
+    };
 
     const gistResult = prepareResultForGist(options.target, result);
     const resultFileName = sortWeight + name + gistResult.suffix;

@@ -1,12 +1,23 @@
-import mapObject from '../../../helpers/map-object';
 import asLookup from '../../../helpers/as-lookup';
 import { assertType } from '../../../helpers/assert-type';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../../../app/shared/languages';
 import { TargetName, TARGET_ASM, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_IL, TARGET_RUN, TARGET_VB, TARGET_VERIFY } from '../../../../app/shared/targets';
 
+const mapFromObject = <TObject, TNewKey extends string, TNewValue>(
+    object: TObject,
+    mapEntry: (key: keyof TObject, value: TObject[keyof TObject]) => readonly [TNewKey, TNewValue]
+) => {
+    const result = {} as { [key in TNewKey]: TNewValue };
+    for (const key in object) {
+        const [newKey, newValue] = mapEntry(key, object[key]);
+        result[newKey] = newValue;
+    }
+    return result;
+};
+
 function reverseMap<TMap extends { [key: string]: string }>(map: TMap) {
     type KeyFromValue<T, V> = { [K in keyof T]: V extends T[K] ? K : never }[keyof T];
-    return mapObject(map, (key, value) => [value, key]) as {
+    return mapFromObject(map, (key, value) => [value, key]) as {
         [TValue in TMap[keyof TMap]]: KeyFromValue<TMap, TValue>
     };
 }
@@ -48,4 +59,4 @@ export {
     targetMapReverseAsLookup as targetMapReverse
 };
 
-export const targetMapReverseV1 = mapObject(targetMapReverseAsLookup, (key, value) => ['>' + key, value] as const); // eslint-disable-line prefer-template
+export const targetMapReverseV1 = mapFromObject(targetMapReverseAsLookup, (key, value) => ['>' + key, value] as const); // eslint-disable-line prefer-template

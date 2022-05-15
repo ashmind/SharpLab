@@ -1,6 +1,5 @@
 ﻿import LZString from 'lz-string';
 import type { RawOptions } from '../../types/raw-options';
-import warn from '../../helpers/warn';
 import throwError from '../../helpers/throw-error';
 import loadGistFromUrlHashAsync, { LoadStateFromGistResult } from '../../../app/features/save-as-gist/loadGistFromUrlHashAsync';
 import type { Gist } from '../../../app/features/save-as-gist/gist';
@@ -123,7 +122,7 @@ export const loadStateFromUrlAsync = async (): Promise<LoadStateFromUrlResult> =
         };
     }
     catch (e) {
-        warn('Failed to load state from URL:', e);
+        console.warn('Failed to load state from URL:', e);
         return null;
     }
 };
