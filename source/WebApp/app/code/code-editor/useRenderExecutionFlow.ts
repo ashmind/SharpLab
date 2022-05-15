@@ -1,11 +1,23 @@
 import { useEffect, useRef } from 'react';
-import groupToMap from '../../../ts/helpers/group-to-map';
 import type { FlowStep } from '../../../ts/types/results';
 
 const escapeNewLines = (text: string) => {
     return text
         .replace(/\r/g, '\\r')
         .replace(/\n/g, '\\n');
+};
+
+const groupStepsByLine = (steps: ReadonlyArray<FlowStep>) => {
+    const map = new Map<number, Array<FlowStep>>();
+    for (const step of steps) {
+        let group = map.get(step.line);
+        if (!group) {
+            group = [];
+            map.set(step.line, group);
+        }
+        group.push(step);
+    }
+    return map;
 };
 
 const createFlowLineEndWidget = (contents: ReadonlyArray<string>, kind: 'notes'|'exception') => {
@@ -42,7 +54,7 @@ const renderExecutionFlow = (steps: ReadonlyArray<FlowStep|number>, cm: CodeMirr
     if (steps.length === 0)
         return { bookmarks: [] };
 
-    const detailsByLine = groupToMap(steps.filter(s => typeof s === 'object') as ReadonlyArray<FlowStep>, s => s.line);
+    const detailsByLine = groupStepsByLine(steps.filter(s => typeof s === 'object') as ReadonlyArray<FlowStep>);
     const bookmarks = [];
     for (const [lineNumber, details] of detailsByLine) {
         const cmLineNumber = lineNumber - 1;
