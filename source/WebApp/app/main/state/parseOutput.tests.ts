@@ -1,4 +1,4 @@
-import parseOutput from '../ts/helpers/parse-output';
+import { parseOutput } from './parseOutput';
 
 describe('parseOutput', () => {
     test.each([

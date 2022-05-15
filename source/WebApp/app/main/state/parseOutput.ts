@@ -1,12 +1,12 @@
-import type { FlowStep, OutputItem, OutputJsonLineFlow } from '../types/results';
-import type { PartiallyMutable } from './partially-mutable';
+import type { OutputItem, OutputJsonLineFlow, FlowStep } from '../../../ts/types/results';
+import type { PartiallyMutable } from '../../helpers/partiallyMutable';
 
 type OutputJsonLineData = Exclude<OutputItem, string> | OutputJsonLineFlow;
 type FlowStepBuilder = Omit<PartiallyMutable<FlowStep, 'notes'|'exception'>, 'skipped'> & {
     skipped: boolean;
 };
 
-export default function parseOutput(outputString: string) {
+export function parseOutput(outputString: string) {
     const output = [] as Array<OutputItem>;
     let flow = [] as ReadonlyArray<FlowStep>;
 

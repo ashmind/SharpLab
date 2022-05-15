@@ -28,9 +28,6 @@
     "transformIgnorePatterns": [
       "/node_modules/(?!(?:mirrorsharp|node-fetch|data-uri-to-buffer|fetch-blob|formdata-polyfill))"
     ],
-    "setupFiles": [
-      "<rootDir>/ts/polyfills/index.ts"
-    ],
     "setupFilesAfterEnv": [
       "<rootDir>/tests/setup.ts"
     ],

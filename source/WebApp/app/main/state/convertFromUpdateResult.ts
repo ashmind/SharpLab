@@ -1,4 +1,3 @@
-import parseOutput from '../../../ts/helpers/parse-output';
 import type {
     DiagnosticError,
     DiagnosticWarning,
@@ -11,6 +10,7 @@ import type {
 import type { MaybeCached } from '../../features/result-cache/types';
 import { TargetName, TARGET_AST, TARGET_EXPLAIN, TARGET_IL, TARGET_RUN, TARGET_VERIFY } from '../../shared/targets';
 import { extractRangesFromIL } from './extractRangesFromIL';
+import { parseOutput } from './parseOutput';
 
 const collectErrorsAndWarnings = (target: TargetName, diagnostics: UpdateResult['diagnostics']) => {
     const errors = [];
