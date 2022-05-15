@@ -1,4 +1,4 @@
-import extractRangesFromIL from '../ts/helpers/extract-ranges-from-il';
+import { extractRangesFromIL } from './extractRangesFromIL';
 
 describe('extractRangesFromIL', () => {
     test('returns expected ranges and code for realistic IL', () => {

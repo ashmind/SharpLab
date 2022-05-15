@@ -1,4 +1,4 @@
-import type { CodeRange } from '../types/code-range';
+import type { CodeRange } from '../../shared/CodeRange';
 
 const regexp = /^(\s*)\/\/ sequence point: \(line (\d+), col (\d+)\) to \(line (\d+), col (\d+)\) in \S+/;
 
@@ -6,7 +6,7 @@ function endOfLastLine(lines: ReadonlyArray<string>) {
     return { line: lines.length - 1, ch: lines[lines.length - 1].length };
 }
 
-export default function extractRangesFromIL(code: string) {
+export function extractRangesFromIL(code: string) {
     const ranges = [];
 
     const [newline] = code.match(/\r\n|\r|\n/) ?? ['\n'];

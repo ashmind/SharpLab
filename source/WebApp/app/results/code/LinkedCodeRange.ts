@@ -1,4 +1,4 @@
-import type { CodeRange } from '../../../ts/types/code-range';
+import type { CodeRange } from '../../shared/CodeRange';
 
 export type LinkedCodeRange = {
     readonly source: CodeRange;
