@@ -26,7 +26,7 @@ CodeMirror.defineMode('asm', () => {
         },
 
         token(stream) {
-            if (stream.eatSpace() || stream.eat('[') || stream.eat(']')) {
+            if (stream.eatSpace() || stream.eat(/[[\]+-]/)) {
                 return null;
             }
 
@@ -36,7 +36,7 @@ CodeMirror.defineMode('asm', () => {
             }
 
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-            if (stream.match(/\w+:/)) {
+            if (stream.match(/L[0-9a-f]{4,}:?/)) {
                 return 'tag';
             }
 
@@ -57,6 +57,11 @@ CodeMirror.defineMode('asm', () => {
                 if (stream.match(grammar[key as keyof typeof grammar])) {
                     return key;
                 }
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            if (stream.match(/(0x)?[0-9a-f]+/)) {
+                return 'string';
             }
 
             stream.match(/\S+/);
