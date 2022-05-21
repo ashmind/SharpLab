@@ -1,4 +1,4 @@
-import React, { FC, useContext, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import type { Result, UpdateResult } from '../ts/types/results';
 import { CodeEditor } from './code/CodeEditor';
@@ -7,13 +7,13 @@ import { ErrorsTopSection } from './ErrorsTopSection';
 import { ResultsTopSection } from './ResultsTopSection';
 import { WarningsTopSection } from './WarningsTopSection';
 import { useLoadingWait } from './main/useLoadingWait';
-import { InitialCodeContext } from './main/AppStateManager';
 import { CodeTopSection } from './CodeTopSection';
 import { MobileSettings } from './features/mobile-settings/MobileSettings';
 import { codeState } from './shared/state/codeState';
 import { targetOptionState } from './shared/state/targetOptionState';
 import { BranchDetailsSection } from './features/roslyn-branches/BranchDetailsSection';
 import { resultState, useDispatchResultUpdate } from './shared/state/resultState';
+import { initialCodeState } from './shared/state/initialCodeState';
 
 const getStatus = (online: boolean, result: Result | undefined) => {
     if (!online)
@@ -25,7 +25,7 @@ const getStatus = (online: boolean, result: Result | undefined) => {
 
 const EMPTY_ARRAY = [] as ReadonlyArray<never>;
 export const Main: FC = () => {
-    const initialCode = useContext(InitialCodeContext);
+    const initialCode = useRecoilValue(initialCodeState);
     const setCode = useSetRecoilState(codeState);
     const target = useRecoilValue(targetOptionState);
     const [online, setOnline] = useState(true);

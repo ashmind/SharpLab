@@ -1,24 +1,27 @@
-import React, { createContext, ReactNode, useEffect, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import React, { FC, ReactNode, useEffect, useState } from 'react';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import defaults from '../../ts/state/handlers/defaults';
 import { loadedStatePromise, saveState } from '../../ts/state/state';
 import { branchOptionState } from '../features/roslyn-branches/branchOptionState';
 import { gistState } from '../features/save-as-gist/gistState';
 import { codeState } from '../shared/state/codeState';
+import { initialCodeState } from '../shared/state/initialCodeState';
 import { languageOptionState } from '../shared/state/languageOptionState';
 import { releaseOptionState } from '../shared/state/releaseOptionState';
 import { useDispatchResultUpdate } from '../shared/state/resultState';
 import { targetOptionState } from '../shared/state/targetOptionState';
 
-export const InitialCodeContext = createContext<string>('');
+type Props = {
+    children: ReactNode;
+};
 
-export const AppStateManager = ({ children }: { children: ReactNode }) => {
+export const AppStateManager: FC<Props> = ({ children }) => {
     const [loaded, setLoaded] = useState(false);
     const [language, setLanguage] = useRecoilState(languageOptionState);
     const [branch, setBranch] = useRecoilState(branchOptionState);
     const [target, setTarget] = useRecoilState(targetOptionState);
     const [release, setRelease] = useRecoilState(releaseOptionState);
-    const [initialCode, setInitialCode] = useState<string>('');
+    const setInitialCode = useSetRecoilState(initialCodeState);
     const [code, setCode] = useRecoilState(codeState);
     // TODO: This should be moved into the Gist feature for clearer responsibility split
     const [gist, setGist] = useRecoilState(gistState);
@@ -54,7 +57,7 @@ export const AppStateManager = ({ children }: { children: ReactNode }) => {
         if (!loaded)
             return;
         setInitialCode(defaults.getCode(language, target));
-    }, [loaded, language, target]);
+    }, [loaded, language, target, setInitialCode]);
 
     useEffect(() => {
         if (!loaded)
@@ -65,7 +68,5 @@ export const AppStateManager = ({ children }: { children: ReactNode }) => {
     if (!loaded)
         return null;
 
-    return <InitialCodeContext.Provider value={initialCode}>
-        {children}
-    </InitialCodeContext.Provider>;
+    return <>{children}</>;
 };
