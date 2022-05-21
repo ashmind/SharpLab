@@ -1,15 +1,14 @@
-import React, { createContext, ReactNode, useEffect, useMemo, useReducer, useState } from 'react';
+import React, { createContext, ReactNode, useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import defaults from '../../ts/state/handlers/defaults';
 import { loadedStatePromise, saveState } from '../../ts/state/state';
 import { branchOptionState } from '../features/roslyn-branches/branchOptionState';
 import { gistState } from '../features/save-as-gist/gistState';
-import { ResultContext } from '../shared/contexts/ResultContext';
 import { codeState } from '../shared/state/codeState';
 import { languageOptionState } from '../shared/state/languageOptionState';
 import { releaseOptionState } from '../shared/state/releaseOptionState';
+import { useDispatchResultUpdate } from '../shared/state/resultState';
 import { targetOptionState } from '../shared/state/targetOptionState';
-import { resultReducer } from './state/resultReducer';
 
 export const InitialCodeContext = createContext<string>('');
 
@@ -24,8 +23,7 @@ export const AppStateManager = ({ children }: { children: ReactNode }) => {
     // TODO: This should be moved into the Gist feature for clearer responsibility split
     const [gist, setGist] = useRecoilState(gistState);
     // eslint-disable-next-line no-undefined
-    const [result, dispatchResultAction] = useReducer(resultReducer, undefined);
-    const resultContext = useMemo(() => [result, dispatchResultAction] as const, [result]);
+    const dispatchResultUpdate = useDispatchResultUpdate();
 
     useEffect(() => {
         void((async () => {
@@ -45,7 +43,7 @@ export const AppStateManager = ({ children }: { children: ReactNode }) => {
             setGist(gist);
 
             if (cachedResult)
-                dispatchResultAction({ type: 'cachedResult', updateResult: cachedResult, target });
+                dispatchResultUpdate({ type: 'cachedResult', updateResult: cachedResult, target });
 
             setLoaded(true);
         })());
@@ -68,8 +66,6 @@ export const AppStateManager = ({ children }: { children: ReactNode }) => {
         return null;
 
     return <InitialCodeContext.Provider value={initialCode}>
-        <ResultContext.Provider value={resultContext}>
-            {children}
-        </ResultContext.Provider>
+        {children}
     </InitialCodeContext.Provider>;
 };

@@ -10,9 +10,9 @@ import { AstView } from './results/AstView';
 import { VerifyView } from './results/VerifyView';
 import { ExplainView } from './results/ExplainView';
 import { OutputView } from './results/OutputView';
-import { useResult } from './shared/useResult';
 import { targetOptionState } from './shared/state/targetOptionState';
 import type { TargetLanguageName } from './shared/targets';
+import { resultState } from './shared/state/resultState';
 
 type CodeState = Pick<CodeResult, 'value'|'ranges'> & { language: TargetLanguageName };
 
@@ -20,7 +20,7 @@ const EMPTY_OUTPUT = [] as ReadonlyArray<OutputItem>;
 export const ResultsTopSection: FC = () => {
     const [lastCodeState, setLastCodeState] = useState<CodeState>();
     const target = useRecoilValue(targetOptionState);
-    const result = useResult();
+    const result = useRecoilValue(resultState);
 
     // Code is special since CodeMirror is slow to set up, so we hide it instead of destroying it
     useEffect(() => {

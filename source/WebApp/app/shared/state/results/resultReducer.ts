@@ -1,8 +1,8 @@
-import type { ParsedResult } from '../../../ts/types/results';
-import type { ResultUpdateAction } from '../../shared/contexts/ResultContext';
+import type { ParsedResult } from '../../../../ts/types/results';
 import { convertFromUpdateResult } from './convertFromUpdateResult';
+import type { ResultUpdateAction } from './ResultUpdateAction';
 
-export const resultReducer = (_: ParsedResult | undefined, action: ResultUpdateAction): ParsedResult | undefined => {
+export const resultReducer = (action: ResultUpdateAction): ParsedResult => {
     switch (action.type) {
         case 'updateResult':
         case 'cachedResult':

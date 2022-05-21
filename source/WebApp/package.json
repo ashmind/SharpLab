@@ -61,8 +61,8 @@
     "@types/react-dom": "18.0.0",
     "@types/sharp": "0.30.1",
     "@types/throttle-debounce": "2.1.0",
-    "@typescript-eslint/eslint-plugin": "5.18.0",
-    "@typescript-eslint/parser": "5.18.0",
+    "@typescript-eslint/eslint-plugin": "5.25.0",
+    "@typescript-eslint/parser": "5.25.0",
     "adm-zip": "0.5.1",
     "autoprefixer": "10.4.4",
     "babel-jest": "27.5.1",
@@ -89,7 +89,7 @@
     "sharp": "0.30.3",
     "ts-jest": "27.1.4",
     "ts-node": "8.10.1",
-    "typescript": "4.3.2"
+    "typescript": "4.6.4"
   },
   "dependencies": {
     "base64-arraybuffer": "1.0.1",

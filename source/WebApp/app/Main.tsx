@@ -2,7 +2,6 @@ import React, { FC, useContext, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import type { Result, UpdateResult } from '../ts/types/results';
 import { CodeEditor } from './code/CodeEditor';
-import { useResult, useDispatchResultUpdate } from './shared/useResult';
 import { classNames } from './helpers/classNames';
 import { ErrorsTopSection } from './ErrorsTopSection';
 import { ResultsTopSection } from './ResultsTopSection';
@@ -14,6 +13,7 @@ import { MobileSettings } from './features/mobile-settings/MobileSettings';
 import { codeState } from './shared/state/codeState';
 import { targetOptionState } from './shared/state/targetOptionState';
 import { BranchDetailsSection } from './features/roslyn-branches/BranchDetailsSection';
+import { resultState, useDispatchResultUpdate } from './shared/state/resultState';
 
 const getStatus = (online: boolean, result: Result | undefined) => {
     if (!online)
@@ -31,7 +31,7 @@ export const Main: FC = () => {
     const [online, setOnline] = useState(true);
     const { loading, onWait, endWait } = useLoadingWait();
     const dispatchResultUpdate = useDispatchResultUpdate();
-    const result = useResult();
+    const result = useRecoilValue(resultState);
 
     const status = getStatus(online, result);
 

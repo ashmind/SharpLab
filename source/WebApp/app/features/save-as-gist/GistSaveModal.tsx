@@ -1,5 +1,5 @@
 import React, { FC, FormEvent, useEffect, useId, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { RecoilValue, useRecoilCallback } from 'recoil';
 import toRawOptions from '../../../ts/helpers/to-raw-options';
 import { useAsync } from '../../helpers/useAsync';
 import { Loader } from '../../shared/Loader';
@@ -7,8 +7,8 @@ import { Modal } from '../../shared/Modal';
 import { codeState } from '../../shared/state/codeState';
 import { languageOptionState } from '../../shared/state/languageOptionState';
 import { releaseOptionState } from '../../shared/state/releaseOptionState';
+import { resultState } from '../../shared/state/resultState';
 import { targetOptionState } from '../../shared/state/targetOptionState';
-import { useResult } from '../../shared/useResult';
 import { branchOptionState } from '../roslyn-branches/branchOptionState';
 import type { Gist } from './Gist';
 import { createGistAsync } from './github-client/gists';
@@ -21,22 +21,25 @@ type Props = {
 export const GistSaveModal: FC<Props> = ({ onSave, onCancel }) => {
     const nameId = useId();
     const [name, setName] = useState('');
-    const code = useRecoilValue(codeState);
-    const language = useRecoilValue(languageOptionState);
-    const branch = useRecoilValue(branchOptionState);
-    const target = useRecoilValue(targetOptionState);
-    const release = useRecoilValue(releaseOptionState);
-    const result = useResult();
-    const [save, saved, error, saving] = useAsync(async () => {
+    const getSharedStateForSave = useRecoilCallback(({ snapshot }) => () => {
+        const get = <T, >(state: RecoilValue<T>) => snapshot.getLoadable(state).getValue();
+        const result = get(resultState);
         if (!result) throw new Error(`Cannot save gist before receiving initial result`);
-        return await createGistAsync({
-            name,
-            code,
-            options: toRawOptions({ language, target, release, branch }),
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return {
+            code: get(codeState),
+            options: toRawOptions({
+                language: get(languageOptionState),
+                target: get(targetOptionState),
+                release: get(releaseOptionState),
+                branch: get(branchOptionState)
+            }),
             result
-        });
-    }, [name, code, language, target, release, branch, result]);
+        };
+    });
+    const [save, saved, error, saving] = useAsync(
+        async () => createGistAsync({ name, ...getSharedStateForSave() }),
+        [name, getSharedStateForSave]
+    );
     const canSave = name && !saving;
     const errorMessage = error && ((error as { message?: string }).message ?? error);
 

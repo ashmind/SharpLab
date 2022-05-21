@@ -1,4 +1,4 @@
-import type { CodeRange } from '../../shared/CodeRange';
+import type { CodeRange } from '../../CodeRange';
 
 const regexp = /^(\s*)\/\/ sequence point: \(line (\d+), col (\d+)\) to \(line (\d+), col (\d+)\) in \S+/;
 
