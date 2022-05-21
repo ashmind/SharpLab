@@ -1,9 +1,9 @@
 import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import defaults from '../../ts/state/handlers/defaults';
-import { loadedStatePromise, saveState } from '../../ts/state/state';
+import { loadedStatePromise, saveState } from '../features/persistent-state/state';
 import { branchOptionState } from '../features/roslyn-branches/branchOptionState';
 import { gistState } from '../features/save-as-gist/gistState';
+import { getDefaultCode } from '../shared/defaults';
 import { codeState } from '../shared/state/codeState';
 import { initialCodeState } from '../shared/state/initialCodeState';
 import { languageOptionState } from '../shared/state/languageOptionState';
@@ -56,7 +56,7 @@ export const AppStateManager: FC<Props> = ({ children }) => {
     useEffect(() => {
         if (!loaded)
             return;
-        setInitialCode(defaults.getCode(language, target));
+        setInitialCode(getDefaultCode(language, target));
     }, [loaded, language, target, setInitialCode]);
 
     useEffect(() => {

@@ -1,6 +1,6 @@
-import help from '../../../helpers/help';
-import { LANGUAGE_CSHARP, LanguageName, LANGUAGE_IL } from '../../../../app/shared/languages';
-import { asLookup } from '../../../../app/helpers/asLookup';
+import { asLookup } from '../../../../helpers/asLookup';
+import { CSHARP_RUN_HELP } from '../../../../shared/help';
+import { LANGUAGE_CSHARP, LANGUAGE_IL, type LanguageName } from '../../../../shared/languages';
 
 const dictionaries = asLookup({
     [LANGUAGE_CSHARP]: build(
@@ -24,7 +24,7 @@ const dictionaries = asLookup({
         'Program',
         'Main',
         'Console.WriteLine',
-        help.run.csharp,
+        CSHARP_RUN_HELP,
         'using System;',
         'public static void Main()',
         'public static class Program',

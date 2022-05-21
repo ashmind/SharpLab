@@ -1,6 +1,6 @@
 import LZString from 'lz-string';
-import type { LanguageName } from '../../../../app/shared/languages';
-import type { TargetName } from '../../../../app/shared/targets';
+import type { LanguageName } from '../../../../shared/languages';
+import type { TargetName } from '../../../../shared/targets';
 import {
     languageMapReverse,
     targetMapReverseV1

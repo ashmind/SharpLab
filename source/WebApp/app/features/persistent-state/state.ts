@@ -1,11 +1,11 @@
-import toRawOptions from '../helpers/to-raw-options';
-import type { Gist } from '../../app/features/save-as-gist/Gist';
-import { CacheKeyData, loadResultFromCacheAsync } from '../../app/features/result-cache/cacheLogic';
-import { resolveBranchAsync } from '../../app/features/roslyn-branches/resolveBranchAsync';
-import type { LanguageName } from '../../app/shared/languages';
-import type { TargetName } from '../../app/shared/targets';
-import type { Branch } from '../../app/features/roslyn-branches/types';
-import defaults from './handlers/defaults';
+import toRawOptions from '../../../ts/helpers/to-raw-options';
+import { DEFAULT_OPTIONS, getDefaultCode } from '../../shared/defaults';
+import type { LanguageName } from '../../shared/languages';
+import type { TargetName } from '../../shared/targets';
+import { type CacheKeyData, loadResultFromCacheAsync } from '../result-cache/cacheLogic';
+import { resolveBranchAsync } from '../roslyn-branches/resolveBranchAsync';
+import type { Branch } from '../roslyn-branches/types';
+import type { Gist } from '../save-as-gist/gist';
 import lastUsed from './handlers/last-used';
 import { saveStateToUrl, loadStateFromUrlAsync } from './handlers/url';
 
@@ -71,11 +71,10 @@ const loadStateAsync = async () => {
     const lastUsedOptions = lastUsed.loadOptions();
 
     const loadedOptions = fromUrl?.options ?? lastUsedOptions ?? {};
-    const defaultOptions = defaults.getOptions();
 
-    const language = loadedOptions.language ?? defaultOptions.language;
-    const target = loadedOptions.target ?? defaultOptions.target;
-    const release = loadedOptions.release ?? defaultOptions.release;
+    const language = loadedOptions.language ?? DEFAULT_OPTIONS.language;
+    const target = loadedOptions.target ?? DEFAULT_OPTIONS.target;
+    const release = loadedOptions.release ?? DEFAULT_OPTIONS.release;
     let branchId = loadedOptions.branchId ?? null;
     if (branchId === 'master')
         branchId = 'main';
@@ -83,7 +82,7 @@ const loadStateAsync = async () => {
     const branch = branchId ? (await resolveBranchAsync(branchId)) : null;
     const options = { language, target, release, branch };
 
-    const code = fromUrl?.code ?? defaults.getCode(language, target);
+    const code = fromUrl?.code ?? getDefaultCode(language, target);
 
     const gist = fromUrl && ('gist' in fromUrl)
         ? fromUrl.gist

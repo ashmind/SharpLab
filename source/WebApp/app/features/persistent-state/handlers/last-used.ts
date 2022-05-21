@@ -1,4 +1,4 @@
-﻿import type { RawOptions } from '../../types/raw-options';
+﻿import type { RawOptions } from '../../../../ts/types/raw-options';
 
 const version = 3 as const;
 type OptionsV3 = {

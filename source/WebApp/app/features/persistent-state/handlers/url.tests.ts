@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import * as gists from '../../../app/features/save-as-gist/github-client/gists';
-import * as languages from '../../../app/shared/languages';
-import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../../app/shared/languages';
-import * as targets from '../../../app/shared/targets';
-import { TARGET_CSHARP, TARGET_IL } from '../../../app/shared/targets';
-import { asMutable, fromPartial } from '../../../tests/helpers';
+import * as gistsSource from '../../../features/save-as-gist/github-client/gists';
+import { partiallyMutable } from '../../../helpers/partiallyMutable';
+import { fromPartial } from '../../../helpers/testing/fromPartial';
+import * as languages from '../../../shared/languages';
+import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../../shared/languages';
+import * as targets from '../../../shared/targets';
+import { TARGET_CSHARP, TARGET_IL } from '../../../shared/targets';
 import { loadStateFromUrlAsync, saveStateToUrl } from './url';
+
+const gists = partiallyMutable(gistsSource)<'getGistAsync'>();
 
 describe('v2', () => {
     for (const [name, value] of ([
@@ -59,7 +62,7 @@ describe('v1', () => {
 
 describe('gist', () => {
     test(`load returns code from gist`, async () => {
-        asMutable(gists).getGistAsync = id => Promise.resolve(fromPartial({ code: 'code of ' + id, options: {} }));
+        gists.getGistAsync = id => Promise.resolve(fromPartial({ code: 'code of ' + id, options: {} }));
 
         window.location.hash = '#gist:test';
         const { code } = (await loadStateFromUrlAsync())!;
@@ -67,7 +70,7 @@ describe('gist', () => {
     });
 
     test(`load returns language from gist`, async () => {
-        asMutable(gists).getGistAsync = id => Promise.resolve(fromPartial({ options: { language: 'language of ' + id as LanguageName } }));
+        gists.getGistAsync = id => Promise.resolve(fromPartial({ options: { language: 'language of ' + id as LanguageName } }));
 
         window.location.hash = '#gist:test';
         const { options } = (await loadStateFromUrlAsync())!;
@@ -77,7 +80,7 @@ describe('gist', () => {
     for (let [key, target] of Object.entries(targets)) { // eslint-disable-line prefer-const
         key = key !== 'csharp' ? key : 'cs';
         test(`load returns target '${target}' for key '${key}'`, async () => {
-            asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
+            gists.getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
 
             window.location.hash = '#gist:_/' + key;
             const { options } = (await loadStateFromUrlAsync())!;
@@ -86,7 +89,7 @@ describe('gist', () => {
     }
 
     test(`load returns branchId if specified`, async () => {
-        asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
+        gists.getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
 
         window.location.hash = '#gist:_//branch';
         const { options } = (await loadStateFromUrlAsync())!;
@@ -94,7 +97,7 @@ describe('gist', () => {
     });
 
     test(`load returns null branchId if not specified`, async () => {
-        asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
+        gists.getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
 
         window.location.hash = '#gist:_/_';
         const { options } = (await loadStateFromUrlAsync())!;
@@ -103,7 +106,7 @@ describe('gist', () => {
 
     for (const [suffix, release] of [['///debug', false], ['', true]] as const) {
         test(`load returns release ${release} for url options ${suffix}`, async () => {
-            asMutable(gists).getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
+            gists.getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
 
             window.location.hash = '#gist:_' + suffix;
             const { options } = (await loadStateFromUrlAsync())!;
@@ -120,7 +123,7 @@ describe('gist', () => {
         ['release',  true, false]
     ] as const) {
         test(`save (option '${key}') changes format to v3 if option changed`, async () => {
-            asMutable(gists).getGistAsync = id => Promise.resolve(fromPartial({ id, code: 'test', options: { [key]: gistValue } }));
+            gists.getGistAsync = id => Promise.resolve(fromPartial({ id, code: 'test', options: { [key]: gistValue } }));
 
             window.location.hash = '#gist:xyz';
             await loadStateFromUrlAsync();
@@ -130,7 +133,7 @@ describe('gist', () => {
     }
 
     test(`save changes format to v2 if gist code changed`, async () => {
-        asMutable(gists).getGistAsync = id => Promise.resolve(fromPartial({ id, code: 'original', options: {} }));
+        gists.getGistAsync = id => Promise.resolve(fromPartial({ id, code: 'original', options: {} }));
 
         window.location.hash = '#gist:xyz';
         await loadStateFromUrlAsync();

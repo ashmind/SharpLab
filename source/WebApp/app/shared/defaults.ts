@@ -1,7 +1,7 @@
-import help from '../../helpers/help';
-import { LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB, LanguageName } from '../../../app/shared/languages';
-import { TargetName, TARGET_RUN } from '../../../app/shared/targets';
-import { asLookup } from '../../../app/helpers/asLookup';
+import { asLookup } from '../helpers/asLookup';
+import { CSHARP_RUN_HELP } from './help';
+import { LANGUAGE_CSHARP, LANGUAGE_VB, LANGUAGE_FSHARP, LANGUAGE_IL, type LanguageName } from './languages';
+import { type TargetName, TARGET_RUN } from './targets';
 
 const normalize = (code: string) => {
     // 8 spaces must match the layout below
@@ -11,7 +11,7 @@ const normalize = (code: string) => {
         .trim();
 };
 
-const code = asLookup({
+const defaultCode = asLookup({
     [LANGUAGE_CSHARP]: 'using System;\r\npublic class C {\r\n    public void M() {\r\n    }\r\n}',
     [LANGUAGE_VB]: 'Imports System\r\nPublic Class C\r\n    Public Sub M()\r\n    End Sub\r\nEnd Class',
     [LANGUAGE_FSHARP]: 'open System\r\ntype C() =\r\n    member _.M() = ()',
@@ -33,7 +33,7 @@ const code = asLookup({
         }
     `),
 
-    [`${LANGUAGE_CSHARP}.run`]: `${help.run.csharp}\r\nusing System;\r\n\r\nConsole.WriteLine("🌄");`,
+    [`${LANGUAGE_CSHARP}.run`]: `${CSHARP_RUN_HELP}\r\nusing System;\r\n\r\nConsole.WriteLine("🌄");`,
     [`${LANGUAGE_VB}.run`]: 'Imports System\r\nPublic Module Program\r\n    Public Sub Main()\r\n        Console.WriteLine("🌄")\r\n    End Sub\r\nEnd Module',
     [`${LANGUAGE_FSHARP}.run`]: 'printfn "🌄"',
     [`${LANGUAGE_IL}.run`]: normalize(`
@@ -58,14 +58,12 @@ const code = asLookup({
     `)
 } as const);
 
-export default {
-    getOptions: () => ({
-        language:   LANGUAGE_CSHARP,
-        target:     LANGUAGE_CSHARP,
-        release:    false
-    } as const),
+export const DEFAULT_OPTIONS = ({
+    language:   LANGUAGE_CSHARP,
+    target:     LANGUAGE_CSHARP,
+    release:    false
+} as const);
 
-    getCode: (language: LanguageName|undefined, target: TargetName|string|undefined) => code[
-        (target === TARGET_RUN ? language + '.run' : language) as string
-    ] ?? ''
-};
+export const getDefaultCode = (language: LanguageName|undefined, target: TargetName|string|undefined) => defaultCode[
+    (target === TARGET_RUN ? language + '.run' : language) as string
+] ?? '';

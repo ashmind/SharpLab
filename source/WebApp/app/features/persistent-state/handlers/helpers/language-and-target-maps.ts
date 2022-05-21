@@ -1,7 +1,7 @@
-import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../../../app/shared/languages';
-import { TargetName, TARGET_ASM, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_IL, TARGET_RUN, TARGET_VB, TARGET_VERIFY } from '../../../../app/shared/targets';
-import { asLookup } from '../../../../app/helpers/asLookup';
-import { assertType } from '../../../../app/helpers/assertType';
+import { asLookup } from '../../../../helpers/asLookup';
+import { assertType } from '../../../../helpers/assertType';
+import { LANGUAGE_CSHARP, LANGUAGE_VB, LANGUAGE_FSHARP, LANGUAGE_IL, type LanguageName } from '../../../../shared/languages';
+import { TARGET_CSHARP, TARGET_VB, TARGET_IL, TARGET_ASM, TARGET_AST, TARGET_RUN, TARGET_VERIFY, TARGET_EXPLAIN, type TargetName } from '../../../../shared/targets';
 
 const mapFromObject = <TObject, TNewKey extends string, TNewValue>(
     object: TObject,

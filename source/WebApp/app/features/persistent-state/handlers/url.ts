@@ -1,17 +1,17 @@
 ﻿import LZString from 'lz-string';
-import type { RawOptions } from '../../types/raw-options';
-import loadGistFromUrlHashAsync, { LoadStateFromGistResult } from '../../../app/features/save-as-gist/loadGistFromUrlHashAsync';
-import type { Gist } from '../../../app/features/save-as-gist/gist';
-import { LanguageName, LANGUAGE_CSHARP } from '../../../app/shared/languages';
-import { TargetName, TARGET_CSHARP } from '../../../app/shared/targets';
+import { LANGUAGE_CSHARP, type LanguageName } from '../../../shared/languages';
+import { TARGET_CSHARP, type TargetName } from '../../../shared/targets';
+import type { Gist } from '../../save-as-gist/gist';
+import loadGistFromUrlHashAsync, { type LoadStateFromGistResult } from '../../save-as-gist/loadGistFromUrlHashAsync';
+import type { RawOptions } from '../../../../ts/types/raw-options';
+import { loadFromLegacyV1, LoadStateFromUrlV1Result } from './url/load-from-v1';
+import precompressor from './url/precompressor';
 import {
     languageMap,
     languageMapReverse,
     targetMap,
     targetMapReverse
 } from './helpers/language-and-target-maps';
-import precompressor from './url/precompressor';
-import { loadFromLegacyV1, LoadStateFromUrlV1Result } from './url/load-from-v1';
 
 let lastHash: string|undefined;
 
