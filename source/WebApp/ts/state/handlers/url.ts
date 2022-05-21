@@ -1,6 +1,5 @@
 ﻿import LZString from 'lz-string';
 import type { RawOptions } from '../../types/raw-options';
-import throwError from '../../helpers/throw-error';
 import loadGistFromUrlHashAsync, { LoadStateFromGistResult } from '../../../app/features/save-as-gist/loadGistFromUrlHashAsync';
 import type { Gist } from '../../../app/features/save-as-gist/gist';
 import { LanguageName, LANGUAGE_CSHARP } from '../../../app/shared/languages';
@@ -104,12 +103,16 @@ export const loadStateFromUrlAsync = async (): Promise<LoadStateFromUrlResult> =
                 return result;
             }, {} as { [key: string]: string|undefined })
         );
-        const language = languageMapReverse[optionsPacked.l ?? 'cs']
-                        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                        ?? throwError(`Failed to resolve language: ${optionsPacked.l}`);
-        const target = targetMapReverse[optionsPacked.t ?? 'cs']
-                    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                    ?? throwError(`Failed to resolve target: ${optionsPacked.t}`);
+        const language = languageMapReverse[optionsPacked.l ?? 'cs'];
+        if (!language) {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            throw new Error(`Failed to resolve language: ${optionsPacked.l}`);
+        }
+        const target = targetMapReverse[optionsPacked.t ?? 'cs'];
+        if (!target) {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            throw new Error(`Failed to resolve target: ${optionsPacked.t}`);
+        }
         const code = precompressor.decompress(codePart, language);
         return {
             options: {
