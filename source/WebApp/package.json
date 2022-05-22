@@ -23,13 +23,13 @@
     "testEnvironment": "jsdom",
     "transform": {
       "\\.ts$": "ts-jest",
-      "(node_modules[/\\\\]|mirrorsharp.+dist)": "./tests/transform-esm-in-node-modules.cjs"
+      "(node_modules[/\\\\]|mirrorsharp.+dist)": "./.jest/transform-esm-in-node-modules.cjs"
     },
     "transformIgnorePatterns": [
       "/node_modules/(?!(?:mirrorsharp|node-fetch|data-uri-to-buffer|fetch-blob|formdata-polyfill|dateformat))"
     ],
     "setupFilesAfterEnv": [
-      "<rootDir>/tests/setup.ts"
+      "<rootDir>/.jest/setup.ts"
     ],
     "testMatch": [
       "<rootDir>/app/**/*.tests.ts",
