@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-export const useAsync = <T>(call: () => Promise<T>, deps: ReadonlyArray<unknown>) => {
+export const useAsyncCallback = <T>(call: () => Promise<T>, deps: ReadonlyArray<unknown>) => {
     const [pending, setPending] = useState(false);
     const [result, setResult] = useState<T>();
     const [error, setError] = useState<unknown>();

@@ -14,8 +14,7 @@
     },
     "include": [
         "app",
-        "ts",
-        "scripts"
+        "ts"
     ],
     "references": [
         { "path": "./tsconfig.scripts.json" },

@@ -163,18 +163,36 @@ const manifest = task('manifest', async () => {
     await jetpack.writeAsync(`${outputVersionRoot}/manifest.json`, JSON.stringify(content));
 }, { watch: [manifestSourcePath] });
 
+const getFavicons = async () => {
+    // http://codepen.io/jakob-e/pen/doMoML
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const faviconSvgUrl = (await jetpack.readAsync(iconSvgSourcePath))!
+        .replace(/"/g, '\'')
+        .replace(/%/g, '%25')
+        .replace(/#/g, '%23')
+        .replace(/{/g, '%7B')
+        .replace(/}/g, '%7D')
+        .replace(/</g, '%3C')
+        .replace(/>/g, '%3E')
+        .replace(/\s+/g, ' ');
+
+    return `
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,${faviconSvgUrl}" data-react-replace>
+    ${iconSizes.map(size => `<link rel="icon" type="image/png" href="icon-${size}.png" sizes="${size}x${size}" data-react-replace>`).join(`
+    `)}`;
+};
+
 const htmlSourcePath = `${dirname}/index.html`;
 const htmlOutputPath = `${outputVersionRoot}/index.html`;
 const html = task('html', async () => {
     const htmlMinifier = (await import('html-minifier')).default;
-    const iconDataUrl = await getIconDataUrl();
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     let html = (await jetpack.readAsync(htmlSourcePath))!;
     html = html
         .replace('{build:js}', 'app.min.js')
         .replace('{build:css}', 'app.min.css')
-        .replace('{build:favicon-svg}', iconDataUrl);
+        .replace('{build:favicons}', await getFavicons());
     html = htmlMinifier.minify(html, { collapseWhitespace: true });
     await jetpack.writeAsync(htmlOutputPath, html);
 }, {
@@ -220,21 +238,6 @@ task('build-ci', async () => {
     await build();
     await zip();
 });
-
-async function getIconDataUrl() {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const faviconSvg = (await jetpack.readAsync(iconSvgSourcePath))!;
-    // http://codepen.io/jakob-e/pen/doMoML
-    return faviconSvg
-        .replace(/"/g, '\'')
-        .replace(/%/g, '%25')
-        .replace(/#/g, '%23')
-        .replace(/{/g, '%7B')
-        .replace(/}/g, '%7D')
-        .replace(/</g, '%3C')
-        .replace(/>/g, '%3E')
-        .replace(/\s+/g, ' ');
-}
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 run();

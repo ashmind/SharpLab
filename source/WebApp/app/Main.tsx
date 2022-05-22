@@ -1,6 +1,6 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import type { Result, UpdateResult } from '../ts/types/results';
+import type { UpdateResult } from '../ts/types/results';
 import { CodeEditor } from './code/CodeEditor';
 import { classNames } from './helpers/classNames';
 import { ErrorsTopSection } from './ErrorsTopSection';
@@ -12,28 +12,21 @@ import { MobileSettings } from './features/mobile-settings/MobileSettings';
 import { codeState } from './shared/state/codeState';
 import { targetOptionState } from './shared/state/targetOptionState';
 import { BranchDetailsSection } from './features/roslyn-branches/BranchDetailsSection';
-import { resultState, useDispatchResultUpdate } from './shared/state/resultState';
+import { resultSelector, useDispatchResultUpdate } from './shared/state/resultState';
 import { initialCodeState } from './shared/state/initialCodeState';
-
-const getStatus = (online: boolean, result: Result | undefined) => {
-    if (!online)
-        return 'offline';
-
-    const error = !!(result && !result.success);
-    return error ? 'error' : 'default';
-};
+import { statusSelector } from './shared/state/statusSelector';
+import { onlineState } from './shared/state/onlineState';
 
 const EMPTY_ARRAY = [] as ReadonlyArray<never>;
 export const Main: FC = () => {
     const initialCode = useRecoilValue(initialCodeState);
     const setCode = useSetRecoilState(codeState);
     const target = useRecoilValue(targetOptionState);
-    const [online, setOnline] = useState(true);
+    const setOnline = useSetRecoilState(onlineState);
     const { loading, onWait, endWait } = useLoadingWait();
     const dispatchResultUpdate = useDispatchResultUpdate();
-    const result = useRecoilValue(resultState);
-
-    const status = getStatus(online, result);
+    const result = useRecoilValue(resultSelector);
+    const status = useRecoilValue(statusSelector);
 
     const onServerError = (message: string) => dispatchResultUpdate({ type: 'serverError', message });
     const onSlowUpdateResult = (updateResult: UpdateResult) => {

@@ -8,13 +8,7 @@ import type { ResultUpdateAction } from './results/ResultUpdateAction';
 const resultState = atom<MaybeCached<ParsedResult> | undefined>({
     key: 'app-result',
     // eslint-disable-next-line no-undefined
-    default: undefined,
-    effects: []
-});
-
-const readOnlyResultState = selector({
-    key: 'app-result-readonly',
-    get: ({ get }) => get(resultState)
+    default: undefined
 });
 
 export const useDispatchResultUpdate = () => {
@@ -25,4 +19,7 @@ export const useDispatchResultUpdate = () => {
     );
 };
 
-export { readOnlyResultState as resultState };
+export const resultSelector = selector({
+    key: 'app-result-readonly',
+    get: ({ get }) => get(resultState)
+});

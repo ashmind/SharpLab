@@ -1,15 +1,15 @@
-import React, { FC, useEffect, useId, useState } from 'react';
+import React, { FC, useEffect, useId } from 'react';
+import { useRecoilState } from 'recoil';
 import { asLookup } from '../../helpers/asLookup';
-import type { Theme } from './Theme';
-import { getUserTheme, setUserTheme } from './themeLogic';
+import { UserTheme, userThemeState } from './themeState';
 
-const calculateCurrentLabel = () => ({
+const themeLabels = {
     auto:  'Auto',
     dark:  'Dark',
     light: 'Light'
-} as const)[getUserTheme()];
+} as const;
 
-const applyBodyClass = (theme: Theme) => {
+const applyBodyClass = (theme: UserTheme) => {
     const allClasses = ['theme-dark', 'theme-auto'] as const;
     const newClassName = asLookup({
         dark: 'theme-dark',
@@ -23,26 +23,24 @@ const applyBodyClass = (theme: Theme) => {
 };
 
 export const DarkModeSwitch: FC = () => {
-    const [currentLabel, setCurrentLabel] = useState<'Auto' | 'Dark' | 'Light'>(calculateCurrentLabel());
+    const [userTheme, setUserTheme] = useRecoilState(userThemeState);
     const toggleId = useId();
+    useEffect(() => applyBodyClass(userTheme), [userTheme]);
 
     const onClick = () => {
         const nextTheme = ({
             auto:  'dark',
             dark:  'light',
             light: 'auto'
-        } as const)[getUserTheme()];
-
+        } as const)[userTheme];
         setUserTheme(nextTheme);
-        setCurrentLabel(calculateCurrentLabel());
-        applyBodyClass(nextTheme);
     };
-    useEffect(() => applyBodyClass(getUserTheme()), []);
 
+    const label = themeLabels[userTheme];
     return <div className="theme-manager block-with-label">
         <label htmlFor={toggleId}>Theme:</label>
         <button onClick={onClick}
             id={toggleId}
-            aria-label={`Theme Toggle, Current: ${currentLabel}`}>{currentLabel}</button>
+            aria-label={`Theme Toggle, Current: ${label}`}>{label}</button>
     </div>;
 };

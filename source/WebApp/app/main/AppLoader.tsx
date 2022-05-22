@@ -6,7 +6,7 @@ type Props = {
     children: ReactNode;
 };
 
-export const AppLoader: FC<Props> = () => {
+export const AppLoader: FC<Props> = ({ children }) => {
     const loaded = useRecoilValue(appLoadedState);
-    return loaded ? <>children</> : null;
+    return loaded ? <>{children}</> : null;
 };

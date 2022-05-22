@@ -1,12 +1,12 @@
 import React, { FC, FormEvent, useEffect, useId, useState } from 'react';
 import { RecoilValue, useRecoilCallback } from 'recoil';
-import { useAsync } from '../../helpers/useAsync';
+import { useAsyncCallback } from '../../helpers/useAsyncCallback';
 import { Loader } from '../../shared/Loader';
 import { Modal } from '../../shared/Modal';
 import { codeState } from '../../shared/state/codeState';
 import { languageOptionState } from '../../shared/state/languageOptionState';
 import { releaseOptionState } from '../../shared/state/releaseOptionState';
-import { resultState } from '../../shared/state/resultState';
+import { resultSelector } from '../../shared/state/resultState';
 import { targetOptionState } from '../../shared/state/targetOptionState';
 import { branchOptionState } from '../roslyn-branches/branchOptionState';
 import type { Gist } from './Gist';
@@ -22,7 +22,7 @@ export const GistSaveModal: FC<Props> = ({ onSave, onCancel }) => {
     const [name, setName] = useState('');
     const getSharedStateForSave = useRecoilCallback(({ snapshot }) => () => {
         const get = <T, >(state: RecoilValue<T>) => snapshot.getLoadable(state).getValue();
-        const result = get(resultState);
+        const result = get(resultSelector);
         if (!result) throw new Error(`Cannot save gist before receiving initial result`);
         return {
             code: get(codeState),
@@ -35,7 +35,7 @@ export const GistSaveModal: FC<Props> = ({ onSave, onCancel }) => {
             result
         };
     });
-    const [save, saved, error, saving] = useAsync(
+    const [save, saved, error, saving] = useAsyncCallback(
         async () => createGistAsync({ name, ...getSharedStateForSave() }),
         [name, getSharedStateForSave]
     );
