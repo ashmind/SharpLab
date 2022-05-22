@@ -1,4 +1,4 @@
-import trackFeature from '../../../ts/helpers/track-feature';
+import { trackFeature } from '../../shared/trackFeature';
 import type { Theme } from './Theme';
 
 const LOCAL_STORAGE_KEY = 'sharplab.theme';
