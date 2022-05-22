@@ -1,4 +1,4 @@
-import type { RunResult } from '../../../../../ts/types/results';
+import type { RunResult } from '../../../../shared/resultTypes';
 
 export default function renderOutputToText(value: RunResult['value']) {
     if (typeof value === 'string')

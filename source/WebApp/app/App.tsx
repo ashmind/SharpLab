@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { RecoilRoot } from 'recoil';
-import { Favicons } from './features/theme-color/Favicons';
-import { ThemeColorMeta } from './features/theme-color/ThemeColorMeta';
+import { Favicons } from './features/status-color/Favicons';
+import { ThemeColorMeta } from './features/status-color/ThemeColorMeta';
 import { Footer } from './Footer';
 import { Main } from './Main';
 import { AppLoader } from './main/AppLoader';

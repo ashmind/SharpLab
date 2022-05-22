@@ -1,5 +1,5 @@
-import type { OutputItem, OutputJsonLineFlow, FlowStep } from '../../../../ts/types/results';
 import type { PartiallyMutable } from '../../../helpers/partiallyMutable';
+import type { OutputItem, OutputJsonLineFlow, FlowStep } from '../../resultTypes';
 
 type OutputJsonLineData = Exclude<OutputItem, string> | OutputJsonLineFlow;
 type FlowStepBuilder = Omit<PartiallyMutable<FlowStep, 'notes'|'exception'>, 'skipped'> & {

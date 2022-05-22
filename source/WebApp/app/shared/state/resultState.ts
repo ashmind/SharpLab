@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { atom, selector, useSetRecoilState } from 'recoil';
-import type { ParsedResult } from '../../../ts/types/results';
 import type { MaybeCached } from '../../features/result-cache/types';
+import type { ParsedResult } from '../resultTypes';
 import { resultReducer } from './results/resultReducer';
 import type { ResultUpdateAction } from './results/ResultUpdateAction';
 

@@ -1,4 +1,4 @@
-import type { ParsedResult } from '../../../../ts/types/results';
+import type { ParsedResult } from '../../resultTypes';
 import { convertFromUpdateResult } from './convertFromUpdateResult';
 import type { ResultUpdateAction } from './ResultUpdateAction';
 

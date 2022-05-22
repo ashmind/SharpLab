@@ -1,6 +1,6 @@
 import { selector } from 'recoil';
-import { statusSelector } from '../../shared/state/statusSelector';
-import { effectiveThemeSelector } from '../dark-mode/themeState';
+import { statusSelector } from '../../../shared/state/statusSelector';
+import { effectiveThemeSelector } from '../../dark-mode/themeState';
 
 export const DEFAULT_STATUS_COLOR = '#4684ee';
 

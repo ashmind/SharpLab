@@ -1,7 +1,7 @@
-import type { CodeResult, AstResult, RunResult, VerifyResult, ExplainResult, ErrorResult, Result } from '../../../../ts/types/results';
 import { asLookup } from '../../../helpers/asLookup';
 import { assertType } from '../../../helpers/assertType';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../../shared/languages';
+import type { CodeResult, AstResult, RunResult, VerifyResult, ExplainResult, ErrorResult, Result } from '../../../shared/resultTypes';
 import { TargetName, TARGET_ASM, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_IL, TARGET_RUN, TARGET_VB, TARGET_VERIFY } from '../../../shared/targets';
 import { targetMap } from '../../persistent-state/handlers/helpers/language-and-target-maps';
 import type { Gist } from '../gist';

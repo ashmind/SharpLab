@@ -1,5 +1,5 @@
-import type { UpdateResult, DiagnosticError, DiagnosticWarning, ParsedNonErrorResult, AstItem, Explanation, RunResult } from '../../../../ts/types/results';
 import type { MaybeCached } from '../../../features/result-cache/types';
+import type { UpdateResult, DiagnosticError, DiagnosticWarning, ParsedNonErrorResult, AstItem, Explanation, RunResult } from '../../resultTypes';
 import { type TargetName, TARGET_AST, TARGET_EXPLAIN, TARGET_VERIFY, TARGET_RUN, TARGET_IL } from '../../targets';
 import { extractRangesFromIL } from './extractRangesFromIL';
 import { parseOutput } from './parseOutput';

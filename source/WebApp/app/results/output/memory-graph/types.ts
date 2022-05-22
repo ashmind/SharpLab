@@ -1,5 +1,5 @@
 import type { SimulationNodeDatum } from 'd3-force';
-import type { MemoryGraphNode } from '../../../../ts/types/results';
+import type { MemoryGraphNode } from '../../../shared/resultTypes';
 
 export interface ExtendedNode extends MemoryGraphNode {
     isStack?: boolean;
