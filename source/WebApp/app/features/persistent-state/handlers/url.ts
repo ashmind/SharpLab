@@ -3,7 +3,6 @@ import { LANGUAGE_CSHARP, type LanguageName } from '../../../shared/languages';
 import { TARGET_CSHARP, type TargetName } from '../../../shared/targets';
 import type { Gist } from '../../save-as-gist/gist';
 import loadGistFromUrlHashAsync, { type LoadStateFromGistResult } from '../../save-as-gist/loadGistFromUrlHashAsync';
-import type { RawOptions } from '../../../../ts/types/raw-options';
 import { loadFromLegacyV1, LoadStateFromUrlV1Result } from './url/load-from-v1';
 import precompressor from './url/precompressor';
 import {
@@ -12,12 +11,13 @@ import {
     targetMap,
     targetMapReverse
 } from './helpers/language-and-target-maps';
+import type { ExactOptionsData } from './helpers/optionsData';
 
 let lastHash: string|undefined;
 
 export const saveStateToUrl = (
     code: string|null|undefined,
-    options: RawOptions,
+    options: ExactOptionsData,
     { gist = null }: { gist?: Gist|null } = {}
 ) => {
     if (code == null) // too early?
@@ -44,7 +44,7 @@ export const saveStateToUrl = (
     return {};
 };
 
-function saveGist(code: string, options: RawOptions, gist: Gist) {
+function saveGist(code: string, options: ExactOptionsData, gist: Gist) {
     if (code !== gist.code)
         return false;
 

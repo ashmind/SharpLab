@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { loadedStatePromise, saveState } from '../features/persistent-state/state';
 import { branchOptionState } from '../features/roslyn-branches/branchOptionState';
@@ -10,13 +10,10 @@ import { languageOptionState } from '../shared/state/languageOptionState';
 import { releaseOptionState } from '../shared/state/releaseOptionState';
 import { useDispatchResultUpdate } from '../shared/state/resultState';
 import { targetOptionState } from '../shared/state/targetOptionState';
+import { appLoadedState } from './appLoadedState';
 
-type Props = {
-    children: ReactNode;
-};
-
-export const AppStateManager: FC<Props> = ({ children }) => {
-    const [loaded, setLoaded] = useState(false);
+export const AppStateManager: FC = () => {
+    const [loaded, setLoaded] = useRecoilState(appLoadedState);
     const [language, setLanguage] = useRecoilState(languageOptionState);
     const [branch, setBranch] = useRecoilState(branchOptionState);
     const [target, setTarget] = useRecoilState(targetOptionState);
@@ -62,11 +59,12 @@ export const AppStateManager: FC<Props> = ({ children }) => {
     useEffect(() => {
         if (!loaded)
             return;
-        saveState({ code, options: { language, branch, target, release }, gist });
+        saveState([
+            ['options', [language, branch, target, release]],
+            ['code', code],
+            ['gist', gist]
+        ]);
     }, [loaded, language, branch, target, release, code, gist]);
 
-    if (!loaded)
-        return null;
-
-    return <>{children}</>;
+    return null;
 };

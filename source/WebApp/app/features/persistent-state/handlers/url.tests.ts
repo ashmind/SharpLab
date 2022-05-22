@@ -5,7 +5,7 @@ import { fromPartial } from '../../../helpers/testing/fromPartial';
 import * as languages from '../../../shared/languages';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../../shared/languages';
 import * as targets from '../../../shared/targets';
-import { TARGET_CSHARP, TARGET_IL } from '../../../shared/targets';
+import { TARGET_ASM, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_IL, TARGET_RUN, TARGET_VB, TARGET_VERIFY } from '../../../shared/targets';
 import { loadStateFromUrlAsync, saveStateToUrl } from './url';
 
 const gists = partiallyMutable(gistsSource)<'getGistAsync'>();
@@ -77,16 +77,22 @@ describe('gist', () => {
         expect(options.language).toBe('language of test');
     });
 
-    for (let [key, target] of Object.entries(targets)) { // eslint-disable-line prefer-const
-        key = key !== 'csharp' ? key : 'cs';
-        test(`load returns target '${target}' for key '${key}'`, async () => {
-            gists.getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
+    test.each([
+        ['cs', TARGET_CSHARP],
+        ['vb', TARGET_VB],
+        ['il', TARGET_IL],
+        ['asm', TARGET_ASM],
+        ['ast', TARGET_AST],
+        ['verify', TARGET_VERIFY],
+        ['explain', TARGET_EXPLAIN],
+        ['run', TARGET_RUN]
+    ])(`load returns target '%s' for key '%s'`, async (key, target) => {
+        gists.getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));
 
-            window.location.hash = '#gist:_/' + key;
-            const { options } = (await loadStateFromUrlAsync())!;
-            expect(options.target).toBe(target);
-        });
-    }
+        window.location.hash = '#gist:_/' + key;
+        const { options } = (await loadStateFromUrlAsync())!;
+        expect(options.target).toBe(target);
+    });
 
     test(`load returns branchId if specified`, async () => {
         gists.getGistAsync = () => Promise.resolve(fromPartial({ options: {} }));

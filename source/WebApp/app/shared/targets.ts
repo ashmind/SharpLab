@@ -9,14 +9,18 @@ export const TARGET_VERIFY = 'Verify';
 export const TARGET_EXPLAIN = 'Explain';
 export const TARGET_RUN = 'Run';
 
-export type TargetName = typeof TARGET_CSHARP
-                       | typeof TARGET_VB
-                       | typeof TARGET_IL
-                       | typeof TARGET_ASM
-                       | typeof TARGET_AST
-                       | typeof TARGET_VERIFY
-                       | typeof TARGET_EXPLAIN
-                       | typeof TARGET_RUN;
+export type TargetNameTuple = [
+    typeof TARGET_CSHARP,
+    typeof TARGET_VB,
+    typeof TARGET_IL,
+    typeof TARGET_ASM,
+    typeof TARGET_AST,
+    typeof TARGET_VERIFY,
+    typeof TARGET_EXPLAIN,
+    typeof TARGET_RUN
+];
+
+export type TargetName = TargetNameTuple[number];
 export type TargetLanguageName = typeof TARGET_CSHARP
                                | typeof TARGET_VB
                                | typeof TARGET_IL

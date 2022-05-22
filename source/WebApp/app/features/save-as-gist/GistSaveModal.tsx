@@ -1,6 +1,5 @@
 import React, { FC, FormEvent, useEffect, useId, useState } from 'react';
 import { RecoilValue, useRecoilCallback } from 'recoil';
-import toRawOptions from '../../../ts/helpers/to-raw-options';
 import { useAsync } from '../../helpers/useAsync';
 import { Loader } from '../../shared/Loader';
 import { Modal } from '../../shared/Modal';
@@ -27,12 +26,12 @@ export const GistSaveModal: FC<Props> = ({ onSave, onCancel }) => {
         if (!result) throw new Error(`Cannot save gist before receiving initial result`);
         return {
             code: get(codeState),
-            options: toRawOptions({
+            options: {
                 language: get(languageOptionState),
                 target: get(targetOptionState),
                 release: get(releaseOptionState),
-                branch: get(branchOptionState)
-            }),
+                branchId: get(branchOptionState)?.id ?? null
+            },
             result
         };
     });

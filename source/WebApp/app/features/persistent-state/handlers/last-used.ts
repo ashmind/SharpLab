@@ -1,9 +1,13 @@
-﻿import type { RawOptions } from '../../../../ts/types/raw-options';
+﻿import type { ExactOptionsData, OptionsData } from './helpers/optionsData';
 
 const version = 3 as const;
 type OptionsV3 = {
     version: 3;
-    options: RawOptions;
+    options: OptionsData;
+};
+type OptionsV3ForSave = {
+    version: 3;
+    options: ExactOptionsData;
 };
 
 export default {
@@ -24,9 +28,14 @@ export default {
         }
     },
 
-    saveOptions(options: RawOptions) {
+    // Cannot use objects for these, since in TypeScript
+    // there is no way to constrain an object to ensure it only has
+    // expected properties -- and any unexpected properties
+    // will not be saved.
+    saveOptions(options: ExactOptionsData) {
+        const data: OptionsV3ForSave = { version, options };
         try {
-            localStorage['sharplab.options'] = JSON.stringify({ version, options });
+            localStorage['sharplab.options'] = JSON.stringify(data);
         }
         catch (ex) {
             console.warn('Failed to save options:', ex);
