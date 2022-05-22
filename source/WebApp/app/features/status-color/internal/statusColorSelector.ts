@@ -2,10 +2,10 @@ import { selector } from 'recoil';
 import { statusSelector } from '../../shared/state/statusSelector';
 import { effectiveThemeSelector } from '../dark-mode/themeState';
 
-export const DEFAULT_COLOR = '#4684ee';
+export const DEFAULT_STATUS_COLOR = '#4684ee';
 
-export const colorSelector = selector({
-    key: 'theme-color',
+export const statusColorSelector = selector({
+    key: 'status-color',
     get: ({ get }) => {
         const theme = get(effectiveThemeSelector);
         if (theme === 'dark')
@@ -13,7 +13,7 @@ export const colorSelector = selector({
 
         const status = get(statusSelector);
         return {
-            default: DEFAULT_COLOR,
+            default: DEFAULT_STATUS_COLOR,
             error: '#dc3912',
             offline: '#aaa'
         }[status];

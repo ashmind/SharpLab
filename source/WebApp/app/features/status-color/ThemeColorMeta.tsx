@@ -1,8 +1,8 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { colorSelector } from './colorSelector';
+import { statusColorSelector } from './internal/statusColorSelector';
 
 export const ThemeColorMeta = () => {
-    const color = useRecoilValue(colorSelector);
+    const color = useRecoilValue(statusColorSelector);
     return <meta name="theme-color" content={color} />;
 };

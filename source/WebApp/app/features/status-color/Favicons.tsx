@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { replacedHeadElements } from '../../shared/DocumentHead';
-import { colorSelector, DEFAULT_COLOR } from './colorSelector';
+import { statusColorSelector, DEFAULT_STATUS_COLOR } from './internal/statusColorSelector';
 import type { FaviconsData } from './internal/FaviconsData';
 import { RecolorArguments, useRecoloredFaviconsData } from './internal/useRecoloredFaviconData';
 
@@ -21,11 +21,11 @@ const initial: FaviconsData = (() => {
 })();
 
 export const Favicons: FC = () => {
-    const color = useRecoilValue(colorSelector);
+    const color = useRecoilValue(statusColorSelector);
     const recolorArguments = useMemo<RecolorArguments>(() => ({
         initial: {
             svgDataUrl: initial.svgUrl,
-            color: DEFAULT_COLOR
+            color: DEFAULT_STATUS_COLOR
         },
         color,
         sizes: initial.sizes.map(s => s.size)
