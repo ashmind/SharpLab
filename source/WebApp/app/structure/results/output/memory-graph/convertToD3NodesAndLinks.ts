@@ -1,4 +1,4 @@
-import type { MemoryGraphReference } from '../../../shared/resultTypes';
+import type { MemoryGraphReference } from '../../../../shared/resultTypes';
 import { getOffsetClientRect } from './getOffsetClientRect';
 import type { ExtendedNode, ExtendedNodeDatum, NodeDatumData, TopLevelNodeDatumData } from './types';
 

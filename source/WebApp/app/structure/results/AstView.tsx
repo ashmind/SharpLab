@@ -1,8 +1,8 @@
 import React, { FC, useCallback, useEffect, useMemo, useReducer } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import type { AstItem } from '../../ts/types/results';
-import { codeRangeSyncSourceState } from '../features/code-range-sync/codeRangeSyncSourceState';
-import { codeRangeSyncTargetState } from '../features/code-range-sync/codeRangeSyncTargetState';
+import { codeRangeSyncSourceState } from '../../features/code-range-sync/codeRangeSyncSourceState';
+import { codeRangeSyncTargetState } from '../../features/code-range-sync/codeRangeSyncTargetState';
+import type { AstItem } from '../../shared/resultTypes';
 import { AstNodeList } from './ast/AstNodeList';
 import { AstSelectionContext } from './ast/AstSelectionContext';
 import { findItemPathByOffset } from './ast/findItemPathByOffset';

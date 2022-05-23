@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type { FlowStep } from '../../shared/resultTypes';
+import type { FlowStep } from '../../../shared/resultTypes';
 
 const escapeNewLines = (text: string) => {
     return text

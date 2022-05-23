@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 import { CodeEditorSwitch } from '../../features/cm6-preview/CodeEditorPreviewSwitch';
 import { GistManager } from '../../features/save-as-gist/GistManager';
-import { LanguageSelect } from '../../header/LanguageSelect';
-import { ModeSelect } from '../../header/ModeSelect';
-import { TargetSelect } from '../../header/TargetSelect';
 import { useIds } from '../../helpers/useIds';
+import { LanguageSelect } from '../../shared/LanguageSelect';
+import { ModeSelect } from '../../shared/ModeSelect';
+import { TargetSelect } from '../../shared/TargetSelect';
 import { BranchDetailsSection } from '../roslyn-branches/BranchDetailsSection';
 import { BranchSelect } from '../roslyn-branches/BranchSelect';
 

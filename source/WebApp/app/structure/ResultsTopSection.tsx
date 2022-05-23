@@ -1,18 +1,18 @@
 import React, { FC, useEffect, useState } from 'react';
 import dateFormat from 'dateformat';
 import { useRecoilValue } from 'recoil';
-import type { CodeResult, OutputItem } from '../ts/types/results';
-import { TargetSelect } from './header/TargetSelect';
-import { ModeSelect } from './header/ModeSelect';
-import { Loader } from './shared/Loader';
-import { CodeView } from './results/CodeView';
-import { AstView } from './results/AstView';
-import { VerifyView } from './results/VerifyView';
-import { ExplainView } from './results/ExplainView';
+import { Loader } from '../shared/Loader';
+import { ModeSelect } from '../shared/ModeSelect';
+import type { CodeResult, OutputItem } from '../shared/resultTypes';
+import { resultSelector } from '../shared/state/resultState';
+import { targetOptionState } from '../shared/state/targetOptionState';
+import type { TargetLanguageName } from '../shared/targets';
+import { TargetSelect } from '../shared/TargetSelect';
 import { OutputView } from './results/OutputView';
-import { targetOptionState } from './shared/state/targetOptionState';
-import type { TargetLanguageName } from './shared/targets';
-import { resultSelector } from './shared/state/resultState';
+import { ExplainView } from './results/ExplainView';
+import { VerifyView } from './results/VerifyView';
+import { AstView } from './results/AstView';
+import { CodeView } from './results/CodeView';
 
 type CodeState = Pick<CodeResult, 'value'|'ranges'> & { language: TargetLanguageName };
 

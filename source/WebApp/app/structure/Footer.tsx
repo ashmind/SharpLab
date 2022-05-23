@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
-import { CodeEditorSwitch } from './features/cm6-preview/CodeEditorPreviewSwitch';
-import { DarkModeSwitch } from './features/dark-mode/DarkModeSwitch';
-import { MobileFontSizeSwitch } from './features/mobile-font-size/MobileFontSizeSwitch';
+import { CodeEditorSwitch } from '../features/cm6-preview/CodeEditorPreviewSwitch';
+import { DarkModeSwitch } from '../features/dark-mode/DarkModeSwitch';
+import { MobileFontSizeSwitch } from '../features/mobile-font-size/MobileFontSizeSwitch';
 
 export const Footer: FC = () => {
     return <footer>

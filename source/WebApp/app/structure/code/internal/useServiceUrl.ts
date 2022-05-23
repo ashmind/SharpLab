@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
-import { branchOptionState } from '../../features/roslyn-branches/branchOptionState';
+import { branchOptionState } from '../../../features/roslyn-branches/branchOptionState';
 
 export const useServiceUrl = () => {
     const branch = useRecoilValue(branchOptionState);

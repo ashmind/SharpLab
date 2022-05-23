@@ -3,15 +3,15 @@ import { debounce } from 'throttle-debounce';
 import CodeMirror from 'codemirror';
 import 'codemirror/mode/clike/clike';
 import 'codemirror/mode/vb/vb';
-import '../shared/codemirror/mode-cil';
-import '../shared/codemirror/mode-asm';
-import '../shared/codemirror/addon-cil-infotip';
+import '../../shared/codemirror/mode-cil';
+import '../../shared/codemirror/mode-asm';
+import '../../shared/codemirror/addon-cil-infotip';
 import { useSetRecoilState } from 'recoil';
-import { TargetLanguageName, TARGET_ASM, TARGET_CSHARP, TARGET_IL, TARGET_VB } from '../shared/targets';
-import { codeRangeSyncSourceState } from '../features/code-range-sync/codeRangeSyncSourceState';
-import type { LinkedCodeRange } from '../features/code-range-sync/LinkedCodeRange';
-import { findRangeByTargetPosition } from '../features/code-range-sync/findRangeByTargetPosition';
-import { assertType } from '../helpers/assertType';
+import { TargetLanguageName, TARGET_ASM, TARGET_CSHARP, TARGET_IL, TARGET_VB } from '../../shared/targets';
+import { codeRangeSyncSourceState } from '../../features/code-range-sync/codeRangeSyncSourceState';
+import type { LinkedCodeRange } from '../../features/code-range-sync/LinkedCodeRange';
+import { findRangeByTargetPosition } from '../../features/code-range-sync/findRangeByTargetPosition';
+import { assertType } from '../../helpers/assertType';
 
 type Props = {
     code: string;

@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { useRecoilValue } from 'recoil';
-import { codeEditorPreviewEnabled } from '../features/cm6-preview/codeEditorPreviewEnabled';
-import { PreviewCodeEditor } from '../features/cm6-preview/PreviewCodeEditor';
+import { codeEditorPreviewEnabled } from '../../features/cm6-preview/codeEditorPreviewEnabled';
+import { PreviewCodeEditor } from '../../features/cm6-preview/PreviewCodeEditor';
 import { CodeEditorProps, StableCodeEditor } from './StableCodeEditor';
 
 type Props = CodeEditorProps;

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { branchOptionState } from '../../features/roslyn-branches/branchOptionState';
-import { releaseOptionState } from '../../shared/state/releaseOptionState';
-import { targetOptionState } from '../../shared/state/targetOptionState';
+import { branchOptionState } from '../../../features/roslyn-branches/branchOptionState';
+import { releaseOptionState } from '../../../shared/state/releaseOptionState';
+import { targetOptionState } from '../../../shared/state/targetOptionState';
 import type { ServerOptions } from './ServerOptions';
 
 export const useServerOptions = ({ initialCached }: { initialCached: boolean }): ServerOptions => {

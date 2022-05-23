@@ -8,7 +8,7 @@
     "parserOptions": {
         "ecmaVersion": 8,
         "sourceType": "module",
-        "project": ["tsconfig.json", "tsconfig.*.json"],
+        "project": ["tsconfig.json", "tsconfig.*.json", ".jest/tsconfig.json"],
         "extraFileExtensions": [".cjs"]
     },
     "plugins": [

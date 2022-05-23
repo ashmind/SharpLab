@@ -1,4 +1,4 @@
-import type { AstItem } from '../../shared/resultTypes';
+import type { AstItem } from '../../../shared/resultTypes';
 
 export const parseRangeFromItem = (item: AstItem | null) => {
     if (!item || !item.range)

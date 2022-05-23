@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
-import type { DiagnosticWarning } from '../ts/types/results';
-import { classNames } from './helpers/classNames';
-import { useExpander } from './helpers/useExpander';
+import { classNames } from '../helpers/classNames';
+import { useExpander } from '../helpers/useExpander';
+import type { DiagnosticWarning } from '../shared/resultTypes';
 import { Diagnostic } from './results/Diagnostic';
 
 type Props = {

@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
-import { replacedHeadElements } from '../../shared/DocumentHead';
+import { replacedHeadElements } from '../../helpers/DocumentHead';
 import { statusColorSelector, DEFAULT_STATUS_COLOR } from './internal/statusColorSelector';
 import type { FaviconsData } from './internal/FaviconsData';
 import { RecolorArguments, useRecoloredFaviconsData } from './internal/useRecoloredFaviconData';

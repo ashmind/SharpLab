@@ -1,7 +1,7 @@
 import React, { FC, ReactElement } from 'react';
-import { BranchSelect } from './features/roslyn-branches/BranchSelect';
-import { GistManager } from './features/save-as-gist/GistManager';
-import { LanguageSelect } from './header/LanguageSelect';
+import { BranchSelect } from '../features/roslyn-branches/BranchSelect';
+import { GistManager } from '../features/save-as-gist/GistManager';
+import { LanguageSelect } from '../shared/LanguageSelect';
 
 type Props = {
     codeEditor: ReactElement;

@@ -1,8 +1,9 @@
-import { fromPartial, asMutable } from '../../../../tests/helpers';
+import { partiallyMutable } from '../../../helpers/partiallyMutable';
+import { fromPartial } from '../../../helpers/testing/fromPartial';
 import { createGistAsync, getGistAsync } from './gists';
 import * as githubAuthModule from './githubAuth';
 
-asMutable(githubAuthModule).token = '_';
+partiallyMutable(githubAuthModule)<'token'>().token = '_';
 
 describe('getGistAsync', () => {
     test('roundtrips options from createGistAsync', async () => {

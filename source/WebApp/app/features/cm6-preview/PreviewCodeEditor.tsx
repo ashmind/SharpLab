@@ -1,11 +1,11 @@
 import React, { FC, useEffect, useLayoutEffect, useRef } from 'react';
 import mirrorsharp, { MirrorSharpOptions, MirrorSharpConnectionState, MirrorSharpInstance, MirrorSharpSlowUpdateResult } from 'mirrorsharp-codemirror-6-preview';
 import { useRecoilValue } from 'recoil';
-import type { Result } from '../../../ts/types/results';
-import { useServerOptions } from '../../code/code-editor/useServerOptions';
-import { useServiceUrl } from '../../code/code-editor/useServiceUrl';
 import { languageOptionState } from '../../shared/state/languageOptionState';
-import type { ServerOptions } from '../../code/code-editor/ServerOptions';
+import type { Result } from '../../shared/resultTypes';
+import { useServerOptions } from '../../structure/code/internal/useServerOptions';
+import { useServiceUrl } from '../../structure/code/internal/useServiceUrl';
+import type { ServerOptions } from '../../structure/code/internal/ServerOptions';
 
 type ResultData = Result['value'];
 

@@ -1,21 +1,21 @@
 import React, { FC } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import type { UpdateResult } from '../ts/types/results';
+import { MobileSettings } from '../features/mobile-settings/MobileSettings';
+import { BranchDetailsSection } from '../features/roslyn-branches/BranchDetailsSection';
+import { classNames } from '../helpers/classNames';
+import type { UpdateResult } from '../shared/resultTypes';
+import { codeState } from '../shared/state/codeState';
+import { initialCodeState } from '../shared/state/initialCodeState';
+import { onlineState } from '../shared/state/onlineState';
+import { useDispatchResultUpdate, resultSelector } from '../shared/state/resultState';
+import { statusSelector } from '../shared/state/statusSelector';
+import { targetOptionState } from '../shared/state/targetOptionState';
 import { CodeEditor } from './code/CodeEditor';
-import { classNames } from './helpers/classNames';
+import { CodeTopSection } from './CodeTopSection';
 import { ErrorsTopSection } from './ErrorsTopSection';
 import { ResultsTopSection } from './ResultsTopSection';
+import { useLoadingWait } from './useLoadingWait';
 import { WarningsTopSection } from './WarningsTopSection';
-import { useLoadingWait } from './main/useLoadingWait';
-import { CodeTopSection } from './CodeTopSection';
-import { MobileSettings } from './features/mobile-settings/MobileSettings';
-import { codeState } from './shared/state/codeState';
-import { targetOptionState } from './shared/state/targetOptionState';
-import { BranchDetailsSection } from './features/roslyn-branches/BranchDetailsSection';
-import { resultSelector, useDispatchResultUpdate } from './shared/state/resultState';
-import { initialCodeState } from './shared/state/initialCodeState';
-import { statusSelector } from './shared/state/statusSelector';
-import { onlineState } from './shared/state/onlineState';
 
 const EMPTY_ARRAY = [] as ReadonlyArray<never>;
 export const Main: FC = () => {
