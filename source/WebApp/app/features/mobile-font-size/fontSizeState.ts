@@ -6,11 +6,8 @@ export type MobileFontSize = 'default'|'large';
 
 export const fontSizeState = atom<MobileFontSize>({
     key: 'mobile-font-size',
-    default: 'default',
+    default: localStorage[LOCAL_STORAGE_KEY] ?? 'default',
     effects: [
-        ({ setSelf, onSet }) => {
-            setSelf(localStorage[LOCAL_STORAGE_KEY]);
-            onSet(value => localStorage[LOCAL_STORAGE_KEY] = value.toString());
-        }
+        ({ onSet }) => onSet(value => localStorage[LOCAL_STORAGE_KEY] = value.toString())
     ]
 });

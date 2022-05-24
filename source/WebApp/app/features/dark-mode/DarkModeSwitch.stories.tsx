@@ -1,6 +1,5 @@
 import React from 'react';
 import { RecoilRoot } from 'recoil';
-import { DarkModeRoot } from '../../helpers/testing/DarkModeRoot';
 import { recoilTestState } from '../../helpers/testing/recoilTestState';
 import { DarkModeSwitch } from './DarkModeSwitch';
 import { UserTheme, userThemeState } from './themeState';
