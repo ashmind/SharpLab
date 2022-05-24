@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { CodeEditorSwitch } from '../../features/cm6-preview/CodeEditorPreviewSwitch';
+import { CodeEditorSwitch } from '../../features/cm6-preview/CodeEditorSwitch';
 import { GistManager } from '../../features/save-as-gist/GistManager';
 import { useIds } from '../../helpers/useIds';
 import { LanguageSelect } from '../../shared/LanguageSelect';

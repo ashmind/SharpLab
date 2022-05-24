@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import ReactDOM from 'react-dom';
-import { CodeEditorSwitch } from '../features/cm6-preview/CodeEditorPreviewSwitch';
+import { CodeEditorSwitch } from '../features/cm6-preview/CodeEditorSwitch';
 import { DarkModeSwitch } from '../features/dark-mode/DarkModeSwitch';
 import { MobileFontSizeSwitch } from '../features/mobile-font-size/MobileFontSizeSwitch';
 
