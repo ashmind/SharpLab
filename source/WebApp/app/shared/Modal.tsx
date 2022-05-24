@@ -2,7 +2,7 @@ import React, { FC, ReactNode, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const modalRoot = document.getElementById('modals')!;
+const modalRoot = document.getElementById('app-modals')!;
 
 type Props = {
     title: string;
