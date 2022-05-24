@@ -23,6 +23,4 @@ const Template: React.FC<TemplateProps> = ({ preview } = {}) => <>
 
 export const Default = () => <Template />;
 export const Preview = () => <Template preview />;
-export const DarkMode = () => <DarkModeRoot>
-    <Template />
-</DarkModeRoot>;
+export const DarkMode = () => <DarkModeRoot><Template /></DarkModeRoot>;

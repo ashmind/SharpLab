@@ -11,14 +11,9 @@ const systemDarkThemeQuery = window.matchMedia
 
 export const userThemeState = atom<UserTheme>({
     key: 'user-theme',
-    default: 'auto',
+    default: localStorage[LOCAL_STORAGE_KEY] ?? 'auto',
     effects: [
-        ({ setSelf, onSet }) => {
-            const loaded = localStorage[LOCAL_STORAGE_KEY];
-            if (loaded)
-                setSelf(loaded);
-            onSet(value => localStorage[LOCAL_STORAGE_KEY] = value.toString());
-        }
+        ({ onSet }) => onSet(value => localStorage[LOCAL_STORAGE_KEY] = value.toString())
     ]
 });
 
