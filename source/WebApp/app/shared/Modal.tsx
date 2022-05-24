@@ -1,4 +1,8 @@
 import React, { FC, ReactNode, useEffect } from 'react';
+import ReactDOM from 'react-dom';
+
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const modalRoot = document.getElementById('modals')!;
 
 type Props = {
     title: string;
@@ -18,7 +22,7 @@ export const Modal: FC<Props> = ({ title, onClose, children }) => {
         return () => document.removeEventListener('keyup', onEscape);
     }, [onClose]);
 
-    return <div className="modal-wrapper">
+    const modal = <div className="modal-wrapper">
         <div className="modal">
             <header>
                 <span>{title}</span>
@@ -33,4 +37,9 @@ export const Modal: FC<Props> = ({ title, onClose, children }) => {
             </div>
         </div>
     </div>;
+
+    return ReactDOM.createPortal(
+        modal,
+        modalRoot
+    );
 };
