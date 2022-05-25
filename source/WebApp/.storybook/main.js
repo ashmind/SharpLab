@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
     "stories": [
         "../app/**/*.stories.tsx"
@@ -12,6 +14,9 @@ module.exports = {
         builder: 'webpack5',
     },
     webpackFinal: async (config) => {
+        config.resolve.alias[
+            path.resolve(__dirname, '../app/features/roslyn-branches/internal/branchesPromise.ts')
+        ] = path.resolve(__dirname, '__mocks__/branchesPromise.ts');
         config.module.rules.push({
             test: /\.less$/,
             use: [

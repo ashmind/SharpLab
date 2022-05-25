@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { Select, SelectHTMLProps } from '../../shared/Select';
 import { languageOptionState } from '../../shared/state/languageOptionState';
@@ -10,7 +10,7 @@ type Props = {
     useAriaLabel?: boolean;
 } & Omit<SelectHTMLProps, 'aria-label'>;
 
-export const BranchSelect: FC<Props> = ({ useAriaLabel, ...htmlProps }) => {
+export const BranchSelect: React.FC<Props> = ({ useAriaLabel, ...htmlProps }) => {
     const allBranches = useRecoilValue(branchesState);
     const language = useRecoilValue(languageOptionState);
     const [branch, setBranch] = useRecoilState(branchOptionState);

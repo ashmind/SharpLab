@@ -14,7 +14,8 @@
     },
     "include": [
         "app",
-        "ts"
+        "ts",
+        ".storybook/mocks"
     ],
     "references": [
         { "path": "./tsconfig.scripts.json" },
