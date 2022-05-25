@@ -1,4 +1,4 @@
-import React, { FC, HTMLAttributes, useEffect, useId, useState } from 'react';
+import React, { FC, HTMLAttributes, useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { classNames } from '../../helpers/classNames';
 import { codeState } from '../../shared/state/codeState';
@@ -9,18 +9,21 @@ import { githubAuth } from './github-client/githubAuth';
 
 type Props = {
     className?: string;
-    useLabel?: boolean;
-
     buttonProps?: Omit<HTMLAttributes<HTMLButtonElement>, 'id'|'onClick'>;
-};
+} & ({
+    hasLabel?: false;
+    actionId?: undefined;
+} | {
+    hasLabel: true;
+    actionId: string;
+});
 export { Props as GistManagerProps };
 
 // only doing it once per page load, even if
 // multiple app-gist-managers are created
 let postGitHubAuthRedirectModalOpened = false;
 
-export const GistManager: FC<Props> = ({ useLabel, buttonProps }) => {
-    const actionId = useId();
+export const GistManager: FC<Props> = ({ hasLabel, actionId, buttonProps }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const code = useRecoilValue(codeState);
     const [gist, setGist] = useRecoilState(gistState);
@@ -55,18 +58,17 @@ export const GistManager: FC<Props> = ({ useLabel, buttonProps }) => {
                 href={gist.url}
                 title={`Gist: ${gist.name}`}
                 target="_blank"
-                rel="noopener">{useLabel ? gist.name : `Gist: ${gist.name}`}</a>;
+                rel="noopener">{hasLabel ? gist.name : `Gist: ${gist.name}`}</a>;
         }
 
         return <button
             {...buttonProps}
             id={actionId}
             className={buttonClassName}
-            onClick={onCreateClick}>{useLabel ? 'Create' : 'Create Gist'}</button>;
+            onClick={onCreateClick}>{hasLabel ? 'Create' : 'Create Gist'}</button>;
     };
 
     const panel = <div className="gist-manager">
-        {useLabel && <label htmlFor={actionId}>Gist:</label>}
         {renderOpenOrCreate()}
     </div>;
 

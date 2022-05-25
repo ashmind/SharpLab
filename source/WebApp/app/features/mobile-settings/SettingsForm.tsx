@@ -11,7 +11,7 @@ import { BranchSelect } from '../roslyn-branches/BranchSelect';
 type Props = Record<string, never>;
 
 export const SettingsForm: FC<Props> = () => {
-    const ids = useIds(['language', 'branch', 'target', 'mode']);
+    const ids = useIds(['language', 'branch', 'target', 'mode', 'gist']);
 
     return <form className="modal-body form-aligned" onSubmit={e => e.preventDefault()}>
         <fieldset>
@@ -38,7 +38,8 @@ export const SettingsForm: FC<Props> = () => {
         <fieldset>
             <legend>Other</legend>
             <div className="form-line">
-                <GistManager useLabel />
+                <label htmlFor={ids.gist}>Gist:</label>
+                <GistManager hasLabel actionId={ids.gist} />
             </div>
             <div className="form-line">
                 <CodeEditorSwitch />
