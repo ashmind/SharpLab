@@ -1,17 +1,15 @@
 import React from 'react';
 import { RecoilRoot } from 'recoil';
-import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
 import { recoilTestState } from '../../helpers/testing/recoilTestState';
+import { DarkModeRoot } from '../../helpers/testing/DarkModeRoot';
+import { MOBILE_VIEWPORT } from '../../helpers/testing/mobileViewport';
 import { fontSizeState, MobileFontSize } from './fontSizeState';
 import { MobileFontSizeSwitch } from './MobileFontSizeSwitch';
 
 export default {
     component: MobileFontSizeSwitch,
     parameters: {
-        viewport: {
-            viewports: INITIAL_VIEWPORTS,
-            defaultViewport: 'pixel'
-        }
+        viewport: MOBILE_VIEWPORT
     }
 };
 
@@ -33,3 +31,4 @@ const Template: React.FC<TemplateProps> = ({ fontSize }) => <>
 
 export const Default = () => <Template fontSize='default' />;
 export const Large = () => <Template fontSize='large' />;
+export const DarkMode = () => <DarkModeRoot><Template fontSize='default' /></DarkModeRoot>;

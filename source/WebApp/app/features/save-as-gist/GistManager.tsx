@@ -45,7 +45,7 @@ export const GistManager: FC<Props> = ({ useLabel, buttonProps }) => {
 
     const buttonClassName = classNames(
         buttonProps?.className,
-        'gist-create oline-only'
+        'gist-create online-only'
     );
     const renderOpenOrCreate = () => {
         if (gist) {

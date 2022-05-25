@@ -26,6 +26,7 @@ export const DarkModeSwitch: FC = () => {
     const [userTheme, setUserTheme] = useRecoilState(userThemeState);
     const toggleId = useId();
     useEffect(() => applyBodyClass(userTheme), [userTheme]);
+    useEffect(() => () => applyBodyClass('auto'), []);
 
     const onClick = () => {
         const nextTheme = ({

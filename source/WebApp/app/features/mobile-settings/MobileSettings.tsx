@@ -4,10 +4,14 @@ import { SettingsForm } from './SettingsForm';
 
 type Props = {
     buttonProps: Omit<HTMLAttributes<HTMLButtonElement>, 'className'|'onClick'|'aria-label'>;
+    // Storybook/Tests only
+    initialState?: {
+        modalOpen?: boolean;
+    };
 };
 
-export const MobileSettings: FC<Props> = ({ buttonProps }) => {
-    const [modalOpen, setModalOpen] = useState(false);
+export const MobileSettings: FC<Props> = ({ buttonProps, initialState }) => {
+    const [modalOpen, setModalOpen] = useState(!!initialState?.modalOpen);
 
     const button = <button
         className="mobile-settings-button"
