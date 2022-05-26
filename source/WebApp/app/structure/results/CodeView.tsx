@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { debounce } from 'throttle-debounce';
 import CodeMirror from 'codemirror';
 import 'codemirror/mode/clike/clike';
@@ -28,7 +28,7 @@ const modeMap = {
 };
 assertType<{ [K in TargetLanguageName]: string }>(modeMap);
 
-export const CodeView: FC<Props> = ({ code, language, ranges }) => {
+export const CodeView: React.FC<Props> = ({ code, language, ranges }) => {
     const setSourceRange = useSetRecoilState(codeRangeSyncSourceState);
 
     const cmRef = useRef<CodeMirror.EditorFromTextArea | null>(null);
