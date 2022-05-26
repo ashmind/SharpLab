@@ -1,16 +1,16 @@
-import React, { FC, HTMLAttributes, useState } from 'react';
+import React, { useState } from 'react';
 import { Modal } from '../../shared/Modal';
 import { SettingsForm } from './SettingsForm';
 
 type Props = {
-    buttonProps: Omit<HTMLAttributes<HTMLButtonElement>, 'className'|'onClick'|'aria-label'>;
+    buttonProps: Omit<React.HTMLAttributes<HTMLButtonElement>, 'className'|'onClick'|'aria-label'>;
     // Storybook/Tests only
     initialState?: {
         modalOpen?: boolean;
     };
 };
 
-export const MobileSettings: FC<Props> = ({ buttonProps, initialState }) => {
+export const MobileSettings: React.FC<Props> = ({ buttonProps, initialState }) => {
     const [modalOpen, setModalOpen] = useState(!!initialState?.modalOpen);
 
     const button = <button

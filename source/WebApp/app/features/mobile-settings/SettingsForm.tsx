@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { CodeEditorSwitch } from '../../features/cm6-preview/CodeEditorSwitch';
 import { GistManager } from '../../features/save-as-gist/GistManager';
 import { useIds } from '../../helpers/useIds';
@@ -10,7 +10,7 @@ import { BranchSelect } from '../roslyn-branches/BranchSelect';
 
 type Props = Record<string, never>;
 
-export const SettingsForm: FC<Props> = () => {
+export const SettingsForm: React.FC<Props> = () => {
     const ids = useIds(['language', 'branch', 'target', 'mode', 'gist']);
 
     return <form className="modal-body form-aligned" onSubmit={e => e.preventDefault()}>

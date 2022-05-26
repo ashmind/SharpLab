@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import mirrorsharp, { MirrorSharpOptions, MirrorSharpConnectionState, MirrorSharpInstance, MirrorSharpSlowUpdateResult } from 'mirrorsharp-codemirror-6-preview';
 import { useRecoilValue } from 'recoil';
 import { languageOptionState } from '../../shared/state/languageOptionState';
@@ -25,7 +25,7 @@ const useUpdatingRef = <T, >(value: T) => {
     return ref;
 };
 
-export const PreviewCodeEditor: FC<Props> = ({
+export const PreviewCodeEditor: React.FC<Props> = ({
     initialCode,
 
     onSlowUpdateWait,
