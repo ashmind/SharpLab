@@ -69,13 +69,15 @@ export const layout = ({ rootElement, heapElement, inspection }: {
         .links(d3Links)
         .strength(l => (l.source as ExtendedNodeDatum).data.node.isStack ? 5 : 2);
 
-    (d3.forceSimulation(d3Nodes)
+    const simulation = d3.forceSimulation(d3Nodes)
         .force('link', forceLinks)
         .force('heap-boundary', forceRepealBoundary(n => getNodeRect(n), heapBoundary))
         .force('intersections', forceRepealNodeIntersections(n => getNodeRect(n, { margin: NODE_LAYOUT_MARGIN })))
         .force('nested', forceBindNested())
-        .tick(400) as unknown as d3.Simulation<ExtendedNodeDatum, undefined>)
         .stop();
+    for (let i = 0; i < 400; i += 1) {
+        simulation.tick();
+    }
 
     const nodePositions = [];
     for (const node of d3Nodes) {

@@ -54,6 +54,7 @@
         "comma-spacing": "warn",
         "no-path-concat": "warn",
         "semi": "off",
+        "quote-props": ["warn", "as-needed"],
 
         "@typescript-eslint/promise-function-async": "off",
         "@typescript-eslint/no-use-before-define": "off",

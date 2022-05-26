@@ -29,6 +29,6 @@ export const GraphReferenceLinks: React.FC<Props> = ({ links }) => {
             key={l.key}
             className="inspection-graph-reference"
             d={renderSvgPath(l)}
-            marker-end="url(#arrow)" />)}
+            markerEnd="url(#arrow)" />)}
     </svg>;
 };

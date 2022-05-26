@@ -11,7 +11,7 @@ export const GraphNodeInnerFragment: React.FC<Props> = ({ node }) => {
             return <div className="inspection-value">{node.value}</div>;
 
         return <ol className="inspection-nested-items">
-            {node.nestedNodes.map(nested => <li className="inspection-graph-node" data-app-node={nested.id}>
+            {node.nestedNodes.map(nested => <li key={nested.id} className="inspection-graph-node" data-app-node={nested.id}>
                 <header>{nested.title}</header>
                 <div className="inspection-value">{nested.value}</div>
             </li>)}

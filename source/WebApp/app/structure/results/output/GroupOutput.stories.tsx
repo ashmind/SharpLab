@@ -21,3 +21,13 @@ export const Full = () => <GroupOutput group={{
     ]
 }} />;
 export const FullDarkMode = () => <DarkModeRoot><Full /></DarkModeRoot>;
+
+export const LimitReached = () => <GroupOutput group={{
+    type: 'inspection:group',
+    title: 'Test Group',
+    inspections: [
+        { type: 'inspection:simple', title: 'Simple', value: 'Test' }
+    ],
+    limitReached: true
+}} />;
+export const LimitReachedDarkMode = () => <DarkModeRoot><LimitReached /></DarkModeRoot>;

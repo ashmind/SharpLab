@@ -1,6 +1,6 @@
-import React, { FC, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { debounce } from 'throttle-debounce';
-import type { MemoryGraphHeapNode, MemoryGraphInspection } from 'ts/types/results';
+import type { MemoryGraphHeapNode, MemoryGraphInspection } from '../../../shared/resultTypes';
 import { GraphNodeInnerFragment } from './memory-graph/GraphNodeInnerFragment';
 import { GraphReferenceLinks } from './memory-graph/GraphReferenceLinks';
 import { layout as generateLayout } from './memory-graph/layout';
@@ -25,7 +25,7 @@ const wasResized = (rect: DOMRect, previous: DOMRect) => {
         || rect.bottom !== previous.bottom;
 };
 
-export const MemoryGraphOutput: FC<Props> = ({ inspection }) => {
+export const MemoryGraphOutput: React.FC<Props> = ({ inspection }) => {
     const rootElementRef = useRef<HTMLDivElement>(null);
     const heapElementRef = useRef<HTMLDivElement>(null);
     const [layout, setLayout] = useState<LayoutResult | EmptyLayoutResult>({
@@ -105,9 +105,9 @@ export const MemoryGraphOutput: FC<Props> = ({ inspection }) => {
         minWidth: layout.heapWidth
     // eslint-disable-next-line no-undefined
     } : undefined;
-    const heapSection = <section className="inspection-graph-heap" ref={heapElementRef} style={heapStyle}>
+    const heapSection = <section className="inspection-graph-heap" style={heapStyle}>
         <header>Heap</header>
-        <div className="inspection-graph-nodes" ref="heap">{inspection.heap.map(renderHeapNode)}</div>
+        <div className="inspection-graph-nodes" ref={heapElementRef}>{inspection.heap.map(renderHeapNode)}</div>
     </section>;
 
     return <div className="inspection inspection-graph" ref={rootElementRef}>
