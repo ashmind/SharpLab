@@ -48,4 +48,4 @@ const DETAILED_BRANCHES = fromPartial<ReadonlyArray<Branch>>([
 
 export const DefaultOnly = () => <Template branches={[]} />;
 export const SpecificBranch = () => <Template branch={DETAILED_BRANCHES[0]} branches={DETAILED_BRANCHES} />;
-export const DarkMode = () => <DarkModeRoot><Template branches={[]} /></DarkModeRoot>;
+export const DarkMode = () => <DarkModeRoot><DefaultOnly /></DarkModeRoot>;

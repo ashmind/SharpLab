@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useRecoilState } from 'recoil';
 import { SelectHTMLProps, Select } from '../shared/Select';
 import { targetOptionState } from '../shared/state/targetOptionState';
@@ -8,7 +8,7 @@ type Props = {
     useAriaLabel?: boolean;
 } & Omit<SelectHTMLProps, 'aria-label'>;
 
-export const TargetSelect: FC<Props> = ({ useAriaLabel, ...htmlProps }) => {
+export const TargetSelect: React.FC<Props> = ({ useAriaLabel, ...htmlProps }) => {
     const [target, setTarget] = useRecoilState(targetOptionState);
 
     const options = useMemo(() => [

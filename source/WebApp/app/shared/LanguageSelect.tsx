@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { useRecoilState } from 'recoil';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../shared/languages';
 import { SelectHTMLProps, Select } from '../shared/Select';
@@ -15,7 +15,7 @@ const options = [
     { label: 'IL', value: LANGUAGE_IL }
 ] as const;
 
-export const LanguageSelect: FC<Props> = ({ useAriaLabel, ...htmlProps }) => {
+export const LanguageSelect: React.FC<Props> = ({ useAriaLabel, ...htmlProps }) => {
     const [language, setLanguage] = useRecoilState(languageOptionState);
 
     return <Select<LanguageName>

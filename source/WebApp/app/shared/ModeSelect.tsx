@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { useRecoilState } from 'recoil';
 import { SelectHTMLProps, Select } from '../shared/Select';
 import { releaseOptionState } from '../shared/state/releaseOptionState';
@@ -14,7 +14,7 @@ const options = [
     { label: 'Release', value: 'release' }
 ] as const;
 
-export const ModeSelect: FC<Props> = ({ useAriaLabel, ...htmlProps }) => {
+export const ModeSelect: React.FC<Props> = ({ useAriaLabel, ...htmlProps }) => {
     const [release, setRelease] = useRecoilState(releaseOptionState);
 
     return <Select<Mode>
