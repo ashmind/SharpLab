@@ -1,4 +1,4 @@
-import type { AstItem } from 'ts/types/results';
+import type { AstItem } from '../../../shared/resultTypes';
 
 const EMPTY_SET = new Set<AstItem>() as ReadonlySet<AstItem>;
 

@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import type { MemoryGraphHeapNode, MemoryGraphStackNode } from 'ts/types/results';
+import type { MemoryGraphHeapNode, MemoryGraphStackNode } from '../../../../shared/resultTypes';
 
 type Props = {
     node: MemoryGraphStackNode | MemoryGraphHeapNode;
