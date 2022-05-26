@@ -4,9 +4,6 @@ import type { MemoryInspection } from '../../../shared/resultTypes';
 import { Select } from '../../../shared/Select';
 import { calculateLabelLevels, FinalLabel } from './memory/memoryLabels';
 
-type Props = {
-    inspection: MemoryInspection;
-};
 
 type Mode = 'decimal'|'hex'|'char';
 const modeOptions = [
@@ -22,8 +19,16 @@ const specialChars = asLookup({
     '\0': '\\0'
 } as const);
 
-export const MemoryOutput: FC<Props> = ({ inspection }) => {
-    const [mode, setMode] = useState<Mode>('decimal');
+type Props = {
+    inspection: MemoryInspection;
+    // Storybook/Tests only
+    initialState?: {
+        mode?: Mode;
+    };
+};
+
+export const MemoryOutput: FC<Props> = ({ inspection, initialState }) => {
+    const [mode, setMode] = useState<Mode>(initialState?.mode ?? 'decimal');
     const labelLevels = useMemo(() => calculateLabelLevels(inspection.labels, inspection.data.length), [inspection]);
 
     const renderLabel = ({ name, length, levelSpan }: FinalLabel, index: number) =>
