@@ -20,10 +20,21 @@ export const Operation = () => <AstNode item={{ type: 'operation', value: 'Block
 export const OperationDarkMode = () => <DarkModeRoot><Operation /></DarkModeRoot>;
 export const OperationProperty = () => <div className="ast">
     <AstNode item={{
-        type: 'operation', value: 'VariableDeclarator', property: 'Operation',
+        type: 'operation',
+        value: 'VariableDeclarator',
+        property: 'Operation',
         properties: {
             Symbol: 'i'
         }
     }} initialState={{ expanded: true }} />
 </div>;
 export const OperationPropertyDarkMode = () => <DarkModeRoot><OperationProperty /></DarkModeRoot>;
+export const CollapsedWithChildren = () => <div className="ast">
+    <AstNode item={{
+        type: 'node',
+        value: 'CompilationUnit',
+        children: [
+            { type: 'node', value: 'ClassDeclaration' }
+        ]
+    }} />
+</div>;
