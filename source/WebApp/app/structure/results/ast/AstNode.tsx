@@ -89,6 +89,6 @@ export const AstNode: React.FC<Props> = ({ item, initialState }) => {
             {item.value && <span className="ast-inline-value">{renderValue(item.value, item.type)}</span>}
             <span className="ast-item-kind">{item.kind}</span>
         </span>
-        {hasChildren && <AstNodeList items={children} />}
+        {hasChildren && <AstNodeList items={children} initialState={initialState} />}
     </li>;
 };

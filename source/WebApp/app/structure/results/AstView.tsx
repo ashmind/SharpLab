@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useReducer } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { codeRangeSyncSourceState } from '../../features/code-range-sync/codeRangeSyncSourceState';
 import { codeRangeSyncTargetState } from '../../features/code-range-sync/codeRangeSyncTargetState';
@@ -11,9 +11,13 @@ import { DEFAULT_SELECTION_STATE, selectionReducer } from './ast/selection';
 
 type Props = {
     roots: ReadonlyArray<AstItem>;
+    // Storybook/Tests only
+    initialState?: {
+        expanded?: boolean;
+    };
 };
 
-export const AstView: FC<Props> = ({ roots }) => {
+export const AstView: React.FC<Props> = ({ roots, initialState }) => {
     const setSourceRange = useSetRecoilState(codeRangeSyncSourceState);
     const targetOffset = useRecoilValue(codeRangeSyncTargetState);
 
@@ -46,7 +50,7 @@ export const AstView: FC<Props> = ({ roots }) => {
 
     return <div className="ast" onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
         <AstSelectionContext.Provider value={selectionContext}>
-            <AstNodeList items={roots} />
+            <AstNodeList items={roots} initialState={initialState} />
         </AstSelectionContext.Provider>
     </div>;
 };

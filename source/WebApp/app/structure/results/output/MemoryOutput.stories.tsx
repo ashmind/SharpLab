@@ -26,7 +26,7 @@ export const String = () => <MemoryOutput inspection={{
         { name: 'm_stringLength', offset: 8, length: 4 },
         { name: 'm_firstChar', offset: 12, length: 2 }
     ],
-    'data': [
+    data: [
         0, 0, 0, 128,
         228, 36, 83, 109,
         4, 0, 0, 0,
