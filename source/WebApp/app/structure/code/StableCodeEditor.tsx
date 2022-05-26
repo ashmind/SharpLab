@@ -1,7 +1,9 @@
-import React, { FC, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import mirrorsharp, { MirrorSharpConnectionState, MirrorSharpInstance, MirrorSharpOptions, MirrorSharpSlowUpdateResult } from 'mirrorsharp';
 import 'codemirror/mode/mllike/mllike';
+import 'codemirror/mode/vb/vb';
 import '../../shared/codemirror/addon-jump-arrows';
+import '../../shared/codemirror/mode-cil';
 import { useRecoilValue } from 'recoil';
 import { useEditorCodeRangeSync } from '../../features/code-range-sync/useEditorCodeRangeSync';
 import type { Result, FlowStep } from '../../shared/resultTypes';
@@ -32,7 +34,7 @@ const useUpdatingRef = <T, >(value: T) => {
     return ref;
 };
 
-export const StableCodeEditor: FC<Props> = ({
+export const StableCodeEditor: React.FC<Props> = ({
     initialCode,
     initialCached,
     executionFlow,

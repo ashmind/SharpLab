@@ -47,18 +47,15 @@ function createSVGElement<TTagName extends keyof SVGElementTagNameMap>(tagName: 
     return document.createElementNS('http://www.w3.org/2000/svg', tagName);
 }
 
-function setAttributes<TElement extends Element>(
-    element: TElement,
-    attributes: {
-        class?: string;
-        width?: string|number;
-        height?: string|number;
-    } & (
-        TElement extends SVGPathElement ? { d?: string } :
-        // eslint-disable-next-line @typescript-eslint/ban-types
-        TElement extends SVGCircleElement ? { cx: string|number; cy: string|number; r: string|number } : {}
-    )
-) {
+type BaseAttributes = {
+    class?: string;
+    width?: string | number;
+    height?: string | number;
+};
+function setAttributes(element: SVGPathElement, attributes: BaseAttributes & { d?: string }): void;
+function setAttributes(element: SVGCircleElement, attributes: BaseAttributes & { cx: string | number; cy: string | number; r: string | number }): void;
+function setAttributes(element: SVGElement, attributes: BaseAttributes): void;
+function setAttributes(element: SVGElement, attributes: BaseAttributes) {
     for (const key in attributes) {
         element.setAttribute(key, attributes[key as keyof typeof attributes] as string);
     }
@@ -167,8 +164,8 @@ class ArrowLayer {
         const toY = to.y - offsetY;
 
         const groupClassName = 'CodeMirror-jump-arrow'
-            + (up ? ' CodeMirror-jump-arrow-up' : '')
-            + (options.throw ? ' CodeMirror-jump-arrow-throw' : '');
+            + ` CodeMirror-jump-arrow-${up ? 'up' : 'down'}`
+            + ` CodeMirror-jump-arrow-${options.throw ? 'throw' : 'default'}`;
 
         const { g, path, start, end } = svgToReuse ?? {
             g: createSVGElement('g'),
