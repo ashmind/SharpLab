@@ -1,4 +1,4 @@
-import React, { FC, FormEvent, useEffect, useId, useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import { RecoilValue, useRecoilCallback } from 'recoil';
 import { useAsyncCallback } from '../../helpers/useAsyncCallback';
 import { Loader } from '../../shared/Loader';
@@ -17,7 +17,7 @@ type Props = {
     onCancel: () => void;
 };
 
-export const GistSaveModal: FC<Props> = ({ onSave, onCancel }) => {
+export const GistSaveModal: React.FC<Props> = ({ onSave, onCancel }) => {
     const nameId = useId();
     const [name, setName] = useState('');
     const getSharedStateForSave = useRecoilCallback(({ snapshot }) => () => {
@@ -47,7 +47,7 @@ export const GistSaveModal: FC<Props> = ({ onSave, onCancel }) => {
             onSave(saved);
     }, [onSave, saved]);
 
-    const onFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         save();
     };

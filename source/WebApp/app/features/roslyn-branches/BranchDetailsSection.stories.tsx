@@ -1,7 +1,7 @@
 import React from 'react';
 import { RecoilRoot } from 'recoil';
 import { recoilTestState } from '../../helpers/testing/recoilTestState';
-import { DarkModeRoot } from '../../helpers/testing/DarkModeRoot';
+import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
 import { fromPartial } from '../../helpers/testing/fromPartial';
 import { BranchDetailsSection } from './BranchDetailsSection';
 import { branchOptionState } from './branchOptionState';

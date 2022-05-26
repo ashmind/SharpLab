@@ -2,7 +2,7 @@ import React from 'react';
 import { RecoilRoot } from 'recoil';
 import { recoilTestState } from '../../helpers/testing/recoilTestState';
 import { fromPartial } from '../../helpers/testing/fromPartial';
-import { DarkModeRoot } from '../../helpers/testing/DarkModeRoot';
+import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
 import { codeState } from '../../shared/state/codeState';
 import { GistManager } from './GistManager';
 import type { Gist } from './gist';

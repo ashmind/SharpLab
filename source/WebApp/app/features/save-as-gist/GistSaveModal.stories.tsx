@@ -1,5 +1,5 @@
 import React from 'react';
-import { DarkModeRoot } from '../../helpers/testing/DarkModeRoot';
+import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
 import { GistSaveModal } from './GistSaveModal';
 
 export default {

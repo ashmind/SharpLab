@@ -2,7 +2,7 @@ import React from 'react';
 import { RecoilRoot } from 'recoil';
 import { DarkModeSwitch } from '../../features/dark-mode/DarkModeSwitch';
 import { UserTheme, userThemeState } from '../../features/dark-mode/themeState';
-import { recoilTestState } from './recoilTestState';
+import { recoilTestState } from '../../helpers/testing/recoilTestState';
 
 type Props = {
     children: React.ReactNode;

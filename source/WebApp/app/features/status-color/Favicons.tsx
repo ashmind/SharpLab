@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { replacedHeadElements } from '../../helpers/DocumentHead';
 import { statusColorSelector, DEFAULT_STATUS_COLOR } from './internal/statusColorSelector';
@@ -20,7 +20,12 @@ const initial: FaviconsData = (() => {
     return { svgUrl, sizes };
 })();
 
-export const Favicons: FC = () => {
+type Props = {
+    // Test/Storybook only
+    onRecolorComplete?: () => void;
+};
+
+export const Favicons: React.FC<Props> = ({ onRecolorComplete }) => {
     const color = useRecoilValue(statusColorSelector);
     const recolorArguments = useMemo<RecolorArguments>(() => ({
         initial: {
@@ -31,6 +36,8 @@ export const Favicons: FC = () => {
         sizes: initial.sizes.map(s => s.size)
     }), [color]);
     const recolored = useRecoloredFaviconsData(recolorArguments);
+    useEffect(() => onRecolorComplete?.(), [onRecolorComplete, recolored]);
+
     const current = recolored ?? initial;
 
     return <>

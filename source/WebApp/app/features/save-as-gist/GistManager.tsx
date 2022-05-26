@@ -1,4 +1,4 @@
-import React, { FC, HTMLAttributes, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { classNames } from '../../helpers/classNames';
 import { codeState } from '../../shared/state/codeState';
@@ -9,7 +9,7 @@ import { githubAuth } from './github-client/githubAuth';
 
 type Props = {
     className?: string;
-    buttonProps?: Omit<HTMLAttributes<HTMLButtonElement>, 'id'|'onClick'>;
+    buttonProps?: Omit<React.HTMLAttributes<HTMLButtonElement>, 'id'|'onClick'>;
 } & ({
     hasLabel?: false;
     actionId?: undefined;
@@ -23,7 +23,7 @@ export { Props as GistManagerProps };
 // multiple app-gist-managers are created
 let postGitHubAuthRedirectModalOpened = false;
 
-export const GistManager: FC<Props> = ({ hasLabel, actionId, buttonProps }) => {
+export const GistManager: React.FC<Props> = ({ hasLabel, actionId, buttonProps }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const code = useRecoilValue(codeState);
     const [gist, setGist] = useRecoilState(gistState);

@@ -5,7 +5,7 @@ import { languageOptionState } from '../../shared/state/languageOptionState';
 import { LanguageName, LANGUAGE_CSHARP } from '../../shared/languages';
 import { targetOptionState } from '../../shared/state/targetOptionState';
 import { TargetName, TARGET_CSHARP } from '../../shared/targets';
-import { DarkModeRoot } from '../../helpers/testing/DarkModeRoot';
+import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
 import { MOBILE_VIEWPORT } from '../../helpers/testing/mobileViewport';
 import { MobileSettings } from './MobileSettings';
 

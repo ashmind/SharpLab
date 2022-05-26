@@ -2,7 +2,9 @@ import { selector } from 'recoil';
 import { onlineState } from './onlineState';
 import { resultSelector } from './resultState';
 
-export const statusSelector = selector({
+export type Status = 'default' | 'error' | 'offline';
+
+export const statusSelector = selector<Status>({
     key: 'app-status',
     get: ({ get }) => {
         if (!get(onlineState))
