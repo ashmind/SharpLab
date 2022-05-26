@@ -1,10 +1,14 @@
-import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import type { AstItem } from 'ts/types/results';
+import React, { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import type { AstItem } from '../../../shared/resultTypes';
 import { AstNodeList } from './AstNodeList';
 import { AstSelectionContext } from './AstSelectionContext';
 
 type Props = {
     item: AstItem;
+    // Storybook/Tests only
+    initialState?: {
+        expanded?: boolean;
+    };
 };
 
 const escapeCommon = (value: string) => {
@@ -26,9 +30,9 @@ const renderValue = (value: string, type: string) =>{
     return escapeCommon(value);
 };
 
-export const AstNode: FC<Props> = ({ item }) => {
+export const AstNode: React.FC<Props> = ({ item, initialState }) => {
     const elementRef = useRef<HTMLLIElement>(null);
-    const [expanded, setExpanded] = useState<boolean>(false);
+    const [expanded, setExpanded] = useState<boolean>(initialState?.expanded ?? false);
     const { selectionState, dispatchSelectionAction } = useContext(AstSelectionContext);
     const { selectionMode, selectedItem } = selectionState;
 

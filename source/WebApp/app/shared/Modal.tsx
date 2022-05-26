@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -7,10 +7,10 @@ const modalRoot = document.getElementById('app-modals')!;
 type Props = {
     title: string;
     onClose?: (() => void) | null;
-    children: ReactNode | ReadonlyArray<ReactNode>;
+    children: React.ReactNode;
 };
 
-export const Modal: FC<Props> = ({ title, onClose, children }) => {
+export const Modal: React.FC<Props> = ({ title, onClose, children }) => {
     useEffect(() => {
         if (!onClose)
             return;
