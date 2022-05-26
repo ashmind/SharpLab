@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
+import React from 'react';
 import type { MemoryGraphHeapNode, MemoryGraphStackNode } from '../../../../shared/resultTypes';
 
 type Props = {
     node: MemoryGraphStackNode | MemoryGraphHeapNode;
 };
 
-export const GraphNodeInnerFragment: FC<Props> = ({ node }) => {
+export const GraphNodeInnerFragment: React.FC<Props> = ({ node }) => {
     const renderContent = () => {
         if (!node.nestedNodes)
             return <div className="inspection-value">{node.value}</div>;

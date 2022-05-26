@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
-import type { SimpleInspection } from 'ts/types/results';
+import React from 'react';
+import type { SimpleInspection } from '../../../shared/resultTypes';
 import { SimpleOutput } from './SimpleOutput';
 
 // TODO: Check if server actually returns those and move to results if so
@@ -14,7 +14,7 @@ type Props = {
     group: InspectionGroup;
 };
 
-export const GroupOutput: FC<Props> = ({ group }) => {
+export const GroupOutput: React.FC<Props> = ({ group }) => {
     const renderInspection = (inspection: SimpleInspection|InspectionGroup, index: number) => {
         switch (inspection.type) {
             case 'inspection:group': return <GroupOutput key={index} group={inspection} />;

@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
-import type { SimpleInspection } from 'ts/types/results';
+import React from 'react';
+import type { SimpleInspection } from '../../../shared/resultTypes';
 
 type Props = {
     inspection: SimpleInspection;
 };
 
-export const SimpleOutput: FC<Props> = ({ inspection }) => {
+export const SimpleOutput: React.FC<Props> = ({ inspection }) => {
     const isMultiline = !!inspection.value && /[\r\n]/.test(inspection.value);
     const isException = inspection.title === 'Exception';
     const isWarning = inspection.title === 'Warning';

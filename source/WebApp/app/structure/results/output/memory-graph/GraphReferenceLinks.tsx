@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import type { LinkPosition } from './types';
 
 type Props = {
@@ -14,7 +14,7 @@ const renderSvgPath = ({ from, to, arc = false }: LinkPosition) => {
     return `${start} L${to.x} ${to.y}`;
 };
 
-export const GraphReferenceLinks: FC<Props> = ({ links }) => {
+export const GraphReferenceLinks: React.FC<Props> = ({ links }) => {
     return <svg className="inspection-graph-reference-layer">
         <defs>
             <marker id="arrow" refX="6" refY="3"
