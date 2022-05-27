@@ -6,7 +6,6 @@ export default {
     component: OutputView
 };
 
-
 export const Empty = () => <OutputView output={[]} />;
 export const EmptyDarkMode = () => <DarkModeRoot><Empty /></DarkModeRoot>;
 
