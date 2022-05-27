@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { classNames } from '../helpers/classNames';
 import { useExpander } from '../helpers/useExpander';
 import { Loader } from '../shared/Loader';
@@ -9,7 +9,7 @@ type Props = {
     errors: Result['errors'];
 };
 
-export const ErrorsTopSection: FC<Props> = ({ errors }) => {
+export const ErrorsTopSection: React.FC<Props> = ({ errors }) => {
     const { expandedClassName, ExpanderButton } = useExpander({ initialExpanded: true });
 
     if (errors.length === 0)
