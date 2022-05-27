@@ -1,8 +1,8 @@
-import React, { FC, useId } from 'react';
+import React, { useId } from 'react';
 import { useRecoilState } from 'recoil';
 import { codeEditorPreviewEnabled } from './codeEditorPreviewEnabled';
 
-export const CodeEditorSwitch: FC = () => {
+export const CodeEditorSwitch: React.FC = () => {
     const [enabled, setEnabled] = useRecoilState(codeEditorPreviewEnabled);
     const toggleId = useId();
 

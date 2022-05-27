@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useId } from 'react';
+import React, { useEffect, useId } from 'react';
 import { useRecoilState } from 'recoil';
 import { fontSizeState, MobileFontSize } from './fontSizeState';
 
@@ -6,7 +6,7 @@ const applyBodyClass = (size: MobileFontSize) => {
     document.body.classList.toggle(`mobile-font-size-large`, size === 'large');
 };
 
-export const MobileFontSizeSwitch: FC = () => {
+export const MobileFontSizeSwitch: React.FC = () => {
     const [fontSize, setFontSize] = useRecoilState(fontSizeState);
     const toggleId = useId();
 

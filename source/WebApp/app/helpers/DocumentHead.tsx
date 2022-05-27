@@ -1,4 +1,3 @@
-import type { FC, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 
 const { head } = document;
@@ -9,9 +8,9 @@ for (const element of elementsToReplace) {
 export { elementsToReplace as replacedHeadElements };
 
 type Props = {
-    children: ReactNode;
+    children: React.ReactNode;
 };
 
-export const DocumentHead: FC<Props> = ({ children }) => {
+export const DocumentHead: React.FC<Props> = ({ children }) => {
     return ReactDOM.createPortal(children, head);
 };

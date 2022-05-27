@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useId } from 'react';
+import React, { useEffect, useId } from 'react';
 import { useRecoilState } from 'recoil';
 import { asLookup } from '../../helpers/asLookup';
 import { UserTheme, userThemeState } from './themeState';
@@ -22,7 +22,7 @@ const applyBodyClass = (theme: UserTheme) => {
         body.classList.add(newClassName);
 };
 
-export const DarkModeSwitch: FC = () => {
+export const DarkModeSwitch: React.FC = () => {
     const [userTheme, setUserTheme] = useRecoilState(userThemeState);
     const toggleId = useId();
     useEffect(() => applyBodyClass(userTheme), [userTheme]);

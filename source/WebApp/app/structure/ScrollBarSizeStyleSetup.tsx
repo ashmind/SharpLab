@@ -1,6 +1,6 @@
-import React, { FC, useLayoutEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 
-export const ScrollBarSizeStyleSetup: FC = () => {
+export const ScrollBarSizeStyleSetup: React.FC = () => {
     const [done, setDone] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 

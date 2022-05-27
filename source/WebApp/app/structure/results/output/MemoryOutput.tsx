@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { asLookup } from '../../../helpers/asLookup';
 import type { MemoryInspection } from '../../../shared/resultTypes';
 import { Select } from '../../../shared/Select';
@@ -27,7 +27,7 @@ type Props = {
     };
 };
 
-export const MemoryOutput: FC<Props> = ({ inspection, initialState }) => {
+export const MemoryOutput: React.FC<Props> = ({ inspection, initialState }) => {
     const [mode, setMode] = useState<Mode>(initialState?.mode ?? 'decimal');
     const labelLevels = useMemo(() => calculateLabelLevels(inspection.labels, inspection.data.length), [inspection]);
 

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { RecoilRoot } from 'recoil';
 import { Favicons } from './features/status-color/Favicons';
 import { ThemeColorMeta } from './features/status-color/ThemeColorMeta';
@@ -9,7 +9,7 @@ import { Footer } from './structure/Footer';
 import { Main } from './structure/Main';
 import { ScrollBarSizeStyleSetup } from './structure/ScrollBarSizeStyleSetup';
 
-export const App: FC = () => {
+export const App: React.FC = () => {
     return <RecoilRoot>
         <DocumentHead>
             <ThemeColorMeta />

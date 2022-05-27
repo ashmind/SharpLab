@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { loadedStatePromise, saveState } from '../features/persistent-state/state';
 import { branchOptionState } from '../features/roslyn-branches/branchOptionState';
@@ -12,7 +12,7 @@ import { useDispatchResultUpdate } from '../shared/state/resultState';
 import { targetOptionState } from '../shared/state/targetOptionState';
 import { appLoadedState } from './appLoadedState';
 
-export const AppStateManager: FC = () => {
+export const AppStateManager: React.FC = () => {
     const [loaded, setLoaded] = useRecoilState(appLoadedState);
     const [language, setLanguage] = useRecoilState(languageOptionState);
     const [branch, setBranch] = useRecoilState(branchOptionState);
