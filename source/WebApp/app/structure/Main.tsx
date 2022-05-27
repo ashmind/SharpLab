@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { MobileSettings } from '../features/mobile-settings/MobileSettings';
 import { BranchDetailsSection } from '../features/roslyn-branches/BranchDetailsSection';
@@ -18,7 +18,7 @@ import { useLoadingWait } from './useLoadingWait';
 import { WarningsTopSection } from './WarningsTopSection';
 
 const EMPTY_ARRAY = [] as ReadonlyArray<never>;
-export const Main: FC = () => {
+export const Main: React.FC = () => {
     const initialCode = useRecoilValue(initialCodeState);
     const setCode = useSetRecoilState(codeState);
     const target = useRecoilValue(targetOptionState);
