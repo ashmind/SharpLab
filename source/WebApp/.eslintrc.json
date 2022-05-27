@@ -91,7 +91,7 @@
         // conflicts with ESLint
         "import/no-duplicates": "off",
         "import/named": "off",
-        "import/extensions": ["error", "never"],
+        "import/extensions": ["error", "never", { "stories": "always" }],
         "import/order": ["warn", { "newlines-between": "never" }],
         "import/newline-after-import": "warn",
 

@@ -5,7 +5,8 @@ import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
 import { CodeView, LinkedCodeRange } from './CodeView';
 
 export default {
-    component: CodeView
+    component: CodeView,
+    excludeStories: /^EXAMPLE_/
 };
 
 type TemplateProps = {
@@ -29,7 +30,7 @@ const DarkMode = (Story: {
     return story;
 };
 
-export const CSharp = () => <Template language={TARGET_CSHARP} code={`
+const EXAMPLE_CSHARP_CODE = `
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -48,7 +49,13 @@ public class C
     {
     }
 }
-`.trim()} />;
+`.trim();
+
+// ...
+const EXAMPLE_CSHARP_CODE_OBJECT = { value: EXAMPLE_CSHARP_CODE };
+export { EXAMPLE_CSHARP_CODE_OBJECT as EXAMPLE_CSHARP_CODE };
+
+export const CSharp = () => <Template language={TARGET_CSHARP} code={EXAMPLE_CSHARP_CODE} />;
 CSharp.storyName = 'C#';
 export const CSharpDarkMode = DarkMode(CSharp);
 
@@ -120,4 +127,4 @@ C.M()
     L0023: ret
 `.trim()} />;
 JitAsm.storyName = 'JIT ASM';
-export const JitAsmDarkMode = DarkMode(JitAsm);
+export const JitAsmDarkMode = DarkMode(IL);

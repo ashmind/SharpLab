@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import dateFormat from 'dateformat';
 import { useRecoilValue } from 'recoil';
 import { Loader } from '../shared/Loader';
@@ -17,7 +17,7 @@ import { CodeView } from './results/CodeView';
 type CodeState = Pick<CodeResult, 'value'|'ranges'> & { language: TargetLanguageName };
 
 const EMPTY_OUTPUT = [] as ReadonlyArray<OutputItem>;
-export const ResultsTopSection: FC = () => {
+export const ResultsTopSection: React.FC = () => {
     const [lastCodeState, setLastCodeState] = useState<CodeState>();
     const target = useRecoilValue(targetOptionState);
     const result = useRecoilValue(resultSelector);

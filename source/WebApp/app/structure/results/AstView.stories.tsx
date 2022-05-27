@@ -4,7 +4,8 @@ import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
 import { AstView } from './AstView';
 
 export default {
-    component: AstView
+    component: AstView,
+    excludeStories: /^EXAMPLE_/
 };
 
 type TemplateProps = React.ComponentProps<typeof AstView>;
@@ -12,7 +13,7 @@ const Template: React.FC<TemplateProps> = props => <RecoilRoot>
     <AstView {...props} />
 </RecoilRoot>;
 
-export const Full = () => <Template roots={[{
+export const EXAMPLE_AST = [{
     type: 'node',
     kind: 'CompilationUnit',
     range: '0-10',
@@ -193,5 +194,7 @@ export const Full = () => <Template roots={[{
             value: ''
         }
     ]
-}]} initialState={{ expanded: true }} />;
+}];
+
+export const Full = () => <Template roots={EXAMPLE_AST} initialState={{ expanded: true }} />;
 export const FullDarkMode = () => <DarkModeRoot><Full /></DarkModeRoot>;

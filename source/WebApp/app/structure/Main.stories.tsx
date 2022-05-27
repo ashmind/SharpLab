@@ -10,31 +10,11 @@ import { TargetName, TARGET_CSHARP } from '../shared/targets';
 import { DarkModeRoot } from '../shared/testing/DarkModeRoot';
 import { ResultStateRoot } from '../shared/testing/ResultStateRoot';
 import { Main } from './Main';
+import { EXAMPLE_CSHARP_CODE } from './results/CodeView.stories';
 
 export default {
     component: Main
 };
-
-const EXAMPLE_RESULT_CODE = `
-using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Security;
-using System.Security.Permissions;
-
-[assembly: CompilationRelaxations(8)]
-[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
-[assembly: Debuggable(DebuggableAttribute.DebuggingModes.Default | DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints | DebuggableAttribute.DebuggingModes.EnableEditAndContinue | DebuggableAttribute.DebuggingModes.DisableOptimizations)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
-[assembly: AssemblyVersion("0.0.0.0")]
-[module: UnverifiableCode]
-public class C
-{
-    public void M()
-    {
-    }
-}
-`.trim();
 
 const Template = () => {
     return <>
@@ -53,8 +33,8 @@ const Template = () => {
                 type: 'cachedResult',
                 updateResult: {
                     diagnostics: [],
-                    cached: { date: new Date() },
-                    x: EXAMPLE_RESULT_CODE
+                    cached: { date: new Date('2000-01-01T00:00:00.000Z') },
+                    x: EXAMPLE_CSHARP_CODE.value
                 }
             }} waitForFirstResult>
                 <Main />

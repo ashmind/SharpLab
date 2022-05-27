@@ -3,13 +3,11 @@ import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
 import { OutputView } from './OutputView';
 
 export default {
-    component: OutputView
+    component: OutputView,
+    excludeStories: /^EXAMPLE_/
 };
 
-export const Empty = () => <OutputView output={[]} />;
-export const EmptyDarkMode = () => <DarkModeRoot><Empty /></DarkModeRoot>;
-
-export const Full = () => <OutputView output={[
+export const EXAMPLE_OUTPUT = [
     'Console 1\r\n',
     {
         type: 'inspection:simple',
@@ -22,5 +20,10 @@ export const Full = () => <OutputView output={[
         title: 'Exception',
         value: 'System.Exception: Exception\r\n   at <Program>$.<Main>$(String[] args)'
     }
-]} />;
+] as const;
+
+export const Empty = () => <OutputView output={[]} />;
+export const EmptyDarkMode = () => <DarkModeRoot><Empty /></DarkModeRoot>;
+
+export const Full = () => <OutputView output={EXAMPLE_OUTPUT} />;
 export const FullDarkMode = () => <DarkModeRoot><Full /></DarkModeRoot>;
