@@ -1,6 +1,6 @@
-import React, { FC, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { marked } from 'marked';
-import type { Explanation } from '../../ts/types/results';
+import type { Explanation } from '../../shared/resultTypes';
 
 type Props = {
     explanations: ReadonlyArray<Explanation>;
@@ -22,7 +22,7 @@ const EMPTY = <section className="markdown">
     </p>
 </section>;
 
-export const ExplainView: FC<Props> = ({ explanations }) => {
+export const ExplainView: React.FC<Props> = ({ explanations }) => {
     const getExplanationHtml = (text: string) => ({
         __html: marked(text)
     });
