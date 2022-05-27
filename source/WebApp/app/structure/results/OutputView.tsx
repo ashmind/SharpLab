@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
-import type { OutputItem } from '../../ts/types/results';
+import React from 'react';
+import type { OutputItem } from '../../shared/resultTypes';
 import { SimpleOutput } from './output/SimpleOutput';
 import { MemoryOutput } from './output/MemoryOutput';
 import { MemoryGraphOutput } from './output/MemoryGraphOutput';
@@ -9,7 +9,7 @@ type Props = {
     output: ReadonlyArray<OutputItem|InspectionGroup>;
 };
 
-export const OutputView: FC<Props> = ({ output }) => {
+export const OutputView: React.FC<Props> = ({ output }) => {
     const renderItem = (item: OutputItem|InspectionGroup, index: number) => {
         if (typeof item === 'string')
             return <pre key={index}>{item}</pre>;
