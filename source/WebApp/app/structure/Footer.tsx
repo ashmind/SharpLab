@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { CodeEditorSwitch } from '../features/cm6-preview/CodeEditorSwitch';
 import { DarkModeSwitch } from '../features/dark-mode/DarkModeSwitch';
@@ -7,7 +7,7 @@ import { MobileFontSizeSwitch } from '../features/mobile-font-size/MobileFontSiz
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const footerRoot = document.querySelector('body > footer')!;
 
-export const Footer: FC = () => {
+export const Footer: React.FC = () => {
     const content = <>
         <CodeEditorSwitch />
         <MobileFontSizeSwitch />
