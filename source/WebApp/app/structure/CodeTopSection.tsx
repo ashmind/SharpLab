@@ -1,10 +1,10 @@
-import React, { FC, ReactElement } from 'react';
+import React from 'react';
 import { BranchSelect } from '../features/roslyn-branches/BranchSelect';
 import { GistManager } from '../features/save-as-gist/GistManager';
 import { LanguageSelect } from '../shared/LanguageSelect';
 
 type Props = {
-    codeEditor: ReactElement;
+    codeEditor: React.ReactElement;
 };
 
 const GIST_BUTTON_PROPS = {
@@ -12,7 +12,7 @@ const GIST_BUTTON_PROPS = {
     tabIndex: 2
 } as const;
 
-export const CodeTopSection: FC<Props> = ({ codeEditor }) => {
+export const CodeTopSection: React.FC<Props> = ({ codeEditor }) => {
     return <section className="top-section code">
         <header>
             <h1>Code</h1>
