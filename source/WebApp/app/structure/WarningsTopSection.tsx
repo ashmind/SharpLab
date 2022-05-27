@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { classNames } from '../helpers/classNames';
 import { useExpander } from '../helpers/useExpander';
 import type { DiagnosticWarning } from '../shared/resultTypes';
@@ -6,10 +6,14 @@ import { Diagnostic } from './results/Diagnostic';
 
 type Props = {
     warnings: ReadonlyArray<DiagnosticWarning>;
+    // Storybook/Tests only
+    initialState?: {
+        expanded?: boolean;
+    };
 };
 
-export const WarningsTopSection: FC<Props> = ({ warnings }) => {
-    const { expandedClassName, ExpanderButton } = useExpander();
+export const WarningsTopSection: React.FC<Props> = ({ warnings, initialState }) => {
+    const { expandedClassName, ExpanderButton } = useExpander({ initialExpanded: initialState?.expanded });
 
     if (warnings.length === 0)
         return null;
