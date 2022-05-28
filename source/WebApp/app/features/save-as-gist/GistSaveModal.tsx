@@ -1,6 +1,6 @@
 import React, { useEffect, useId, useState } from 'react';
 import { RecoilValue, useRecoilCallback } from 'recoil';
-import { useAsyncCallback } from '../../helpers/useAsyncCallback';
+import { useAsyncCallback } from '../../shared/helpers/useAsyncCallback';
 import { Loader } from '../../shared/Loader';
 import { Modal } from '../../shared/Modal';
 import { codeState } from '../../shared/state/codeState';

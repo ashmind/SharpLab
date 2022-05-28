@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { useDocumentBodyClass } from '../helpers/useDocumentBodyClass';
+import { useDocumentBodyClass } from '../shared/helpers/useDocumentBodyClass';
 import { statusSelector } from '../shared/state/statusSelector';
 import { Footer } from './Footer';
 import { Main } from './Main';

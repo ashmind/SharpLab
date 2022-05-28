@@ -1,4 +1,4 @@
-import type { PartiallyMutable } from '../../../helpers/partiallyMutable';
+import type { PartiallyMutable } from '../../../shared/helpers/partiallyMutable';
 import type { Branch, BranchCommit } from '../types';
 
 const branchesUrl = (() => {

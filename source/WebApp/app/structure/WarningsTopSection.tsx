@@ -1,6 +1,6 @@
 import React from 'react';
-import { classNames } from '../helpers/classNames';
-import { useExpander } from '../helpers/useExpander';
+import { classNames } from '../shared/helpers/classNames';
+import { useExpander } from '../shared/helpers/useExpander';
 import type { DiagnosticWarning } from '../shared/resultTypes';
 import { Diagnostic } from './results/Diagnostic';
 

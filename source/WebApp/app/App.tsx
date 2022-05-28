@@ -2,7 +2,7 @@ import React from 'react';
 import { RecoilRoot } from 'recoil';
 import { Favicons } from './features/status-color/Favicons';
 import { ThemeColorMeta } from './features/status-color/ThemeColorMeta';
-import { DocumentHead } from './helpers/DocumentHead';
+import { DocumentHead } from './shared/helpers/DocumentHead';
 import { AppLoader } from './structure/AppLoader';
 import { AppStateManager } from './structure/AppStateManager';
 import { Body } from './structure/Body';

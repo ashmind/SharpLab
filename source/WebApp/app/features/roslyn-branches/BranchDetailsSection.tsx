@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { classNames } from '../../helpers/classNames';
-import { useExpander } from '../../helpers/useExpander';
+import { classNames } from '../../shared/helpers/classNames';
+import { useExpander } from '../../shared/helpers/useExpander';
 import { branchOptionState } from './branchOptionState';
 
 type Props = {

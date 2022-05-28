@@ -1,5 +1,5 @@
-import { partiallyMutable } from '../../../helpers/partiallyMutable';
-import { fromPartial } from '../../../helpers/testing/fromPartial';
+import { partiallyMutable } from '../../../shared/helpers/partiallyMutable';
+import { fromPartial } from '../../../shared/helpers/testing/fromPartial';
 import { createGistAsync, getGistAsync } from './gists';
 import * as githubAuthModule from './githubAuth';
 

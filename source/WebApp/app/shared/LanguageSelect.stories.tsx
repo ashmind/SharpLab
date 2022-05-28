@@ -1,6 +1,6 @@
 import React from 'react';
 import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../helpers/testing/recoilTestState';
+import { recoilTestState } from '../shared/helpers/testing/recoilTestState';
 import { LanguageName, LANGUAGE_CSHARP } from './languages';
 import { LanguageSelect } from './LanguageSelect';
 import { languageOptionState } from './state/languageOptionState';

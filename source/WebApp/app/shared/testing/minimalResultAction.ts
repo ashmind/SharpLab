@@ -1,4 +1,4 @@
-import { fromPartial } from '../../helpers/testing/fromPartial';
+import { fromPartial } from '../../shared/helpers/testing/fromPartial';
 import type { ResultUpdateAction } from '../state/results/ResultUpdateAction';
 
 export const minimalResultAction = ({ error }: { error?: boolean }) => error

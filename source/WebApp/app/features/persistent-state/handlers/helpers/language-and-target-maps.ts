@@ -1,5 +1,5 @@
-import { asLookup } from '../../../../helpers/asLookup';
-import { assertType } from '../../../../helpers/assertType';
+import { asLookup } from '../../../../shared/helpers/asLookup';
+import { assertType } from '../../../../shared/helpers/assertType';
 import { LANGUAGE_CSHARP, LANGUAGE_VB, LANGUAGE_FSHARP, LANGUAGE_IL, type LanguageName } from '../../../../shared/languages';
 import { TARGET_CSHARP, TARGET_VB, TARGET_IL, TARGET_ASM, TARGET_AST, TARGET_RUN, TARGET_VERIFY, TARGET_EXPLAIN, type TargetName } from '../../../../shared/targets';
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { classNames } from '../../helpers/classNames';
+import { classNames } from '../../shared/helpers/classNames';
 import { codeState } from '../../shared/state/codeState';
 import type { Gist } from './gist';
 import { GistSaveModal } from './GistSaveModal';

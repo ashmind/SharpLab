@@ -1,7 +1,7 @@
 import React from 'react';
 import { RecoilRoot } from 'recoil';
 import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
-import { recoilTestState } from '../../helpers/testing/recoilTestState';
+import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
 import { codeEditorPreviewEnabled } from './codeEditorPreviewEnabled';
 import { CodeEditorSwitch } from './CodeEditorSwitch';
 

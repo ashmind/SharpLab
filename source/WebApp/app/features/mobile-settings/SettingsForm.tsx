@@ -1,7 +1,7 @@
 import React from 'react';
 import { CodeEditorSwitch } from '../../features/cm6-preview/CodeEditorSwitch';
 import { GistManager } from '../../features/save-as-gist/GistManager';
-import { useIds } from '../../helpers/useIds';
+import { useIds } from '../../shared/helpers/useIds';
 import { LanguageSelect } from '../../shared/LanguageSelect';
 import { ModeSelect } from '../../shared/ModeSelect';
 import { TargetSelect } from '../../shared/TargetSelect';

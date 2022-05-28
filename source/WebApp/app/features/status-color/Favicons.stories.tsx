@@ -1,7 +1,7 @@
 import React from 'react';
 import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../../helpers/testing/recoilTestState';
-import { useReactTestRender } from '../../helpers/testing/useReactTestRender';
+import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
+import { useReactTestRender } from '../../shared/helpers/testing/useReactTestRender';
 import { onlineState } from '../../shared/state/onlineState';
 import { minimalResultAction } from '../../shared/testing/minimalResultAction';
 import { ResultRoot } from '../../shared/testing/ResultRoot';

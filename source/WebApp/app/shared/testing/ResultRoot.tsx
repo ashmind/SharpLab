@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
-import { DeepPartial, fromPartial } from '../../helpers/testing/fromPartial';
+import { DeepPartial, fromPartial } from '../../shared/helpers/testing/fromPartial';
 import type { ResultUpdateAction } from '../state/results/ResultUpdateAction';
 import { resultSelector, useDispatchResultUpdate } from '../state/resultState';
 

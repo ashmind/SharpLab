@@ -1,4 +1,4 @@
-import type { PartiallyMutable } from '../../../helpers/partiallyMutable';
+import type { PartiallyMutable } from '../../../shared/helpers/partiallyMutable';
 import type { OutputItem, OutputJsonLineFlow, FlowStep } from '../../resultTypes';
 
 type OutputJsonLineData = Exclude<OutputItem, string> | OutputJsonLineFlow;

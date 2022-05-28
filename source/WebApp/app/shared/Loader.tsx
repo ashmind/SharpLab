@@ -1,5 +1,5 @@
 import React from 'react';
-import { classNames } from '../helpers/classNames';
+import { classNames } from '../shared/helpers/classNames';
 
 type Props = {
     inline?: boolean;

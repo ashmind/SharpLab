@@ -1,6 +1,6 @@
 import React from 'react';
 import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../helpers/testing/recoilTestState';
+import { recoilTestState } from '../shared/helpers/testing/recoilTestState';
 import { ModeSelect } from './ModeSelect';
 import { releaseOptionState } from './state/releaseOptionState';
 import { DarkModeRoot } from './testing/DarkModeRoot';

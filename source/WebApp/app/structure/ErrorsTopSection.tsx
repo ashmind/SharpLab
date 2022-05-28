@@ -1,6 +1,6 @@
 import React from 'react';
-import { classNames } from '../helpers/classNames';
-import { useExpander } from '../helpers/useExpander';
+import { classNames } from '../shared/helpers/classNames';
+import { useExpander } from '../shared/helpers/useExpander';
 import { Loader } from '../shared/Loader';
 import type { Result } from '../shared/resultTypes';
 import { Diagnostic } from './results/Diagnostic';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { RecoilRoot } from 'recoil';
 import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
-import { recoilTestState } from '../../helpers/testing/recoilTestState';
+import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../shared/languages';
 import { languageOptionState } from '../../shared/state/languageOptionState';
 import type { FlowStep } from '../../shared/resultTypes';

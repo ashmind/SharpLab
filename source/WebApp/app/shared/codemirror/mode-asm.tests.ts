@@ -1,5 +1,5 @@
 import CodeMirror from 'codemirror';
-import { fromPartial } from '../../helpers/testing/fromPartial';
+import { fromPartial } from '../../shared/helpers/testing/fromPartial';
 import './mode-asm';
 
 test.each([

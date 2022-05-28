@@ -1,8 +1,8 @@
 import React from 'react';
 import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../../helpers/testing/recoilTestState';
+import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
 import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
-import { MOBILE_VIEWPORT } from '../../helpers/testing/mobileViewport';
+import { MOBILE_VIEWPORT } from '../../shared/helpers/testing/mobileViewport';
 import { fontSizeState, MobileFontSize } from './fontSizeState';
 import { MobileFontSizeSwitch } from './MobileFontSizeSwitch';
 

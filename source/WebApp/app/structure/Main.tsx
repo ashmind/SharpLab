@@ -2,7 +2,7 @@ import React from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { MobileSettings } from '../features/mobile-settings/MobileSettings';
 import { BranchDetailsSection } from '../features/roslyn-branches/BranchDetailsSection';
-import { classNames } from '../helpers/classNames';
+import { classNames } from '../shared/helpers/classNames';
 import type { UpdateResult } from '../shared/resultTypes';
 import { codeState } from '../shared/state/codeState';
 import { initialCodeState } from '../shared/state/initialCodeState';

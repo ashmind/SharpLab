@@ -1,7 +1,7 @@
 import React, { useId } from 'react';
 import { useRecoilState } from 'recoil';
-import { asLookup } from '../../helpers/asLookup';
-import { useDocumentBodyClass } from '../../helpers/useDocumentBodyClass';
+import { asLookup } from '../../shared/helpers/asLookup';
+import { useDocumentBodyClass } from '../../shared/helpers/useDocumentBodyClass';
 import { userThemeState } from './themeState';
 
 const themeLabels = {

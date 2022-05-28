@@ -1,9 +1,9 @@
 import React from 'react';
 import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../../helpers/testing/recoilTestState';
+import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
 import { onlineState } from '../../shared/state/onlineState';
 import { UserTheme, userThemeState } from '../dark-mode/themeState';
-import { useReactTestRender } from '../../helpers/testing/useReactTestRender';
+import { useReactTestRender } from '../../shared/helpers/testing/useReactTestRender';
 import { ResultRoot } from '../../shared/testing/ResultRoot';
 import { minimalResultAction } from '../../shared/testing/minimalResultAction';
 import { ThemeColorMeta } from './ThemeColorMeta';

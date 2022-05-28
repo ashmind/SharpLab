@@ -1,4 +1,4 @@
-import { asLookup } from '../../../../helpers/asLookup';
+import { asLookup } from '../../../../shared/helpers/asLookup';
 import { CSHARP_RUN_HELP } from '../../../../shared/help';
 import { LANGUAGE_CSHARP, LANGUAGE_IL, type LanguageName } from '../../../../shared/languages';
 

@@ -11,7 +11,7 @@ import { TargetLanguageName, TARGET_ASM, TARGET_CSHARP, TARGET_IL, TARGET_VB } f
 import { codeRangeSyncSourceState } from '../../features/code-range-sync/codeRangeSyncSourceState';
 import type { LinkedCodeRange } from '../../features/code-range-sync/LinkedCodeRange';
 import { findRangeByTargetPosition } from '../../features/code-range-sync/findRangeByTargetPosition';
-import { assertType } from '../../helpers/assertType';
+import { assertType } from '../../shared/helpers/assertType';
 
 type Props = {
     code: string;

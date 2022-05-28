@@ -1,5 +1,5 @@
 import dateFormat from 'dateformat';
-import type { PartiallyMutable } from '../../../helpers/partiallyMutable';
+import type { PartiallyMutable } from '../../../shared/helpers/partiallyMutable';
 import type { Branch } from '../types';
 import { getBranchesAsync } from './getBranchesAsync';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../helpers/testing/recoilTestState';
+import { recoilTestState } from '../shared/helpers/testing/recoilTestState';
 import { LanguageName, LANGUAGE_CSHARP } from '../shared/languages';
 import { languageOptionState } from '../shared/state/languageOptionState';
 import { DarkModeRoot } from '../shared/testing/DarkModeRoot';

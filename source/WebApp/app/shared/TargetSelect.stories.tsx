@@ -1,6 +1,6 @@
 import React from 'react';
 import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../helpers/testing/recoilTestState';
+import { recoilTestState } from '../shared/helpers/testing/recoilTestState';
 import { targetOptionState } from './state/targetOptionState';
 import { type TargetName, TARGET_CSHARP, TARGET_RUN } from './targets';
 import { TargetSelect } from './TargetSelect';

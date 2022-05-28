@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { asLookup } from '../../../helpers/asLookup';
+import { asLookup } from '../../../shared/helpers/asLookup';
 import type { MemoryInspection } from '../../../shared/resultTypes';
 import { Select } from '../../../shared/Select';
 import { calculateLabelLevels, FinalLabel } from './memory/memoryLabels';

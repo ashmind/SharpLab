@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import * as gistsSource from '../../../features/save-as-gist/github-client/gists';
-import { partiallyMutable } from '../../../helpers/partiallyMutable';
-import { fromPartial } from '../../../helpers/testing/fromPartial';
+import { partiallyMutable } from '../../../shared/helpers/partiallyMutable';
+import { fromPartial } from '../../../shared/helpers/testing/fromPartial';
 import * as languages from '../../../shared/languages';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../../shared/languages';
 import * as targets from '../../../shared/targets';

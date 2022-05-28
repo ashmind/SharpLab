@@ -1,4 +1,4 @@
-import { fromPartial } from '../../../helpers/testing/fromPartial';
+import { fromPartial } from '../../../shared/helpers/testing/fromPartial';
 
 describe('get-branches-async', () => {
     test.each([
