@@ -3,11 +3,11 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { codeRangeSyncSourceState } from '../../features/code-range-sync/codeRangeSyncSourceState';
 import { codeRangeSyncTargetState } from '../../features/code-range-sync/codeRangeSyncTargetState';
 import type { AstItem } from '../../shared/resultTypes';
-import { AstNodeList } from './ast/AstNodeList';
-import { AstSelectionContext } from './ast/AstSelectionContext';
-import { findItemPathByOffset } from './ast/findItemPathByOffset';
-import { parseRangeFromItem } from './ast/parseRangeFromItem';
-import { DEFAULT_SELECTION_STATE, selectionReducer } from './ast/selection';
+import { AstNodeList } from './internal/AstNodeList';
+import { AstSelectionContext } from './internal/AstSelectionContext';
+import { findItemPathByOffset } from './internal/findItemPathByOffset';
+import { parseRangeFromItem } from './internal/parseRangeFromItem';
+import { DEFAULT_SELECTION_STATE, selectionReducer } from './internal/selection';
 
 type Props = {
     roots: ReadonlyArray<AstItem>;

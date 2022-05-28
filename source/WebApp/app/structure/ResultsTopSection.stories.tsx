@@ -6,7 +6,7 @@ import { targetOptionState } from '../shared/state/targetOptionState';
 import { TargetName, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_RUN, TARGET_VERIFY } from '../shared/targets';
 import { DarkModeRoot } from '../shared/testing/DarkModeRoot';
 import { ResultRoot } from '../shared/testing/ResultRoot';
-import { EXAMPLE_AST } from './results/AstView.stories';
+import { EXAMPLE_AST } from '../features/view-ast/AstView.stories';
 import { EXAMPLE_CSHARP_CODE } from './results/CodeView.stories';
 import { EXAMPLE_EXPLANATIONS } from './results/ExplainView.stories';
 import { EXAMPLE_OUTPUT } from './results/OutputView.stories';

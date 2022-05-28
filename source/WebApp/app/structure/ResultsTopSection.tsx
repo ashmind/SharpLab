@@ -8,10 +8,10 @@ import { resultSelector } from '../shared/state/resultState';
 import { targetOptionState } from '../shared/state/targetOptionState';
 import type { TargetLanguageName } from '../shared/targets';
 import { TargetSelect } from '../shared/TargetSelect';
+import { AstView } from '../features/view-ast/AstView';
 import { OutputView } from './results/OutputView';
 import { ExplainView } from './results/ExplainView';
 import { VerifyView } from './results/VerifyView';
-import { AstView } from './results/AstView';
 import { CodeView } from './results/CodeView';
 
 type CodeState = Pick<CodeResult, 'value'|'ranges'> & { language: TargetLanguageName };
