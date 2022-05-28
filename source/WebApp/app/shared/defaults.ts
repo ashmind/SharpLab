@@ -1,7 +1,7 @@
 import { asLookup } from '../shared/helpers/asLookup';
 import { CSHARP_RUN_HELP } from './help';
 import { LANGUAGE_CSHARP, LANGUAGE_VB, LANGUAGE_FSHARP, LANGUAGE_IL, type LanguageName } from './languages';
-import { type TargetName, TARGET_RUN } from './targets';
+import { type TargetName, TARGET_RUN, TARGET_CSHARP } from './targets';
 
 const normalize = (code: string) => {
     // 8 spaces must match the layout below
@@ -58,12 +58,12 @@ const defaultCode = asLookup({
     `)
 } as const);
 
-export const DEFAULT_OPTIONS = ({
-    language:   LANGUAGE_CSHARP,
-    target:     LANGUAGE_CSHARP,
-    release:    false
-} as const);
+export const DEFAULT_LANGUAGE = LANGUAGE_CSHARP;
+export const DEFAULT_TARGET = TARGET_CSHARP;
+export const DEFAULT_RELEASE = false;
 
 export const getDefaultCode = (language: LanguageName|undefined, target: TargetName|string|undefined) => defaultCode[
     (target === TARGET_RUN ? language + '.run' : language) as string
 ] ?? '';
+
+export const isDefaultCode = (code: string) => Object.values(defaultCode).some(c => c === code);

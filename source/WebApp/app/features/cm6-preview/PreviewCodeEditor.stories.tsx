@@ -4,6 +4,7 @@ import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
 import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../shared/languages';
 import { languageOptionState } from '../../shared/state/languageOptionState';
+import { loadedCodeState } from '../../shared/state/loadedCodeState';
 import { PreviewCodeEditor } from './PreviewCodeEditor';
 
 export default {
@@ -12,17 +13,17 @@ export default {
 
 type TemplateProps = {
     language: LanguageName;
-    initialCode: string;
+    loadedCode: string;
 };
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const doNothing = () => {};
 
-const Template: React.FC<TemplateProps> = ({ language, initialCode }) => <>
+const Template: React.FC<TemplateProps> = ({ language, loadedCode }) => <>
     <RecoilRoot initializeState={recoilTestState(
-        [languageOptionState, language]
+        [languageOptionState, language],
+        [loadedCodeState, loadedCode]
     )}>
         <PreviewCodeEditor
-            initialCode={initialCode}
             onCodeChange={doNothing}
             onConnectionChange={doNothing}
             onServerError={doNothing}
@@ -31,7 +32,7 @@ const Template: React.FC<TemplateProps> = ({ language, initialCode }) => <>
     </RecoilRoot>
 </>;
 
-export const CSharp = () => <Template language={LANGUAGE_CSHARP} initialCode={`
+export const CSharp = () => <Template language={LANGUAGE_CSHARP} loadedCode={`
 using System;
 public class C {
     public void M() {
@@ -42,7 +43,7 @@ public class C {
 `.trim()} />;
 CSharp.storyName = 'C#';
 
-export const VisualBasic = () => <Template language={LANGUAGE_VB} initialCode={`
+export const VisualBasic = () => <Template language={LANGUAGE_VB} loadedCode={`
 Imports System
 Public Class C
     Public Sub M() {
@@ -52,7 +53,7 @@ Public Class C
 End Class
 `.trim()} />;
 
-export const FSharp = () => <Template language={LANGUAGE_FSHARP} initialCode={`
+export const FSharp = () => <Template language={LANGUAGE_FSHARP} loadedCode={`
 open System;
 
 let number = 1;
@@ -60,7 +61,7 @@ let string = "abc";
 `.trim()} />;
 FSharp.storyName = 'F#';
 
-export const IL = () => <Template language={LANGUAGE_IL} initialCode={`
+export const IL = () => <Template language={LANGUAGE_IL} loadedCode={`
 .class public auto ansi abstract sealed beforefieldinit C
     extends System.Object
 {

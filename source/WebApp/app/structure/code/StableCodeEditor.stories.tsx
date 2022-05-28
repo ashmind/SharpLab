@@ -5,6 +5,7 @@ import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../shared/languages';
 import { languageOptionState } from '../../shared/state/languageOptionState';
 import type { FlowStep } from '../../shared/resultTypes';
+import { loadedCodeState } from '../../shared/state/loadedCodeState';
 import { StableCodeEditor } from './StableCodeEditor';
 
 export default {
@@ -13,18 +14,18 @@ export default {
 
 type TemplateProps = {
     language: LanguageName;
-    initialCode: string;
+    loadedCode: string;
     executionFlow?: ReadonlyArray<FlowStep>;
 };
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const doNothing = () => {};
 
-const Template: React.FC<TemplateProps> = ({ language, initialCode, executionFlow }) => <>
+const Template: React.FC<TemplateProps> = ({ language, loadedCode, executionFlow }) => <>
     <RecoilRoot initializeState={recoilTestState(
-        [languageOptionState, language]
+        [languageOptionState, language],
+        [loadedCodeState, loadedCode]
     )}>
         <StableCodeEditor
-            initialCode={initialCode}
             onCodeChange={doNothing}
             onConnectionChange={doNothing}
             onServerError={doNothing}
@@ -44,7 +45,7 @@ const DarkMode = (Story: {
     return story;
 };
 
-export const CSharp = () => <Template language={LANGUAGE_CSHARP} initialCode={`
+export const CSharp = () => <Template language={LANGUAGE_CSHARP} loadedCode={`
 using System;
 public class C {
     public void M() {
@@ -56,7 +57,7 @@ public class C {
 CSharp.storyName = 'C#';
 export const CSharpDarkMode = DarkMode(CSharp);
 
-export const VisualBasic = () => <Template language={LANGUAGE_VB} initialCode={`
+export const VisualBasic = () => <Template language={LANGUAGE_VB} loadedCode={`
 Imports System
 Public Class C
     Public Sub M() {
@@ -68,7 +69,7 @@ End Class
 VisualBasic.storyName = 'Visual Basic';
 export const VisualBasicDarkMode = DarkMode(VisualBasic);
 
-export const FSharp = () => <Template language={LANGUAGE_FSHARP} initialCode={`
+export const FSharp = () => <Template language={LANGUAGE_FSHARP} loadedCode={`
 open System;
 
 let number = 1;
@@ -77,7 +78,7 @@ let string = "abc";
 FSharp.storyName = 'F#';
 export const FSharpDarkMode = DarkMode(FSharp);
 
-export const IL = () => <Template language={LANGUAGE_IL} initialCode={`
+export const IL = () => <Template language={LANGUAGE_IL} loadedCode={`
 .class public auto ansi abstract sealed beforefieldinit C
     extends System.Object
 {
@@ -96,7 +97,7 @@ export const IL = () => <Template language={LANGUAGE_IL} initialCode={`
 IL.storyName = 'IL';
 export const ILDarkMode = DarkMode(IL);
 
-export const ExecutionFlow = () => <Template language={LANGUAGE_CSHARP} initialCode={`
+export const ExecutionFlow = () => <Template language={LANGUAGE_CSHARP} loadedCode={`
 Test(0);
 Test(1);
 
@@ -114,7 +115,7 @@ static int Test(int x) {
 ExecutionFlow.storyName = 'Execution Flow';
 export const ExecutionFlowDarkMode = DarkMode(ExecutionFlow);
 
-export const ExecutionFlowException = () => <Template language={LANGUAGE_CSHARP} initialCode={`
+export const ExecutionFlowException = () => <Template language={LANGUAGE_CSHARP} loadedCode={`
 try {
     throw new();
 }

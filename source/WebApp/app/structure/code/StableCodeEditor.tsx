@@ -8,6 +8,8 @@ import { useRecoilValue } from 'recoil';
 import { useEditorCodeRangeSync } from '../../features/code-range-sync/useEditorCodeRangeSync';
 import type { Result, FlowStep } from '../../shared/resultTypes';
 import { languageOptionState } from '../../shared/state/languageOptionState';
+import { loadedCodeState } from '../../shared/state/loadedCodeState';
+import { defaultCodeSelector, isDefaultCode } from '../../shared/state/defaultCodeSelector';
 import { useRenderExecutionFlow } from './internal/useRenderExecutionFlow';
 import { useServerOptions } from './internal/useServerOptions';
 import { useServiceUrl } from './internal/useServiceUrl';
@@ -16,7 +18,6 @@ import type { ServerOptions } from './internal/ServerOptions';
 type ResultData = Result['value'];
 
 type Props = {
-    initialCode: string;
     initialCached: boolean;
     executionFlow: ReadonlyArray<FlowStep> | null;
 
@@ -35,7 +36,6 @@ const useUpdatingRef = <T, >(value: T) => {
 };
 
 export const StableCodeEditor: React.FC<Props> = ({
-    initialCode,
     initialCached,
     executionFlow,
 
@@ -46,11 +46,13 @@ export const StableCodeEditor: React.FC<Props> = ({
     onServerError
 }) => {
     const language = useRecoilValue(languageOptionState);
+    const loadedCode = useRecoilValue(loadedCodeState);
+    const defaultCode = useRecoilValue(defaultCodeSelector);
+
     const serviceUrl = useServiceUrl();
     const serverOptions = useServerOptions({ initialCached });
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const lastInitialCodeRef = useRef<string>();
 
     const onSlowUpdateWaitRef = useUpdatingRef(onSlowUpdateWait);
     const onSlowUpdateResultRef = useUpdatingRef(onSlowUpdateResult);
@@ -92,8 +94,7 @@ export const StableCodeEditor: React.FC<Props> = ({
     useLayoutEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const textarea = textareaRef.current!;
-        textarea.value = initialCode;
-        lastInitialCodeRef.current = initialCode;
+        textarea.value = loadedCode;
 
         const instance = mirrorsharp(textarea, optionsRef.current);
         setInstance(instance);
@@ -116,12 +117,14 @@ export const StableCodeEditor: React.FC<Props> = ({
     }, []);
 
     useEffect(() => {
-        if (!instance || lastInitialCodeRef.current === initialCode)
-            return;
-        if (instance.getCodeMirror().getValue() === lastInitialCodeRef.current)
-            instance.setText(initialCode);
-        lastInitialCodeRef.current = initialCode;
-    }, [instance, initialCode]);
+        if (instance && isDefaultCode(instance.getCodeMirror().getValue()))
+            instance.setText(defaultCode);
+    }, [instance, defaultCode]);
+
+    useEffect(() => {
+        if (instance)
+            instance.setText(loadedCode);
+    }, [instance, loadedCode]);
 
     useEffect(() => {
         if (!instance || language === optionsRef.current.language)

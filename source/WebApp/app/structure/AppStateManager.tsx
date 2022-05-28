@@ -3,9 +3,8 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { loadedStatePromise, saveState } from '../features/persistent-state/state';
 import { branchOptionState } from '../features/roslyn-branches/branchOptionState';
 import { gistState } from '../features/save-as-gist/gistState';
-import { getDefaultCode } from '../shared/defaults';
 import { codeState } from '../shared/state/codeState';
-import { initialCodeState } from '../shared/state/initialCodeState';
+import { loadedCodeState } from '../shared/state/loadedCodeState';
 import { languageOptionState } from '../shared/state/languageOptionState';
 import { releaseOptionState } from '../shared/state/releaseOptionState';
 import { useDispatchResultUpdate } from '../shared/state/resultState';
@@ -18,7 +17,7 @@ export const AppStateManager: React.FC = () => {
     const [branch, setBranch] = useRecoilState(branchOptionState);
     const [target, setTarget] = useRecoilState(targetOptionState);
     const [release, setRelease] = useRecoilState(releaseOptionState);
-    const setInitialCode = useSetRecoilState(initialCodeState);
+    const setLoadedCode = useSetRecoilState(loadedCodeState);
     const [code, setCode] = useRecoilState(codeState);
     // TODO: This should be moved into the Gist feature for clearer responsibility split
     const [gist, setGist] = useRecoilState(gistState);
@@ -38,7 +37,7 @@ export const AppStateManager: React.FC = () => {
             setBranch(branch);
             setTarget(target);
             setRelease(release);
-            setInitialCode(code);
+            setLoadedCode(code);
             setCode(code);
             setGist(gist);
 
@@ -49,12 +48,6 @@ export const AppStateManager: React.FC = () => {
         })());
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    useEffect(() => {
-        if (!loaded)
-            return;
-        setInitialCode(getDefaultCode(language, target));
-    }, [loaded, language, target, setInitialCode]);
 
     useEffect(() => {
         if (!loaded)

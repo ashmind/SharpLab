@@ -6,12 +6,11 @@ import type { Result } from '../../shared/resultTypes';
 import { useServerOptions } from '../../structure/code/internal/useServerOptions';
 import { useServiceUrl } from '../../structure/code/internal/useServiceUrl';
 import type { ServerOptions } from '../../structure/code/internal/ServerOptions';
+import { loadedCodeState } from '../../shared/state/loadedCodeState';
 
 type ResultData = Result['value'];
 
 type Props = {
-    initialCode: string;
-
     onSlowUpdateWait: () => void;
     onSlowUpdateResult: (value: MirrorSharpSlowUpdateResult<ResultData>) => void;
     onConnectionChange: (state: MirrorSharpConnectionState) => void;
@@ -26,8 +25,6 @@ const useUpdatingRef = <T, >(value: T) => {
 };
 
 export const PreviewCodeEditor: React.FC<Props> = ({
-    initialCode,
-
     onSlowUpdateWait,
     onSlowUpdateResult,
     onConnectionChange,
@@ -35,6 +32,8 @@ export const PreviewCodeEditor: React.FC<Props> = ({
     onServerError
 }) => {
     const language = useRecoilValue(languageOptionState);
+    const loadedCode = useRecoilValue(loadedCodeState);
+
     const serviceUrl = useServiceUrl();
     const serverOptions = useServerOptions({ initialCached: true });
     const containerRef = useRef<HTMLDivElement>(null);
@@ -50,7 +49,7 @@ export const PreviewCodeEditor: React.FC<Props> = ({
     const optionsRef = useRef<MirrorSharpOptions<ServerOptions, ResultData>>({
         serviceUrl,
         language,
-        initialText: initialCode,
+        initialText: loadedCode,
         initialServerOptions: serverOptions,
         on: {
             slowUpdateWait: () => onSlowUpdateWaitRef.current(),

@@ -4,6 +4,7 @@ import { codeEditorPreviewEnabled } from '../../features/cm6-preview/codeEditorP
 import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
 import { LanguageName, LANGUAGE_CSHARP } from '../../shared/languages';
 import { languageOptionState } from '../../shared/state/languageOptionState';
+import { loadedCodeState } from '../../shared/state/loadedCodeState';
 import { CodeEditor } from './CodeEditor';
 
 export default {
@@ -18,10 +19,10 @@ const doNothing = () => {};
 const Template: React.FC<TemplateProps> = ({ preview } = {}) =>
     <RecoilRoot initializeState={recoilTestState(
         [codeEditorPreviewEnabled, !!preview],
-        [languageOptionState, LANGUAGE_CSHARP as LanguageName]
+        [languageOptionState, LANGUAGE_CSHARP as LanguageName],
+        [loadedCodeState, 'using System;\r\n\r\nConsole.WriteLine("🌄");']
     )}>
         <CodeEditor
-            initialCode={'using System;\r\n\r\nConsole.WriteLine("🌄");'}
             onCodeChange={doNothing}
             onConnectionChange={doNothing}
             onServerError={doNothing}

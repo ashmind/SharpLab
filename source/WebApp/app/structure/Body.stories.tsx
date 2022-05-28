@@ -11,7 +11,7 @@ import { recoilTestState } from '../shared/helpers/testing/recoilTestState';
 import { getDefaultCode } from '../shared/defaults';
 import { LanguageName, LANGUAGE_CSHARP } from '../shared/languages';
 import type { UpdateResult } from '../shared/resultTypes';
-import { initialCodeState } from '../shared/state/initialCodeState';
+import { loadedCodeState } from '../shared/state/loadedCodeState';
 import { languageOptionState } from '../shared/state/languageOptionState';
 import { onlineState } from '../shared/state/onlineState';
 import type { ResultUpdateAction } from '../shared/state/results/ResultUpdateAction';
@@ -65,7 +65,7 @@ const Template: React.FC<TemplateProps> = ({ branch, result, offline, dark }) =>
         <RecoilRoot initializeState={recoilTestState(
             [languageOptionState, LANGUAGE_CSHARP as LanguageName],
             [targetOptionState, TARGET_CSHARP as TargetName],
-            [initialCodeState, getDefaultCode(LANGUAGE_CSHARP, TARGET_CSHARP)],
+            [loadedCodeState, getDefaultCode(LANGUAGE_CSHARP, TARGET_CSHARP)],
             [userThemeState, (dark ? 'dark' : 'light') as UserTheme],
             [branchOptionState, branch ?? null],
             [onlineState, !offline]

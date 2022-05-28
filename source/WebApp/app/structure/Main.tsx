@@ -5,7 +5,6 @@ import { BranchDetailsSection } from '../features/roslyn-branches/BranchDetailsS
 import { classNames } from '../shared/helpers/classNames';
 import type { UpdateResult } from '../shared/resultTypes';
 import { codeState } from '../shared/state/codeState';
-import { initialCodeState } from '../shared/state/initialCodeState';
 import { onlineState } from '../shared/state/onlineState';
 import { useDispatchResultUpdate, resultSelector } from '../shared/state/resultState';
 import { targetOptionState } from '../shared/state/targetOptionState';
@@ -18,7 +17,6 @@ import { WarningsSection } from './WarningsSection';
 
 const EMPTY_ARRAY = [] as ReadonlyArray<never>;
 export const Main: React.FC = () => {
-    const initialCode = useRecoilValue(initialCodeState);
     const setCode = useSetRecoilState(codeState);
     const target = useRecoilValue(targetOptionState);
     const setOnline = useSetRecoilState(onlineState);
@@ -35,7 +33,6 @@ export const Main: React.FC = () => {
     };
 
     const codeEditor = <CodeEditor
-        initialCode={initialCode}
         initialCached={!!result?.cached}
         executionFlow={(result?.type === 'run' && result.value) ? result.value.flow : null}
         onCodeChange={get => setCode(get())}

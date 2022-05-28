@@ -1,4 +1,4 @@
-import { DEFAULT_OPTIONS, getDefaultCode } from '../../shared/defaults';
+import { DEFAULT_LANGUAGE, DEFAULT_RELEASE, DEFAULT_TARGET, getDefaultCode } from '../../shared/defaults';
 import type { LanguageName } from '../../shared/languages';
 import type { TargetName } from '../../shared/targets';
 import { type CacheKeyData, loadResultFromCacheAsync } from '../result-cache/cacheLogic';
@@ -65,9 +65,9 @@ const loadStateAsync = async () => {
 
     const loadedOptions = fromUrl?.options ?? lastUsedOptions ?? {};
 
-    const language = loadedOptions.language ?? DEFAULT_OPTIONS.language;
-    const target = loadedOptions.target ?? DEFAULT_OPTIONS.target;
-    const release = loadedOptions.release ?? DEFAULT_OPTIONS.release;
+    const language = loadedOptions.language ?? DEFAULT_LANGUAGE;
+    const target = loadedOptions.target ?? DEFAULT_TARGET;
+    const release = loadedOptions.release ?? DEFAULT_RELEASE;
     let branchId = loadedOptions.branchId ?? null;
     if (branchId === 'master')
         branchId = 'main';
