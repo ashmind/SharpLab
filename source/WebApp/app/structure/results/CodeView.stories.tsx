@@ -51,9 +51,8 @@ public class C
 }
 `.trim();
 
-// ...
-const EXAMPLE_CSHARP_CODE_OBJECT = { value: EXAMPLE_CSHARP_CODE };
-export { EXAMPLE_CSHARP_CODE_OBJECT as EXAMPLE_CSHARP_CODE };
+// Workaround for .trim() issue https://github.com/storybookjs/storybook/issues/18350
+export { EXAMPLE_CSHARP_CODE as EXAMPLE_CSHARP_CODE };
 
 export const CSharp = () => <Template language={TARGET_CSHARP} code={EXAMPLE_CSHARP_CODE} />;
 CSharp.storyName = 'C#';
@@ -127,4 +126,4 @@ C.M()
     L0023: ret
 `.trim()} />;
 JitAsm.storyName = 'JIT ASM';
-export const JitAsmDarkMode = DarkMode(IL);
+export const JitAsmDarkMode = DarkMode(JitAsm);

@@ -45,7 +45,7 @@ const Template: React.FC<TemplateProps> = ({ target, value }) => {
     </>;
 };
 
-export const Code = () => <Template target={TARGET_CSHARP} value={EXAMPLE_CSHARP_CODE.value} />;
+export const Code = () => <Template target={TARGET_CSHARP} value={EXAMPLE_CSHARP_CODE} />;
 export const CodeDarkMode = () => <DarkModeRoot><Code /></DarkModeRoot>;
 
 export const Ast = () => <Template target={TARGET_AST} value={EXAMPLE_AST} />;

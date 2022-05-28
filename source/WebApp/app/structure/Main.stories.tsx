@@ -34,7 +34,7 @@ const Template = () => {
                 updateResult: {
                     diagnostics: [],
                     cached: { date: new Date('2000-01-01T00:00:00.000Z') },
-                    x: EXAMPLE_CSHARP_CODE.value
+                    x: EXAMPLE_CSHARP_CODE
                 }
             }} waitForFirstResult>
                 <Main />
