@@ -9,7 +9,7 @@ type Props = {
     errors: Result['errors'];
 };
 
-export const ErrorsTopSection: React.FC<Props> = ({ errors }) => {
+export const ErrorsSection: React.FC<Props> = ({ errors }) => {
     const { expandedClassName, ExpanderButton } = useExpander({ initialExpanded: true });
 
     if (errors.length === 0)

@@ -17,7 +17,7 @@ import { CodeView } from './results/CodeView';
 type CodeState = Pick<CodeResult, 'value'|'ranges'> & { language: TargetLanguageName };
 
 const EMPTY_OUTPUT = [] as ReadonlyArray<OutputItem>;
-export const ResultsTopSection: React.FC = () => {
+export const ResultsSection: React.FC = () => {
     const [lastCodeState, setLastCodeState] = useState<CodeState>();
     const target = useRecoilValue(targetOptionState);
     const result = useRecoilValue(resultSelector);

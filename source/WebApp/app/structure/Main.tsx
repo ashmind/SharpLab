@@ -10,11 +10,11 @@ import { onlineState } from '../shared/state/onlineState';
 import { useDispatchResultUpdate, resultSelector } from '../shared/state/resultState';
 import { targetOptionState } from '../shared/state/targetOptionState';
 import { CodeEditor } from './code/CodeEditor';
-import { CodeTopSection } from './CodeTopSection';
-import { ErrorsTopSection } from './ErrorsTopSection';
-import { ResultsTopSection } from './ResultsTopSection';
+import { CodeSection } from './CodeSection';
+import { ErrorsSection } from './ErrorsSection';
+import { ResultsSection } from './ResultsSection';
 import { useLoadingWait } from './useLoadingWait';
-import { WarningsTopSection } from './WarningsTopSection';
+import { WarningsSection } from './WarningsSection';
 
 const EMPTY_ARRAY = [] as ReadonlyArray<never>;
 export const Main: React.FC = () => {
@@ -51,13 +51,13 @@ export const Main: React.FC = () => {
         <div className="mobile-offline-notice">connection lost, reconnecting…</div>
 
         <div className="top-section-group top-section-group-code">
-            <CodeTopSection codeEditor={codeEditor} />
+            <CodeSection codeEditor={codeEditor} />
             <BranchDetailsSection className="top-section" />
         </div>
         <div className={classNames('top-section-group top-section-group-results', loading && 'loading')}>
-            <ResultsTopSection />
-            <ErrorsTopSection errors={result?.errors ?? EMPTY_ARRAY} />
-            <WarningsTopSection warnings={result?.warnings ?? EMPTY_ARRAY} />
+            <ResultsSection />
+            <ErrorsSection errors={result?.errors ?? EMPTY_ARRAY} />
+            <WarningsSection warnings={result?.warnings ?? EMPTY_ARRAY} />
         </div>
     </>;
 };

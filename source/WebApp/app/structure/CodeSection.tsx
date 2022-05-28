@@ -12,7 +12,7 @@ const GIST_BUTTON_PROPS = {
     tabIndex: 2
 } as const;
 
-export const CodeTopSection: React.FC<Props> = ({ codeEditor }) => {
+export const CodeSection: React.FC<Props> = ({ codeEditor }) => {
     return <section className="top-section code">
         <header>
             <h1>Code</h1>

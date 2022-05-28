@@ -10,10 +10,10 @@ import { EXAMPLE_AST } from '../features/view-ast/AstView.stories';
 import { EXAMPLE_CSHARP_CODE } from './results/CodeView.stories';
 import { EXAMPLE_EXPLANATIONS } from './results/ExplainView.stories';
 import { EXAMPLE_OUTPUT } from './results/OutputView.stories';
-import { ResultsTopSection } from './ResultsTopSection';
+import { ResultsSection } from './ResultsSection';
 
 export default {
-    component: ResultsTopSection
+    component: ResultsSection
 };
 
 type TemplateProps = {
@@ -39,7 +39,7 @@ const Template: React.FC<TemplateProps> = ({ target, value }) => {
                     x: value
                 }
             }}>
-                <ResultsTopSection />
+                <ResultsSection />
             </ResultRoot>
         </RecoilRoot>
     </>;

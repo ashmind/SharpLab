@@ -19,9 +19,9 @@ import { targetOptionState } from '../shared/state/targetOptionState';
 import { TargetName, TARGET_CSHARP } from '../shared/targets';
 import { ResultRoot } from '../shared/testing/ResultRoot';
 import { Body } from './Body';
-import { EXAMPLE_ERRORS } from './ErrorsTopSection.stories';
+import { EXAMPLE_ERRORS } from './ErrorsSection.stories';
 import { EXAMPLE_CSHARP_CODE } from './results/CodeView.stories';
-import { EXAMPLE_WARNINGS } from './WarningsTopSection.stories';
+import { EXAMPLE_WARNINGS } from './WarningsSection.stories';
 
 export default {
     component: Body

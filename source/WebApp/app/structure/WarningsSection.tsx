@@ -12,7 +12,7 @@ type Props = {
     };
 };
 
-export const WarningsTopSection: React.FC<Props> = ({ warnings, initialState }) => {
+export const WarningsSection: React.FC<Props> = ({ warnings, initialState }) => {
     const { expandedClassName, ExpanderButton } = useExpander({ initialExpanded: initialState?.expanded });
 
     if (warnings.length === 0)
