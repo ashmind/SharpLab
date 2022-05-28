@@ -51,7 +51,7 @@ const encodeArrayBufferToHex = (buffer: ArrayBuffer) => {
         .join('');
 };
 
-export const buildCacheKeysAsync = async ({ language, target, release, code }: CacheKeyData, branchKey: string | null) => {
+const buildCacheKeysAsync = async ({ language, target, release, code }: CacheKeyData, branchKey: string | null) => {
     const keyFormat = `${language}|${target}|${release ? 'release' : 'debug'}|${branchKey ?? ''}|${code}`;
     const secretKeyBytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(keyFormat));
     const cacheKey = encodeArrayBufferToHex(await crypto.subtle.digest('SHA-256', secretKeyBytes));
@@ -61,7 +61,7 @@ export const buildCacheKeysAsync = async ({ language, target, release, code }: C
     return { cacheKey, secretKey };
 };
 
-export const decryptCacheDataAsync = async (encrypted: Encrypted, secretKey: CryptoKey): Promise<string> => {
+const decryptCacheDataAsync = async (encrypted: Encrypted, secretKey: CryptoKey): Promise<string> => {
     const dataBytes = decodeArrayBufferFromBase64(encrypted.data);
     const ivBytes = decodeArrayBufferFromBase64(encrypted.iv);
     const tagBytes = decodeArrayBufferFromBase64(encrypted.tag);

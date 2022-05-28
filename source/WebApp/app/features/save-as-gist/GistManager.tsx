@@ -17,7 +17,6 @@ type Props = {
     hasLabel: true;
     actionId: string;
 });
-export { Props as GistManagerProps };
 
 // only doing it once per page load, even if
 // multiple app-gist-managers are created

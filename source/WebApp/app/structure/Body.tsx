@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { useDocumentBodyClass } from '../helpers/useDocumentBodyClass';
 import { statusSelector } from '../shared/state/statusSelector';

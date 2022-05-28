@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 
 const { head } = document;
-export const elementsToReplace = [...head.querySelectorAll('[data-react-replace]')];
+const elementsToReplace = [...head.querySelectorAll('[data-react-replace]')];
 for (const element of elementsToReplace) {
     element.remove();
 }
