@@ -24,14 +24,17 @@ const Template: React.FC<TemplateProps> = ({ branch, headerless, expanded } = {}
 </RecoilRoot>;
 
 export const EXAMPLE_BRANCH = fromPartial<Branch>({
+    id: 'main',
     displayName: 'main (11 May 2022)',
+    url: 'stub',
     commits: [{
         hash: 'e6b5dd830f1b790bd80e62272129cc040d0a2fdc',
         author: 'Jane Roslyn',
         message: `
             Fix all issues with the flux capacitor.
             Add support for parsing Swift.
-        `
+        `,
+        date: new Date('2020-01-01T00:00:00.000Z')
     }]
 });
 

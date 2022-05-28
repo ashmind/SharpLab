@@ -1,11 +1,23 @@
+import { useEffect } from 'react';
 import type { Branch } from '../../app/features/roslyn-branches/types';
 
-const mockBranches = [] as Array<Branch>;
+type ResolveBranches = (branches: ReadonlyArray<Branch>) => void;
 
-export const setMockBranches = (branches: ReadonlyArray<Branch>) => {
-    mockBranches.splice(0, mockBranches.length);
-    mockBranches.push(...branches);
-};
+let mockBranches = [] as ReadonlyArray<Branch>;
+const resolves = [] as Array<ResolveBranches>;
+
+export const useMockBranches = (branches: ReadonlyArray<Branch>) => useEffect(() => {
+    const previous = mockBranches;
+    mockBranches = branches;
+    for (const resolve of resolves) {
+        resolve(mockBranches!);
+    }
+    return () => { mockBranches = previous; };
+}, []);
+
 export const branchesPromise = {
-    then: (callback: (branches: ReadonlyArray<Branch>) => void) => callback([...mockBranches])
+    then: (resolve: ResolveBranches) => {
+        resolve(mockBranches);
+        resolves.push(resolve);
+    }
 };

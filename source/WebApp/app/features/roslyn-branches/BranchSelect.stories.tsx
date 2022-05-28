@@ -1,7 +1,7 @@
 import React from 'react';
 import { RecoilRoot } from 'recoil';
 import { recoilTestState } from '../../helpers/testing/recoilTestState';
-import { setMockBranches } from '../../../.storybook/__mocks__/branchesPromise';
+import { useMockBranches } from '../../../.storybook/__mocks__/branchesPromise';
 import { fromPartial } from '../../helpers/testing/fromPartial';
 import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
 import { branchOptionState } from './branchOptionState';
@@ -17,7 +17,7 @@ type TemplateProps = {
     branch?: Branch;
 };
 const Template: React.FC<TemplateProps> = ({ branches, branch }) => {
-    setMockBranches(branches);
+    useMockBranches(branches);
     return <header>
         <RecoilRoot initializeState={recoilTestState([branchOptionState, branch ?? null])}>
             <BranchSelect />

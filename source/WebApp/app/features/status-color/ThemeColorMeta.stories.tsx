@@ -3,8 +3,9 @@ import { RecoilRoot } from 'recoil';
 import { recoilTestState } from '../../helpers/testing/recoilTestState';
 import { onlineState } from '../../shared/state/onlineState';
 import { UserTheme, userThemeState } from '../dark-mode/themeState';
-import { MinimalResultState } from '../../shared/testing/MinimalResultState';
 import { useReactTestRender } from '../../helpers/testing/useReactTestRender';
+import { ResultRoot } from '../../shared/testing/ResultRoot';
+import { minimalResultAction } from '../../shared/testing/minimalResultAction';
 import { ThemeColorMeta } from './ThemeColorMeta';
 
 export default {
@@ -23,8 +24,9 @@ const renderMeta = ({ offline, error, dark }: TemplateProps) => {
         [onlineState, !offline],
         [userThemeState, (dark ? 'dark' : 'light') as UserTheme]
     )}>
-        <MinimalResultState error={error} />
-        <ThemeColorMeta />
+        <ResultRoot action={minimalResultAction({ error })}>
+            <ThemeColorMeta />
+        </ResultRoot>
     </RecoilRoot>;
 };
 

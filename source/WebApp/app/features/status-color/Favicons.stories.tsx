@@ -3,7 +3,8 @@ import { RecoilRoot } from 'recoil';
 import { recoilTestState } from '../../helpers/testing/recoilTestState';
 import { useReactTestRender } from '../../helpers/testing/useReactTestRender';
 import { onlineState } from '../../shared/state/onlineState';
-import { MinimalResultState } from '../../shared/testing/MinimalResultState';
+import { minimalResultAction } from '../../shared/testing/minimalResultAction';
+import { ResultRoot } from '../../shared/testing/ResultRoot';
 import { UserTheme, userThemeState } from '../dark-mode/themeState';
 import { Favicons } from './Favicons';
 
@@ -23,8 +24,9 @@ const renderFavicons = ({ offline, error, dark }: TemplateProps) => {
         [onlineState, !offline],
         [userThemeState, (dark ? 'dark' : 'light') as UserTheme]
     )}>
-        <MinimalResultState error={error} />
-        <Favicons />
+        <ResultRoot action={minimalResultAction({ error })}>
+            <Favicons />
+        </ResultRoot>
     </RecoilRoot>;
 };
 

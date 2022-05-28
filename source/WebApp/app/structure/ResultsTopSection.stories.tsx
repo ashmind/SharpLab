@@ -5,7 +5,7 @@ import type { Result } from '../shared/resultTypes';
 import { targetOptionState } from '../shared/state/targetOptionState';
 import { TargetName, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_RUN, TARGET_VERIFY } from '../shared/targets';
 import { DarkModeRoot } from '../shared/testing/DarkModeRoot';
-import { ResultStateRoot } from '../shared/testing/ResultStateRoot';
+import { ResultRoot } from '../shared/testing/ResultRoot';
 import { EXAMPLE_AST } from './results/AstView.stories';
 import { EXAMPLE_CSHARP_CODE } from './results/CodeView.stories';
 import { EXAMPLE_EXPLANATIONS } from './results/ExplainView.stories';
@@ -30,7 +30,7 @@ const Template: React.FC<TemplateProps> = ({ target, value }) => {
             }
         `}</style>
         <RecoilRoot initializeState={recoilTestState([targetOptionState, target])}>
-            <ResultStateRoot action={{
+            <ResultRoot action={{
                 type: 'cachedResult',
                 target,
                 updateResult: {
@@ -38,9 +38,9 @@ const Template: React.FC<TemplateProps> = ({ target, value }) => {
                     cached: { date: new Date('2000-01-01T00:00:00.000Z') },
                     x: value
                 }
-            }} waitForFirstResult>
+            }}>
                 <ResultsTopSection />
-            </ResultStateRoot>
+            </ResultRoot>
         </RecoilRoot>
     </>;
 };

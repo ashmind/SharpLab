@@ -8,7 +8,6 @@ import { codeState } from '../shared/state/codeState';
 import { initialCodeState } from '../shared/state/initialCodeState';
 import { onlineState } from '../shared/state/onlineState';
 import { useDispatchResultUpdate, resultSelector } from '../shared/state/resultState';
-import { statusSelector } from '../shared/state/statusSelector';
 import { targetOptionState } from '../shared/state/targetOptionState';
 import { CodeEditor } from './code/CodeEditor';
 import { CodeTopSection } from './CodeTopSection';
@@ -26,7 +25,6 @@ export const Main: React.FC = () => {
     const { loading, onWait, endWait } = useLoadingWait();
     const dispatchResultUpdate = useDispatchResultUpdate();
     const result = useRecoilValue(resultSelector);
-    const status = useRecoilValue(statusSelector);
 
     const onServerError = (message: string) => dispatchResultUpdate({ type: 'serverError', message });
     const onSlowUpdateResult = (updateResult: UpdateResult) => {
@@ -46,8 +44,9 @@ export const Main: React.FC = () => {
         onSlowUpdateResult={onSlowUpdateResult}
         onSlowUpdateWait={onWait} />;
 
-    const className = `root-status-${status}` as const;
-    return <main className={className}>
+    // Main does not actually output <main> tag, as React does not recommend
+    // attaching <App> (its parent) to <body> -- so its parent is already <main>.
+    return <>
         <MobileSettings buttonProps={{ tabIndex: 1 }} />
         <div className="mobile-offline-notice">connection lost, reconnecting…</div>
 
@@ -60,5 +59,5 @@ export const Main: React.FC = () => {
             <ErrorsTopSection errors={result?.errors ?? EMPTY_ARRAY} />
             <WarningsTopSection warnings={result?.warnings ?? EMPTY_ARRAY} />
         </div>
-    </main>;
+    </>;
 };

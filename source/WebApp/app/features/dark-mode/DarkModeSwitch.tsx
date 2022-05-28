@@ -1,7 +1,8 @@
-import React, { useEffect, useId } from 'react';
+import React, { useId } from 'react';
 import { useRecoilState } from 'recoil';
 import { asLookup } from '../../helpers/asLookup';
-import { UserTheme, userThemeState } from './themeState';
+import { useDocumentBodyClass } from '../../helpers/useDocumentBodyClass';
+import { userThemeState } from './themeState';
 
 const themeLabels = {
     auto:  'Auto',
@@ -9,24 +10,14 @@ const themeLabels = {
     light: 'Light'
 } as const;
 
-const applyBodyClass = (theme: UserTheme) => {
-    const allClasses = ['theme-dark', 'theme-auto'] as const;
-    const newClassName = asLookup({
-        dark: 'theme-dark',
-        auto: 'theme-auto'
-    } as const)[theme];
-
-    const { body } = document;
-    body.classList.remove(...allClasses);
-    if (newClassName)
-        body.classList.add(newClassName);
-};
-
 export const DarkModeSwitch: React.FC = () => {
     const [userTheme, setUserTheme] = useRecoilState(userThemeState);
     const toggleId = useId();
-    useEffect(() => applyBodyClass(userTheme), [userTheme]);
-    useEffect(() => () => applyBodyClass('auto'), []);
+    const themeClassName = asLookup({
+        dark: 'theme-dark',
+        auto: 'theme-auto'
+    } as const)[userTheme];
+    useDocumentBodyClass(themeClassName);
 
     const onClick = () => {
         const nextTheme = ({

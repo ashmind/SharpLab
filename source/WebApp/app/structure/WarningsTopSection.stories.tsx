@@ -3,10 +3,11 @@ import { DarkModeRoot } from '../shared/testing/DarkModeRoot';
 import { WarningsTopSection } from './WarningsTopSection';
 
 export default {
-    component: WarningsTopSection
+    component: WarningsTopSection,
+    excludeStories: /^EXAMPLE_/
 };
 
-const EXAMPLE_WARNINGS = [
+export const EXAMPLE_WARNINGS = [
     { id: 'CS0219', message: "The variable 'x' is assigned but its value is never used", severity: 'warning' },
     { id: 'CS0105', message: "The using directive for 'System' appeared previously in this namespace", severity: 'warning' }
 ] as const;
