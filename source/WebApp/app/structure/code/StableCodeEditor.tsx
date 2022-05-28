@@ -117,12 +117,20 @@ export const StableCodeEditor: React.FC<Props> = ({
     }, []);
 
     useEffect(() => {
-        if (instance && isDefaultCode(instance.getCodeMirror().getValue()))
+        if (!instance)
+            return;
+
+        const code = instance.getCodeMirror().getValue();
+        if (code !== defaultCode && isDefaultCode(code))
             instance.setText(defaultCode);
     }, [instance, defaultCode]);
 
     useEffect(() => {
-        if (instance)
+        if (!instance)
+            return;
+
+        const code = instance.getCodeMirror().getValue();
+        if (loadedCode !== code)
             instance.setText(loadedCode);
     }, [instance, loadedCode]);
 

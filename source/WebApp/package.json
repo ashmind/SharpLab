@@ -10,7 +10,8 @@
     "start": "ts-node-script ./scripts.ts start --watch",
     "build-ci": "ts-node-script ./scripts.ts build-ci",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "test-storybook": "test-storybook"
   },
   "engines": {
     "node": ">=16.14.2"
@@ -49,6 +50,7 @@
     "@storybook/builder-webpack5": "6.5.5",
     "@storybook/manager-webpack5": "6.5.5",
     "@storybook/react": "6.5.5",
+    "@storybook/test-runner": "0.1.1",
     "@storybook/testing-library": "0.0.11",
     "@types/adm-zip": "0.4.33",
     "@types/applicationinsights-js": "1.0.9",

@@ -2,15 +2,15 @@ const path = require('path');
 const { StatsWriterPlugin } = require("webpack-stats-plugin");
 
 module.exports = {
-    "stories": [
+    stories: [
         "../app/**/*.stories.tsx"
     ],
-    "addons": [
+    addons: [
         "@storybook/addon-links",
         "@storybook/addon-essentials",
         "@storybook/addon-interactions"
     ],
-    "framework": "@storybook/react",
+    framework: "@storybook/react",
     core: {
         builder: 'webpack5',
     },
