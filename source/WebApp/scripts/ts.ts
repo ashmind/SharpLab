@@ -1,8 +1,12 @@
 import jetpack from 'fs-jetpack';
-import { task, exec } from 'oldowan';
+import { task } from 'oldowan';
 import { exec2, inputRoot, outputVersionRoot } from './shared';
 
-const tsLint = task('ts:lint', () => exec('eslint . --max-warnings 0 --ext .js,.ts'));
+const tsLint = task('ts:lint', () => exec2('eslint', [
+    inputRoot,
+    '--max-warnings', '0',
+    '--ext', '.js,.ts'
+]));
 const tsInputPath = `${inputRoot}/app/index.tsx`;
 const jsOutputPath = `${outputVersionRoot}/app.min.js`;
 const esbuildArgs = [

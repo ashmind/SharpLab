@@ -2,7 +2,8 @@
     "root": true,
     "ignorePatterns": [
         "/node_modules/",
-        "/public/"
+        "/public/",
+        "/storybook-static/"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
