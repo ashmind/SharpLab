@@ -1,0 +1,42 @@
+exceptions
+    | where client_Type != 'Browser'
+    | where type !startswith 'Unbreakable'
+    | where not (type == 'System.NotSupportedException' and (
+        assembly startswith 'SharpLab'
+        or
+        outerMessage has 'not supported by SharpLab'
+    ))
+    | where outerType !in (
+        'MirrorSharp.Advanced.EarlyAccess.RoslynSourceTextGuardException',
+        'MirrorSharp.Advanced.EarlyAccess.RoslynCompilationGuardException',
+        'SharpLab.Runtime.Internal.JitGenericAttributeException'
+    )
+    | extend containerType = iif(type == 'System.Exception', extract('Container host repor?ted an error:[\\r\\n]*([^:]+)', 1, outerMessage), '')
+    | where containerType != 'SharpLab.Container.Manager.Internal.ContainerAllocationException'
+    | extend containerMethod = iif(isnotempty(containerType), extract('[\\r\\n]+\\s*at ([^(]+)', 1, outerMessage), '')
+    | project itemCount,
+              app=tostring(customDimensions['Web App']),
+              type=coalesce(containerType, type),
+              method=iif(type != 'System.InvalidProgramException', coalesce(containerMethod, method), '<user code>'),
+              query=strcat(
+                  'exceptions\n  | where type == \'', type,
+                  iif(type != 'System.InvalidProgramException', strcat('\'\n  | where method == \'', method, '\''), ''),
+                  iif(isnotempty(containerType), strcat('\n  | where outerMessage contains \'', containerType, '\''), '')
+              )
+    | summarize _count=sum(itemCount) by type, method, query, app
+    | summarize countRows=make_list(strcat('| ', app, ' | ', _count, ' |'), 100),
+                countTotal=sum(_count) by type, method, query
+    | project title=strcat(type, ' at ', method),
+              body=strcat(
+                  'AppInsights query:\n',
+                  '```Kusto\n',
+                  query,
+                  '\n```'
+              ),
+              comment=strcat(
+                  '| App | Count (last 24h) |\n',
+                  '| ------------- | ------------- |\n',
+                  strcat_array(countRows, '\n'), '\n',
+                  '| Total | ', countTotal, ' |'
+              )
+    | take 150

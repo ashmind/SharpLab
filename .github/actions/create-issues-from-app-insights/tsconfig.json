@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "ES2019",
+        "module": "ES2022",
+        "moduleResolution": "node",
+        "noEmit": true,
+        "strict": true,
+        "noImplicitAny": true,
+        "importsNotUsedAsValues": "error",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true
+    },
+    "include": [
+        "logic",
+        "*.ts"
+    ]
+}

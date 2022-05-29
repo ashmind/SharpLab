@@ -21,3 +21,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
+
+      - uses: ./.github/actions/create-issues-from-app-insights
+        with:
+          app-insights-query-path: './.github/workflows/exceptions/query.kql'
+          app-insights-apps: 'f33db8a2-47c9-48ea-81c4-8f431f8fd1f9'
+          app-insights-period: '24h'
+          github-label: ':boom: exception'
+          github-label-cannot-reproduce: '✖ cannot reproduce'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
