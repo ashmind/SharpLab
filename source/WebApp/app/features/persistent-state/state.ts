@@ -4,7 +4,7 @@ import type { TargetName } from '../../shared/targets';
 import { type CacheKeyData, loadResultFromCacheAsync } from '../result-cache/cacheLogic';
 import { resolveBranchAsync } from '../roslyn-branches/resolveBranchAsync';
 import type { Branch } from '../roslyn-branches/types';
-import type { Gist } from '../save-as-gist/gist';
+import type { Gist } from '../save-as-gist/Gist';
 import { toOptionsData } from './handlers/helpers/optionsData';
 import lastUsed from './handlers/last-used';
 import { saveStateToUrl, loadStateFromUrlAsync } from './handlers/url';

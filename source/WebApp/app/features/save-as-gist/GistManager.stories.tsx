@@ -5,7 +5,7 @@ import { fromPartial } from '../../shared/helpers/testing/fromPartial';
 import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
 import { codeState } from '../../shared/state/codeState';
 import { GistManager } from './GistManager';
-import type { Gist } from './gist';
+import type { Gist } from './Gist';
 import { gistState } from './gistState';
 
 export default {
