@@ -20,7 +20,7 @@
     "maxConcurrency": 10,
     "globals": {
       "ts-jest": {
-        "tsconfig": "<rootDir>/tests/tsconfig.json"
+        "tsconfig": "<rootDir>/tsconfig.json"
       }
     },
     "testEnvironment": "jsdom",
