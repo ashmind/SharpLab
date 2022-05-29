@@ -1,7 +1,7 @@
 ﻿import LZString from 'lz-string';
 import { LANGUAGE_CSHARP, type LanguageName } from '../../../shared/languages';
 import { TARGET_CSHARP, type TargetName } from '../../../shared/targets';
-import type { Gist } from '../../save-as-gist/gist';
+import type { Gist } from '../../save-as-gist/Gist';
 import loadGistFromUrlHashAsync, { type LoadStateFromGistResult } from '../../save-as-gist/loadGistFromUrlHashAsync';
 import { loadFromLegacyV1, LoadStateFromUrlV1Result } from './url/load-from-v1';
 import precompressor from './url/precompressor';

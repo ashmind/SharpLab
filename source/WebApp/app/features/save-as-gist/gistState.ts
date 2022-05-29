@@ -1,6 +1,7 @@
 import { atom } from 'recoil';
+import { toOptionsData } from '../persistent-state/handlers/helpers/optionsData';
 import { saveStateToUrl } from '../persistent-state/handlers/url';
-import type { Gist } from './gist';
+import type { Gist } from './Gist';
 
 export const gistState = atom<Gist | null>({
     key: 'gist',
@@ -10,7 +11,13 @@ export const gistState = atom<Gist | null>({
             onSet(gist => {
                 if (!gist)
                     return;
-                saveStateToUrl(gist.code, gist.options, { gist });
+                const { language, branchId, target, release } = gist.options;
+                saveStateToUrl(gist.code, toOptionsData(
+                    language,
+                    branchId ? { id: branchId } : null,
+                    target,
+                    release
+                ), { gist });
             });
         }
     ]

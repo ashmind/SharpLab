@@ -25,6 +25,7 @@ describe('get-branches-async', () => {
 
         jest.resetModules();
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        // @ts-expect-error 'TODO: needs separate target setting for type check, but actually works'
         const { getBranchesAsync } = (await import('./getBranchesAsync'));
 
         await getBranchesAsync();

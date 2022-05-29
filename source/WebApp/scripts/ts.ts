@@ -2,6 +2,11 @@ import jetpack from 'fs-jetpack';
 import { task } from 'oldowan';
 import { exec2, inputRoot, outputVersionRoot } from './shared';
 
+const tsTypeCheck = task('ts:type-check', () => exec2('tsc', [
+    '--project', `${inputRoot}/tsconfig.json`,
+    '--noEmit',
+    '--skipLibCheck'
+]));
 const tsLint = task('ts:lint', () => exec2('eslint', [
     inputRoot,
     '--max-warnings', '0',
@@ -47,6 +52,7 @@ const tsAsmRegex = task('ts:asm-regex', async () => {
 export const ts = task('ts', async () => {
     await tsAsmRegex();
     await Promise.all([
+        tsTypeCheck(),
         tsLint(),
         tsMain()
     ]);

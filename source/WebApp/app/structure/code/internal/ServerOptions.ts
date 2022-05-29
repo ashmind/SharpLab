@@ -1,4 +1,4 @@
-import type { TargetName } from '../../shared/targets';
+import type { TargetName } from '../../../shared/targets';
 
 export interface ServerOptions {
     readonly 'x-optimize': 'release'|'debug';

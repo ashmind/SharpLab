@@ -1,6 +1,5 @@
 import type { LanguageName } from '../../../../shared/languages';
 import type { TargetName } from '../../../../shared/targets';
-import type { Branch } from '../../../roslyn-branches/types';
 
 const exact = Symbol('Options were validated and confirmed not to include any extra keys');
 
@@ -17,7 +16,7 @@ export type ExactOptionsData = OptionsData & {
 
 export const toOptionsData = (
     language: LanguageName,
-    branch: Branch | null,
+    branch: { id: string } | null,
     target: TargetName,
     release: boolean
 ): ExactOptionsData => ({

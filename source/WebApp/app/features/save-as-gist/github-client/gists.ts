@@ -4,7 +4,7 @@ import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_V
 import type { CodeResult, AstResult, RunResult, VerifyResult, ExplainResult, ErrorResult, Result } from '../../../shared/resultTypes';
 import { TargetName, TARGET_ASM, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_IL, TARGET_RUN, TARGET_VB, TARGET_VERIFY } from '../../../shared/targets';
 import { targetMap } from '../../persistent-state/handlers/helpers/language-and-target-maps';
-import type { Gist } from '../gist';
+import type { Gist } from '../Gist';
 import { token } from './githubAuth';
 import renderOutputToText from './internal/render-output-to-text';
 
