@@ -6,9 +6,12 @@
     "build": "ts-node-script ./scripts.ts build",
     "lint": "ts-node-script ./scripts.ts ts:lint",
     "test": "jest",
-    "test:skip-render": "cross-env TEST_SKIP_RENDER=true jest --testPathIgnorePatterns rendering",
     "start": "ts-node-script ./scripts.ts start --watch",
-    "build-ci": "ts-node-script ./scripts.ts build-ci"
+    "build-ci": "ts-node-script ./scripts.ts build-ci",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook",
+    "test-storybook": "test-storybook",
+    "test-storybook-ci": "ts-node-script ./scripts.ts test-storybook-ci"
   },
   "engines": {
     "node": ">=16.14.2"
@@ -17,35 +20,38 @@
     "maxConcurrency": 10,
     "globals": {
       "ts-jest": {
-        "tsconfig": "<rootDir>/tests/tsconfig.json"
+        "tsconfig": "<rootDir>/tsconfig.json"
       }
     },
     "testEnvironment": "jsdom",
     "transform": {
       "\\.ts$": "ts-jest",
-      "(node_modules[/\\\\]|mirrorsharp.+dist)": "./tests/transform-esm-in-node-modules.cjs"
+      "(node_modules[/\\\\]|mirrorsharp.+dist)": "./.jest/transform-esm-in-node-modules.cjs"
     },
     "transformIgnorePatterns": [
-      "/node_modules/(?!(?:mirrorsharp|node-fetch|data-uri-to-buffer|fetch-blob|formdata-polyfill))"
-    ],
-    "setupFiles": [
-      "<rootDir>/ts/polyfills/index.ts"
+      "/node_modules/(?!(?:mirrorsharp|node-fetch|data-uri-to-buffer|fetch-blob|formdata-polyfill|dateformat))"
     ],
     "setupFilesAfterEnv": [
-      "<rootDir>/tests/setup.ts",
-      "<rootDir>/tests/rendering/setup.ts"
+      "<rootDir>/.jest/setup.ts"
     ],
-    "globalTeardown": "<rootDir>/tests/rendering/docker/global-teardown.ts",
     "testMatch": [
+      "<rootDir>/app/**/*.tests.ts",
       "<rootDir>/tests/**/*.tests.ts"
-    ],
-    "moduleNameMapper": {
-      "^vue$": "<rootDir>/node_modules/vue/dist/vue.js"
-    }
+    ]
   },
   "devDependencies": {
+    "@babel/core": "7.18.0",
     "@babel/preset-env": "7.9.0",
     "@peculiar/webcrypto": "1.1.7",
+    "@storybook/addon-actions": "6.5.5",
+    "@storybook/addon-essentials": "6.5.5",
+    "@storybook/addon-interactions": "6.5.5",
+    "@storybook/addon-links": "6.5.5",
+    "@storybook/builder-webpack5": "6.5.5",
+    "@storybook/manager-webpack5": "6.5.5",
+    "@storybook/react": "6.5.5",
+    "@storybook/test-runner": "0.1.1",
+    "@storybook/testing-library": "0.0.11",
     "@types/adm-zip": "0.4.33",
     "@types/applicationinsights-js": "1.0.9",
     "@types/autoprefixer": "9.7.2",
@@ -64,18 +70,23 @@
     "@types/node-fetch": "2.6.1",
     "@types/proper-lockfile": "4.1.2",
     "@types/puppeteer": "5.4.5",
+    "@types/react": "18.0.5",
+    "@types/react-dom": "18.0.0",
+    "@types/react-test-renderer": "18.0.0",
     "@types/sharp": "0.30.1",
     "@types/throttle-debounce": "2.1.0",
-    "@typescript-eslint/eslint-plugin": "5.18.0",
-    "@typescript-eslint/parser": "5.18.0",
-    "@vue/test-utils": "1.0.0-beta.29",
+    "@typescript-eslint/eslint-plugin": "5.25.0",
+    "@typescript-eslint/parser": "5.25.0",
     "adm-zip": "0.5.1",
     "autoprefixer": "10.4.4",
     "babel-jest": "27.5.1",
+    "babel-loader": "8.2.5",
     "cross-env": "7.0.3",
     "esbuild": "0.14.34",
     "eslint": "8.12.0",
     "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-react-hooks": "4.4.0",
+    "eslint-plugin-storybook": "0.5.12",
     "execa": "5.0.0",
     "fs-jetpack": "2.1.0",
     "html-minifier": "3.5.19",
@@ -84,18 +95,21 @@
     "jest-image-snapshot": "4.5.1",
     "jest-mock-proxy": "3.0.0",
     "less": "4.1.2",
+    "less-loader": "11.0.0",
     "node-fetch": "3.2.3",
     "oldowan": "1.0.0",
     "postcss": "8.4.12",
     "postcss-csso": "6.0.0",
     "proper-lockfile": "4.1.2",
     "puppeteer": "13.5.2",
+    "react-test-renderer": "18.0.0",
     "regex-combiner": "github:am11/regex-combiner#1fd650aa8dcec8d71e0101558bc181eed8b9ed08",
     "sharp": "0.30.3",
     "ts-jest": "27.1.4",
     "ts-node": "8.10.1",
-    "typescript": "4.3.2",
-    "vue-template-compiler": "2.5.16"
+    "typescript": "4.6.4",
+    "wait-on": "6.0.1",
+    "webpack-stats-plugin": "1.0.3"
   },
   "dependencies": {
     "base64-arraybuffer": "1.0.1",
@@ -111,9 +125,10 @@
     "mirrorsharp": "file:../%23external/mirrorsharp/WebAssets/dist",
     "mirrorsharp-codemirror-6-preview": "0.13.0",
     "normalize.css": "8.0.1",
-    "portal-vue": "2.1.7",
+    "react": "18.0.0",
+    "react-dom": "18.0.0",
+    "recoil": "0.7.2",
     "resize-observer-polyfill": "1.5.1",
-    "throttle-debounce": "1.0.1",
-    "vue": "2.6.10"
+    "throttle-debounce": "1.0.1"
   }
 }

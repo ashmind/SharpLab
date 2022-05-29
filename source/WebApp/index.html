@@ -1,147 +1,24 @@
 <!DOCTYPE html>
 <html>
-  <head data-theme-color-manager-bind="status.color">
+  <head>
     <meta charset="UTF-8">
     <title>SharpLab</title>
 
     <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1">
-    <meta name="theme-color" content="#4684ee">
+    <meta name="theme-color" content="#4684ee" data-react-replace>
     <meta name="description" content="C#/VB/F# compiler playground.">
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,{build:favicon-svg}">
-    <link rel="icon" type="image/png" href="icon-256.png" sizes="256x256">
-    <link rel="icon" type="image/png" href="icon-196.png" sizes="196x196">
-    <link rel="icon" type="image/png" href="icon-128.png" sizes="128x128">
-    <link rel="icon" type="image/png" href="icon-96.png" sizes="96x96">
-    <link rel="icon" type="image/png" href="icon-64.png" sizes="64x64">
-    <link rel="icon" type="image/png" href="icon-32.png" sizes="32x32">
-    <link rel="icon" type="image/png" href="icon-16.png" sizes="16x16">
+    {build:favicons}
 
     <link rel="stylesheet" href="{build:css}">
     <link rel="manifest" href="manifest.json">
   </head>
-  <body data-mobile-codemirror-fullscreen-class="mobile-editor-focus" class="loading" data-cloak="loading">
-    <main v-bind:class="{
-      'root-status-default': status.online && !status.error,
-      'root-status-offline': !status.online,
-      'root-status-error':   status.error
-    }">
-      <app-mobile-settings
-          v-bind:options="options"
-          v-bind:branches="branches"
-          v-bind:gist="gist"
-          v-bind:button-props="{ tabindex: 1 }">
-        <template v-slot:gist-manager>
-          <app-gist-manager v-bind:gist="gist"
-                            v-bind:code="code"
-                            v-bind:options="options"
-                            v-bind:result="result"
-                            v-bind:use-label="true"
-                            v-on:save="applyGistSave"></app-gist-manager>
-        </template>
-      </app-mobile-settings>
-      <div class="mobile-offline-notice">connection lost, reconnecting…</div>
-
-      <div class="top-section-group top-section-group-code">
-        <section class="top-section code">
-          <header>
-            <h1>Code</h1>
-            <app-select-language v-model="options.language" tabindex="1"></app-select-language>
-            <app-gist-manager class="header-block"
-                              v-bind:button-props="{ class: 'header-text-button', tabindex: 2 }"
-                              v-bind:gist="gist"
-                              v-bind:code="code"
-                              v-bind:options="options"
-                              v-bind:result="result"
-                              v-on:save="applyGistSave"></app-gist-manager>
-            <div class="offline-only">[connection lost, reconnecting…]</div>
-
-            <app-select-branch v-model="options.branch"
-                               v-bind:branches="branches"
-                               v-bind:language="options.language"
-                               tabindex="3"></app-select-branch>
-          </header>
-          <div class="content">
-            <app-code-edit v-bind:initial-text="lastLoadedCode"
-                           v-bind:initial-cached="result.cached"
-                           v-bind:service-url="serviceUrl"
-                           v-bind:language="options.language"
-                           v-bind:server-options="serverOptions"
-                           v-bind:highlighted-range="highlightedCodeRange"
-                           v-bind:execution-flow="result.type === 'run' && result.value ? result.value.flow : null"
-                           v-on:text-change="code = arguments[0]()"
-                           v-on:cursor-move="applyCursorMove"
-                           v-on:slow-update-wait="applyUpdateWait"
-                           v-on:slow-update-result="applyUpdateResult"
-                           v-on:server-error="applyServerError"
-                           v-on:connection-change="applyConnectionChange"></app-code-edit>
-          </div>
-        </section>
-
-        <app-section-branch-details v-bind:branch="options.branch" class="top-section"></app-section-branch-details>
-      </div>
-
-      <div class="top-section-group top-section-group-results" v-bind:class="{ loading: loading }">
-        <section class="top-section result">
-          <header>
-            <h1>Results</h1>
-            <app-select-target v-model="options.target" tabindex="4"></app-select-target>
-            <small v-if="result.cached" class="result-cached-indicator" title="Note: This output is cached and might not represent the latest behavior">
-              Cached: {{formatDate(result.cached.date, 'd mmm yyyy')}}
-            </small>
-            <app-select-mode v-model="options.release" tabindex="5"></app-select-mode>
-          </header>
-          <div class="content">
-            <div class="loader"></div>
-            <app-code-view v-if="lastResultOfType.code"
-                           v-show="result.type === 'code'"
-                           v-bind:value="lastResultOfType.code.value"
-                           v-bind:ranges="lastResultOfType.code.ranges"
-                           v-bind:language="options.target"
-                           v-on:range-active="applyCodeViewRange"></app-code-view>
-            <app-ast-view ref="astView"
-                          v-if="lastResultOfType.ast"
-                          v-show="result.type === 'ast'"
-                          v-bind:roots="lastResultOfType.ast.value"
-                          v-on:item-select="applyAstSelect"></app-ast-view>
-            <app-verify-view v-if="lastResultOfType.verify"
-                             v-show="result.type === 'verify'"
-                             v-bind:value="lastResultOfType.verify.value"></app-verify-view>
-            <app-explain-view v-if="lastResultOfType.explain"
-                              v-show="result.type === 'explain'"
-                              v-bind:explanations="lastResultOfType.explain.value"></app-explain-view>
-            <app-output-view v-if="lastResultOfType.run"
-                             v-show="result.type === 'run'"
-                             v-bind:output="lastResultOfType.run.value ? lastResultOfType.run.value.output : []"></app-output-view>
-          </div>
-        </section>
-
-        <section class="top-section errors" v-show="result.errors.length > 0">
-          <header>
-            <button class="expander" v-app-class-toggle="{ target: '.errors', class: 'collapsed' }"></button>
-            <h1>Errors</h1>
-          </header>
-          <div class="content">
-            <div class="loader"></div>
-            <ul>
-              <li v-for="error in result.errors">
-                <app-diagnostic v-bind:model="error" severity="error"></app-diagnostic>
-              </li>
-            </ul>
-          </div>
-        </section>
-
-        <app-section-warnings class="top-section collapsed" v-bind:warnings="result.warnings"></app-section-warnings>
-      </div>
-
-      <portal-target name="modals" multiple class="fragment"></portal-target>
-    </main>
-    <app-footer></app-footer>
-
-    {build:templates}
-
-    <script type="text/javascript">
-      (function() {
+  <body>
+    <main></main>
+    <footer></footer>
+    <div id="app-modals"></div>
+    <script>
+      (() => {
         var key={"sharplab.io":"06084182-fccf-4a44-a241-dc82ece257e8","edge.sharplab.io":"4abe72ed-eb6a-4530-ac84-f5577b9d2a6a"}[window.location.host];
         if (!key) return;
         window.appInsights=function(config){function i(config){t[config]=function(){var i=arguments;t.queue.push(function(){t[config].apply(t,i)})}}var t={config:config},u=document,e=window,o="script",s="AuthenticatedUserContext",h="start",c="stop",l="Track",a=l+"Event",v=l+"Page",y=u.createElement(o),r,f;y.src=config.url||"https://az416426.vo.msecnd.net/scripts/a/ai.0.js";u.getElementsByTagName(o)[0].parentNode.appendChild(y);try{t.cookie=u.cookie}catch(p){}for(t.queue=[],t.version="1.0",r=["Event","Exception","Metric","PageView","Trace","Dependency"];r.length;)i("track"+r.pop());return i("set"+s),i("clear"+s),i(h+a),i(c+a),i(h+v),i(c+v),i("flush"),config.disableExceptionTracking||(r="onerror",i("_"+r),f=e[r],e[r]=function(config,i,u,e,o){var s=f&&f(config,i,u,e,o);return s!==!0&&t["_"+r](config,i,u,e,o),s}),t}({

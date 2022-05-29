@@ -11,6 +11,7 @@ node_modules/
 bin/
 obj/
 /source/WebApp/public/
+/source/WebApp/storybook-static/
 /source/Native.Profiler/x64/
 __diff_output__/
 .ionide/

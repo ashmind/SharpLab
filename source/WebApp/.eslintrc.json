@@ -2,25 +2,28 @@
     "root": true,
     "ignorePatterns": [
         "/node_modules/",
-        "/public/"
+        "/public/",
+        "/storybook-static/"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 8,
         "sourceType": "module",
-        "project": ["tsconfig.json", "tsconfig.*.json"],
+        "project": ["tsconfig.json", "tsconfig.*.json", ".jest/tsconfig.json"],
         "extraFileExtensions": [".cjs"]
     },
     "plugins": [
         "@typescript-eslint",
-        "import"
+        "import",
+        "react-hooks"
     ],
     "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:import/errors",
-        "plugin:import/warnings"
+        "plugin:import/warnings",
+        "plugin:react-hooks/recommended"
     ],
     "env": {
         "node": true
@@ -52,6 +55,7 @@
         "comma-spacing": "warn",
         "no-path-concat": "warn",
         "semi": "off",
+        "quote-props": ["warn", "consistent-as-needed"],
 
         "@typescript-eslint/promise-function-async": "off",
         "@typescript-eslint/no-use-before-define": "off",
@@ -74,6 +78,7 @@
         "@typescript-eslint/quotes": ["error", "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
         "@typescript-eslint/brace-style": ["warn", "stroustrup", { "allowSingleLine": true }],
         "@typescript-eslint/semi": ["error"],
+        "@typescript-eslint/member-delimiter-style": "warn",
         "@typescript-eslint/restrict-template-expressions": ["error", { "allowBoolean": true, "allowNumber": true }],
         "@typescript-eslint/array-type": ["error", { "default": "generic" }],
         "@typescript-eslint/prefer-readonly": "warn",
@@ -87,9 +92,12 @@
         // conflicts with ESLint
         "import/no-duplicates": "off",
         "import/named": "off",
-        "import/extensions": ["error", "never"],
+        "import/extensions": ["error", "never", { "stories": "always" }],
         "import/order": ["warn", { "newlines-between": "never" }],
-        "import/newline-after-import": "warn"
+        "import/newline-after-import": "warn",
 
+        "react-hooks/exhaustive-deps": ["warn", {
+            "additionalHooks": "useAsyncCallback"
+        }]
     }
 }

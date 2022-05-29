@@ -8,12 +8,12 @@
     pointer-events: none;
 }
 
-.CodeMirror-jump-arrow {
+.CodeMirror-jump-arrow-default.CodeMirror-jump-arrow-down {
     fill: #b4cdce;
     stroke: #b4cdce;
 }
 
-.CodeMirror-jump-arrow-up {
+.CodeMirror-jump-arrow-default.CodeMirror-jump-arrow-up {
     fill: #f7d1c5;
     stroke: #f7d1c5;
 }

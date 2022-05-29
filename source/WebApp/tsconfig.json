@@ -10,12 +10,12 @@
         "importsNotUsedAsValues": "error",
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
-        "baseUrl": "."
+        "jsx": "react"
     },
     "include": [
+        "app",
         "ts",
-        "components",
-        "scripts"
+        ".storybook/mocks"
     ],
     "references": [
         { "path": "./tsconfig.scripts.json" },

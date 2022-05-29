@@ -40,16 +40,16 @@ namespace Fragile {
         }
 
         public void InitialSetup() {
-            /*var workingDirectory = new DirectoryInfo(_configuration.WorkingDirectoryPath);
+            var workingDirectory = new DirectoryInfo(_configuration.WorkingDirectoryPath);
             var workingDirectorySecurity = workingDirectory.GetAccessControl();
             workingDirectorySecurity.AddAccessRule(new FileSystemAccessRule(
-                _workingDirectoryAccessCapabilityIdentifier,
+                _essentialAccessCapabilityIdentifier,
                 FileSystemRights.Read,
                 InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit,
                 PropagationFlags.None,
                 AccessControlType.Allow
             ));
-            workingDirectory.SetAccessControl(workingDirectorySecurity);*/
+            workingDirectory.SetAccessControl(workingDirectorySecurity);
 
             var windowStationHandle = User32.GetProcessWindowStation();
             var windowStationSecurity = new WindowObjectSecurity(new WindowObjectNoCloseHandle(windowStationHandle), AccessControlSections.Access);
