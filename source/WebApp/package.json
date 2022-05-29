@@ -6,12 +6,12 @@
     "build": "ts-node-script ./scripts.ts build",
     "lint": "ts-node-script ./scripts.ts ts:lint",
     "test": "jest",
-    "test:skip-render": "cross-env TEST_SKIP_RENDER=true jest --testPathIgnorePatterns rendering",
     "start": "ts-node-script ./scripts.ts start --watch",
     "build-ci": "ts-node-script ./scripts.ts build-ci",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "test-storybook": "test-storybook"
+    "test-storybook": "test-storybook",
+    "test-storybook-ci": "ts-node-script ./scripts.ts test-storybook-ci"
   },
   "engines": {
     "node": ">=16.14.2"
@@ -108,6 +108,7 @@
     "ts-jest": "27.1.4",
     "ts-node": "8.10.1",
     "typescript": "4.6.4",
+    "wait-on": "6.0.1",
     "webpack-stats-plugin": "1.0.3"
   },
   "dependencies": {
