@@ -1,25 +1,22 @@
 name: 'Create GitHub Issues from App Insights'
-description: 'Uploads GitHub artifact to the Azure VM, then runs a custom deployment script'
+description: 'Creates or updates GitHub issues based on App Insights query results'
 inputs:
-  azure-subscription:
-    description: '(TODO: Get from az cli) Azure Subscription Id of the target VM'
+  app-insights-query-path:
+    description: 'Path to a KQL file containing App Insights query. Query must return "title", "body" and "comment" columns.'
     required: true
-  azure-resource-group:
-    description: 'Azure Resource Group Name of the target VM'
+  app-insights-apps:
+    description: 'Application ID of the App Insights App'
     required: true
-  azure-vm:
-    description: 'Name of the target VM'
+  app-insights-period:
+    description: 'Time period to query, e.g. 24h.'
     required: true
-  artifact-name:
-    description: 'Name of the artifact to deploy (from the current run)'
+  github-label:
+    description: 'Label that will be applied to the created issues. Note: also used to find issues; changing this later will create duplicates.'
     required: true
-  artifact-download-path:
-    description: 'Path where the artifact should be downloaded (on the target VM)'
-    required: true
-  deploy-script-inline:
-    description: 'Deploy script to be run once the artifact is downloaded (on the target VM)'
-    required: true
+  github-label-cannot-reproduce:
+    description: 'If an issue is closed and has this label, the issue will be reopened and label removed.'
+    required: false
 
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'index.js'
