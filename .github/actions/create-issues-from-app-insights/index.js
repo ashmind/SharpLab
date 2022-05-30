@@ -1,11 +1,7 @@
-import { execa } from 'execa';
+import exec from '@actions/exec';
 
 try {
-    await execa('ts-node-esm', ['index.ts'], {
-        preferLocal: true,
-        stdout: process.stdout,
-        stderr: process.stderr
-    });
+    await exec.exec('ts-node-esm index.ts');
 }
 catch (error) {
     process.exit(1);
