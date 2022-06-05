@@ -13,7 +13,7 @@ export interface AstItem {
     readonly type: 'node'|'token'|'value'|'trivia'|'operation'|string;
     readonly kind?: string;
     readonly property?: string;
-    readonly value?: string;
+    readonly value?: string | number | boolean;
 
     readonly range?: string;
     readonly properties?: { readonly [key: string]: string };

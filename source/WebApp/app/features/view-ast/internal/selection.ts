@@ -16,11 +16,16 @@ export type SelectionAction = {
 
 export type SelectionState = {
     selectionMode: 'hover'|'click';
-    selectedItem: AstItem | null;
     // only applies if selection comes from outside of the component, e.g. selectedOffset
     expansionPath: ReadonlySet<AstItem>;
     expansionPersistent: boolean;
-};
+} & ({
+    selectedItem: null;
+    selectedItemSource?: null;
+} | {
+    selectedItem: AstItem;
+    selectedItemSource: 'internal'|'external';
+});
 
 export const DEFAULT_SELECTION_STATE: SelectionState = {
     selectionMode: 'click',
@@ -43,15 +48,27 @@ export const selectionReducer = (state: SelectionState, action: SelectionAction)
             return {
                 ...state,
                 selectedItem: item,
+                selectedItemSource: 'internal',
                 expansionPath: EMPTY_SET
             };
         }
 
         case 'select-from-external-offset': {
             const { selectedPath } = action;
+            const selectedItem = selectedPath?.[selectedPath.length - 1] ?? null;
+            if (!selectedItem) {
+                return {
+                    ...state,
+                    selectedItem: null,
+                    selectedItemSource: null,
+                    expansionPath: EMPTY_SET
+                };
+            }
+
             return {
                 ...state,
-                selectedItem: selectedPath?.[selectedPath.length - 1] ?? null,
+                selectedItem,
+                selectedItemSource: 'external',
                 expansionPath: new Set(selectedPath)
             };
         }
@@ -60,6 +77,7 @@ export const selectionReducer = (state: SelectionState, action: SelectionAction)
             return {
                 ...state,
                 selectedItem: null,
+                selectedItemSource: null,
                 expansionPath: EMPTY_SET
             };
         }

@@ -129,6 +129,7 @@
     "react-dom": "18.0.0",
     "recoil": "0.7.2",
     "resize-observer-polyfill": "1.5.1",
+    "scroll-into-view-if-needed": "2.2.29",
     "throttle-debounce": "1.0.1"
   }
 }

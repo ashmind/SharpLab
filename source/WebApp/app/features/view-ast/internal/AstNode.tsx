@@ -1,4 +1,5 @@
 import React, { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import scrollIntoView from 'scroll-into-view-if-needed';
 import type { AstItem } from '../../../shared/resultTypes';
 import { AstNodeList } from './AstNodeList';
 import { AstSelectionContext } from './AstSelectionContext';
@@ -23,7 +24,10 @@ const escapeTrivia = (value: string) => {
         .replace(/(^ +| +$)/g, (_, $1: string) => $1.length > 1 ? `<space:${$1.length}>` : '<space>');
 };
 
-const renderValue = (value: string, type: string) =>{
+const renderValue = (value: string | number | boolean, type: string) => {
+    if (typeof value !== 'string')
+        return value.toString();
+
     if (type === 'trivia')
         return escapeTrivia(value);
 
@@ -31,22 +35,22 @@ const renderValue = (value: string, type: string) =>{
 };
 
 export const AstNode: React.FC<Props> = ({ item, initialState }) => {
-    const elementRef = useRef<HTMLLIElement>(null);
+    const titleElementRef = useRef<HTMLSpanElement>(null);
     const [expanded, setExpanded] = useState<boolean>(initialState?.expanded ?? false);
     const { selectionState, dispatchSelectionAction } = useContext(AstSelectionContext);
-    const { selectionMode, selectedItem } = selectionState;
+    const { selectionMode, selectedItem, selectedItemSource } = selectionState;
 
     const selected = selectedItem === item;
-
-    useLayoutEffect(() => {
-        if (selected && elementRef.current)
-            elementRef.current.scrollIntoView();
-    }, [selected]);
 
     useEffect(() => {
         if (selectionState.expansionPath.has(item))
             setExpanded(true);
     }, [item, selectionState.expansionPath]);
+
+    useLayoutEffect(() => {
+        if (selected && selectedItemSource === 'external' && titleElementRef.current)
+            scrollIntoView(titleElementRef.current, { scrollMode: 'if-needed' });
+    }, [selected, selectedItemSource]);
 
     const children = useMemo(() => {
         if (item.properties) {
@@ -81,14 +85,14 @@ export const AstNode: React.FC<Props> = ({ item, initialState }) => {
         hasChildren ? null : 'leaf'
     ].filter(c => c).join(' ');
 
-    return <li className={className} ref={elementRef}>
-        <span className={`ast-item-wrap ast-item-${item.type}`} onClick={onClick} onMouseOver={onMouseOver}>
+    return <li className={className}>
+        <span className={`ast-item-wrap ast-item-${item.type}`} ref={titleElementRef} onClick={onClick} onMouseOver={onMouseOver}>
             {hasChildren && <button />}
             <span className="ast-item-type" title={item.type}></span>
             {item.property && <span className="ast-item-property">{item.property}:</span>}
             {item.value && <span className="ast-inline-value">{renderValue(item.value, item.type)}</span>}
             <span className="ast-item-kind">{item.kind}</span>
         </span>
-        {hasChildren && <AstNodeList items={children} initialState={initialState} />}
+        {hasChildren && expanded && <AstNodeList items={children} initialState={initialState} />}
     </li>;
 };
