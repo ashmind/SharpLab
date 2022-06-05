@@ -66,7 +66,11 @@ namespace SharpLab.Server.Execution.Internal {
                 if (!method.HasBody || method.Body.Instructions.Count == 0)
                     continue;
                 foreach (var instruction in method.Body.Instructions) {
-                    if (instruction.OpCode.FlowControl == FlowControl.Call && IsFlowSuppressing((MethodReference)instruction.Operand))
+                    var isFlowSupressing = instruction.OpCode.FlowControl == FlowControl.Call
+                        && instruction.Operand is MethodReference m
+                        && IsFlowSuppressing(m);
+
+                    if (isFlowSupressing)
                         return true;
                 }
             }
@@ -213,7 +217,7 @@ namespace SharpLab.Server.Execution.Internal {
         }
 
         private GenericInstanceMethod? PrepareReportValue(TypeReference valueType, ReportMethods flow) {
-            if (valueType.IsPointer)
+            if (valueType.IsPointer || valueType.IsFunctionPointer)
                 return null;
 
             if (valueType is RequiredModifierType requiredType)

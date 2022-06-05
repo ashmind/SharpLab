@@ -23,6 +23,8 @@ namespace SharpLab.Tests.Execution {
         [InlineData("InitOnlyProperty.cs")]
         [InlineData("TopLevelLocalConstant.cs")]
         [InlineData("LambdaParameterList.vb", LanguageNames.VisualBasic)]
+        [InlineData("UnsafePointers.cs")]
+        [InlineData("UnsafeFunctionPointerCall.cs")]
         public async Task Execution_DoesNotFail(string codeFileName, string languageName = LanguageNames.CSharp) {
             // Arrange
             var code = await TestCode.FromCodeOnlyFileAsync("Regression/" + codeFileName);

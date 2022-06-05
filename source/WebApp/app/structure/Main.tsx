@@ -24,12 +24,13 @@ export const Main: React.FC = () => {
     const dispatchResultUpdate = useDispatchResultUpdate();
     const result = useRecoilValue(resultSelector);
 
-    const onServerError = (message: string) => dispatchResultUpdate({ type: 'serverError', message });
+    const onServerError = (message: string) => {
+        endWait();
+        dispatchResultUpdate({ type: 'serverError', message });
+    };
     const onSlowUpdateResult = (updateResult: UpdateResult) => {
         endWait();
-        dispatchResultUpdate({
-            type: 'updateResult', updateResult, target
-        });
+        dispatchResultUpdate({ type: 'updateResult', updateResult, target });
     };
 
     const codeEditor = <CodeEditor
