@@ -45,6 +45,7 @@ namespace SharpLab.Server.Common.Languages {
                 // Requested
                 "System.Data",
                 "System.Runtime.Intrinsics",
+                "System.Runtime.CompilerServices.Unsafe",
                 "System.Web.HttpUtility",
                 "System.Xml.Linq"
             ).ToImmutableList();
