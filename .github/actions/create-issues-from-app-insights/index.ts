@@ -31,6 +31,8 @@ const issues = await octokit.paginate(
     {
         owner,
         repo,
+        state: 'all',
+        labels: githubLabel,
         per_page: 100
     }
 );
