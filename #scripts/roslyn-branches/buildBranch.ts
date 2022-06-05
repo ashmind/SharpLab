@@ -144,11 +144,13 @@ async function buildSharpLab(roslynPackagesRoot: string) {
     await fs.ensureDir(branchSourceRoot);
 
     console.log('Building Roslyn package map...');
-
     const roslynVersionMap = Object.fromEntries(
         (await globby(['*.nupkg'], { cwd: roslynPackagesRoot, absolute: true })).map(filePath => {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const [, name, version] = path.basename(filePath).match(/^([^\d]+)\.(\d.+)\.nupkg$/)!;
+            const fileName = path.basename(filePath);
+            const match = fileName.match(/^((?:[^\d.][^.]*\.)*[^\d.][^.]*)\.(\d.+)\.nupkg$/);
+            if (!match) throw new Error(`Could not parse package file name '${fileName}'`);
+
+            const [, name, version] = match;
             return [name, version];
         })
     );
