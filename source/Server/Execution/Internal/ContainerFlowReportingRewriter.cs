@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using MirrorSharp.Advanced;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -200,22 +201,37 @@ namespace SharpLab.Server.Execution.Internal {
             ReportMethods flow,
             ref int index
         ) {
-            if (valueType.IsPointer)
+            var report = PrepareReportValue(valueType, flow);
+            if (report == null)
                 return;
 
             il.InsertBeforeAndRetargetAll(instruction, getValue);
             il.InsertBefore(instruction, valueName != null ? il.Create(OpCodes.Ldstr, valueName) : il.Create(OpCodes.Ldnull));
             il.InsertBefore(instruction, il.CreateLdcI4Best(line));
+            il.InsertBefore(instruction, il.CreateCall(report));
+            index += 4;
+        }
+
+        private GenericInstanceMethod? PrepareReportValue(TypeReference valueType, ReportMethods flow) {
+            if (valueType.IsPointer)
+                return null;
 
             if (valueType is RequiredModifierType requiredType)
                 valueType = requiredType.ElementType; // not the same as GetElementType() which unwraps nested ref-types etc
 
-            var report = PrepareReportValue(valueType, flow.ReportValue, flow.ReportSpanValue, flow.ReportReadOnlySpanValue);
             if (valueType is ByReferenceType byRef)
-                report = PrepareReportValue(byRef.ElementType, flow.ReportRefValue, flow.ReportRefSpanValue, flow.ReportRefReadOnlySpanValue);
+                return PrepareReportValue(byRef.ElementType, flow.ReportRefValue, flow.ReportRefSpanValue, flow.ReportRefReadOnlySpanValue);
 
-            il.InsertBefore(instruction, il.CreateCall(report));
-            index += 4;
+            if (!valueType.IsPrimitive) {
+                var valueTypeDefinition = valueType.Resolve();
+                foreach (var attribute in valueTypeDefinition.CustomAttributes) {
+                    // ref structs cannot be reported in a generic way
+                    if (attribute.AttributeType is { Name: nameof(IsByRefLikeAttribute), Namespace: "System.Runtime.CompilerServices" })
+                        return null;
+                }
+            }
+
+            return PrepareReportValue(valueType, flow.ReportValue, flow.ReportSpanValue, flow.ReportReadOnlySpanValue);
         }
 
         private GenericInstanceMethod PrepareReportValue(TypeReference valueType, MethodReference reportAnyNonSpan, MethodReference reportSpan, MethodReference reportReadOnlySpan) {

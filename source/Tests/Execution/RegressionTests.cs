@@ -3,15 +3,21 @@ using SharpLab.Server.Common;
 using SharpLab.Tests.Execution.Internal;
 using SharpLab.Tests.Internal;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace SharpLab.Tests.Execution {
     [Collection(TestCollectionNames.Execution)]
     public class RegressionTests {
+        public RegressionTests(ITestOutputHelper output) {
+            // TestAssemblyLog.Enable(output);
+        }
+
         [Theory]
         [InlineData("CertainLoop.cs")]
         [InlineData("FSharpNestedLambda.fs", LanguageNames.FSharp)]
         [InlineData("NestedAnonymousObject.cs")]
-        [InlineData("ReturnRef.cs")]
+        [InlineData("RefReturn.cs")]
+        [InlineData("RefStructReturningThis.cs")]
         [InlineData("CatchWithNameSameLineAsClosingTryBracket.cs")]
         [InlineData("MoreThanFourArguments.cs")]
         [InlineData("InitOnlyProperty.cs")]
