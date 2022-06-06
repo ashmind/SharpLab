@@ -42,7 +42,8 @@ export default async function publishBranch({ webAppName, webAppUrl, branchArtif
                     console.warn(formatStatus((e as { response: Response }).response));
                 }
 
-                const temporary = (e as Partial<SafeFetchError>).response?.status === 503;
+                const { status } = (e as Partial<SafeFetchError>).response ?? {};
+                const temporary = status === 503 || status === 403;
                 if (temporary) {
                     tryTemporary += 1;
                 }
