@@ -4,14 +4,17 @@ services:
 
 # Used by the cache implementation
 - name: azurite
+  tags: ["server-only"]
   executable: pwsh
   args: -Command "azurite"
   workingDirectory: "!azurite"
-  tags: ["server-only"]
 
 - name: container-manager
   project: source/Container.Manager/Container.Manager.csproj
   tags: ["server-only"]
+  buildProperties:
+  - name: Configuration
+    value: Release
   bindings:
   - protocol: http
     port: 44400
@@ -22,8 +25,11 @@ services:
   workingDirectory: source/WebApp
 
 - name: webapp-server
-  project: source/WebApp.Server/WebApp.Server.csproj
   tags: ["server-only"]
+  project: source/WebApp.Server/WebApp.Server.csproj
+  buildProperties:
+  - name: Configuration
+    value: Release
   bindings:
   - protocol: http
     port: 44100

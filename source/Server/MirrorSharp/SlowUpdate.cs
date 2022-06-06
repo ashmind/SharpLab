@@ -106,7 +106,9 @@ namespace SharpLab.Server.MirrorSharp {
 
                 assemblyStream.Seek(0, SeekOrigin.Begin);
                 symbolStream?.Seek(0, SeekOrigin.Begin);
-                AssemblyLog.Log("1.Compiled", assemblyStream, compiled.symbols ? symbolStream : null);
+                #if DEBUG
+                DiagnosticLog.LogAssembly("1.Compiled", assemblyStream, compiled.symbols ? symbolStream : null);
+                #endif
 
                 var streams = new CompilationStreamPair(assemblyStream, compiled.symbols ? symbolStream : null);
                 if (targetName == TargetNames.Run) {

@@ -8,10 +8,11 @@ using SharpLab.Tests.Internal;
 namespace SharpLab.Tests.Execution {
     [Collection(TestCollectionNames.Execution)]
     public class ExceptionTests {
-        private readonly ITestOutputHelper _testOutputHelper;
+        private readonly ITestOutputHelper _outputHelper;
 
-        public ExceptionTests(ITestOutputHelper testOutputHelper) {
-            _testOutputHelper = testOutputHelper;
+        public ExceptionTests(ITestOutputHelper outputHelper) {
+            _outputHelper = outputHelper;
+            // TestDiagnosticLog.Enable(outputHelper);
         }
 
         [Theory]
@@ -34,7 +35,7 @@ namespace SharpLab.Tests.Execution {
             var output = await ContainerTestDriver.CompileAndExecuteAsync(code, optimizationLevel: optimizationLevel);
 
             // Assert
-            TestOutput.AssertFlowMatchesComments(code, output, _testOutputHelper);
+            TestOutput.AssertFlowMatchesComments(code, output, _outputHelper);
         }
 
         [Fact]

@@ -9,7 +9,7 @@ namespace SharpLab.Tests.Execution {
     [Collection(TestCollectionNames.Execution)]
     public class RegressionTests {
         public RegressionTests(ITestOutputHelper output) {
-            // TestAssemblyLog.Enable(output);
+            // TestDiagnosticLog.Enable(output);
         }
 
         [Theory]
@@ -26,6 +26,8 @@ namespace SharpLab.Tests.Execution {
         [InlineData("UnsafePointers.cs")]
         [InlineData("UnsafeFunctionPointerCall.cs")]
         [InlineData("DynamicPassedToGeneric.cs")]
+        [InlineData("UsingDeclarationsWith2Declarations.cs")]
+        [InlineData("UsingDeclarationsWith3Declarations.cs")]
         public async Task Execution_DoesNotFail(string codeFileName, string languageName = LanguageNames.CSharp) {
             // Arrange
             var code = await TestCode.FromCodeOnlyFileAsync("Regression/" + codeFileName);

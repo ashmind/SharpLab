@@ -43,6 +43,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Features" Version="3.10.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.10.0" />
     <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="2.0.226801" />
+    <PackageReference Include="Microsoft.ILVerification" Version="7.0.0-preview.4.22229.4" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.0" />
     <PackageReference Include="Mono.Cecil" Version="0.11.4" />
     <PackageReference Include="Octokit" Version="0.32.0" />

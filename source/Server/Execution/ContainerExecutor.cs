@@ -51,7 +51,9 @@ namespace SharpLab.Server.Execution {
                 rewriter.Rewrite(definition, session);
             }
 
-            AssemblyLog.Log("2.WithFlow", definition);
+            #if DEBUG
+            DiagnosticLog.LogAssembly("2.WithFlow", definition);
+            #endif
 
             using var rewrittenStream = _memoryStreamManager.GetStream();
             definition.Write(rewrittenStream);

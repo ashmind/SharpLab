@@ -13,7 +13,7 @@ namespace SharpLab.Tests.Decompilation {
 
         public LanguageILTests(ITestOutputHelper output) {
             _output = output;
-            // TestAssemblyLog.Enable(output);
+            // TestDiagnosticLog.Enable(output);
         }
 
         [Theory]

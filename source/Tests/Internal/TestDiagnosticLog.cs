@@ -7,7 +7,7 @@ using SharpLab.Server.Common.Diagnostics;
 using Xunit.Abstractions;
 
 namespace SharpLab.Tests.Internal {
-    public static class TestAssemblyLog {
+    public static class TestDiagnosticLog {
         [Conditional("DEBUG")]
         public static void Enable(ITestOutputHelper output) {
             var test = ((ITest)
@@ -19,7 +19,8 @@ namespace SharpLab.Tests.Internal {
             var testType = test.TestCase.TestMethod.TestClass.Class.ToRuntimeType();
             var testName = test.DisplayName.Replace(testType.FullName + ".", "");
 
-            var safeTestName = Regex.Replace(testName, "[^a-zA-Z._-]+", "_");
+            string SafePath(string name) => Regex.Replace(name, @"[^a-zA-Z\d._\-]+", "_");
+            var safeTestName = SafePath(testName);
             if (safeTestName.Length > 100)
                 safeTestName = safeTestName.Substring(0, 100) + "-" + safeTestName.GetHashCode();
 
@@ -28,7 +29,7 @@ namespace SharpLab.Tests.Internal {
                 testType.Name, safeTestName
             );
             #if DEBUG
-            AssemblyLog.Enable(stepName => Path.Combine(basePath, stepName));
+            DiagnosticLog.Enable(stepName => Path.Combine(basePath, SafePath(stepName)));
             #endif
         }
     }

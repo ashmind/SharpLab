@@ -12,7 +12,7 @@ namespace SharpLab.Tests.Decompilation {
 
         public GeneralTests(ITestOutputHelper output) {
             _output = output;
-            // TestAssemblyLog.Enable(output);
+            // TestDiagnosticLog.Enable(output);
         }
 
         [Theory]

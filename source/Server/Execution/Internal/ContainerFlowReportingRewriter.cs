@@ -1,13 +1,16 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
 using MirrorSharp.Advanced;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using SharpLab.Runtime.Internal;
 using SharpLab.Server.Common;
+using SharpLab.Server.Common.Diagnostics;
 
 namespace SharpLab.Server.Execution.Internal {
     public class ContainerFlowReportingRewriter : IContainerAssemblyRewriter {
@@ -254,20 +257,50 @@ namespace SharpLab.Server.Execution.Internal {
                 return;
 
             var handlers = il.Body.ExceptionHandlers;
+
+            LogILIfEnabled("Initial", il);
+            for (var i = handlers.Count - 1; i >= 0; i--) {
+                EnsureTryLeave(handlers[i], i, il);
+                LogILIfEnabled($"EnsureTryLeave.{i}", il);
+            }
+
             for (var i = 0; i < handlers.Count; i++) {
-                switch (handlers[i].HandlerType) {
+                var handler = handlers[i];
+                switch (handler.HandlerType) {
                     case ExceptionHandlerType.Catch:
-                        RewriteCatch(handlers[i].HandlerStart, il, flow);
+                        RewriteCatch(handler.HandlerStart, il, flow);
                         break;
 
                     case ExceptionHandlerType.Filter:
-                        RewriteCatch(handlers[i].FilterStart, il, flow);
+                        RewriteCatch(handler.FilterStart, il, flow);
                         break;
 
                     case ExceptionHandlerType.Finally:
-                        RewriteFinally(handlers[i], ref i, il, flow);
+                        RewriteFinally(handler, ref i, il, flow);
                         break;
                 }
+            }
+        }
+
+        private void EnsureTryLeave(ExceptionHandler handler, int handlerIndex, ILProcessor il) {
+            if (handler.TryEnd.Previous.OpCode.Code.IsLeave())
+                return;
+
+            // In some cases (e.g. exception throw) handler does
+            // not end with `leave` -- but we do need it once we wrap
+            // that throw.
+
+            // If the handler is the last thing in the method.
+            if (handler.HandlerEnd == null) {
+                var finalReturn = il.Create(OpCodes.Ret);
+                il.Append(finalReturn);
+                handler.HandlerEnd = finalReturn;
+            }
+
+            var leave = il.Create(OpCodes.Leave, handler.HandlerEnd);
+            il.InsertBefore(handler.TryEnd, leave);
+            for (var i = 0; i < handlerIndex; i++) {
+                il.Body.ExceptionHandlers[i].RetargetAll(handler.TryEnd, leave);
             }
         }
 
@@ -280,22 +313,6 @@ namespace SharpLab.Server.Execution.Internal {
             // for try/finally, the only thing we can do is to
             // wrap internals of try into a new try+filter+catch
             var outerTryLeave = handler.TryEnd.Previous;
-            if (!outerTryLeave.OpCode.Code.IsLeave()) {
-                // in some cases (e.g. exception throw) outer handler does
-                // not end with `leave` -- but we do need it once we wrap
-                // that throw
-
-                // if the handler is the last thing in the method
-                if (handler.HandlerEnd == null)
-                {
-                    var finalReturn = il.Create(OpCodes.Ret);
-                    il.Append(finalReturn);
-                    handler.HandlerEnd = finalReturn;
-                }
-
-                outerTryLeave = il.Create(OpCodes.Leave, handler.HandlerEnd);
-                il.InsertBefore(handler.TryEnd, outerTryLeave);
-            }
 
             var innerTryLeave = il.Create(OpCodes.Leave_S, outerTryLeave);
             var reportCall = il.CreateCall(flow.ReportException);
@@ -341,6 +358,52 @@ namespace SharpLab.Server.Execution.Internal {
 
                 default: return null;
             }
+        }
+
+        [Conditional("DEBUG")]
+        private void LogILIfEnabled(string stepName, ILProcessor il) {
+            #if DEBUG
+            if (!DiagnosticLog.IsEnabled())
+                return;
+
+            var builder = new StringBuilder();
+            var indent = 0;
+            foreach (var instruction in il.Body.Instructions) {
+                foreach (var handler in il.Body.ExceptionHandlers) {
+                    if (handler.TryStart == instruction) {
+                        builder.Append(new string(' ', indent));
+                        builder.AppendLine(".try {");
+                        indent += 4;
+                    }
+                    else if (handler.TryEnd == instruction) {
+                        indent -= 4;
+                        builder.Append(new string(' ', indent));
+                        builder.AppendLine("}");
+                    }
+
+                    if (handler.HandlerStart == instruction) {
+                        builder.Append(new string(' ', indent));
+                        builder.AppendLine(handler.HandlerType switch {
+                            ExceptionHandlerType.Catch => ".catch {",
+                            ExceptionHandlerType.Finally => ".finally {",
+                            ExceptionHandlerType.Filter => ".filter {",
+                            ExceptionHandlerType.Fault => ".fault {",
+                            _ => throw new()
+                        });
+                        indent += 4;
+                    }
+                    else if (handler.HandlerEnd == instruction) {
+                        indent -= 4;
+                        builder.Append(new string(' ', indent));
+                        builder.AppendLine("}");
+                    }
+                }
+
+                builder.Append(new string(' ', indent));
+                builder.AppendLine(instruction.ToString());
+            }
+            DiagnosticLog.LogText("Flow.IL." + il.Body.Method.Name + "." + stepName, builder.ToString());
+            #endif
         }
 
         private struct ReportMethods {
