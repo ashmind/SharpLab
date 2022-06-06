@@ -37,9 +37,9 @@ export default async function publishBranch({ webAppName, webAppUrl, branchArtif
             }
             catch (e) {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-                if (e.response) {
+                if ((e as { response?: Response }).response) {
                     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-                    console.warn(formatStatus(e.response));
+                    console.warn(formatStatus((e as { response: Response }).response));
                 }
 
                 const temporary = (e as Partial<SafeFetchError>).response?.status === 503;
@@ -99,6 +99,9 @@ export default async function publishBranch({ webAppName, webAppUrl, branchArtif
         zip.addLocalFolder(branchSiteRoot);
         zip.writeZip(zipPath);
 
+        console.log(`  Stopping...`);
+        await azureWebAppClient.webApps.stop(resourceGroupName, webAppName);
+
         console.log(`  Publishing...`);
         const {
             publishingUserName,
@@ -151,6 +154,9 @@ export default async function publishBranch({ webAppName, webAppUrl, branchArtif
 
         console.log('');
         console.log(`    ✔️ ${dateFormat(new Date(), 'HH:MM:ss')}`);
+
+        console.log(`  Starting...`);
+        await azureWebAppClient.webApps.start(resourceGroupName, webAppName);
 
         console.log(`  Done.`);
     }
