@@ -4,7 +4,7 @@ import execa from 'execa';
 export const inputRoot = path.resolve(__dirname, '..');
 
 export const outputSharedRoot = `${inputRoot}/public`;
-const outputVersion = process.env.NODE_ENV === 'ci'
+const outputVersion = process.env.NODE_ENV === 'production'
     ? (process.env.SHARPLAB_WEBAPP_BUILD_VERSION ?? (() => { throw 'SHARPLAB_WEBAPP_BUILD_VERSION was not provided.'; })())
     : Date.now();
 export const outputVersionRoot = `${outputSharedRoot}/${outputVersion}`;
