@@ -18,7 +18,7 @@ const esbuildArgs = [
     tsInputPath,
     '--preserve-symlinks',
     '--bundle',
-    ...(process.env.NODE_ENV === 'ci' ? ['--minify'] : []),
+    ...(process.env.NODE_ENV === 'production' ? ['--minify'] : []),
     '--sourcemap',
     `--outfile=${jsOutputPath}`
 ];
