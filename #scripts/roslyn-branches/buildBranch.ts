@@ -10,7 +10,7 @@ import execa from 'execa';
 import chalk from 'chalk';
 import safeFetch from './helpers/safeFetch';
 import useAzure from './helpers/useAzure';
-import publishBranch from './steps/publishBranch';
+import { publishBranch } from './steps/publishBranch';
 import updateInBranchesJson from './steps/updateInBranchesJson';
 
 const pipeline = promisify(stream.pipeline);
