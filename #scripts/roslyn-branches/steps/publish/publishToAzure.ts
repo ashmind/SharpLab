@@ -10,6 +10,7 @@ import safeFetch from '../../helpers/safeFetch';
 import { getAzureCredentials } from '../getAzureCredentials';
 
 const resourceGroupName = 'SharpLab';
+const armTemplatesBasePath = path.join(__dirname, '../../arm/');
 
 const deployZip = async ({ webAppName, zipPath, userName, password }: {
     webAppName: string;
@@ -77,9 +78,9 @@ export const publishToAzure = async ({
     branchSiteRoot: string;
 }) => {
     const armTemplate = JSON.parse(stripJsonComments(
-        await fs.readFile(path.join(__dirname, '../arm/template.json'), 'utf-8')
+        await fs.readFile(path.join(armTemplatesBasePath, 'template.json'), 'utf-8')
     ));
-    const armParameters = (JSON.parse(await fs.readFile(path.join(__dirname, '../arm/parameters.json'), 'utf-8')) as {
+    const armParameters = (JSON.parse(await fs.readFile(path.join(armTemplatesBasePath, 'parameters.json'), 'utf-8')) as {
         parameters: Record<string, { value: string }>;
     }).parameters;
 
