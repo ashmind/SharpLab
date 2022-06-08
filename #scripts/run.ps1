@@ -8,6 +8,9 @@ $ErrorActionPreference = 'Stop'
 Write-Host "Opening new window for initial wait" -ForegroundColor White
 Start-Process powershell -ArgumentList "-File `"$PSScriptRoot/run/wait.ps1`""
 
-$tags = $ServerOnly ? @('server-only') : @();
-
-dotnet tye run --watch --tags $tags
+if (!$ServerOnly) {
+  dotnet tye run --watch
+}
+else {
+  dotnet tye run --watch --tags server-only
+}
