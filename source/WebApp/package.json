@@ -25,7 +25,7 @@
     },
     "testEnvironment": "jsdom",
     "transform": {
-      "\\.ts$": "ts-jest",
+      "\\.tsx?$": "ts-jest",
       "(node_modules[/\\\\]|mirrorsharp.+dist)": "./.jest/transform-esm-in-node-modules.cjs"
     },
     "transformIgnorePatterns": [
@@ -35,8 +35,7 @@
       "<rootDir>/.jest/setup.ts"
     ],
     "testMatch": [
-      "<rootDir>/app/**/*.tests.ts",
-      "<rootDir>/tests/**/*.tests.ts"
+      "<rootDir>/app/**/*.tests.ts?(x)"
     ]
   },
   "devDependencies": {

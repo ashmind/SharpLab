@@ -14,7 +14,6 @@
     },
     "include": [
         "app",
-        "ts",
         ".storybook/mocks"
     ],
     "references": [

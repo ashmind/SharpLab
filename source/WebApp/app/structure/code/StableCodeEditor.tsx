@@ -126,13 +126,14 @@ export const StableCodeEditor: React.FC<Props> = ({
     }, [instance, defaultCode]);
 
     useEffect(() => {
+        const instance = instanceRef.current;
         if (!instance)
             return;
 
         const code = instance.getCodeMirror().getValue();
         if (loadedCode !== code)
             instance.setText(loadedCode);
-    }, [instance, loadedCode]);
+    }, [instanceRef, loadedCode]);
 
     useEffect(() => {
         if (!instance || language === optionsRef.current.language)

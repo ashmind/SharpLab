@@ -142,7 +142,6 @@
     ],
     "eslint.lintTask.enable": true,
     "eslint.lintTask.options": ". --max-warnings 0 --ext .js,.ts",
-    "jest.pathToJest": "npm run test --",
     "search.exclude": {
         "/.git/": true,
         "/node_modules/": true,
