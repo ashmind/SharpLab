@@ -1,6 +1,8 @@
+import { promisify } from 'util';
 import { task, exec, build as run } from 'oldowan';
 import jetpack from 'fs-jetpack';
 import waitOn from 'wait-on';
+import kill from 'tree-kill';
 import { exec2, outputSharedRoot } from './scripts/shared';
 import { less } from './scripts/less';
 import { ts } from './scripts/ts';
@@ -49,13 +51,44 @@ task('build-ci', async () => {
 });
 
 task('test-storybook-ci', async () => {
-    await exec2('build-storybook', [], { env: { NODE_ENV: 'test' } });
-    void(exec2('http-server', ['storybook-static', '--port', '6006', '--silent']));
-    await waitOn({
-        resources: ['http://localhost:6006'],
-        timeout: 10000
-    });
-    await exec('test-storybook');
+    // await exec2('build-storybook', [], { env: { NODE_ENV: 'test' } });
+    console.log('http-server: starting');
+    const server = exec2('http-server', ['storybook-static', '--port', '6006', '--silent']);
+    console.log('docker: starting');
+    const docker = exec2('docker', [
+        'container', 'run',
+        '-p', '9222:9222',
+        '--rm',
+        '--security-opt',
+        `seccomp=${dirname}/scripts/chrome.seccomp.json`,
+        'zenika/alpine-chrome:102',
+        '--remote-debugging-address=0.0.0.0',
+        `--remote-debugging-port=9222`,
+        'about:blank'
+    ]);
+    try {
+        await waitOn({
+            resources: [
+                'http://localhost:6006',
+                'http://localhost:9222'
+            ],
+            timeout: 60000
+        });
+        await exec('test-storybook');
+    }
+    finally {
+        if (!server.killed) {
+            console.log('http-server: terminating');
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            await promisify(kill)(server.pid!);
+        }
+
+        if (!docker.killed) {
+            console.log('docker: terminating');
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            await promisify(kill)(docker.pid!);
+        }
+    }
 });
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

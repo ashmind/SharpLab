@@ -14,7 +14,8 @@
     },
     "include": [
         "app",
-        ".storybook/mocks"
+        ".storybook/mocks",
+        "playwright.config.*"
     ],
     "references": [
         { "path": "./tsconfig.scripts.json" },
