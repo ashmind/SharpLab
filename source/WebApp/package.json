@@ -11,7 +11,8 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "test-storybook": "test-storybook",
-    "test-storybook-ci": "ts-node-script ./scripts.ts test-storybook-ci"
+    "test-storybook-ci": "ts-node-script ./scripts.ts test-storybook-ci",
+    "test-storybook-ci-in-container": "ts-node-script ./scripts.ts test-storybook-ci-in-container"
   },
   "engines": {
     "node": ">=16.14.2"

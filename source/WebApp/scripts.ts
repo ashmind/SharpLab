@@ -50,30 +50,16 @@ task('build-ci', async () => {
     await zip();
 });
 
-task('test-storybook-ci', async () => {
-    // await exec2('build-storybook', [], { env: { NODE_ENV: 'test' } });
+task('test-storybook-ci-in-container', async () => {
     console.log('http-server: starting');
     const server = exec2('http-server', ['storybook-static', '--port', '6006', '--silent']);
-    console.log('docker: starting');
-    const docker = exec2('docker', [
-        'container', 'run',
-        '-p', '9222:9222',
-        '--rm',
-        '--security-opt',
-        `seccomp=${dirname}/scripts/chrome.seccomp.json`,
-        'zenika/alpine-chrome:102',
-        '--remote-debugging-address=0.0.0.0',
-        `--remote-debugging-port=9222`,
-        'about:blank'
-    ]);
     try {
         await waitOn({
-            resources: [
-                'http://localhost:6006',
-                'http://localhost:9222'
-            ],
-            timeout: 60000
+            resources: ['http://localhost:6006'],
+            timeout: 10000
         });
+        console.log('http-server: ready');
+        console.log('Starting Storybook tests...');
         await exec('test-storybook');
     }
     finally {
@@ -82,13 +68,27 @@ task('test-storybook-ci', async () => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             await promisify(kill)(server.pid!);
         }
-
-        if (!docker.killed) {
-            console.log('docker: terminating');
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            await promisify(kill)(docker.pid!);
-        }
     }
+}, {
+    timeout: 20 * 60 * 1000
+});
+
+task('test-storybook-ci', async () => {
+    console.log('Building Storybook...');
+    await exec2('build-storybook', [], { env: { NODE_ENV: 'test' } });
+
+    console.log('Starting Docker...');
+    await exec2('docker', [
+        'run',
+        '--rm',
+        '--ipc=host',
+        `--volume=${dirname}:/work`,
+        '--workdir=/work',
+        'mcr.microsoft.com/playwright:v1.22.2-focal',
+        'npm', 'run', 'test-storybook-ci-in-container'
+    ]);
+}, {
+    timeout: 20 * 60 * 1000
 });
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
