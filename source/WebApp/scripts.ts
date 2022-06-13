@@ -12,6 +12,7 @@ import { manifest } from './scripts/manifest';
 import { html, htmlOutputPath } from './scripts/html';
 
 const dirname = __dirname;
+const UPDATE_SNAPSHOTS_KEY = 'SL_CI_UPDATE_SNAPSHOTS';
 
 const latest = task('latest', () => jetpack.writeAsync(
     `${outputSharedRoot}/latest`, htmlOutputPath.replace(outputSharedRoot, '').replace(/^[\\/]/, '')
@@ -59,8 +60,10 @@ task('test-storybook-ci-in-container', async () => {
             timeout: 10000
         });
         console.log('http-server: ready');
-        console.log('Starting Storybook tests...');
-        await exec('test-storybook');
+
+        const updateSnapshots = process.env[UPDATE_SNAPSHOTS_KEY] === 'true';
+        console.log(`Starting Storybook tests${updateSnapshots ? ' (with snapshot update)' : ''}...`);
+        await exec2('test-storybook', updateSnapshots ? ['--', '--updateSnapshot'] : []);
     }
     finally {
         if (!server.killed) {
@@ -74,8 +77,8 @@ task('test-storybook-ci-in-container', async () => {
 });
 
 task('test-storybook-ci', async () => {
-    console.log('Building Storybook...');
-    await exec2('build-storybook', [], { env: { NODE_ENV: 'test' } });
+    // console.log('Building Storybook...');
+    // await exec2('build-storybook', [], { env: { NODE_ENV: 'test' } });
 
     console.log('Starting Docker...');
     await exec2('docker', [
@@ -84,6 +87,7 @@ task('test-storybook-ci', async () => {
         '--ipc=host',
         `--volume=${dirname}:/work`,
         '--workdir=/work',
+        ...(process.env[UPDATE_SNAPSHOTS_KEY] === 'true' ? ['--env', `${UPDATE_SNAPSHOTS_KEY}=true`] : []),
         'mcr.microsoft.com/playwright:v1.22.2-focal',
         'npm', 'run', 'test-storybook-ci-in-container'
     ]);
