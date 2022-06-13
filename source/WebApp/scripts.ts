@@ -12,7 +12,7 @@ import { manifest } from './scripts/manifest';
 import { html, htmlOutputPath } from './scripts/html';
 
 const dirname = __dirname;
-const UPDATE_SNAPSHOTS_KEY = 'SL_CI_UPDATE_SNAPSHOTS';
+const UPDATE_SNAPSHOTS_KEY = 'SHARPLAB_TEST_UPDATE_SNAPSHOTS';
 
 const latest = task('latest', () => jetpack.writeAsync(
     `${outputSharedRoot}/latest`, htmlOutputPath.replace(outputSharedRoot, '').replace(/^[\\/]/, '')

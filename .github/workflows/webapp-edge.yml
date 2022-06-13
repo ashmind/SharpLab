@@ -48,6 +48,25 @@ jobs:
       - run: npm run test-storybook-ci
 
       - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: __diff_output__
+          path: source/WebApp/app/**/__image_snapshots__/__diff_output__/**/*.*
+          if-no-files-found: ignore
+
+      - run: npm run test-storybook-ci
+        if: failure()
+        env:
+          SHARPLAB_TEST_UPDATE_SNAPSHOTS: 'true'
+
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: '__image_snapshots__ (updated)'
+          path: source/WebApp/app/**/__image_snapshots__/**/*.*
+          if-no-files-found: ignore
+
+      - uses: actions/upload-artifact@v2
         with:
           name: WebApp
           path: source/WebApp/WebApp.zip
