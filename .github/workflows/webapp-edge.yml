@@ -21,6 +21,9 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: 'true'
+          lfs: 'true'
+
+      - run: git lfs checkout
 
       - uses: actions/setup-node@v1
         with:
@@ -51,19 +54,22 @@ jobs:
           NODE_ENV: test
       - run: npm run test-storybook-ci
 
-      - uses: actions/upload-artifact@v2
+      - name: "[Failure] Run actions/upload-artifact@v2 (diff output)"
+        uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: __diff_output__
           path: source/WebApp/app/**/__image_snapshots__/__diff_output__/**/*.*
           if-no-files-found: ignore
 
-      - run: npm run test-storybook-ci
+      - name: "[Failure] Run npm run test-storybook-ci (update)"
+        run: npm run test-storybook-ci
         if: failure()
         env:
           SHARPLAB_TEST_UPDATE_SNAPSHOTS: 'true'
 
-      - uses: actions/upload-artifact@v2
+      - name: "[Failure] Run actions/upload-artifact@v2 (updated snapshots)"
+        uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: '__image_snapshots__ (updated)'
