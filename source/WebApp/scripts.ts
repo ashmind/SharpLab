@@ -1,5 +1,5 @@
 import { promisify } from 'util';
-import { task, exec, build as run } from 'oldowan';
+import { task, build as run } from 'oldowan';
 import jetpack from 'fs-jetpack';
 import waitOn from 'wait-on';
 import kill from 'tree-kill';
