@@ -77,9 +77,6 @@ task('test-storybook-ci-in-container', async () => {
 });
 
 task('test-storybook-ci', async () => {
-    console.log('Building Storybook...');
-    await exec2('build-storybook', [], { env: { NODE_ENV: 'test' } });
-
     console.log('Starting Docker...');
     await exec2('docker', [
         'run',

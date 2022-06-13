@@ -45,6 +45,10 @@ jobs:
           SHARPLAB_WEBAPP_BUILD_VERSION: ${{ steps.version.outputs.version_number }}
 
       - run: npm run test
+
+      - run: npm run build-storybook
+        env:
+          NODE_ENV: test
       - run: npm run test-storybook-ci
 
       - uses: actions/upload-artifact@v2
