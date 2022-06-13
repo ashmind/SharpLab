@@ -59,7 +59,7 @@ jobs:
         if: failure()
         with:
           name: __diff_output__
-          path: source/WebApp/app/**/__image_snapshots__/__diff_output__/**/*.*
+          path: source/WebApp/app/**/__snapshots__/__diff_output__/**/*.*
           if-no-files-found: ignore
 
       - name: "[Failure] Run npm run test-storybook-ci (update)"
@@ -72,8 +72,8 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: '__image_snapshots__ (updated)'
-          path: source/WebApp/app/**/__image_snapshots__/**/*.*
+          name: '__snapshots__ (updated)'
+          path: source/WebApp/app/**/__snapshots__/**/*.*
           if-no-files-found: ignore
 
       - uses: actions/upload-artifact@v2
