@@ -57,7 +57,7 @@ task('test-storybook-ci-in-container', async () => {
     try {
         await waitOn({
             resources: ['http://localhost:6006'],
-            timeout: 10000
+            timeout: 120000
         });
         console.log('http-server: ready');
 
@@ -77,8 +77,8 @@ task('test-storybook-ci-in-container', async () => {
 });
 
 task('test-storybook-ci', async () => {
-    // console.log('Building Storybook...');
-    // await exec2('build-storybook', [], { env: { NODE_ENV: 'test' } });
+    console.log('Building Storybook...');
+    await exec2('build-storybook', [], { env: { NODE_ENV: 'test' } });
 
     console.log('Starting Docker...');
     await exec2('docker', [
