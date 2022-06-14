@@ -5,8 +5,12 @@ module.exports = {
         expect.extend({ toMatchImageSnapshot });
     },
 
+    /**
+     * @param {import('playwright').Page} page
+     * @param {*} context
+     */
     async postRender(page, context) {
-        const image = await page.screenshot();
+        const image = await page.screenshot({ animations: 'disabled' });
 
         const storyPathParts = context.title.split('/');
         const storyFileName = storyPathParts.pop();
