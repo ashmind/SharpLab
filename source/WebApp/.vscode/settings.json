@@ -147,7 +147,8 @@
     "search.exclude": {
         "/.git/": true,
         "/node_modules/": true,
-        "/public/": true
+        "/public/": true,
+        "/storybook-static/": true
     },
     "typescript.tsdk": "./node_modules/typescript/lib",
     "editor.codeActionsOnSave": {

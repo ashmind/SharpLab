@@ -15,7 +15,8 @@
     "plugins": [
         "@typescript-eslint",
         "import",
-        "react-hooks"
+        "react-hooks",
+        "storybook"
     ],
     "extends": [
         "eslint:recommended",
@@ -23,7 +24,8 @@
         "plugin:@typescript-eslint/recommended",
         "plugin:import/errors",
         "plugin:import/warnings",
-        "plugin:react-hooks/recommended"
+        "plugin:react-hooks/recommended",
+        "plugin:storybook/recommended"
     ],
     "env": {
         "node": true

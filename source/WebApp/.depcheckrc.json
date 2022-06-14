@@ -1,0 +1,27 @@
+{
+    "ignores": [
+        "@babel/core",
+        "@babel/preset-env",
+        "@fontsource/*",
+        "@storybook/*",
+        "@types/applicationinsights-js",
+        "@types/css-font-loading-module",
+        "babel-loader",
+        "codemirror-addon-infotip",
+        "codemirror-addon-lint-fix",
+        "less-loader",
+        "normalize.css",
+        "playwright",
+
+        "depcheck",
+        "esbuild",
+        "http-server",
+
+        "d3-force"
+    ],
+    "specials": [
+        "bin",
+        "eslint",
+        "jest"
+    ]
+}

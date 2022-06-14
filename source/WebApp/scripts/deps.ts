@@ -1,7 +1,9 @@
 import execa from 'execa';
-import { task } from 'oldowan';
+import { exec, task } from 'oldowan';
 
-const depsCheckDuplicates = task('deps:check-duplicates', async () => {
+const unused = task('deps:unused', () => exec('depcheck'));
+
+const duplicates = task('deps:duplicates', async () => {
     const output = (await execa('npm', ['find-dupes'])).stdout;
     // https://github.com/npm/cli/issues/2687
     const potentialDuplicatesOutput = output
@@ -14,5 +16,6 @@ const depsCheckDuplicates = task('deps:check-duplicates', async () => {
 });
 
 export const deps = task('deps', () => Promise.all([
-    depsCheckDuplicates()
+    unused(),
+    duplicates()
 ]));
