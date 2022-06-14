@@ -52,7 +52,7 @@ const Template: React.FC<TemplateProps> = ({ offline, error, dark }) => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const svg = faviconLinks.find(l => l.props.type === 'image/svg+xml')!;
     const firstColumnStyle = { minWidth: '5em' } as const;
-    const results: Array<React.ReactNode> = [<tr>
+    const rows: Array<React.ReactNode> = [<tr key='svg'>
         <td style={firstColumnStyle}>SVG</td>
         <td><img src={svg.props.href} width="64" height="64" /></td>
     </tr>];
@@ -60,16 +60,20 @@ const Template: React.FC<TemplateProps> = ({ offline, error, dark }) => {
     const nonSvg = faviconLinks.filter(l => l !== svg);
     if (!nonSvg.every(l => l.props.href.startsWith('data:'))) {
         return <>
-            <table>{results}</table>
+            <table>
+                <tbody>{rows}</tbody>
+            </table>
             Default images other than SVG are not available in Storybook at the moment.
         </>;
     }
 
-    results.push(nonSvg.map((link, index) => <tr key={index}>
+    rows.push(nonSvg.map((link, index) => <tr key={index}>
         <td style={firstColumnStyle}>{link.props.sizes}</td>
         <td><img src={link.props.href} /></td>
     </tr>));
-    return <table>{results}</table>;
+    return <table>
+        <tbody>{rows}</tbody>
+    </table>;
 };
 
 export const Default = () => <Template />;
