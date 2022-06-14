@@ -5,6 +5,7 @@
   "scripts": {
     "build": "ts-node-script ./scripts.ts build",
     "lint": "ts-node-script ./scripts.ts ts:lint",
+    "less": "ts-node-script ./scripts.ts less",
     "test": "jest",
     "start": "ts-node-script ./scripts.ts start --watch",
     "build-ci": "ts-node-script ./scripts.ts build-ci",
@@ -68,6 +69,7 @@
     "@types/marked": "4.0.3",
     "@types/node": "16.11.4",
     "@types/node-fetch": "2.6.1",
+    "@types/postcss-url": "10.0.0",
     "@types/proper-lockfile": "4.1.2",
     "@types/puppeteer": "5.4.5",
     "@types/react": "18.0.5",
@@ -100,6 +102,7 @@
     "oldowan": "1.0.0",
     "postcss": "8.4.12",
     "postcss-csso": "6.0.0",
+    "postcss-url": "10.1.3",
     "proper-lockfile": "4.1.2",
     "puppeteer": "13.5.2",
     "react-test-renderer": "18.0.0",
@@ -113,6 +116,8 @@
     "webpack-stats-plugin": "1.0.3"
   },
   "dependencies": {
+    "@fontsource/open-sans": "4.5.10",
+    "@fontsource/roboto-condensed": "4.5.8",
     "base64-arraybuffer": "1.0.1",
     "clean-css": "4.2.1",
     "codemirror": "5.61.1",
