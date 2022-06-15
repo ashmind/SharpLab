@@ -1,11 +1,30 @@
 using System;
 
 namespace SharpLab.Runtime.Internal {
-    public static class ContainerFlow {
+    public static class Flow {
         public const int UnknownLineNumber = -1;
+
+        public static void ReportMethodArea(int startLineNumber, int endLineNumber) {
+            RuntimeServices.FlowWriter.WriteArea(FlowAreaKind.Method, startLineNumber, endLineNumber);
+        }
+
+        public static void ReportLoopArea(int startLineNumber, int endLineNumber) {
+            RuntimeServices.FlowWriter.WriteArea(FlowAreaKind.Loop, startLineNumber, endLineNumber);
+        }
 
         public static void ReportLineStart(int lineNumber) {
             RuntimeServices.FlowWriter.WriteLineVisit(lineNumber);
+        }
+        public static void ReportJump() {
+            RuntimeServices.FlowWriter.WriteTag(FlowRecordTag.Jump);
+        }
+
+        public static void ReportLoopStart() {
+            RuntimeServices.FlowWriter.WriteTag(FlowRecordTag.LoopStart);
+        }
+
+        public static void ReportLoopEnd() {
+            RuntimeServices.FlowWriter.WriteTag(FlowRecordTag.LoopEnd);
         }
 
         public static void ReportRefValue<T>(ref T value, string? name, int lineNumber) {

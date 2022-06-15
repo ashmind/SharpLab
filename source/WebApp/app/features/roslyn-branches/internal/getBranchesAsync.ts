@@ -20,7 +20,7 @@ const branchesUrl = (() => {
     }
 })();
 
-export async function getBranchesAsync(): Promise<ReadonlyArray<Branch>> {
+export const getBranchesAsync = async (): Promise<ReadonlyArray<Branch>> => {
     try {
         const branches = await (await fetch(branchesUrl)).json() as ReadonlyArray<Omit<Branch, 'commits'> & {
             commits?: ReadonlyArray<Omit<BranchCommit, 'date'> & { date: string }>;
@@ -37,4 +37,4 @@ export async function getBranchesAsync(): Promise<ReadonlyArray<Branch>> {
     catch (e) {
         return [];
     }
-}
+};

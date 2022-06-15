@@ -6,11 +6,11 @@ import '../../shared/codemirror/addon-jump-arrows';
 import '../../shared/codemirror/mode-cil';
 import { useRecoilValue } from 'recoil';
 import { useEditorCodeRangeSync } from '../../features/code-range-sync/useEditorCodeRangeSync';
-import type { Result, FlowStep } from '../../shared/resultTypes';
+import type { Result, Flow, FlowArea } from '../../shared/resultTypes';
 import { languageOptionState } from '../../shared/state/languageOptionState';
 import { loadedCodeState } from '../../shared/state/loadedCodeState';
 import { defaultCodeSelector, isDefaultCode } from '../../shared/state/defaultCodeSelector';
-import { useRenderExecutionFlow } from './internal/useRenderExecutionFlow';
+import { useRenderExecutionFlow } from '../../features/execution-flow/useRenderExecutionFlow';
 import { useServerOptions } from './internal/useServerOptions';
 import { useServiceUrl } from './internal/useServiceUrl';
 import type { ServerOptions } from './internal/ServerOptions';
@@ -19,7 +19,10 @@ type ResultData = Result['value'];
 
 type Props = {
     initialCached: boolean;
-    executionFlow: ReadonlyArray<FlowStep> | null;
+    executionFlow: Flow | null;
+
+    // Test/Storybook only (for now)
+    initialExecutionFlowSelectRule?: (area: FlowArea) => number | null;
 
     onSlowUpdateWait: () => void;
     onSlowUpdateResult: (value: MirrorSharpSlowUpdateResult<ResultData>) => void;
@@ -38,6 +41,8 @@ const useUpdatingRef = <T, >(value: T) => {
 export const StableCodeEditor: React.FC<Props> = ({
     initialCached,
     executionFlow,
+
+    initialExecutionFlowSelectRule,
 
     onSlowUpdateWait,
     onSlowUpdateResult,
@@ -166,7 +171,7 @@ export const StableCodeEditor: React.FC<Props> = ({
 
     const cm = instance?.getCodeMirror();
     useEditorCodeRangeSync(cm);
-    useRenderExecutionFlow(executionFlow, cm);
+    useRenderExecutionFlow(cm, executionFlow, initialExecutionFlowSelectRule);
 
     return <textarea ref={textareaRef}></textarea>;
 };

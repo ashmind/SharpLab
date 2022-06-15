@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -13,74 +15,116 @@ using SharpLab.Server.Common;
 using SharpLab.Server.Common.Diagnostics;
 
 namespace SharpLab.Server.Execution.Internal {
-    public class ContainerFlowReportingRewriter : IContainerAssemblyRewriter {
+    public class FlowReportingRewriter : IAssemblyRewriter {
         private const int HiddenLine = 0xFEEFEE;
 
+        private static readonly MethodInfo ReportMethodAreaMethod =
+            typeof(Flow).GetMethod(nameof(Flow.ReportMethodArea))!;
+        private static readonly MethodInfo ReportLoopAreaMethod =
+            typeof(Flow).GetMethod(nameof(Flow.ReportLoopArea))!;
+
         private static readonly MethodInfo ReportLineStartMethod =
-            typeof(ContainerFlow).GetMethod(nameof(ContainerFlow.ReportLineStart))!;
+            typeof(Flow).GetMethod(nameof(Flow.ReportLineStart))!;
+
+        private static readonly MethodInfo ReportJumpMethod =
+            typeof(Flow).GetMethod(nameof(Flow.ReportJump))!;
+
         private static readonly MethodInfo ReportValueMethod =
-            typeof(ContainerFlow).GetMethod(nameof(ContainerFlow.ReportValue))!;
+            typeof(Flow).GetMethod(nameof(Flow.ReportValue))!;
         private static readonly MethodInfo ReportRefValueMethod =
-            typeof(ContainerFlow).GetMethod(nameof(ContainerFlow.ReportRefValue))!;
+            typeof(Flow).GetMethod(nameof(Flow.ReportRefValue))!;
         private static readonly MethodInfo ReportSpanValueMethod =
-            typeof(ContainerFlow).GetMethod(nameof(ContainerFlow.ReportSpanValue))!;
+            typeof(Flow).GetMethod(nameof(Flow.ReportSpanValue))!;
         private static readonly MethodInfo ReportRefSpanValueMethod =
-            typeof(ContainerFlow).GetMethod(nameof(ContainerFlow.ReportRefSpanValue))!;
+            typeof(Flow).GetMethod(nameof(Flow.ReportRefSpanValue))!;
         private static readonly MethodInfo ReportReadOnlySpanValueMethod =
-            typeof(ContainerFlow).GetMethod(nameof(ContainerFlow.ReportReadOnlySpanValue))!;
+            typeof(Flow).GetMethod(nameof(Flow.ReportReadOnlySpanValue))!;
         private static readonly MethodInfo ReportRefReadOnlySpanValueMethod =
-            typeof(ContainerFlow).GetMethod(nameof(ContainerFlow.ReportRefReadOnlySpanValue))!;
+            typeof(Flow).GetMethod(nameof(Flow.ReportRefReadOnlySpanValue))!;
+
         private static readonly MethodInfo ReportExceptionMethod =
-            typeof(ContainerFlow).GetMethod(nameof(ContainerFlow.ReportException))!;
+            typeof(Flow).GetMethod(nameof(Flow.ReportException))!;
 
         private readonly IReadOnlyDictionary<string, ILanguageAdapter> _languages;
 
-        public ContainerFlowReportingRewriter(IReadOnlyList<ILanguageAdapter> languages) {
+        public FlowReportingRewriter(IReadOnlyList<ILanguageAdapter> languages) {
             _languages = languages.ToDictionary(l => l.LanguageName);
         }
 
         public void Rewrite(AssemblyDefinition assembly, IWorkSession session) {
             foreach (var module in assembly.Modules) {
+                if (!module.HasTypes)
+                    continue;
+
                 foreach (var type in module.Types) {
                     if (HasFlowSupressingCalls(type))
                         return;
                 }
             }
 
+            FlowMethods mainModuleFlow = default;
             foreach (var module in assembly.Modules) {
-                var flow = new ReportMethods {
+                if (!module.HasTypes)
+                    continue;
+
+                var flow = new FlowMethods {
+                    ReportMethodArea = module.ImportReference(ReportMethodAreaMethod),
+                    ReportLoopArea = module.ImportReference(ReportLoopAreaMethod),
+
                     ReportLineStart = module.ImportReference(ReportLineStartMethod),
+
+                    ReportJump = module.ImportReference(ReportJumpMethod),
+
                     ReportValue = module.ImportReference(ReportValueMethod),
                     ReportRefValue = module.ImportReference(ReportRefValueMethod),
                     ReportSpanValue = module.ImportReference(ReportSpanValueMethod),
                     ReportRefSpanValue = module.ImportReference(ReportRefSpanValueMethod),
                     ReportReadOnlySpanValue = module.ImportReference(ReportReadOnlySpanValueMethod),
                     ReportRefReadOnlySpanValue = module.ImportReference(ReportRefReadOnlySpanValueMethod),
+
                     ReportException = module.ImportReference(ReportExceptionMethod),
                 };
+                if (module == assembly.MainModule)
+                    mainModuleFlow = flow;
                 foreach (var type in module.Types) {
                     Rewrite(type, flow, session);
+                }
+            }
+
+            var entryPointIL = assembly.MainModule.EntryPoint.Body.GetILProcessor();
+            var insertIndex = 0;
+            foreach (var module in assembly.Modules) {
+                if (!module.HasTypes)
+                    continue;
+
+                foreach (var type in module.Types) {
+                    TryInsertReportMethodAreaForAllMethods(entryPointIL, type, mainModuleFlow, ref insertIndex);
                 }
             }
         }
 
         private bool HasFlowSupressingCalls(TypeDefinition type) {
-            foreach (var method in type.Methods) {
-                if (!method.HasBody || method.Body.Instructions.Count == 0)
-                    continue;
-                foreach (var instruction in method.Body.Instructions) {
-                    var isFlowSupressing = instruction.OpCode.FlowControl == FlowControl.Call
-                        && instruction.Operand is MethodReference m
-                        && IsFlowSuppressing(m);
+            if (type.HasMethods) {
+                foreach (var method in type.Methods) {
+                    if (!method.HasBody || method.Body.Instructions.Count == 0)
+                        continue;
 
-                    if (isFlowSupressing)
-                        return true;
+                    foreach (var instruction in method.Body.Instructions) {
+                        var isFlowSupressing = instruction.OpCode.FlowControl == FlowControl.Call
+                            && instruction.Operand is MethodReference m
+                            && IsFlowSuppressing(m);
+
+                        if (isFlowSupressing)
+                            return true;
+                    }
                 }
             }
 
-            foreach (var nested in type.NestedTypes) {
-                if (HasFlowSupressingCalls(nested))
-                    return true;
+            if (type.HasNestedTypes) {
+                foreach (var nested in type.NestedTypes) {
+                    if (HasFlowSupressingCalls(nested))
+                        return true;
+                }
             }
 
             return false;
@@ -91,18 +135,63 @@ namespace SharpLab.Server.Execution.Internal {
                 && callee.DeclaringType.Name == nameof(Inspect);
         }
 
-        private void Rewrite(TypeDefinition type, ReportMethods flow, IWorkSession session) {
-            foreach (var method in type.Methods) {
-                Rewrite(method, flow, session);
+        private void TryInsertReportMethodAreaForAllMethods(ILProcessor entryPointIL, TypeDefinition type, FlowMethods flow, ref int insertIndex) {
+            if (type.HasMethods) {
+                foreach (var method in type.Methods) {
+                    TryInsertReportMethodArea(entryPointIL, method, flow, ref insertIndex);
+                }
             }
 
-            foreach (var nested in type.NestedTypes) {
-                Rewrite(nested, flow, session);
+            if (type.HasNestedTypes) {
+                foreach (var nested in type.NestedTypes) {
+                    TryInsertReportMethodAreaForAllMethods(entryPointIL, nested, flow, ref insertIndex);
+                }
             }
         }
 
-        private void Rewrite(MethodDefinition method, ReportMethods flow, IWorkSession session) {
+        private void TryInsertReportMethodArea(ILProcessor entryPointIL, MethodDefinition method, FlowMethods flow, ref int insertIndex) {
+            if (!method.HasBody || method.DebugInformation == null)
+                return;
+
+            var startLine = int.MaxValue;
+            var endLine = int.MinValue;
+            foreach (var instruction in method.Body.Instructions) {
+                var sequencePoint = method.DebugInformation.GetSequencePoint(instruction);
+                if (!HasLine(sequencePoint))
+                    continue;
+
+                startLine = Math.Min(sequencePoint.StartLine, startLine);
+                endLine = Math.Max(sequencePoint.EndLine, endLine);
+            }
+
+            if (startLine == int.MaxValue || endLine == int.MinValue)
+                return;
+
+            entryPointIL.Body.Instructions.Insert(insertIndex, entryPointIL.CreateLdcI4Best(startLine));
+            entryPointIL.Body.Instructions.Insert(insertIndex + 1, entryPointIL.CreateLdcI4Best(endLine));
+            entryPointIL.Body.Instructions.Insert(insertIndex + 2, entryPointIL.CreateCall(flow.ReportMethodArea));
+            insertIndex += 3;
+        }
+
+        private void Rewrite(TypeDefinition type, FlowMethods flow, IWorkSession session) {
+            if (type.HasMethods) {
+                foreach (var method in type.Methods) {
+                    Rewrite(method, flow, session);
+                }
+            }
+
+            if (type.HasNestedTypes) {
+                foreach (var nested in type.NestedTypes) {
+                    Rewrite(nested, flow, session);
+                }
+            }
+        }
+
+        private void Rewrite(MethodDefinition method, FlowMethods flow, IWorkSession session) {
             if (!method.HasBody || method.Body.Instructions.Count == 0)
+                return;
+
+            if (method.DebugInformation is not {} debug)
                 return;
 
             method.Body.SimplifyMacros();
@@ -110,22 +199,38 @@ namespace SharpLab.Server.Execution.Internal {
             var il = method.Body.GetILProcessor();
             var instructions = il.Body.Instructions;
             var lastLine = (int?)null;
+            var lastLoopReportIndex = 0;
             for (var i = 0; i < instructions.Count; i++) {
                 var instruction = instructions[i];
-                var sequencePoint = method.DebugInformation?.GetSequencePoint(instruction);
-                var hasSequencePoint = sequencePoint != null && sequencePoint.StartLine != HiddenLine;
-                if (!hasSequencePoint && lastLine == null)
+                                
+                var sequencePoint = debug.GetSequencePoint(instruction);
+                var hasLine = HasLine(sequencePoint);
+                if (!hasLine && lastLine == null)
                     continue;
 
-                if (hasSequencePoint && sequencePoint!.StartLine != lastLine) {
-                    if (i == 0)
+                if (hasLine && sequencePoint!.StartLine != lastLine) {
+                    var isMethodStart = i == 0;
+                    if (isMethodStart)
                         TryInsertReportMethodArguments(il, instruction, sequencePoint, method, flow, session, ref i);
 
                     il.InsertBeforeAndRetargetAll(instruction, il.CreateLdcI4Best(sequencePoint.StartLine));
                     il.InsertBefore(instruction, il.CreateCall(flow.ReportLineStart));
                     i += 2;
+
                     lastLine = sequencePoint.StartLine;
                 }
+                
+                var isJump = instruction.OpCode.FlowControl
+                          is FlowControl.Branch
+                          or FlowControl.Cond_Branch
+                          or FlowControl.Call
+                          or FlowControl.Return;
+                if (isJump) {
+                    il.InsertBefore(instruction, il.CreateCall(flow.ReportJump));
+                    i += 1;
+                }
+
+                TryInsertReportLoopArea(il, instruction, debug, flow, ref i, ref lastLoopReportIndex);
 
                 var valueOrNull = GetValueToReport(instruction, il, session);
                 if (valueOrNull == null)
@@ -135,17 +240,17 @@ namespace SharpLab.Server.Execution.Internal {
                 InsertReportValue(
                     il, instruction,
                     il.Create(OpCodes.Dup), value.type, value.name,
-                    sequencePoint?.StartLine ?? lastLine ?? ContainerFlow.UnknownLineNumber,
+                    sequencePoint?.StartLine ?? lastLine ?? Flow.UnknownLineNumber,
                     flow, ref i
                 );
             }
 
-            RewriteExceptionHandlers(il, flow);
+            RewriteExceptionHandlers(il, flow);            
 
             method.Body.OptimizeMacros();
         }
 
-        private void TryInsertReportMethodArguments(ILProcessor il, Instruction instruction, SequencePoint sequencePoint, MethodDefinition method, ReportMethods flow, IWorkSession session, ref int index) {
+        private void TryInsertReportMethodArguments(ILProcessor il, Instruction instruction, SequencePoint sequencePoint, MethodDefinition method, FlowMethods flow, IWorkSession session, ref int index) {
             if (!method.HasParameters)
                 return;
 
@@ -173,6 +278,53 @@ namespace SharpLab.Server.Execution.Internal {
                     ref index
                 );
             }
+        }
+
+        private void TryInsertReportLoopArea(
+            ILProcessor il,
+            Instruction instruction,
+            MethodDebugInformation debug,
+            FlowMethods flow,
+            ref int index,
+            ref int lastLoopReportIndex
+        ) {
+            if (instruction.OpCode.FlowControl != FlowControl.Cond_Branch)
+                return;
+            
+            if (instruction.Operand is not Instruction start)
+                return;
+
+            if (start.Offset >= instruction.Offset)
+                return;
+
+            var startPoint = debug.GetSequencePoint(start);
+            if (!HasLine(startPoint))
+                return;
+
+            var startLine = startPoint.StartLine;
+            if (FindLoopEndLine(instruction, start, startLine, debug, flow) is not {} endLine)
+                return;
+
+            il.Body.Instructions.Insert(lastLoopReportIndex, il.CreateLdcI4Best(startLine));
+            il.Body.Instructions.Insert(lastLoopReportIndex + 1, il.CreateLdcI4Best(endLine));
+            il.Body.Instructions.Insert(lastLoopReportIndex + 2, il.CreateCall(flow.ReportLoopArea));
+            lastLoopReportIndex += 3;
+            index += 3;
+        }
+
+        private int? FindLoopEndLine(Instruction end, Instruction start, int startLine, MethodDebugInformation debug, FlowMethods flow) {
+            // Naive approach to end line can sometimes capture start line instead.
+            // For something like 'while (condition)' in C# the condition is
+            // located on the line of 'while', but in IL it is checked _before_ the
+            // jump back.
+            var previous = end.Previous;
+            while (previous != null && previous != start) {
+                var point = debug.GetSequencePoint(previous);
+                if (HasLine(point) && point.EndLine > startLine)
+                    return point.EndLine;
+                previous = previous.Previous;
+            }
+            return null;
         }
 
         private (string name, TypeReference type)? GetValueToReport(Instruction instruction, ILProcessor il, IWorkSession session) {
@@ -205,7 +357,7 @@ namespace SharpLab.Server.Execution.Internal {
             TypeReference valueType,
             string valueName,
             int line,
-            ReportMethods flow,
+            FlowMethods flow,
             ref int index
         ) {
             var report = PrepareReportValue(valueType, flow);
@@ -219,7 +371,7 @@ namespace SharpLab.Server.Execution.Internal {
             index += 4;
         }
 
-        private GenericInstanceMethod? PrepareReportValue(TypeReference valueType, ReportMethods flow) {
+        private GenericInstanceMethod? PrepareReportValue(TypeReference valueType, FlowMethods flow) {
             if (valueType.IsPointer || valueType.IsFunctionPointer)
                 return null;
 
@@ -252,7 +404,7 @@ namespace SharpLab.Server.Execution.Internal {
             return new GenericInstanceMethod(reportAnyNonSpan) { GenericArguments = { valueType } };
         }
 
-        private void RewriteExceptionHandlers(ILProcessor il, ReportMethods flow) {
+        private void RewriteExceptionHandlers(ILProcessor il, FlowMethods flow) {
             if (!il.Body.HasExceptionHandlers)
                 return;
 
@@ -304,12 +456,12 @@ namespace SharpLab.Server.Execution.Internal {
             }
         }
 
-        private void RewriteCatch(Instruction start, ILProcessor il, ReportMethods flow) {
+        private void RewriteCatch(Instruction start, ILProcessor il, FlowMethods flow) {
             il.InsertBeforeAndRetargetAll(start, il.Create(OpCodes.Dup));
             il.InsertBefore(start, il.CreateCall(flow.ReportException));
         }
 
-        private void RewriteFinally(ExceptionHandler handler, ref int handlerIndex, ILProcessor il, ReportMethods flow) {
+        private void RewriteFinally(ExceptionHandler handler, ref int handlerIndex, ILProcessor il, FlowMethods flow) {
             // for try/finally, the only thing we can do is to
             // wrap internals of try into a new try+filter+catch
             var outerTryLeave = handler.TryEnd.Previous;
@@ -337,6 +489,10 @@ namespace SharpLab.Server.Execution.Internal {
                 HandlerEnd = outerTryLeave
             });
             handlerIndex += 1;
+        }
+
+        private bool HasLine([NotNullWhen(true)] SequencePoint? point) {
+            return point != null && !point.IsHidden;
         }
 
         private void InsertAfter(ILProcessor il, ref Instruction target, ref int index, Instruction instruction) {
@@ -406,8 +562,11 @@ namespace SharpLab.Server.Execution.Internal {
             #endif
         }
 
-        private struct ReportMethods {
+        private struct FlowMethods {
+            public MethodReference ReportMethodArea { get; set; }
+            public MethodReference ReportLoopArea { get; set; }
             public MethodReference ReportLineStart { get; set; }
+            public MethodReference ReportJump { get; set; }
             public MethodReference ReportValue { get; set; }
             public MethodReference ReportRefValue { get; set; }
             public MethodReference ReportSpanValue { get; set; }

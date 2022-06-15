@@ -1,5 +1,6 @@
 import React from 'react';
 import type { OutputItem } from '../../shared/resultTypes';
+import type { LanguageName } from '../../shared/languages';
 import { SimpleOutput } from './internal/SimpleOutput';
 import { MemoryOutput } from './internal/MemoryOutput';
 import { MemoryGraphOutput } from './internal/MemoryGraphOutput';
@@ -7,6 +8,9 @@ import { GroupOutput, InspectionGroup } from './internal/GroupOutput';
 
 type Props = {
     output: ReadonlyArray<OutputItem|InspectionGroup>;
+
+    sourceCode: string;
+    sourceLanguage: LanguageName;
 };
 
 export const OutputView: React.FC<Props> = ({ output }) => {

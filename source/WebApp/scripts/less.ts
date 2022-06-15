@@ -60,6 +60,6 @@ export const less = task('less', async () => {
     await Promise.all([
         jetpack.writeAsync(outputPath, css),
         jetpack.writeAsync(outputPath + '.map', JSON.stringify(map)),
-        ...fonts.map(([from, to]) => jetpack.copyAsync(from, to))
+        ...fonts.map(([from, to]) => jetpack.copyAsync(from, to, { overwrite: true }))
     ]);
 }, { watch: [`${inputRoot}/less/**/*.less`] });

@@ -1,5 +1,8 @@
 import React from 'react';
+import { LANGUAGE_CSHARP } from '../../shared/languages';
+import type { OutputItem } from '../../shared/resultTypes';
 import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
+import type { InspectionGroup } from './internal/GroupOutput';
 import { OutputView } from './OutputView';
 
 export default {
@@ -22,8 +25,15 @@ export const EXAMPLE_OUTPUT = [
     }
 ] as const;
 
-export const Empty = () => <OutputView output={[]} />;
+type TemplateProps = {
+    output: ReadonlyArray<OutputItem|InspectionGroup>;
+};
+const Template: React.FC<TemplateProps> = ({ output }) => {
+    return <OutputView output={output} sourceCode={''} sourceLanguage={LANGUAGE_CSHARP} />;
+};
+
+export const Empty = () => <Template output={[]} />;
 export const EmptyDarkMode = () => <DarkModeRoot><Empty /></DarkModeRoot>;
 
-export const Full = () => <OutputView output={EXAMPLE_OUTPUT} />;
+export const Full = () => <Template output={EXAMPLE_OUTPUT} />;
 export const FullDarkMode = () => <DarkModeRoot><Full /></DarkModeRoot>;

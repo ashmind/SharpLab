@@ -64,7 +64,10 @@ namespace SharpLab.Container.Runtime {
                 case int i:
                     AppendNumber(output, i, out byteCount);
                     break;
-                case ICollection<int> c:
+                case IReadOnlyCollection<int> c:
+                    AppendEnumerable(output, c, depth, limits, out byteCount);
+                    break;
+                case IReadOnlyCollection<char> c:
                     AppendEnumerable(output, c, depth, limits, out byteCount);
                     break;
                 case ICollection c:

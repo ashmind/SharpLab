@@ -5,6 +5,7 @@
   "scripts": {
     "build": "ts-node-script ./scripts.ts build",
     "lint": "ts-node-script ./scripts.ts ts:lint",
+    "type-check": "ts-node-script ./scripts.ts ts:type-check",
     "less": "ts-node-script ./scripts.ts less",
     "test": "jest",
     "start": "ts-node-script ./scripts.ts start --watch",
@@ -110,6 +111,7 @@
   "dependencies": {
     "@fontsource/open-sans": "4.5.10",
     "@fontsource/roboto-condensed": "4.5.8",
+    "array.prototype.grouptomap": "1.1.1",
     "base64-arraybuffer": "1.0.1",
     "codemirror": "5.61.1",
     "codemirror-addon-infotip": "1.0.0",

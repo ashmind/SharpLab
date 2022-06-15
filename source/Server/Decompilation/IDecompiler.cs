@@ -1,10 +1,10 @@
 using System.IO;
-using JetBrains.Annotations;
+using MirrorSharp.Advanced;
 using SharpLab.Server.Common;
 
 namespace SharpLab.Server.Decompilation {
     public interface IDecompiler {
-        [NotNull] string LanguageName { get; }
-        void Decompile([NotNull] CompilationStreamPair streams, [NotNull] TextWriter codeWriter);
+        string LanguageName { get; }
+        void Decompile(CompilationStreamPair streams, TextWriter codeWriter, IWorkSession session);
     }
 }

@@ -29,6 +29,11 @@ namespace SharpLab.Container.Runtime {
         // Flow
         public static readonly JsonEncodedText Flow = Encode("flow");
         public static readonly JsonEncodedText Exception = Encode("exception");
+        public static readonly JsonEncodedText MethodAreaCode = Encode("m");
+        public static readonly JsonEncodedText LoopAreaCode = Encode("l");
+        public static readonly JsonEncodedText JumpCode = Encode("j");
+        public static readonly JsonEncodedText LoopStartCode = Encode("ls");
+        public static readonly JsonEncodedText LoopEndCode = Encode("le");
 
         private static JsonEncodedText Encode(string text) => JsonEncodedText.Encode(text, JavaScriptEncoder.UnsafeRelaxedJsonEscaping);
 

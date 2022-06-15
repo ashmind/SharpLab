@@ -2,6 +2,18 @@ import { asLookup } from '../../../../shared/helpers/asLookup';
 import { CSHARP_RUN_HELP } from '../../../../shared/help';
 import { LANGUAGE_CSHARP, LANGUAGE_IL, type LanguageName } from '../../../../shared/languages';
 
+const escapeRegex = (value: string) => {
+    return value.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
+};
+
+const build = (...entries: ReadonlyArray<string>) => {
+    const sortedByLength = entries.slice(0);
+    sortedByLength.sort((a, b) => Math.sign(b.length - a.length));
+
+    const pattern = String.raw`@|(?:${sortedByLength.map(escapeRegex).join('|')}')(?=[^\d]|$)`;
+    return { entries, regex: new RegExp(pattern, 'mg') };
+};
+
 const dictionaries = asLookup({
     [LANGUAGE_CSHARP]: build(
         'using',
@@ -47,15 +59,7 @@ const dictionaries = asLookup({
     )
 });
 
-function build(...entries: ReadonlyArray<string>) {
-    const sortedByLength = entries.slice(0);
-    sortedByLength.sort((a, b) => Math.sign(b.length - a.length));
-
-    const pattern = String.raw`@|(?:${sortedByLength.map(escapeRegex).join('|')}')(?=[^\d]|$)`;
-    return { entries, regex: new RegExp(pattern, 'mg') };
-}
-
-function compress(code: string, language: LanguageName) {
+const compress = (code: string, language: LanguageName) => {
     const dictionary = dictionaries[language];
     if (!dictionary)
         return code.replace('@', '@@');
@@ -64,9 +68,9 @@ function compress(code: string, language: LanguageName) {
             return '@@';
         return '@' + dictionary.entries.indexOf(m); // eslint-disable-line prefer-template
     });
-}
+};
 
-function decompress(compressed: string, language: LanguageName) {
+const decompress = (compressed: string, language: LanguageName) => {
     const dictionary = dictionaries[language];
     if (!dictionary)
         return compressed.replace('@@', '@');
@@ -75,11 +79,7 @@ function decompress(compressed: string, language: LanguageName) {
             return '@';
         return dictionary.entries[parseInt($1, 10)];
     });
-}
-
-function escapeRegex(value: string) {
-    return value.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
-}
+};
 
 export default {
     compress,

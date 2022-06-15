@@ -154,6 +154,17 @@
         color: @error-color;
     }
 
+    .flow-visit {
+        border: 1px solid var(--border-color);
+    }
+
+    .flow-visit-selected {
+        &, &:hover {
+            background-color: #5d8c8d;
+            color: #fff;
+        }
+    }
+
     .inspection-exception header {
         color: @error-color;
         border-bottom: 1px solid @error-color;
@@ -178,16 +189,6 @@
 
     .CodeMirror-jump-arrow-start {
         fill: @dark-background-color;
-    }
-
-    .CodeMirror-jump-arrow-default.CodeMirror-jump-arrow-down {
-        fill: #87afb0;
-        stroke: #87afb0;
-    }
-
-    .CodeMirror-jump-arrow-default.CodeMirror-jump-arrow-up {
-        fill: #b0879b;
-        stroke: #b0879b;
     }
 }
 
