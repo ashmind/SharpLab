@@ -14,7 +14,7 @@
     },
     "include": [
         "app",
-        ".storybook/mocks",
+        ".storybook",
         "test-runner-jest.config.js"
     ],
     "references": [
