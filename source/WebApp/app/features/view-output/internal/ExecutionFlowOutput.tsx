@@ -27,16 +27,43 @@ type ModeToken = {
     style: string | null;
 };
 
+const groupSteps = (flow: ReadonlyArray<FlowStep>, lines: ReadonlyArray<string>) => {
+    const groups = [] as Array<Array<FlowStep>>;
+    for (const step of flow) {
+        const lastGroup = groups[groups.length - 1];
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        const lastLine = lastGroup?.[lastGroup?.length - 1]?.line;
+        if (lastLine <= step.line) {
+            let matchLine = lastLine + 1;
+            const skipped = [] as Array<FlowStep>;
+            while (matchLine <= step.line && /^\s*$/.test(lines[matchLine - 1])) {
+                skipped.push({ line: matchLine });
+                matchLine += 1;
+            }
+            if (matchLine === step.line) {
+                lastGroup.push(...skipped);
+                lastGroup.push(step);
+                continue;
+            }
+        }
+
+        groups.push([step]);
+    }
+    return groups as ReadonlyArray<ReadonlyArray<FlowStep>>;
+};
+
 export const ExecutionFlowOutput: React.FC<Props> = ({ code, flow, language }) => {
     const lines = useMemo(() => code.split(/\n/g), [code]);
     const mode = modeMap[language];
+    const groups = groupSteps(flow, lines);
 
     const renderLine = (line: string) => {
         const parts = [] as Array<ModeToken>;
         CodeMirror.runMode(line, mode, (text, style) => parts.push({ text, style }));
 
         return parts.map(
-            ({ text, style }) => style ? <span className={'cm-' + style}>{text}</span> : text
+            // eslint-disable-next-line no-undefined
+            ({ text, style }, index) => <span key={index} className={style ? ('cm-' + style) : undefined}>{text}</span>
         );
     };
 
@@ -44,12 +71,15 @@ export const ExecutionFlowOutput: React.FC<Props> = ({ code, flow, language }) =
         const line = lines[step.line - 1];
         return <div key={index} className="output-execution-step">
             <div>
-                <span>{step.line}: </span>
-                <code className='mirrorsharp-theme'>{renderLine(line)}</code>
+                <code className='output-execution-step-line mirrorsharp-theme'>{renderLine(line)}</code>
             </div>
             {step.notes && <div className='output-execution-step-notes'>{step.notes}</div>}
         </div>;
     };
 
-    return <div>{flow.map(renderStep)}</div>;
+    const renderGroup = (group: ReadonlyArray<FlowStep>, index: number) => {
+        return <div key={index} className="output-execution-group">{group.map(renderStep)}</div>;
+    };
+
+    return <div>{groups.map(renderGroup)}</div>;
 };
