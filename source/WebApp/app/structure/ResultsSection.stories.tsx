@@ -7,9 +7,9 @@ import { TargetName, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_RUN, TARG
 import { DarkModeRoot } from '../shared/testing/DarkModeRoot';
 import { ResultRoot } from '../shared/testing/ResultRoot';
 import { EXAMPLE_AST } from '../features/view-ast/AstView.stories';
+import { EXAMPLE_OUTPUT } from '../features/view-output/OutputView.stories';
 import { EXAMPLE_CSHARP_CODE } from './results/CodeView.stories';
 import { EXAMPLE_EXPLANATIONS } from './results/ExplainView.stories';
-import { EXAMPLE_OUTPUT } from './results/OutputView.stories';
 import { ResultsSection } from './ResultsSection';
 
 export default {

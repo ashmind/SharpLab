@@ -1,9 +1,9 @@
 import React from 'react';
 import type { OutputItem } from '../../shared/resultTypes';
-import { SimpleOutput } from './output/SimpleOutput';
-import { MemoryOutput } from './output/MemoryOutput';
-import { MemoryGraphOutput } from './output/MemoryGraphOutput';
-import { GroupOutput, InspectionGroup } from './output/GroupOutput';
+import { SimpleOutput } from './internal/SimpleOutput';
+import { MemoryOutput } from './internal/MemoryOutput';
+import { MemoryGraphOutput } from './internal/MemoryGraphOutput';
+import { GroupOutput, InspectionGroup } from './internal/GroupOutput';
 
 type Props = {
     output: ReadonlyArray<OutputItem|InspectionGroup>;

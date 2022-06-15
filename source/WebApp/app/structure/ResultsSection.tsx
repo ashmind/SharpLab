@@ -9,7 +9,7 @@ import { targetOptionState } from '../shared/state/targetOptionState';
 import type { TargetLanguageName } from '../shared/targets';
 import { TargetSelect } from '../shared/TargetSelect';
 import { AstView } from '../features/view-ast/AstView';
-import { OutputView } from './results/OutputView';
+import { OutputView } from '../features/view-output/OutputView';
 import { ExplainView } from './results/ExplainView';
 import { VerifyView } from './results/VerifyView';
 import { CodeView } from './results/CodeView';
