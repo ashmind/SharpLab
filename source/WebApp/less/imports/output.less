@@ -241,6 +241,23 @@
     }
 }
 
+.output-execution-step {
+    .code-font();
+    border: 1px solid var(--inspection-border-color);
+    padding: 5px;
+
+    & + & {
+        margin-top: 10px;
+    }
+}
+
+.output-execution-step-notes {
+    background-color: var(--inspection-header-color);
+    margin-left: 10px;
+    margin-top: 5px;
+    padding: 2px;
+}
+
 .root-status-offline {
     .output-disclaimer,
     .output-message-positive {

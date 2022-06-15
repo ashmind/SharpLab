@@ -1,33 +1,51 @@
 import React, { useEffect, useState } from 'react';
 import dateFormat from 'dateformat';
-import { useRecoilValue } from 'recoil';
+import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { Loader } from '../shared/Loader';
 import { ModeSelect } from '../shared/ModeSelect';
-import type { CodeResult, OutputItem } from '../shared/resultTypes';
+import type { CodeResult, OutputItem, ParsedResult } from '../shared/resultTypes';
 import { resultSelector } from '../shared/state/resultState';
 import { targetOptionState } from '../shared/state/targetOptionState';
 import type { TargetLanguageName } from '../shared/targets';
 import { TargetSelect } from '../shared/TargetSelect';
 import { AstView } from '../features/view-ast/AstView';
 import { OutputView } from '../features/view-output/OutputView';
+import type { LanguageName } from '../shared/languages';
+import { languageOptionState } from '../shared/state/languageOptionState';
+import { codeState } from '../shared/state/codeState';
+import type { MaybeCached } from '../features/result-cache/types';
 import { ExplainView } from './results/ExplainView';
 import { VerifyView } from './results/VerifyView';
 import { CodeView } from './results/CodeView';
 
 type CodeState = Pick<CodeResult, 'value'|'ranges'> & { language: TargetLanguageName };
+type ResultState = {
+    sourceCode: string;
+    sourceLanguage: LanguageName;
+    result: MaybeCached<ParsedResult>;
+};
 
 const EMPTY_OUTPUT = [] as ReadonlyArray<OutputItem>;
 export const ResultsSection: React.FC = () => {
     const [lastCodeState, setLastCodeState] = useState<CodeState>();
-    const target = useRecoilValue(targetOptionState);
     const result = useRecoilValue(resultSelector);
+    const [resultState, setResultState] = useState<ResultState | null>(null);
+
+    const updateOnResultChange = useRecoilCallback(({ snapshot }) => (result: MaybeCached<ParsedResult> | undefined) => {
+        if (result?.type === 'code') {
+            const target = snapshot.getLoadable(targetOptionState).getValue();
+            setLastCodeState({ ...result, language: target as TargetLanguageName });
+        }
+
+        setResultState(result ? {
+            sourceCode: snapshot.getLoadable(codeState).getValue(),
+            sourceLanguage: snapshot.getLoadable(languageOptionState).getValue(),
+            result
+        } : null);
+    });
 
     // Code is special since CodeMirror is slow to set up, so we hide it instead of destroying it
-    useEffect(() => {
-        if (result?.type === 'code')
-            setLastCodeState({ ...result, language: target as TargetLanguageName });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [result]);
+    useEffect(() => updateOnResultChange(result), [updateOnResultChange, result]);
     const codeResult = lastCodeState && <div hidden={result?.type !== 'code'}>
         <CodeView
             code={lastCodeState.value ?? ''}
@@ -36,9 +54,10 @@ export const ResultsSection: React.FC = () => {
     </div>;
 
     const renderNonCodeResult = () => {
-        if (!result)
+        if (!resultState)
             return null;
 
+        const { sourceCode, sourceLanguage, result } = resultState;
         switch (result.type) {
             case 'code':
                 return null;
@@ -49,7 +68,12 @@ export const ResultsSection: React.FC = () => {
             case 'explain':
                 return <ExplainView explanations={result.value} />;
             case 'run':
-                return <OutputView output={result.value?.output ?? EMPTY_OUTPUT} />;
+                return <OutputView
+                    output={result.value?.output ?? EMPTY_OUTPUT}
+                    sourceCode={sourceCode}
+                    sourceLanguage={sourceLanguage}
+                    flow={result.value?.flow}
+                />;
         }
     };
 

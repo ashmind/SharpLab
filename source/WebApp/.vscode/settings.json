@@ -90,6 +90,7 @@
         "mixins",
         "mkrefany",
         "mllike",
+        "modespec",
         "montudor",
         "multiline",
         "multipipe",

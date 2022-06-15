@@ -1,15 +1,23 @@
 import React from 'react';
-import type { OutputItem } from '../../shared/resultTypes';
+import type { FlowStep, OutputItem } from '../../shared/resultTypes';
+import type { LanguageName } from '../../shared/languages';
 import { SimpleOutput } from './internal/SimpleOutput';
 import { MemoryOutput } from './internal/MemoryOutput';
 import { MemoryGraphOutput } from './internal/MemoryGraphOutput';
 import { GroupOutput, InspectionGroup } from './internal/GroupOutput';
+import { ExecutionFlowOutput } from './internal/ExecutionFlowOutput';
 
 type Props = {
     output: ReadonlyArray<OutputItem|InspectionGroup>;
+
+    sourceCode: string;
+    sourceLanguage: LanguageName;
+    flow?: ReadonlyArray<FlowStep> | null;
 };
 
-export const OutputView: React.FC<Props> = ({ output }) => {
+const flowViewEnabled = localStorage.getItem('sharplab.experiments.output.flow');
+
+export const OutputView: React.FC<Props> = ({ output, sourceCode, sourceLanguage, flow }) => {
     const renderItem = (item: OutputItem|InspectionGroup, index: number) => {
         if (typeof item === 'string')
             return <pre key={index}>{item}</pre>;
@@ -23,7 +31,8 @@ export const OutputView: React.FC<Props> = ({ output }) => {
     };
 
     return <div className="output result-content">
-        {!output.length && <div className="output-empty">Completed — no output.</div>}
+        {!output.length && (!flowViewEnabled || !flow) && <div className="output-empty">Completed — no output.</div>}
+        {flowViewEnabled && flow && <ExecutionFlowOutput flow={flow} code={sourceCode} language={sourceLanguage} />}
         {output.map(renderItem)}
     </div>;
 };

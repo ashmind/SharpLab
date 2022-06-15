@@ -9,8 +9,28 @@ import { loadedCodeState } from '../../shared/state/loadedCodeState';
 import { StableCodeEditor } from './StableCodeEditor';
 
 export default {
-    component: StableCodeEditor
+    component: StableCodeEditor,
+    excludeStories: /^EXAMPLE_/
 };
+
+export const EXAMPLE_CODE_WITH_EXECUTION_FLOW = {
+    CODE: `
+Test(0);
+Test(1);
+
+static int Test(int x) {
+    return x;
+}
+    `.trim(),
+    FLOW: [
+        { line: 1 },
+        { line: 4, notes: 'x: 0' },
+        { line: 6, notes: 'return: 0' },
+        { line: 2 },
+        { line: 4, notes: 'x: 1' },
+        { line: 6, notes: 'return: 1' }
+    ]
+} as const;
 
 type TemplateProps = {
     language: LanguageName;
@@ -97,21 +117,11 @@ export const IL = () => <Template language={LANGUAGE_IL} loadedCode={`
 IL.storyName = 'IL';
 export const ILDarkMode = DarkMode(IL);
 
-export const ExecutionFlow = () => <Template language={LANGUAGE_CSHARP} loadedCode={`
-Test(0);
-Test(1);
-
-static int Test(int x) {
-    return x;
-}
-`.trim()} executionFlow={[
-    { line: 1 },
-    { line: 4, notes: 'x: 0' },
-    { line: 6, notes: 'return: 0' },
-    { line: 2 },
-    { line: 4, notes: 'x: 1' },
-    { line: 6, notes: 'return: 1' }
-]} />;
+export const ExecutionFlow = () => <Template
+    language={LANGUAGE_CSHARP}
+    loadedCode={EXAMPLE_CODE_WITH_EXECUTION_FLOW.CODE}
+    executionFlow={EXAMPLE_CODE_WITH_EXECUTION_FLOW.FLOW}
+/>;
 ExecutionFlow.storyName = 'Execution Flow';
 export const ExecutionFlowDarkMode = DarkMode(ExecutionFlow);
 
