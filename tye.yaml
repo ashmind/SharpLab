@@ -12,9 +12,6 @@ services:
 - name: container-manager
   project: source/Container.Manager/Container.Manager.csproj
   tags: ["server-only"]
-  buildProperties:
-  - name: Configuration
-    value: Release
   bindings:
   - protocol: http
     port: 44400
@@ -27,9 +24,6 @@ services:
 - name: webapp-server
   tags: ["server-only"]
   project: source/WebApp.Server/WebApp.Server.csproj
-  buildProperties:
-  - name: Configuration
-    value: Release
   bindings:
   - protocol: http
     port: 44100

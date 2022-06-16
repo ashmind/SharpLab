@@ -50,7 +50,7 @@
         "arrow-parens": ["warn", "as-needed"],
         "dot-location": ["warn", "property"],
         "operator-linebreak": ["warn", "before"],
-        "func-style": ["warn", "declaration", { "allowArrowFunctions": true }],
+        "func-style": ["warn", "expression"],
         "prefer-object-spread": "warn",
         "no-mixed-operators": "warn",
         "space-infix-ops": "warn",

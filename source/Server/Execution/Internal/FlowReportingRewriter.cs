@@ -13,7 +13,7 @@ using SharpLab.Server.Common;
 using SharpLab.Server.Common.Diagnostics;
 
 namespace SharpLab.Server.Execution.Internal {
-    public class ContainerFlowReportingRewriter : IContainerAssemblyRewriter {
+    public class FlowReportingRewriter : IAssemblyRewriter {
         private const int HiddenLine = 0xFEEFEE;
 
         private static readonly MethodInfo ReportLineStartMethod =
@@ -35,7 +35,7 @@ namespace SharpLab.Server.Execution.Internal {
 
         private readonly IReadOnlyDictionary<string, ILanguageAdapter> _languages;
 
-        public ContainerFlowReportingRewriter(IReadOnlyList<ILanguageAdapter> languages) {
+        public FlowReportingRewriter(IReadOnlyList<ILanguageAdapter> languages) {
             _languages = languages.ToDictionary(l => l.LanguageName);
         }
 

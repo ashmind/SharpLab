@@ -9,9 +9,8 @@ namespace SharpLab.Container.Runtime {
 
     internal partial class FlowWriter : IFlowWriter {
         private static class Limits {
-            public const int MaxRecords = 50;
-            public const int MaxValuesPerLine = 3;
-            public const int MaxNameLength = 10;
+            public const int MaxRecords = 200;
+            public const int MaxNameLength = 20;
 
             public static readonly ValuePresenterLimits Value = new(maxValueLength: 10, maxEnumerableItemCount: 3);
         }
@@ -19,8 +18,7 @@ namespace SharpLab.Container.Runtime {
         private readonly StdoutWriter _stdoutWriter;
         private readonly Utf8ValuePresenter _valuePresenter;
         private readonly byte[] _truncatedNameBytes = new byte[(Limits.MaxNameLength - 1) + Utf8Ellipsis.Length];
-        private readonly FlowRecord[] _records = new FlowRecord[50];
-        private readonly int[] _valueCountsPerLine = new int[75];
+        private readonly FlowRecord[] _records = new FlowRecord[Limits.MaxRecords];
         private int _currentRecordIndex = -1;
 
         public FlowWriter(
@@ -38,16 +36,6 @@ namespace SharpLab.Container.Runtime {
 
         // Must be thread safe
         public void WriteValue<T>(T value, string? name, int lineNumber) {
-            if (lineNumber >= _valueCountsPerLine.Length || _valueCountsPerLine[lineNumber] > Limits.MaxValuesPerLine)
-                return;
-
-            var valueCountPerLine = Interlocked.Increment(ref _valueCountsPerLine[lineNumber]);
-            if (valueCountPerLine > Limits.MaxValuesPerLine) {
-                if (valueCountPerLine == Limits.MaxValuesPerLine + 1)
-                    TryAddRecord(new(lineNumber, null, VariantValue.From("…")));
-                return;
-            }
-
             TryAddRecord(new (lineNumber, name, VariantValue.From(value)));
         }
 
@@ -79,7 +67,6 @@ namespace SharpLab.Container.Runtime {
             var recordCount = Math.Min(_currentRecordIndex + 1, _records.Length);
 
             _currentRecordIndex = -1;
-            Array.Clear(_valueCountsPerLine, 0, _valueCountsPerLine.Length);
 
             if (recordCount == 0)
                 return;

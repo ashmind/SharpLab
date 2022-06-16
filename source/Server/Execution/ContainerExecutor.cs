@@ -17,14 +17,14 @@ namespace SharpLab.Server.Execution {
     public class ContainerExecutor : IContainerExecutor {
         private readonly IAssemblyResolver _assemblyResolver;
         private readonly ISymbolReaderProvider _symbolReaderProvider;
-        private readonly IReadOnlyCollection<IContainerAssemblyRewriter> _rewriters;
+        private readonly IReadOnlyCollection<IAssemblyRewriter> _rewriters;
         private readonly RecyclableMemoryStreamManager _memoryStreamManager;
         private readonly IContainerClient _client;
 
         public ContainerExecutor(
             IAssemblyResolver assemblyResolver,
             ISymbolReaderProvider symbolReaderProvider,
-            IReadOnlyCollection<IContainerAssemblyRewriter> rewriters,
+            IReadOnlyCollection<IAssemblyRewriter> rewriters,
             RecyclableMemoryStreamManager memoryStreamManager,
             IContainerClient client
         ) {

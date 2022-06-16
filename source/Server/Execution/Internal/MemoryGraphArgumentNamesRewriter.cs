@@ -8,7 +8,7 @@ using SharpLab.Runtime.Internal;
 using SharpLab.Server.Common;
 
 namespace SharpLab.Server.Execution.Internal {
-    public class MemoryGraphArgumentNamesRewriter : IContainerAssemblyRewriter {
+    public class MemoryGraphArgumentNamesRewriter : IAssemblyRewriter {
         private readonly IReadOnlyDictionary<string, ILanguageAdapter> _languages;
 
         private static readonly MethodInfo AllocateNextMethod =

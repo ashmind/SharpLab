@@ -23,15 +23,15 @@ namespace SharpLab.Server.Execution {
                    .SingleInstance();
 
             builder.RegisterType<MemoryGraphArgumentNamesRewriter>()
-                   .As<IContainerAssemblyRewriter>()
+                   .As<IAssemblyRewriter>()
                    .SingleInstance();
 
             builder.RegisterType<FSharpEntryPointRewriter>()
-                   .As<IContainerAssemblyRewriter>()
+                   .As<IAssemblyRewriter>()
                    .SingleInstance();
 
-            builder.RegisterType<ContainerFlowReportingRewriter>()
-                   .As<IContainerAssemblyRewriter>()
+            builder.RegisterType<FlowReportingRewriter>()
+                   .As<IAssemblyRewriter>()
                    .SingleInstance();
 
             builder.Register(c => {
