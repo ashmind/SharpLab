@@ -1,21 +1,19 @@
-import type { FlowStep } from '../../../shared/resultTypes';
+import type { FlowStepForJumps } from './FlowStepForJumps';
 
-export const extractJumps = (steps: ReadonlyArray<FlowStep>) => {
+export const extractJumps = (steps: ReadonlyArray<FlowStepForJumps>) => {
     const jumps = [] as Array<JumpData>;
-    let lastLineNumber: number|undefined;
-    let lastException: string|undefined|null;
+    let last: FlowStepForJumps | undefined;
     for (const step of steps) {
         if (step.skipped)
             continue;
-        const { line: lineNumber, exception } = step;
+        const { line } = step;
 
-        const important = (lastLineNumber != null && (lineNumber < lastLineNumber || lineNumber - lastLineNumber > 2)) || lastException;
-        if (important) {
+        const important = (last?.line != null && (line < last.line || line - last.line > 2)) || last?.exception;
+        if (important && !last?.ignoreForJumpsOut) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            jumps.push({ fromLine: lastLineNumber! - 1, toLine: lineNumber - 1, options: { throw: !!lastException } });
+            jumps.push({ fromLine: last!.line - 1, toLine: line - 1, options: { throw: !!last!.exception } });
         }
-        lastLineNumber = lineNumber;
-        lastException = exception;
+        last = step;
     }
     return jumps;
 };

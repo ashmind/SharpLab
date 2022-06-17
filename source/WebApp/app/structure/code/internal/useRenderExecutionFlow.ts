@@ -1,11 +1,16 @@
 import { useEffect, useRef } from 'react';
 import type { FlowStep } from '../../../shared/resultTypes';
 import { extractJumps } from './extractJumps';
+import type { FlowStepForJumps } from './FlowStepForJumps';
 import { LineDetails, LoopDetails, LoopVisit, processStepsIntoLineDetails } from './processStepsIntoLineDetails';
 
 type TrackingTree = {
     bookmarks: Array<CodeMirror.TextMarker>;
-    jumps: Array<JumpData>;
+    lineWidgets: Array<CodeMirror.LineWidget>;
+    stepsForJumps: Array<FlowStepForJumps | {
+        fromChildIndex: number;
+        ignoreForJumpsOut?: boolean;
+    }>;
     children: Array<TrackingTree>;
 };
 
@@ -24,7 +29,7 @@ let loopNameIndex = 1;
 const createLoopWidget = (
     { visits }: LoopDetails,
     lineStartX: number,
-    updateSubtree: (lineDetails: ReadonlyArray<LineDetails>) => void
+    updateSubtree: (visit: LoopVisit, nextVisit?: LoopVisit) => void
 ) => {
     const widget = document.createElement('div');
     widget.className = 'flow-loop';
@@ -58,7 +63,8 @@ const createLoopWidget = (
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         selectedLabel = (e.target as HTMLElement).parentElement! as HTMLLabelElement;
         selectedLabel.classList.add('flow-loop-visit-selected');
-        updateSubtree(visit.lines ?? []);
+        const nextVisit = visits[visits.indexOf(visit) + 1];
+        updateSubtree(visit, nextVisit);
     });
 
     return widget;
@@ -73,38 +79,64 @@ const createNotesOrExceptionWidget = (content: string, kind: 'notes'|'exception'
 
 const createTrackingTree = (): TrackingTree => ({
     bookmarks: [],
-    jumps: [],
+    lineWidgets: [],
+    stepsForJumps: [],
     children: []
 });
 
-const clearWidgets = (tree: TrackingTree) => {
+const clearWidgets = (cm: CodeMirror.Editor, tree: TrackingTree) => {
     for (const bookmark of tree.bookmarks) {
         bookmark.clear();
     }
     tree.bookmarks = [];
+    for (const lineWidget of tree.lineWidgets) {
+        cm.removeLineWidget(lineWidget);
+    }
+    tree.lineWidgets = [];
+
     for (const child of tree.children) {
-        clearWidgets(child);
+        clearWidgets(cm, child);
     }
     tree.children = [];
 };
 
-const collectAllJumps = (allJumps: Array<JumpData>, tree: TrackingTree) => {
-    allJumps.push(...tree.jumps);
-    for (const child of tree.children) {
-        collectAllJumps(allJumps, child);
+const getAllStepsForJumps = (tree: TrackingTree) => {
+    const allSteps = [] as Array<FlowStepForJumps>;
+    for (const step of tree.stepsForJumps) {
+        if ('fromChildIndex' in step) {
+            const child = tree.children[step.fromChildIndex];
+            const childSteps = getAllStepsForJumps(child);
+            if (step.ignoreForJumpsOut && childSteps.length > 0) {
+                childSteps[childSteps.length - 1] = {
+                    ...childSteps[childSteps.length - 1],
+                    ignoreForJumpsOut: true
+                };
+            }
+            allSteps.push(...childSteps);
+            continue;
+        }
+        allSteps.push(step);
     }
+    return allSteps;
+};
+
+type TreeRenderContext = {
+    cm: CodeMirror.Editor;
+    rerenderAllJumps: () => void;
 };
 
 const renderTree = (
-    cm: CodeMirror.Editor,
     lineDetails: ReadonlyArray<LineDetails>,
     trackingTree: TrackingTree,
-    rerenderAllJumps: () => void
+    context: TreeRenderContext,
+    loop?: { start: FlowStepForJumps; end?: FlowStepForJumps | null }
 ) => {
-    clearWidgets(trackingTree);
+    const { cm } = context;
+    clearWidgets(cm, trackingTree);
 
-    let stepsToConsiderForJumps = [] as Array<FlowStep>;
-    const jumps = [];
+    trackingTree.stepsForJumps = [];
+    if (loop)
+        trackingTree.stepsForJumps.push(loop.start);
     for (let i = 0; i < lineDetails.length; i++) {
         const details = lineDetails[i];
         const cmLineNumber = details.line - 1;
@@ -113,23 +145,39 @@ const renderTree = (
             continue;
 
         if (details.type === 'loop') {
-            jumps.push(...extractJumps(stepsToConsiderForJumps));
-            stepsToConsiderForJumps = [];
-
+            const lastStepBeforeLoop = trackingTree.stepsForJumps[trackingTree.stepsForJumps.length - 1];
             const start = getLineStart(line);
             const lineStartCoords = cm.cursorCoords({ line: cmLineNumber, ch: start }, 'local');
+
             const trackingSubtree = createTrackingTree();
             trackingTree.children.push(trackingSubtree);
+
+            lastStepBeforeLoop.ignoreForJumpsOut = true;
             const widget = createLoopWidget(
                 details, lineStartCoords.left,
-                lines => renderTree(cm, lines, trackingSubtree, rerenderAllJumps)
+                (visit, nextVisit) => {
+                    lastStepBeforeLoop.ignoreForJumpsOut = false;
+                    const startForJumps = { ...visit.start };
+                    const endForJumps: FlowStepForJumps | null = nextVisit
+                        ? { ...nextVisit.start, ignoreForJumpsOut: true }
+                        : null;
+                    renderTree(
+                        visit.lines ?? [], trackingSubtree, context,
+                        { start: startForJumps, end: endForJumps }
+                    );
+                }
             );
-            cm.addLineWidget(cmLineNumber - 1, widget);
+            const lineWidget = cm.addLineWidget(cmLineNumber - 1, widget);
+            trackingTree.lineWidgets.push(lineWidget);
+            trackingTree.stepsForJumps.push({
+                fromChildIndex: trackingTree.children.length - 1
+            });
+
             continue;
         }
 
         const { step } = details;
-        stepsToConsiderForJumps.push(step);
+        trackingTree.stepsForJumps.push({ ...step });
         const end = line.length;
         for (const partName of ['notes', 'exception'] as const) {
             const part = step[partName];
@@ -139,20 +187,19 @@ const renderTree = (
             trackingTree.bookmarks.push(cm.setBookmark({ line: cmLineNumber, ch: end }, { widget }));
         }
     }
+    if (loop?.end)
+        trackingTree.stepsForJumps.push(loop.end);
 
-    jumps.push(...extractJumps(stepsToConsiderForJumps));
-    trackingTree.jumps = jumps;
-    rerenderAllJumps();
+    context.rerenderAllJumps();
 };
 
 const renderExecutionFlow = (cm: CodeMirror.Editor, steps: ReadonlyArray<FlowStep|number>, tree: TrackingTree) => {
     const normalizedSteps = steps.map(step => typeof step === 'number' ? { line: step } : step);
     const lineDetails = processStepsIntoLineDetails(normalizedSteps);
 
-    renderTree(cm, lineDetails, tree, () => {
-        const allJumps = [] as Array<JumpData>;
-        collectAllJumps(allJumps, tree);
-        cm.setJumpArrows(allJumps);
+    renderTree(lineDetails, tree, {
+        cm,
+        rerenderAllJumps: () => cm.setJumpArrows(extractJumps(getAllStepsForJumps(tree)))
     });
 };
 
@@ -166,7 +213,7 @@ export const useRenderExecutionFlow = (cm: CodeMirror.Editor | undefined, steps:
         const tree = trackingTreeRef.current;
         renderExecutionFlow(cm, steps, tree);
         return () => {
-            clearWidgets(tree);
+            clearWidgets(cm, tree);
             cm.setJumpArrows([]);
         };
     }, [steps, cm]);
