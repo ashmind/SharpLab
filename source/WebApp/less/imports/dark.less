@@ -154,6 +154,21 @@
         color: @error-color;
     }
 
+    .flow-loop-visit {
+        background-color: transparent;
+        border: 1px solid var(--border-color);
+
+        &:hover {
+            background-color: @dark-highlight-color;
+        }
+    }
+
+    .flow-loop-visit-selected {
+        &, &:hover {
+            background-color: @dark-cm-hint-active-color;
+        }
+    }
+
     .inspection-exception header {
         color: @error-color;
         border-bottom: 1px solid @error-color;
