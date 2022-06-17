@@ -33,21 +33,28 @@ const fillEmptyLines = (flow: ReadonlyArray<FlowStep>, lines: ReadonlyArray<stri
     return results as ReadonlyArray<FlowStep>;
 };
 
-const trimBraces = (line: string) => line.replace(/^\s*[{}]|[{}]\s*$/g, '');
+const trimPunctuation = (line: string) => line.replace(/^\s*[{};]|[{};]\s*$/g, '');
 
 const extractEventFromStep = (step: FlowStep, previous: FlowStep|undefined, lines: ReadonlyArray<string>) => {
     const parts = [] as Array<FlowEventPart>;
     if (previous && step.line !== previous.line + 1) {
-        const sourceLine = trimBraces(lines[previous.line - 1]);
-        const targetLine = trimBraces(lines[step.line - 1]);
+        const sourceLine = trimPunctuation(lines[previous.line - 1]);
+        const targetLine = trimPunctuation(lines[step.line - 1]);
         parts.push({
             type: step.line > previous.line ? 'jump-down' : 'jump-up',
             text: `${sourceLine} 🡆 ${targetLine}`
         });
     }
 
-    if (step.notes)
+    if (step.notes) {
+        /*if (parts.length === 0) {
+            parts.push({
+                type: 'code',
+                text: trimPunctuation(lines[step.line - 1])
+            });
+        }*/
         parts.push({ type: 'notes', text: step.notes });
+    }
 
     if (step.exception)
         parts.push({ type: 'exception', text: step.exception });

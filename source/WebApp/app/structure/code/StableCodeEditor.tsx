@@ -10,6 +10,7 @@ import type { Result, FlowStep } from '../../shared/resultTypes';
 import { languageOptionState } from '../../shared/state/languageOptionState';
 import { loadedCodeState } from '../../shared/state/loadedCodeState';
 import { defaultCodeSelector, isDefaultCode } from '../../shared/state/defaultCodeSelector';
+import { outputFlowEnabled } from '../../features/view-output/outputFlowEnabled';
 import { useRenderExecutionFlow } from './internal/useRenderExecutionFlow';
 import { useServerOptions } from './internal/useServerOptions';
 import { useServiceUrl } from './internal/useServiceUrl';
@@ -166,7 +167,7 @@ export const StableCodeEditor: React.FC<Props> = ({
 
     const cm = instance?.getCodeMirror();
     useEditorCodeRangeSync(cm);
-    useRenderExecutionFlow(executionFlow, cm);
+    useRenderExecutionFlow(outputFlowEnabled ? null : executionFlow, cm);
 
     return <textarea ref={textareaRef}></textarea>;
 };

@@ -6,6 +6,7 @@ import { MemoryOutput } from './internal/MemoryOutput';
 import { MemoryGraphOutput } from './internal/MemoryGraphOutput';
 import { GroupOutput, InspectionGroup } from './internal/GroupOutput';
 import { ExecutionFlowOutput } from './internal/ExecutionFlowOutput';
+import { outputFlowEnabled } from './outputFlowEnabled';
 
 type Props = {
     output: ReadonlyArray<OutputItem|InspectionGroup>;
@@ -14,8 +15,6 @@ type Props = {
     sourceLanguage: LanguageName;
     flow?: ReadonlyArray<FlowStep> | null;
 };
-
-const flowViewEnabled = localStorage.getItem('sharplab.experiments.output.flow');
 
 export const OutputView: React.FC<Props> = ({ output, sourceCode, sourceLanguage, flow }) => {
     const renderItem = (item: OutputItem|InspectionGroup, index: number) => {
@@ -31,8 +30,8 @@ export const OutputView: React.FC<Props> = ({ output, sourceCode, sourceLanguage
     };
 
     return <div className="output result-content">
-        {!output.length && (!flowViewEnabled || !flow) && <div className="output-empty">Completed — no output.</div>}
-        {flowViewEnabled && flow && <ExecutionFlowOutput flow={flow} code={sourceCode} language={sourceLanguage} />}
+        {!output.length && (!outputFlowEnabled || !flow) && <div className="output-empty">Completed — no output.</div>}
+        {outputFlowEnabled && flow && <ExecutionFlowOutput flow={flow} code={sourceCode} language={sourceLanguage} />}
         {output.map(renderItem)}
     </div>;
 };
