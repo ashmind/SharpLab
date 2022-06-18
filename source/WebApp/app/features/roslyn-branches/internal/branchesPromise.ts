@@ -3,7 +3,7 @@ import type { PartiallyMutable } from '../../../shared/helpers/partiallyMutable'
 import type { Branch } from '../types';
 import { getBranchesAsync } from './getBranchesAsync';
 
-function getBranchDisplayName(branch: Branch) {
+const getBranchDisplayName = (branch: Branch) => {
     const feature = branch.feature;
     let displayName = feature
         ? `${feature.language}: ${feature.name}`
@@ -12,7 +12,7 @@ function getBranchDisplayName(branch: Branch) {
         displayName += ` (${dateFormat(branch.commits[0].date, 'd mmm yyyy')})`;
 
     return displayName;
-}
+};
 
 export const branchesPromise = (async () => {
     const branches = await getBranchesAsync();

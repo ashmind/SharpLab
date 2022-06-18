@@ -26,14 +26,14 @@ export type LoadStateFromGistResult = {
     readonly code: string;
 };
 
-function getIsRelease(options: { release: boolean|null|undefined }, overrides: Overrides) {
+const getIsRelease = (options: { release: boolean|null|undefined }, overrides: Overrides) => {
     if (overrides.mode || options.release == null)
         return overrides.mode !== 'debug';
 
     return options.release;
-}
+};
 
-export default async function loadGistFromUrlHashAsync(hash: string): Promise<LoadStateFromGistResult> {
+export const loadGistFromUrlHashAsync = async (hash: string): Promise<LoadStateFromGistResult> => {
     const parts = hash.replace(/^gist:/, '').split('/');
     const id = parts[0];
     let gist;
@@ -66,4 +66,4 @@ export default async function loadGistFromUrlHashAsync(hash: string): Promise<Lo
             release:  getIsRelease(gist.options, overrides)
         }
     };
-}
+};

@@ -15,12 +15,12 @@ const mapFromObject = <TObject, TNewKey extends string, TNewValue>(
     return result;
 };
 
-function reverseMap<TMap extends { [key: string]: string }>(map: TMap) {
+const reverseMap = <TMap extends { [key: string]: string }>(map: TMap) => {
     type KeyFromValue<T, V> = { [K in keyof T]: V extends T[K] ? K : never }[keyof T];
     return mapFromObject(map, (key, value) => [value, key]) as {
         [TValue in TMap[keyof TMap]]: KeyFromValue<TMap, TValue>
     };
-}
+};
 
 const languageMap = {
     [LANGUAGE_CSHARP]: 'cs',
