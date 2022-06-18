@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 
 namespace SharpLab.Container.Runtime {
-    internal readonly partial struct VariantValue {
+    internal readonly struct VariantValue {
         private readonly VariantKind _kind;
         private readonly object? _objectValue;
         private readonly Union _unionValue;

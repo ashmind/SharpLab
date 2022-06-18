@@ -17,21 +17,29 @@ namespace SharpLab.Server.Execution.Internal {
         private const int HiddenLine = 0xFEEFEE;
 
         private static readonly MethodInfo ReportLineStartMethod =
-            typeof(ContainerFlow).GetMethod(nameof(ContainerFlow.ReportLineStart))!;
+            typeof(Flow).GetMethod(nameof(Flow.ReportLineStart))!;
+        /*private static readonly MethodInfo ReportBeforeJumpUpMethod =
+            typeof(Flow).GetMethod(nameof(Flow.ReportBeforeJumpUp))!;
+        private static readonly MethodInfo ReportBeforeJumpDownMethod =
+            typeof(Flow).GetMethod(nameof(Flow.ReportBeforeJumpDown))!;*/
+        private static readonly MethodInfo ReportMethodStartMethod =
+            typeof(Flow).GetMethod(nameof(Flow.ReportMethodStart))!;
+        private static readonly MethodInfo ReportMethodReturnMethod =
+            typeof(Flow).GetMethod(nameof(Flow.ReportMethodReturn))!;
         private static readonly MethodInfo ReportValueMethod =
-            typeof(ContainerFlow).GetMethod(nameof(ContainerFlow.ReportValue))!;
+            typeof(Flow).GetMethod(nameof(Flow.ReportValue))!;
         private static readonly MethodInfo ReportRefValueMethod =
-            typeof(ContainerFlow).GetMethod(nameof(ContainerFlow.ReportRefValue))!;
+            typeof(Flow).GetMethod(nameof(Flow.ReportRefValue))!;
         private static readonly MethodInfo ReportSpanValueMethod =
-            typeof(ContainerFlow).GetMethod(nameof(ContainerFlow.ReportSpanValue))!;
+            typeof(Flow).GetMethod(nameof(Flow.ReportSpanValue))!;
         private static readonly MethodInfo ReportRefSpanValueMethod =
-            typeof(ContainerFlow).GetMethod(nameof(ContainerFlow.ReportRefSpanValue))!;
+            typeof(Flow).GetMethod(nameof(Flow.ReportRefSpanValue))!;
         private static readonly MethodInfo ReportReadOnlySpanValueMethod =
-            typeof(ContainerFlow).GetMethod(nameof(ContainerFlow.ReportReadOnlySpanValue))!;
+            typeof(Flow).GetMethod(nameof(Flow.ReportReadOnlySpanValue))!;
         private static readonly MethodInfo ReportRefReadOnlySpanValueMethod =
-            typeof(ContainerFlow).GetMethod(nameof(ContainerFlow.ReportRefReadOnlySpanValue))!;
+            typeof(Flow).GetMethod(nameof(Flow.ReportRefReadOnlySpanValue))!;
         private static readonly MethodInfo ReportExceptionMethod =
-            typeof(ContainerFlow).GetMethod(nameof(ContainerFlow.ReportException))!;
+            typeof(Flow).GetMethod(nameof(Flow.ReportException))!;
 
         private readonly IReadOnlyDictionary<string, ILanguageAdapter> _languages;
 
@@ -50,12 +58,19 @@ namespace SharpLab.Server.Execution.Internal {
             foreach (var module in assembly.Modules) {
                 var flow = new ReportMethods {
                     ReportLineStart = module.ImportReference(ReportLineStartMethod),
+
+                    // ReportBeforeJumpUp = module.ImportReference(ReportBeforeJumpUpMethod),
+                    // ReportBeforeJumpDown = module.ImportReference(ReportBeforeJumpDownMethod),
+                    ReportMethodStart = module.ImportReference(ReportMethodStartMethod),
+                    ReportMethodReturn = module.ImportReference(ReportMethodReturnMethod),
+
                     ReportValue = module.ImportReference(ReportValueMethod),
                     ReportRefValue = module.ImportReference(ReportRefValueMethod),
                     ReportSpanValue = module.ImportReference(ReportSpanValueMethod),
                     ReportRefSpanValue = module.ImportReference(ReportRefSpanValueMethod),
                     ReportReadOnlySpanValue = module.ImportReference(ReportReadOnlySpanValueMethod),
                     ReportRefReadOnlySpanValue = module.ImportReference(ReportRefReadOnlySpanValueMethod),
+
                     ReportException = module.ImportReference(ReportExceptionMethod),
                 };
                 foreach (var type in module.Types) {
@@ -118,13 +133,24 @@ namespace SharpLab.Server.Execution.Internal {
                     continue;
 
                 if (hasSequencePoint && sequencePoint!.StartLine != lastLine) {
-                    if (i == 0)
+                    var isMethodStart = i == 0;
+                    if (isMethodStart)
                         TryInsertReportMethodArguments(il, instruction, sequencePoint, method, flow, session, ref i);
 
                     il.InsertBeforeAndRetargetAll(instruction, il.CreateLdcI4Best(sequencePoint.StartLine));
                     il.InsertBefore(instruction, il.CreateCall(flow.ReportLineStart));
                     i += 2;
                     lastLine = sequencePoint.StartLine;
+
+                    if (isMethodStart) {
+                        il.InsertBefore(instruction, il.CreateCall(flow.ReportMethodStart));
+                        i += 1;
+                    }
+                }
+
+                if (instruction.OpCode.FlowControl == FlowControl.Return) {
+                    il.InsertBeforeAndRetargetAll(instruction, il.CreateCall(flow.ReportMethodReturn));
+                    i += 1;
                 }
 
                 var valueOrNull = GetValueToReport(instruction, il, session);
@@ -135,7 +161,7 @@ namespace SharpLab.Server.Execution.Internal {
                 InsertReportValue(
                     il, instruction,
                     il.Create(OpCodes.Dup), value.type, value.name,
-                    sequencePoint?.StartLine ?? lastLine ?? ContainerFlow.UnknownLineNumber,
+                    sequencePoint?.StartLine ?? lastLine ?? Flow.UnknownLineNumber,
                     flow, ref i
                 );
             }
@@ -174,6 +200,18 @@ namespace SharpLab.Server.Execution.Internal {
                 );
             }
         }
+
+        /*private void TryInsertReportJump(ILProcessor il, Instruction instruction, ReportMethods flow, ref int index) {
+            var report = instruction.OpCode.FlowControl switch {
+                FlowControl.Call => flow.ReportBeforeCall,
+                _ => null
+            };
+            if (report == null)
+                return;
+
+            il.InsertBeforeAndRetargetAll(instruction, il.CreateCall(report));
+            index += 1;
+        }*/
 
         private (string name, TypeReference type)? GetValueToReport(Instruction instruction, ILProcessor il, IWorkSession session) {
             var localIndex = GetIndexIfStloc(instruction);
@@ -408,6 +446,10 @@ namespace SharpLab.Server.Execution.Internal {
 
         private struct ReportMethods {
             public MethodReference ReportLineStart { get; set; }
+            // public MethodReference ReportBeforeJumpUp { get; set; }
+            // public MethodReference ReportBeforeJumpDown { get; set; }
+            public MethodReference ReportMethodStart { get; set; }
+            public MethodReference ReportMethodReturn { get; set; }
             public MethodReference ReportValue { get; set; }
             public MethodReference ReportRefValue { get; set; }
             public MethodReference ReportSpanValue { get; set; }

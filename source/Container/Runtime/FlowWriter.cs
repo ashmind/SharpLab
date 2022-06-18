@@ -45,6 +45,11 @@ namespace SharpLab.Container.Runtime {
         }
 
         // Must be thread safe
+        public void WriteTag(FlowRecordTag tag) {
+            TryAddRecord(new(tag));
+        }
+
+        // Must be thread safe
         public void WriteException(object exception) {
             TryAddRecord(new (exception));
         }
@@ -84,6 +89,18 @@ namespace SharpLab.Container.Runtime {
         private void WriteRecordToWriter(Utf8JsonWriter writer, FlowRecord record) {
             if (record.Value is {} value) {
                 WriteRecordWithValueToWriter(writer, record, value);
+                return;
+            }
+
+            if (record.Tag is {} tag) {
+                var code = tag switch {
+                    //FlowJumpKind.JumpUp => JumpUpCode,
+                    //FlowJumpKind.JumpDown => JumpDownCode,
+                    FlowRecordTag.MethodStart => MethodStartTagCode,
+                    FlowRecordTag.MethodReturn => MethodReturnTagCode,
+                    _ => throw new NotSupportedException("Unknown flow jump type: " + tag.ToString())
+                };
+                writer.WriteStringValue(code);
                 return;
             }
 
@@ -149,6 +166,11 @@ namespace SharpLab.Container.Runtime {
                 Name = name;
                 Value = value;
                 Exception = default;
+                Tag = default;
+            }
+
+            public FlowRecord(FlowRecordTag tag) : this() {
+                Tag = tag;
             }
 
             public FlowRecord(object exception) : this() {
@@ -158,12 +180,16 @@ namespace SharpLab.Container.Runtime {
             public int LineNumber { get; }
             public string? Name { get; }
             public VariantValue? Value { get; }
+            public FlowRecordTag? Tag { get; }
             public object? Exception { get; }
 
             // allocates -- debug only
             public override string ToString() {
                 if (Exception != null)
                     return "{exception: " + Exception.GetType().Name + "}";
+
+                if (Tag != null)
+                    return "{tag: " + Tag + "}";
 
                 if (Value != null)
                     return "{value}";

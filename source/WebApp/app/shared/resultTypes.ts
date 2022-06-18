@@ -84,11 +84,14 @@ export type OutputJsonLineFlow = {
     >;
 };
 
+export type FlowStepTag = 'method-start' | 'method-return';
+
 export interface FlowStep {
     readonly line: number;
     readonly skipped?: true;
     readonly notes?: string;
     readonly exception?: string;
+    readonly tags?: ReadonlyArray<FlowStepTag>;
 }
 
 export interface Explanation {

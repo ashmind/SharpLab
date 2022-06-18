@@ -10,10 +10,10 @@ import type { Result, FlowStep } from '../../shared/resultTypes';
 import { languageOptionState } from '../../shared/state/languageOptionState';
 import { loadedCodeState } from '../../shared/state/loadedCodeState';
 import { defaultCodeSelector, isDefaultCode } from '../../shared/state/defaultCodeSelector';
-import { useRenderExecutionFlow } from './internal/useRenderExecutionFlow';
 import { useServerOptions } from './internal/useServerOptions';
 import { useServiceUrl } from './internal/useServiceUrl';
 import type { ServerOptions } from './internal/ServerOptions';
+import { useRenderExecutionFlow } from '../../features/execution-flow/useRenderExecutionFlow';
 
 type ResultData = Result['value'];
 
