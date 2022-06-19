@@ -18,14 +18,16 @@ namespace SharpLab.Server.Execution.Internal {
 
         private static readonly MethodInfo ReportLineStartMethod =
             typeof(Flow).GetMethod(nameof(Flow.ReportLineStart))!;
-        /*private static readonly MethodInfo ReportBeforeJumpUpMethod =
-            typeof(Flow).GetMethod(nameof(Flow.ReportBeforeJumpUp))!;
-        private static readonly MethodInfo ReportBeforeJumpDownMethod =
-            typeof(Flow).GetMethod(nameof(Flow.ReportBeforeJumpDown))!;*/
+
         private static readonly MethodInfo ReportMethodStartMethod =
             typeof(Flow).GetMethod(nameof(Flow.ReportMethodStart))!;
         private static readonly MethodInfo ReportMethodReturnMethod =
             typeof(Flow).GetMethod(nameof(Flow.ReportMethodReturn))!;
+        private static readonly MethodInfo ReportLoopStartMethod =
+            typeof(Flow).GetMethod(nameof(Flow.ReportLoopStart))!;
+        private static readonly MethodInfo ReportLoopEndMethod =
+            typeof(Flow).GetMethod(nameof(Flow.ReportLoopEnd))!;
+
         private static readonly MethodInfo ReportValueMethod =
             typeof(Flow).GetMethod(nameof(Flow.ReportValue))!;
         private static readonly MethodInfo ReportRefValueMethod =
@@ -38,6 +40,7 @@ namespace SharpLab.Server.Execution.Internal {
             typeof(Flow).GetMethod(nameof(Flow.ReportReadOnlySpanValue))!;
         private static readonly MethodInfo ReportRefReadOnlySpanValueMethod =
             typeof(Flow).GetMethod(nameof(Flow.ReportRefReadOnlySpanValue))!;
+
         private static readonly MethodInfo ReportExceptionMethod =
             typeof(Flow).GetMethod(nameof(Flow.ReportException))!;
 
@@ -56,13 +59,13 @@ namespace SharpLab.Server.Execution.Internal {
             }
 
             foreach (var module in assembly.Modules) {
-                var flow = new ReportMethods {
+                var flow = new FlowMethods {
                     ReportLineStart = module.ImportReference(ReportLineStartMethod),
 
-                    // ReportBeforeJumpUp = module.ImportReference(ReportBeforeJumpUpMethod),
-                    // ReportBeforeJumpDown = module.ImportReference(ReportBeforeJumpDownMethod),
                     ReportMethodStart = module.ImportReference(ReportMethodStartMethod),
                     ReportMethodReturn = module.ImportReference(ReportMethodReturnMethod),
+                    ReportLoopStart = module.ImportReference(ReportLoopStartMethod),
+                    ReportLoopEnd = module.ImportReference(ReportLoopEndMethod),
 
                     ReportValue = module.ImportReference(ReportValueMethod),
                     ReportRefValue = module.ImportReference(ReportRefValueMethod),
@@ -106,7 +109,7 @@ namespace SharpLab.Server.Execution.Internal {
                 && callee.DeclaringType.Name == nameof(Inspect);
         }
 
-        private void Rewrite(TypeDefinition type, ReportMethods flow, IWorkSession session) {
+        private void Rewrite(TypeDefinition type, FlowMethods flow, IWorkSession session) {
             foreach (var method in type.Methods) {
                 Rewrite(method, flow, session);
             }
@@ -116,7 +119,7 @@ namespace SharpLab.Server.Execution.Internal {
             }
         }
 
-        private void Rewrite(MethodDefinition method, ReportMethods flow, IWorkSession session) {
+        private void Rewrite(MethodDefinition method, FlowMethods flow, IWorkSession session) {
             if (!method.HasBody || method.Body.Instructions.Count == 0)
                 return;
 
@@ -127,6 +130,7 @@ namespace SharpLab.Server.Execution.Internal {
             var lastLine = (int?)null;
             for (var i = 0; i < instructions.Count; i++) {
                 var instruction = instructions[i];
+
                 var sequencePoint = method.DebugInformation?.GetSequencePoint(instruction);
                 var hasSequencePoint = sequencePoint != null && sequencePoint.StartLine != HiddenLine;
                 if (!hasSequencePoint && lastLine == null)
@@ -140,6 +144,7 @@ namespace SharpLab.Server.Execution.Internal {
                     il.InsertBeforeAndRetargetAll(instruction, il.CreateLdcI4Best(sequencePoint.StartLine));
                     il.InsertBefore(instruction, il.CreateCall(flow.ReportLineStart));
                     i += 2;
+
                     lastLine = sequencePoint.StartLine;
 
                     if (isMethodStart) {
@@ -149,8 +154,11 @@ namespace SharpLab.Server.Execution.Internal {
                 }
 
                 if (instruction.OpCode.FlowControl == FlowControl.Return) {
-                    il.InsertBeforeAndRetargetAll(instruction, il.CreateCall(flow.ReportMethodReturn));
+                    il.InsertBefore(instruction, il.CreateCall(flow.ReportMethodReturn));
                     i += 1;
+                }
+                else {
+                    TryInsertReportLoop(il, instruction, flow, ref i);
                 }
 
                 var valueOrNull = GetValueToReport(instruction, il, session);
@@ -171,7 +179,7 @@ namespace SharpLab.Server.Execution.Internal {
             method.Body.OptimizeMacros();
         }
 
-        private void TryInsertReportMethodArguments(ILProcessor il, Instruction instruction, SequencePoint sequencePoint, MethodDefinition method, ReportMethods flow, IWorkSession session, ref int index) {
+        private void TryInsertReportMethodArguments(ILProcessor il, Instruction instruction, SequencePoint sequencePoint, MethodDefinition method, FlowMethods flow, IWorkSession session, ref int index) {
             if (!method.HasParameters)
                 return;
 
@@ -201,17 +209,74 @@ namespace SharpLab.Server.Execution.Internal {
             }
         }
 
-        /*private void TryInsertReportJump(ILProcessor il, Instruction instruction, ReportMethods flow, ref int index) {
-            var report = instruction.OpCode.FlowControl switch {
-                FlowControl.Call => flow.ReportBeforeCall,
-                _ => null
-            };
-            if (report == null)
+        private void TryInsertReportLoop(
+            ILProcessor il,
+            Instruction instruction,
+            FlowMethods flow,
+            ref int index
+        ) {
+            if (instruction.OpCode.FlowControl != FlowControl.Cond_Branch)
                 return;
 
-            il.InsertBeforeAndRetargetAll(instruction, il.CreateCall(report));
+            if (instruction.Operand is not Instruction target)
+                return;
+
+            if (target.Offset >= instruction.Offset)
+                return;
+
+            if (FindLoopStartLine(target, flow) is not {} start)
+                return;
+
+            if (FindLoopEndLine(instruction, start.reportLine, start.line, flow) is not {} end)
+                return;
+
+            if (start.reportIsInLoop) {
+                il.InsertAfter(start.reportLine, il.CreateCall(flow.ReportLoopStart));
+            }
+            else {
+                il.InsertBeforeAndRetargetAll(target, il.CreateCall(flow.ReportLoopStart));
+            }
             index += 1;
-        }*/
+
+            il.InsertAfter(end.reportLine, il.CreateCall(flow.ReportLoopEnd));
+            index += 1;
+        }
+
+        private (Instruction reportLine, int line, bool reportIsInLoop)? FindLoopStartLine(Instruction start, FlowMethods flow) {
+            if (GetReportedLineIfReportLineStart(start.Next, flow) is {} startLine) {
+                // if target is the ldc.i4 of the line number, and target.Next is ReportStartLine
+                return (start.Next, startLine, reportIsInLoop: true);
+            }
+
+            var previous = start.Previous;
+            while (previous != null) {
+                if (GetReportedLineIfReportLineStart(previous, flow) is { } startLineBeforeLoop)
+                    return (previous, startLineBeforeLoop, reportIsInLoop: false);
+                previous = previous.Previous;
+            }
+
+            return null;
+        }
+
+        private (Instruction reportLine, int line)? FindLoopEndLine(Instruction end, Instruction reportStartLine, int startLine, FlowMethods flow) {
+            // Naive approach to end line can sometimes capture start line instead.
+            // For something like 'while (condition)' in C# the condition is
+            // located on the line of 'while', but in IL it is checked _before_ the
+            // jump back.
+            var previous = end.Previous;
+            while (previous != null && previous != reportStartLine) {
+                if (GetReportedLineIfReportLineStart(previous, flow) is {} endLine && endLine > startLine)
+                    return (previous, endLine);
+                previous = previous.Previous;
+            }
+            return null;
+        }
+
+        private int? GetReportedLineIfReportLineStart(Instruction instruction, FlowMethods flow) {
+            return (instruction.OpCode.Code == Code.Call && instruction.Operand == flow.ReportLineStart)
+                 ? instruction.Previous.GetLdcI4Value()
+                 : null;
+        }
 
         private (string name, TypeReference type)? GetValueToReport(Instruction instruction, ILProcessor il, IWorkSession session) {
             var localIndex = GetIndexIfStloc(instruction);
@@ -243,7 +308,7 @@ namespace SharpLab.Server.Execution.Internal {
             TypeReference valueType,
             string valueName,
             int line,
-            ReportMethods flow,
+            FlowMethods flow,
             ref int index
         ) {
             var report = PrepareReportValue(valueType, flow);
@@ -257,7 +322,7 @@ namespace SharpLab.Server.Execution.Internal {
             index += 4;
         }
 
-        private GenericInstanceMethod? PrepareReportValue(TypeReference valueType, ReportMethods flow) {
+        private GenericInstanceMethod? PrepareReportValue(TypeReference valueType, FlowMethods flow) {
             if (valueType.IsPointer || valueType.IsFunctionPointer)
                 return null;
 
@@ -290,7 +355,7 @@ namespace SharpLab.Server.Execution.Internal {
             return new GenericInstanceMethod(reportAnyNonSpan) { GenericArguments = { valueType } };
         }
 
-        private void RewriteExceptionHandlers(ILProcessor il, ReportMethods flow) {
+        private void RewriteExceptionHandlers(ILProcessor il, FlowMethods flow) {
             if (!il.Body.HasExceptionHandlers)
                 return;
 
@@ -342,12 +407,12 @@ namespace SharpLab.Server.Execution.Internal {
             }
         }
 
-        private void RewriteCatch(Instruction start, ILProcessor il, ReportMethods flow) {
+        private void RewriteCatch(Instruction start, ILProcessor il, FlowMethods flow) {
             il.InsertBeforeAndRetargetAll(start, il.Create(OpCodes.Dup));
             il.InsertBefore(start, il.CreateCall(flow.ReportException));
         }
 
-        private void RewriteFinally(ExceptionHandler handler, ref int handlerIndex, ILProcessor il, ReportMethods flow) {
+        private void RewriteFinally(ExceptionHandler handler, ref int handlerIndex, ILProcessor il, FlowMethods flow) {
             // for try/finally, the only thing we can do is to
             // wrap internals of try into a new try+filter+catch
             var outerTryLeave = handler.TryEnd.Previous;
@@ -444,12 +509,12 @@ namespace SharpLab.Server.Execution.Internal {
             #endif
         }
 
-        private struct ReportMethods {
+        private struct FlowMethods {
             public MethodReference ReportLineStart { get; set; }
-            // public MethodReference ReportBeforeJumpUp { get; set; }
-            // public MethodReference ReportBeforeJumpDown { get; set; }
             public MethodReference ReportMethodStart { get; set; }
             public MethodReference ReportMethodReturn { get; set; }
+            public MethodReference ReportLoopStart { get; set; }
+            public MethodReference ReportLoopEnd { get; set; }
             public MethodReference ReportValue { get; set; }
             public MethodReference ReportRefValue { get; set; }
             public MethodReference ReportSpanValue { get; set; }

@@ -14,13 +14,23 @@ export type MethodDetails = RepeatAreaDetails & {
     readonly type: 'method';
 };
 
+export type LoopDetails = RepeatAreaDetails & {
+    readonly type: 'loop';
+};
+
 type MethodDetailsBuilder = {
     line: number;
     type: 'method';
     visits: Array<Visit>;
 };
 
-export type LineDetails = MethodDetails | {
+type LoopDetailsBuilder = {
+    line: number;
+    type: 'loop';
+    visits: Array<Visit>;
+};
+
+export type LineDetails = MethodDetails | LoopDetails | {
     readonly line: number;
     readonly type: 'step';
     readonly step: FlowStep;
@@ -72,17 +82,23 @@ const collectLoop = (start: FlowStep, results: Array<LineDetails>) => {
 };
 */
 
-const collectLineDetails = (
+const collectRepeatAreaDetails = () => {
+
+};
+
+const collectLineDetailsRecursive = (
     results: Array<LineDetails>,
     steps: ReadonlyArray<FlowStep>,
     startIndex: number,
     isLastStepToCollect: (step: FlowStep) => boolean,
     context: {
         readonly methodsByStartLine: Map<number, MethodDetailsBuilder>;
+        readonly loopsByStartLine: Map<number, LoopDetailsBuilder>;
     }
 ) => {
     for (let index = startIndex; index < steps.length; index++) {
         const step = steps[index];
+
         if (step.tags?.includes('method-start')) {
             let method = context.methodsByStartLine.get(step.line);
             if (!method) {
@@ -96,7 +112,33 @@ const collectLineDetails = (
 
             const visit = { start: step, lines: [] };
             method.visits.push(visit);
-            index = collectLineDetails(visit.lines, steps, index + 1, s => !!s.tags?.includes('method-return'), context);
+            index = collectLineDetailsRecursive(
+                visit.lines, steps,
+                index + 1, s => !!s.tags?.includes('method-return'),
+                context
+            );
+            continue;
+        }
+
+        if (step.tags?.includes('loop-start')) {
+            let loop = context.loopsByStartLine.get(step.line);
+            if (!loop) {
+                loop = {
+                    line: step.line,
+                    type: 'loop',
+                    visits: []
+                };
+                context.loopsByStartLine.set(step.line, loop);
+                results.push(loop);
+            }
+
+            const visit = { start: step, lines: [] };
+            loop.visits.push(visit);
+            index = collectLineDetailsRecursive(
+                visit.lines, steps,
+                index + 1, s => !!s.tags?.includes('loop-end'),
+                context
+            );
             continue;
         }
 
@@ -115,8 +157,12 @@ const collectLineDetails = (
 export const processStepsIntoLineDetails = (steps: ReadonlyArray<FlowStep>) => {
     const results = [] as Array<LineDetails>;
     const methodsByStartLine = new Map<number, MethodDetailsBuilder>();
+    const loopsByStartLine = new Map<number, LoopDetailsBuilder>();
 
-    collectLineDetails(results, steps, 0, _ => false, { methodsByStartLine });
+    collectLineDetailsRecursive(results, steps, 0, () => false, {
+        methodsByStartLine,
+        loopsByStartLine
+    });
     for (const method of methodsByStartLine.values()) {
         results.push(method);
     }

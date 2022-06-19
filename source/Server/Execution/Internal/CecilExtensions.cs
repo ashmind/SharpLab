@@ -68,6 +68,25 @@ namespace SharpLab.Server.Execution.Internal {
             }
         }
 
+
+        public static int? GetLdcI4Value(this Instruction instruction) {
+            return instruction.OpCode.Code switch {
+                Code.Ldc_I4_0 => 0,
+                Code.Ldc_I4_1 => 1,
+                Code.Ldc_I4_2 => 2,
+                Code.Ldc_I4_3 => 3,
+                Code.Ldc_I4_4 => 4,
+                Code.Ldc_I4_5 => 5,
+                Code.Ldc_I4_6 => 6,
+                Code.Ldc_I4_7 => 7,
+                Code.Ldc_I4_8 => 8,
+                Code.Ldc_I4_M1 => -1,
+                Code.Ldc_I4_S => (sbyte)instruction.Operand,
+                Code.Ldc_I4 => (int)instruction.Operand,
+                _ => null
+            };
+        }
+
         private static bool IsSByte(int value) {
             return value >= sbyte.MinValue && value <= sbyte.MaxValue;
         }

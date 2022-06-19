@@ -1,11 +1,8 @@
 import type { PartiallyMutable } from '../../../../shared/helpers/partiallyMutable';
 import type { FlowStep, FlowStepTag } from '../../../../shared/resultTypes';
 
-const TAG_CODE_METHOD_START = 'm';
-const TAG_CODE_METHOD_RETURN = 'r';
-
 type ValueTuple = [line: number, value: string, name?: string];
-type TagCode = typeof TAG_CODE_METHOD_START | typeof TAG_CODE_METHOD_RETURN;
+type TagCode = string;
 
 export type OutputJsonLineFlow = {
     readonly flow: ReadonlyArray<
@@ -58,9 +55,11 @@ const addFlowTag = (flow: Array<FlowStepBuilder>, code: TagCode) => {
         return;
 
     const tag = ({
-        [TAG_CODE_METHOD_START]: 'method-start',
-        [TAG_CODE_METHOD_RETURN]: 'method-return'
-    } as const)[code];
+        m: 'method-start',
+        r: 'method-return',
+        ls: 'loop-start',
+        le: 'loop-end'
+    } as const)[code] ?? `unknown: ${code}`;
 
     const previous = flow[flow.length - 1];
     previous.tags ??= [];
@@ -78,6 +77,7 @@ const addFlowException = (
 };
 
 export const parseFlowSteps = (data: OutputJsonLineFlow['flow']) => {
+    console.log('flow', data);
     const flow = [] as Array<FlowStepBuilder>;
 
     for (const item of data) {

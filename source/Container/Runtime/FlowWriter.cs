@@ -94,11 +94,11 @@ namespace SharpLab.Container.Runtime {
 
             if (record.Tag is {} tag) {
                 var code = tag switch {
-                    //FlowJumpKind.JumpUp => JumpUpCode,
-                    //FlowJumpKind.JumpDown => JumpDownCode,
                     FlowRecordTag.MethodStart => MethodStartTagCode,
                     FlowRecordTag.MethodReturn => MethodReturnTagCode,
-                    _ => throw new NotSupportedException("Unknown flow jump type: " + tag.ToString())
+                    FlowRecordTag.LoopStart => LoopStartCode,
+                    FlowRecordTag.LoopEnd => LoopEndCode,
+                    _ => throw new NotSupportedException("Unknown flow tag: " + tag.ToString())
                 };
                 writer.WriteStringValue(code);
                 return;

@@ -84,7 +84,7 @@ export type OutputJsonLineFlow = {
     >;
 };
 
-export type FlowStepTag = 'method-start' | 'method-return';
+export type FlowStepTag = 'method-start' | 'method-return' | 'loop-start' | 'loop-end' | `unknown: ${string}`;
 
 export interface FlowStep {
     readonly line: number;

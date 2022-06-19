@@ -3,6 +3,7 @@ using System.IO;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.CSharp.OutputVisitor;
 using ICSharpCode.Decompiler.Metadata;
+using MirrorSharp.Advanced;
 using SharpLab.Server.Common;
 using SharpLab.Server.Decompilation.Internal;
 
@@ -36,9 +37,10 @@ namespace SharpLab.Server.Decompilation {
             _debugInfoFactory = debugInfoFactory;
         }
 
-        public void Decompile(CompilationStreamPair streams, TextWriter codeWriter) {
+        public void Decompile(CompilationStreamPair streams, TextWriter codeWriter, IWorkSession session) {
             Argument.NotNull(nameof(streams), streams);
             Argument.NotNull(nameof(codeWriter), codeWriter);
+            Argument.NotNull(nameof(session), session);
 
             using (var assemblyFile = new PEFile("", streams.AssemblyStream))
             using (var debugInfo = streams.SymbolStream != null ? _debugInfoFactory(streams.SymbolStream) : null) {

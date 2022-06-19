@@ -32,7 +32,7 @@ namespace SharpLab.Server.Compilation {
             if (GlobalStatement == null)
                 return; // this branch does not support global statements
 
-            if (session.GetTargetName() == TargetNames.Run)
+            if (session.GetTargetName() is TargetNames.Run or TargetNames.RunIL)
                 return; // must always use executable mode for Run
 
             if (!session.Roslyn.Project.Documents.Single().TryGetSyntaxRoot(out var syntaxRoot)) {

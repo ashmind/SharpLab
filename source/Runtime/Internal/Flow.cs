@@ -8,20 +8,20 @@ namespace SharpLab.Runtime.Internal {
             RuntimeServices.FlowWriter.WriteLineVisit(lineNumber);
         }
 
-        /*public static void ReportBeforeJumpUp() {
-            RuntimeServices.FlowWriter.WriteBeforeJump(FlowJumpKind.JumpUp);
-        }
-
-        public static void ReportBeforeJumpDown() {
-            RuntimeServices.FlowWriter.WriteBeforeJump(FlowJumpKind.JumpDown);
-        }*/
-
         public static void ReportMethodStart() {
             RuntimeServices.FlowWriter.WriteTag(FlowRecordTag.MethodStart);
         }
 
         public static void ReportMethodReturn() {
             RuntimeServices.FlowWriter.WriteTag(FlowRecordTag.MethodReturn);
+        }
+
+        public static void ReportLoopStart() {
+            RuntimeServices.FlowWriter.WriteTag(FlowRecordTag.LoopStart);
+        }
+
+        public static void ReportLoopEnd() {
+            RuntimeServices.FlowWriter.WriteTag(FlowRecordTag.LoopEnd);
         }
 
         public static void ReportRefValue<T>(ref T value, string? name, int lineNumber) {

@@ -41,6 +41,10 @@ namespace SharpLab.Server.Execution {
             }).SingleInstance()
               .AsSelf();
 
+            builder.RegisterType<AssemblyStreamRewriterComposer>()
+                   .As<IAssemblyStreamRewriterComposer>()
+                   .SingleInstance();
+
             builder.RegisterType<ContainerClient>()
                    .As<IContainerClient>()
                    .SingleInstance();
