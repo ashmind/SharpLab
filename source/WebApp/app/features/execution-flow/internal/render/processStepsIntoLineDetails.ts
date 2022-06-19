@@ -2,7 +2,7 @@ import type { FlowStep } from '../../../../shared/resultTypes';
 
 export type Visit = {
     readonly start: FlowStep;
-    readonly lines?: ReadonlyArray<LineDetails>;
+    readonly lines: ReadonlyArray<LineDetails>;
 };
 
 export type RepeatAreaDetails = {
@@ -81,10 +81,6 @@ const collectLoop = (start: FlowStep, results: Array<LineDetails>) => {
     return loop;
 };
 */
-
-const collectRepeatAreaDetails = () => {
-
-};
 
 const collectLineDetailsRecursive = (
     results: Array<LineDetails>,

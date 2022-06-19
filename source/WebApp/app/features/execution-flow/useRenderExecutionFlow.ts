@@ -128,8 +128,7 @@ type TreeRenderContext = {
 const renderTree = (
     lineDetails: ReadonlyArray<LineDetails>,
     trackingTree: TrackingTree,
-    context: TreeRenderContext/*,
-    loop?: { start: FlowStepForJumps; end?: FlowStepForJumps | null }*/
+    context: TreeRenderContext
 ) => {
     const { cm } = context;
     clearWidgets(cm, trackingTree);
@@ -137,14 +136,18 @@ const renderTree = (
     // trackingTree.stepsForJumps = [];
     // if (loop)
     //     trackingTree.stepsForJumps.push(loop.start);
-    for (let i = 0; i < lineDetails.length; i++) {
-        const details = lineDetails[i];
+    for (const details of lineDetails) {
         const cmLineNumber = details.line - 1;
         const line = cm.getLine(cmLineNumber);
         if (!line)
             continue;
 
-        if (details.type === 'method') {
+        if (details.type === 'method' || details.type === 'loop') {
+            if (details.visits.length === 1) {
+                renderTree(details.visits[0].lines, trackingTree, context);
+                continue;
+            }
+
             // const lastStepBeforeLoop = trackingTree.stepsForJumps[trackingTree.stepsForJumps.length - 1];
             const start = getLineStart(line);
             const lineStartCoords = cm.cursorCoords({ line: cmLineNumber, ch: start }, 'local');
@@ -162,7 +165,7 @@ const renderTree = (
                     //    ? { ...nextVisit.start, ignoreForJumpsOut: true }
                     //    : null;
                     renderTree(
-                        visit.lines ?? [], trackingSubtree, context/*,
+                        visit.lines, trackingSubtree, context/*,
                         { start: startForJumps, end: endForJumps }*/
                     );
                 }
