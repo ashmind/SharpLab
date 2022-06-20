@@ -9,26 +9,15 @@ export type RepeatAreaDetails = {
     readonly line: number;
     readonly visits: ReadonlyArray<Visit>;
 };
+export type MethodDetails = RepeatAreaDetails & { readonly type: 'method' };
+export type LoopDetails = RepeatAreaDetails & { readonly type: 'loop' };
 
-export type MethodDetails = RepeatAreaDetails & {
-    readonly type: 'method';
-};
-
-export type LoopDetails = RepeatAreaDetails & {
-    readonly type: 'loop';
-};
-
-type MethodDetailsBuilder = {
+type RepeatAreaBuilder = {
     line: number;
-    type: 'method';
     visits: Array<Visit>;
 };
-
-type LoopDetailsBuilder = {
-    line: number;
-    type: 'loop';
-    visits: Array<Visit>;
-};
+type MethodDetailsBuilder = RepeatAreaBuilder & { type: 'method' };
+type LoopDetailsBuilder = RepeatAreaBuilder & { type: 'loop' };
 
 export type LineDetails = MethodDetails | LoopDetails | {
     readonly line: number;
@@ -36,51 +25,26 @@ export type LineDetails = MethodDetails | LoopDetails | {
     readonly step: FlowStep;
 };
 
-/*
-const collectLoop = (start: FlowStep, results: Array<LineDetails>) => {
-    const loopLines = [] as Array<LineDetails>;
-    let previous = results[results.length - 1] as LineDetails | undefined;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const endLine = previous!.line;
-    do {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        loopLines.push(previous!);
-        results.pop();
-        previous = results[results.length - 1] as LineDetails | undefined;
-    } while (previous && start.line < previous.line);
+const prepareAreaVisit = <TType, TAreaBuilder extends RepeatAreaBuilder & { type: TType }>(
+    type: TType,
+    mapByStartLine: Map<number, TAreaBuilder>,
+    start: FlowStep
+) => {
+    const { line } = start;
 
-    loopLines.reverse();
-
-    if (previous && start.line === previous.line) {
-        if (previous.type !== 'loop') {
-            results.pop();
-            previous = {
-                line: start.line,
-                endLine,
-                type: 'loop',
-                visits: [{ start: previous.step }]
-            };
-            results.push(previous);
-        }
-
-        previous.visits[previous.visits.length - 1].lines = loopLines;
-        previous.visits.push({ start });
-        return previous;
+    let area = mapByStartLine.get(line);
+    let areaIsNew = false;
+    if (!area) {
+        area = { line, type, visits: [] as Array<Visit> } as TAreaBuilder;
+        mapByStartLine.set(line, area);
+        areaIsNew = true;
     }
 
-    const loop: LoopDetails = {
-        line: start.line,
-        endLine,
-        type: 'loop',
-        visits: [
-            { start: { line: start.line }, lines: loopLines },
-            { start }
-        ]
-    };
-    results.push(loop);
-    return loop;
+    const visit = { start, lines: [] };
+    area.visits.push(visit);
+
+    return [visit, area, areaIsNew] as const;
 };
-*/
 
 const collectLineDetailsRecursive = (
     results: Array<LineDetails>,
@@ -96,18 +60,7 @@ const collectLineDetailsRecursive = (
         const step = steps[index];
 
         if (step.tags?.includes('method-start')) {
-            let method = context.methodsByStartLine.get(step.line);
-            if (!method) {
-                method = {
-                    line: step.line,
-                    type: 'method',
-                    visits: []
-                };
-                context.methodsByStartLine.set(step.line, method);
-            }
-
-            const visit = { start: step, lines: [] };
-            method.visits.push(visit);
+            const [visit] = prepareAreaVisit('method', context.methodsByStartLine, step);
             index = collectLineDetailsRecursive(
                 visit.lines, steps,
                 index + 1, s => !!s.tags?.includes('method-return'),
@@ -117,19 +70,9 @@ const collectLineDetailsRecursive = (
         }
 
         if (step.tags?.includes('loop-start')) {
-            let loop = context.loopsByStartLine.get(step.line);
-            if (!loop) {
-                loop = {
-                    line: step.line,
-                    type: 'loop',
-                    visits: []
-                };
-                context.loopsByStartLine.set(step.line, loop);
+            const [visit, loop, loopIsNew] = prepareAreaVisit('loop', context.loopsByStartLine, step);
+            if (loopIsNew)
                 results.push(loop);
-            }
-
-            const visit = { start: step, lines: [] };
-            loop.visits.push(visit);
             index = collectLineDetailsRecursive(
                 visit.lines, steps,
                 index + 1, s => !!s.tags?.includes('loop-end'),
