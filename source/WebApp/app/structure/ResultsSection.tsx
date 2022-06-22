@@ -42,7 +42,7 @@ export const ResultsSection: React.FC = () => {
             sourceLanguage: snapshot.getLoadable(languageOptionState).getValue(),
             result
         } : null);
-    });
+    }, []);
 
     // Code is special since CodeMirror is slow to set up, so we hide it instead of destroying it
     useEffect(() => updateOnResultChange(result), [updateOnResultChange, result]);

@@ -1,5 +1,6 @@
 import type { PartiallyMutable } from '../../../../shared/helpers/partiallyMutable';
 import type { FlowStep, FlowStepTag } from '../../../../shared/resultTypes';
+import { FLOW_TAG_LOOP_END, FLOW_TAG_LOOP_START, FLOW_TAG_METHOD_RETURN, FLOW_TAG_METHOD_START } from '../tags';
 
 type ValueTuple = [line: number, value: string, name?: string];
 type TagCode = string;
@@ -55,10 +56,10 @@ const addFlowTag = (flow: Array<FlowStepBuilder>, code: TagCode) => {
         return;
 
     const tag = ({
-        m: 'method-start',
-        r: 'method-return',
-        ls: 'loop-start',
-        le: 'loop-end'
+        m: FLOW_TAG_METHOD_START,
+        r: FLOW_TAG_METHOD_RETURN,
+        ls: FLOW_TAG_LOOP_START,
+        le: FLOW_TAG_LOOP_END
     } as const)[code] ?? `unknown: ${code}`;
 
     const previous = flow[flow.length - 1];

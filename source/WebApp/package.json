@@ -5,6 +5,7 @@
   "scripts": {
     "build": "ts-node-script ./scripts.ts build",
     "lint": "ts-node-script ./scripts.ts ts:lint",
+    "type-check": "ts-node-script ./scripts.ts ts:type-check",
     "less": "ts-node-script ./scripts.ts less",
     "test": "jest",
     "start": "ts-node-script ./scripts.ts start --watch",
