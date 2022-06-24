@@ -3,6 +3,7 @@ import { FLOW_TAG_LOOP_END, FLOW_TAG_LOOP_START, FLOW_TAG_METHOD_RETURN, FLOW_TA
 
 export type Visit = {
     readonly start: FlowStep;
+    readonly end: FlowStep;
     readonly lines: ReadonlyArray<LineDetails>;
 };
 
@@ -29,6 +30,11 @@ export type SimpleLineDetails = {
 
 export type LineDetails = MethodDetails | LoopDetails | SimpleLineDetails;
 
+const isEndStepFromOuterArea = (step: FlowStep) => {
+    return !!step.tags?.includes(FLOW_TAG_LOOP_END)
+        || !!step.tags?.includes(FLOW_TAG_METHOD_RETURN);
+};
+
 const collectAreaVisit = <TAreaBuilder extends MethodDetailsBuilder | LoopDetailsBuilder>(
     results: Array<LineDetails>,
     steps: ReadonlyArray<FlowStep>,
@@ -41,19 +47,46 @@ const collectAreaVisit = <TAreaBuilder extends MethodDetailsBuilder | LoopDetail
     const { line } = start;
 
     let area = mapByStartLine.get(line);
+    const visitLines = [] as Array<LineDetails>;
+
+    const isEndStep = (step: FlowStep, index: number) => {
+        if (step.tags?.includes(endTag))
+            return true;
+
+        if (!area?.visits.length)
+            return false;
+
+        const { start: areaStart, end: areaEnd } = area.visits[0];
+        const next = steps[index + 1] as FlowStep | undefined;
+        if (!next)
+            return false;
+
+        return next.line < areaStart.line
+            || next.line > areaEnd.line
+            || isEndStepFromOuterArea(next);
+    };
+    const [endIndex, end] = collectLineDetailsRecursive(
+        visitLines, steps, startIndex + 1, isEndStep
+    );
+    if (!end && !area) {
+        // end not found -- inline visit
+        results.push(...visitLines);
+        return endIndex;
+    }
+
     if (!area) {
         area = { line, type, visits: [] as Array<Visit> } as TAreaBuilder;
         mapByStartLine.set(line, area);
         results.push(area);
     }
 
-    const visit = { start, lines: [] };
-    area.visits.push(visit);
+    area.visits.push({
+        start,
+        end: end ?? steps[steps.length - 1],
+        lines: visitLines
+    });
 
-    return collectLineDetailsRecursive(
-        visit.lines, steps,
-        startIndex + 1, s => !!s.tags?.includes(endTag)
-    );
+    return endIndex;
 };
 
 const getJumpTarget = (steps: ReadonlyArray<FlowStep>, index: number) => {
@@ -69,7 +102,7 @@ const collectLineDetailsRecursive = (
     results: Array<LineDetails>,
     steps: ReadonlyArray<FlowStep>,
     startIndex: number,
-    isLastStepToCollect: (step: FlowStep) => boolean
+    isLastStepToCollect: (step: FlowStep, index: number) => boolean
 ) => {
     const methodsByStartLine = new Map<number, MethodDetailsBuilder>();
     const loopsByStartLine = new Map<number, LoopDetailsBuilder>();
@@ -94,10 +127,10 @@ const collectLineDetailsRecursive = (
             jumpTo: getJumpTarget(steps, index)
         });
 
-        if (isLastStepToCollect(step))
-            return index;
+        if (isLastStepToCollect(step, index))
+            return [index, step] as const;
     }
-    return steps.length - 1;
+    return [steps.length, null] as const;
 };
 
 export const processStepsIntoLineDetails = (steps: ReadonlyArray<FlowStep>) => {
