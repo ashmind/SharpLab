@@ -84,15 +84,28 @@ export type OutputJsonLineFlow = {
     >;
 };
 
-export type FlowStepTag = 'method-start' | 'method-return' | 'loop-start' | 'loop-end' | `unknown: ${string}`;
+export type FlowStepTag = 'jump' | `unknown: ${string}`;
 
-export interface FlowStep {
+export type FlowStep = {
     readonly line: number;
-    readonly skipped?: true;
+    readonly skipped?: boolean;
     readonly notes?: string;
     readonly exception?: string;
     readonly tags?: ReadonlyArray<FlowStepTag>;
-}
+};
+
+export type FlowAreaType = 'method' | 'loop' | `unknown: ${string}`;
+
+export type FlowArea = {
+    readonly type: FlowAreaType;
+    readonly startLine: number;
+    readonly endLine: number;
+};
+
+export type Flow = {
+    readonly steps: ReadonlyArray<FlowStep>;
+    readonly areas: ReadonlyArray<FlowArea>;
+};
 
 export interface Explanation {
     readonly code: string;
@@ -121,12 +134,14 @@ export interface AstResult extends ResultBase {
     readonly value: ReadonlyArray<AstItem>;
 }
 
+export type RunResultLegacyValue = {
+    readonly output: ReadonlyArray<OutputItem>;
+    readonly flow: ReadonlyArray<FlowStep>;
+};
+
 export interface RunResult extends ResultBase {
     readonly type: 'run';
-    readonly value: {
-        readonly output: ReadonlyArray<OutputItem>;
-        readonly flow: ReadonlyArray<FlowStep>;
-    } | string | null;
+    readonly value: RunResultLegacyValue | string | null;
 }
 
 export interface VerifyResult extends ResultBase {
@@ -149,7 +164,10 @@ export type NonErrorResult = CodeResult|AstResult|ExplainResult|VerifyResult|Run
 export type Result = NonErrorResult|ErrorResult;
 
 type ParsedRunResult = Omit<RunResult, 'value'> & {
-    value: Exclude<RunResult['value'], string>;
+    readonly value: {
+        readonly output: ReadonlyArray<OutputItem>;
+        readonly flow: Flow | null;
+    } | null;
 };
 export type ParsedNonErrorResult = Exclude<Result, RunResult|ErrorResult>|ParsedRunResult;
 export type ParsedResult = ParsedNonErrorResult|ErrorResult;

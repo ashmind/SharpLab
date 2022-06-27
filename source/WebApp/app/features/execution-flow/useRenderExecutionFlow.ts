@@ -1,16 +1,12 @@
 import { useEffect, useRef } from 'react';
-import type { FlowStep } from '../../shared/resultTypes';
-import { extractJumps } from './internal/render/extractJumps';
-import { type RepeatAreaDetails, type Visit, type LineDetails, processStepsIntoLineDetails, SimpleLineDetails } from './internal/render/processStepsIntoLineDetails';
-
-type ChildLineDetailsSource = {
-    fromChildIndex: number;
-};
+import type { Flow } from '../../shared/resultTypes';
+import { extractJumpsData, StepForJumps } from './internal/render/extractJumpsData';
+import { type AreaDetails, type AreaVisit, type LineDetails, processFlowIntoLineDetails } from './internal/render/processFlowIntoLineDetails';
 
 type TrackingTree = {
     bookmarks: Array<CodeMirror.TextMarker>;
     lineWidgets: Array<CodeMirror.LineWidget>;
-    linesForJumps: Array<SimpleLineDetails | ChildLineDetailsSource>;
+    stepsForJumps: Array<StepForJumps>;
     children: Array<TrackingTree>;
 };
 
@@ -27,15 +23,15 @@ const getLineStart = (line: string) => {
 
 let visitSelectorNameIndex = 1;
 const createRepeatVisitSelectorWidget = (
-    { visits }: RepeatAreaDetails,
+    { visits }: AreaDetails,
     lineStartX: number,
-    updateSubtree: (visit: Visit) => void
+    updateSubtree: (visit: AreaVisit) => void
 ) => {
     const widget = document.createElement('div');
     widget.className = 'flow-repeat-visit-selector';
     widget.style.paddingLeft = lineStartX + 'px';
 
-    const visitByElement = new WeakMap<HTMLElement, Visit>();
+    const visitByElement = new WeakMap<HTMLElement, AreaVisit>();
     // eslint-disable-next-line no-plusplus
     const radioName = 'flow-repeat-visit-selector-' + visitSelectorNameIndex++;
 
@@ -79,7 +75,7 @@ const createNotesOrExceptionWidget = (content: string, kind: 'notes'|'exception'
 const createTrackingTree = (): TrackingTree => ({
     bookmarks: [],
     lineWidgets: [],
-    linesForJumps: [],
+    stepsForJumps: [],
     children: []
 });
 
@@ -99,26 +95,25 @@ const clearWidgets = (cm: CodeMirror.Editor, tree: TrackingTree) => {
     tree.children = [];
 };
 
-const getAllLinesForJumps = (tree: TrackingTree) => {
-    const allLines = [] as Array<SimpleLineDetails>;
-    for (const details of tree.linesForJumps) {
-        if ('fromChildIndex' in details) {
-            allLines.push(...getAllLinesForJumps(
-                tree.children[details.fromChildIndex]
-            ));
-            continue;
+const getAllStepsForJumps = (tree: TrackingTree) => {
+    const generator = function*(tree: TrackingTree): Generator<StepForJumps> {
+        for (const step of tree.stepsForJumps) {
+            yield step;
         }
-        allLines.push(details);
-    }
-    return allLines;
+        for (const child of tree.children) {
+            yield* generator(child);
+        }
+    };
+
+    return [...generator(tree)];
 };
 
 type TreeRenderContext = {
     cm: CodeMirror.Editor;
-    rerenderAllJumps: () => void;
+    renderAllJumps: () => void;
 };
 
-const renderTree = (
+const renderWidgetTree = (
     lineDetails: ReadonlyArray<LineDetails>,
     trackingTree: TrackingTree,
     context: TreeRenderContext
@@ -126,39 +121,39 @@ const renderTree = (
     const { cm } = context;
     clearWidgets(cm, trackingTree);
 
-    trackingTree.linesForJumps = [];
+    trackingTree.stepsForJumps = [];
     for (const details of lineDetails) {
         const cmLineNumber = details.line - 1;
         const line = cm.getLine(cmLineNumber);
         if (!line)
             continue;
 
-        if (details.type === 'method' || details.type === 'loop') {
+        if (details.type === 'area') {
             const trackingSubtree = createTrackingTree();
             trackingTree.children.push(trackingSubtree);
-            trackingTree.linesForJumps.push({
-                fromChildIndex: trackingTree.children.length - 1
-            });
-
-            if (details.visits.length === 1) {
-                renderTree(details.visits[0].lines, trackingSubtree, context);
-                continue;
-            }
 
             const start = getLineStart(line);
             const lineStartCoords = cm.cursorCoords({ line: cmLineNumber, ch: start }, 'local');
 
             const widget = createRepeatVisitSelectorWidget(
                 details, lineStartCoords.left,
-                visit => renderTree(visit.lines, trackingSubtree, context)
+                visit => {
+                    renderWidgetTree(visit.lines, trackingSubtree, context);
+                    trackingSubtree.stepsForJumps.unshift({ step: visit.start });
+                    context.renderAllJumps();
+                }
             );
             const lineWidget = cm.addLineWidget(cmLineNumber - 1, widget);
             trackingTree.lineWidgets.push(lineWidget);
+            trackingSubtree.stepsForJumps.push(...details.visits.map(v => ({
+                step: v.start,
+                mode: 'jump-to-only'
+            } as const)));
             continue;
         }
 
         const { step } = details;
-        trackingTree.linesForJumps.push(details);
+        trackingTree.stepsForJumps.push({ step });
         const end = line.length;
         for (const partName of ['notes', 'exception'] as const) {
             const part = step[partName];
@@ -168,33 +163,32 @@ const renderTree = (
             trackingTree.bookmarks.push(cm.setBookmark({ line: cmLineNumber, ch: end }, { widget }));
         }
     }
-
-    context.rerenderAllJumps();
 };
 
-const renderExecutionFlow = (cm: CodeMirror.Editor, steps: ReadonlyArray<FlowStep|number>, tree: TrackingTree) => {
-    const normalizedSteps = steps.map(step => typeof step === 'number' ? { line: step } : step);
-    const lineDetails = processStepsIntoLineDetails(normalizedSteps);
+const renderExecutionFlow = (cm: CodeMirror.Editor, flow: Flow | null, tree: TrackingTree) => {
+    const result = processFlowIntoLineDetails(flow);
 
-    renderTree(lineDetails, tree, {
-        cm,
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        rerenderAllJumps: () => cm.setJumpArrows(extractJumps(getAllLinesForJumps(tree)))
-    });
+    const renderAllJumps = () => {
+        const jumps = extractJumpsData(result.jumps, getAllStepsForJumps(tree));
+        cm.setJumpArrows(jumps);
+    };
+
+    renderWidgetTree(result.lines, tree, { cm, renderAllJumps });
+    renderAllJumps();
 };
 
-export const useRenderExecutionFlow = (cm: CodeMirror.Editor | undefined, steps: ReadonlyArray<FlowStep|number> | null) => {
+export const useRenderExecutionFlow = (cm: CodeMirror.Editor | undefined, flow: Flow | null) => {
     const trackingTreeRef = useRef<TrackingTree>(createTrackingTree());
 
     useEffect(() => {
-        if (!steps || !cm)
+        if (!cm)
             return;
 
         const tree = trackingTreeRef.current;
-        renderExecutionFlow(cm, steps, tree);
+        renderExecutionFlow(cm, flow, tree);
         return () => {
             clearWidgets(cm, tree);
             cm.setJumpArrows([]);
         };
-    }, [steps, cm]);
+    }, [cm, flow]);
 };

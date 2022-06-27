@@ -1,11 +1,11 @@
 import { tryParseOutputJsonAsFlow } from '../../../features/execution-flow/tryParseOutputJsonAsFlow';
-import type { FlowStep, OutputItem } from '../../resultTypes';
+import type { Flow, OutputItem } from '../../resultTypes';
 
 type OutputJsonLineData = Exclude<OutputItem, string> | object;
 
 export const parseOutput = (outputString: string) => {
     const output = [] as Array<OutputItem>;
-    let flow = [] as ReadonlyArray<FlowStep>;
+    let flow: Flow | null = null;
 
     let lastIndex = 0;
     const commitFragmentUpTo = (index: number) => {

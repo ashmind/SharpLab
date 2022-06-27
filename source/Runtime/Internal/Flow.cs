@@ -4,16 +4,19 @@ namespace SharpLab.Runtime.Internal {
     public static class Flow {
         public const int UnknownLineNumber = -1;
 
+        public static void ReportMethodArea(int startLineNumber, int endLineNumber) {
+            RuntimeServices.FlowWriter.WriteArea(FlowAreaKind.Method, startLineNumber, endLineNumber);
+        }
+
+        public static void ReportLoopArea(int startLineNumber, int endLineNumber) {
+            RuntimeServices.FlowWriter.WriteArea(FlowAreaKind.Loop, startLineNumber, endLineNumber);
+        }
+
         public static void ReportLineStart(int lineNumber) {
             RuntimeServices.FlowWriter.WriteLineVisit(lineNumber);
         }
-
-        public static void ReportMethodStart() {
-            RuntimeServices.FlowWriter.WriteTag(FlowRecordTag.MethodStart);
-        }
-
-        public static void ReportMethodReturn() {
-            RuntimeServices.FlowWriter.WriteTag(FlowRecordTag.MethodReturn);
+        public static void ReportJump() {
+            RuntimeServices.FlowWriter.WriteTag(FlowRecordTag.Jump);
         }
 
         public static void ReportLoopStart() {
