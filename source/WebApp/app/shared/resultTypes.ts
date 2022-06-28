@@ -163,7 +163,7 @@ export interface ErrorResult extends ResultBase {
 export type NonErrorResult = CodeResult|AstResult|ExplainResult|VerifyResult|RunResult;
 export type Result = NonErrorResult|ErrorResult;
 
-type ParsedRunResult = Omit<RunResult, 'value'> & {
+export type ParsedRunResult = Omit<RunResult, 'value'> & {
     readonly value: {
         readonly output: ReadonlyArray<OutputItem>;
         readonly flow: Flow | null;

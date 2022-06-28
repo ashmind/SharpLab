@@ -29,7 +29,7 @@ type TemplateProps = {
     output: ReadonlyArray<OutputItem|InspectionGroup>;
 };
 const Template: React.FC<TemplateProps> = ({ output }) => {
-    return <OutputView output={output} flow={null} sourceCode={''} sourceLanguage={LANGUAGE_CSHARP} />;
+    return <OutputView output={output} sourceCode={''} sourceLanguage={LANGUAGE_CSHARP} />;
 };
 
 export const Empty = () => <Template output={[]} />;

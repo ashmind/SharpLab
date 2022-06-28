@@ -1,8 +1,8 @@
 import { asLookup } from '../../../shared/helpers/asLookup';
 import { assertType } from '../../../shared/helpers/assertType';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../../shared/languages';
-import type { CodeResult, AstResult, RunResult, VerifyResult, ExplainResult, ErrorResult, Result } from '../../../shared/resultTypes';
-import { TargetName, TARGET_ASM, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_IL, TARGET_RUN, TARGET_VB, TARGET_VERIFY } from '../../../shared/targets';
+import type { CodeResult, AstResult, RunResult, VerifyResult, ExplainResult, ErrorResult, Result, ParsedResult, ParsedRunResult } from '../../../shared/resultTypes';
+import { TargetName, TARGET_ASM, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_IL, TARGET_RUN, TARGET_RUN_IL, TARGET_VB, TARGET_VERIFY } from '../../../shared/targets';
 import { targetMap } from '../../persistent-state/handlers/helpers/language-and-target-maps';
 import type { Gist } from '../Gist';
 import { token } from './githubAuth';
@@ -13,11 +13,12 @@ type TargetResultMap = {
     [TARGET_IL]: CodeResult;
     [TARGET_ASM]: CodeResult;
     [TARGET_AST]: AstResult;
-    [TARGET_RUN]: RunResult;
+    [TARGET_RUN]: ParsedRunResult;
     [TARGET_VERIFY]: VerifyResult;
     [TARGET_EXPLAIN]: ExplainResult;
     // not actually supported anymore, but needed for completeness
     [TARGET_VB]: CodeResult;
+    [TARGET_RUN_IL]: CodeResult;
 };
 
 // Zero-width space (\u200B) is invisible, but ensures that these will be sorted after other files
@@ -120,7 +121,7 @@ export const getGistAsync = async (id: string): Promise<Gist> => {
 };
 
 type CreateGistRequest = Pick<Gist, 'name' | 'code' | 'options'> & {
-    readonly result: Result;
+    readonly result: ParsedResult;
 };
 
 export const createGistAsync = async ({ name, code, options, result }: CreateGistRequest): Promise<Gist> => {

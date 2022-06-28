@@ -1,5 +1,5 @@
 import React from 'react';
-import type { FlowStep, OutputItem } from '../../shared/resultTypes';
+import type { OutputItem } from '../../shared/resultTypes';
 import type { LanguageName } from '../../shared/languages';
 import { SimpleOutput } from './internal/SimpleOutput';
 import { MemoryOutput } from './internal/MemoryOutput';
@@ -11,7 +11,6 @@ type Props = {
 
     sourceCode: string;
     sourceLanguage: LanguageName;
-    flow?: ReadonlyArray<FlowStep> | null;
 };
 
 export const OutputView: React.FC<Props> = ({ output }) => {

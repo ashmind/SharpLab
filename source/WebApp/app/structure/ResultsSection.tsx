@@ -72,7 +72,6 @@ export const ResultsSection: React.FC = () => {
                     output={result.value?.output ?? EMPTY_OUTPUT}
                     sourceCode={sourceCode}
                     sourceLanguage={sourceLanguage}
-                    flow={result.value?.flow}
                 />;
         }
     };

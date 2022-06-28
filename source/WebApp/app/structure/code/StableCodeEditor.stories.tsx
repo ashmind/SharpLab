@@ -4,7 +4,7 @@ import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
 import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../shared/languages';
 import { languageOptionState } from '../../shared/state/languageOptionState';
-import type { FlowStep } from '../../shared/resultTypes';
+import type { Flow, FlowStep } from '../../shared/resultTypes';
 import { loadedCodeState } from '../../shared/state/loadedCodeState';
 import { StableCodeEditor } from './StableCodeEditor';
 
@@ -22,20 +22,25 @@ static int Test(int x) {
     return x;
 }
     `.trim(),
-    FLOW: [
-        { line: 1 },
-        { line: 4, notes: 'x: 0' },
-        { line: 6, notes: 'return: 0' },
-        { line: 2 },
-        { line: 4, notes: 'x: 1' },
-        { line: 6, notes: 'return: 1' }
-    ]
+    FLOW: {
+        steps: [
+            { line: 1 },
+            { line: 4, notes: 'x: 0' },
+            { line: 6, notes: 'return: 0' },
+            { line: 2 },
+            { line: 4, notes: 'x: 1' },
+            { line: 6, notes: 'return: 1' }
+        ],
+        areas: [
+            { type: 'method', startLine: 4, endLine: 6 }
+        ]
+    } as Flow
 } as const;
 
 type TemplateProps = {
     language: LanguageName;
     loadedCode: string;
-    executionFlow?: ReadonlyArray<FlowStep>;
+    executionFlow?: Flow;
 };
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const doNothing = () => {};
@@ -131,11 +136,14 @@ try {
 }
 catch {
 }
-`.trim()} executionFlow={[
-    { line: 1 },
-    { line: 2, exception: 'Exception' },
-    { line: 4 },
-    { line: 5 }
-]} />;
+`.trim()} executionFlow={{
+    steps: [
+        { line: 1 },
+        { line: 2, exception: 'Exception' },
+        { line: 4 },
+        { line: 5 }
+    ],
+    areas: []
+}} />;
 ExecutionFlowException.storyName = 'Execution Flow Exception';
 export const ExecutionFlowExceptionDarkMode = DarkMode(ExecutionFlowException);

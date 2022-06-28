@@ -39,7 +39,7 @@ const render = ({
         <TestSetRecoilState state={loadedCodeState} value={loadedCode} />
         <StableCodeEditor
             initialCached={true}
-            executionFlow={[]}
+            executionFlow={null}
             onCodeChange={doNothing}
             onConnectionChange={doNothing}
             onServerError={doNothing}

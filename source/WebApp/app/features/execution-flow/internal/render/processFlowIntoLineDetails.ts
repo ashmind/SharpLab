@@ -1,38 +1,12 @@
 import type { Flow, FlowArea, FlowStep } from '../../../../shared/resultTypes';
-import type { JumpDetails } from './JumpDetails';
+import type { AreaVisitDetails, FlowDetails } from './detailsTypes';
 
 type Builder<T, TKey extends keyof T> = Omit<T, TKey> & {
-    [K in TKey]: Array<T[K] extends ReadonlyArray<infer TElement> ? TElement : never>;
+    -readonly [K in TKey]: Array<T[K] extends ReadonlyArray<infer TElement> ? TElement : never>;
 };
 
-export type AreaVisit = {
-    readonly start: FlowStep;
-    readonly lines: ReadonlyArray<LineDetails>;
-};
-
-type AreaVisitBuilder = Builder<AreaVisit, 'lines'>;
-
-export type AreaDetails = {
-    readonly line: number;
-    readonly type: 'area';
-    readonly area: FlowArea;
-    readonly visits: ReadonlyArray<AreaVisit>;
-};
-
-type AreaBuilder = Builder<AreaDetails, 'visits'>;
-
-export type StepDetails = {
-    readonly line: number;
-    readonly type: 'step';
-    readonly step: FlowStep;
-};
-
-export type LineDetails = AreaDetails | StepDetails;
-
-type ResultBuilder = {
-    lines: Array<LineDetails>;
-    jumps: Array<JumpDetails>;
-};
+type AreaVisitBuilder = Builder<AreaVisitDetails, 'lines'>;
+type ResultBuilder = Builder<FlowDetails, 'lines'|'jumps'>;
 
 const isEndOfAreaVisit = (
     area: FlowArea,
@@ -56,34 +30,42 @@ const isEndOfAreaVisit = (
     return false;
 };
 
-const collectAreaVisitRecursive = (
-    areaDetails: AreaBuilder,
-    jumps: Array<JumpDetails>,
+const collectVisitDetailsRecursive = (
+    result: ResultBuilder,
     flow: Flow,
-    startIndex: number
+    startIndex: number,
+    area: FlowArea
 ) => {
+    const startStep = flow.steps[startIndex];
     const visit = {
-        start: flow.steps[startIndex],
+        type: 'area',
+        area,
+        order: startIndex,
+        start: {
+            type: 'step',
+            line: startStep.line,
+            step: startStep
+        },
         lines: []
     } as AreaVisitBuilder;
+    result.lines.push(visit);
 
-    areaDetails.visits.push(visit);
-    return collectLineDetailsRecursive({ lines: visit.lines, jumps }, flow, startIndex + 1, areaDetails);
+    return collectLineDetailsRecursive(
+        { lines: visit.lines, jumps: result.jumps }, flow, startIndex + 1, area
+    );
 };
 
 const collectLineDetailsRecursive = (
     result: ResultBuilder,
     flow: Flow,
     startIndex: number,
-    areaDetails?: AreaBuilder
+    area?: FlowArea
 ) => {
     const { steps, areas } = flow;
-    const area = areaDetails?.area;
-    const detailsByArea = new Map<FlowArea, AreaBuilder>();
 
-    let lastStepDetails: StepDetails | null = null;
     for (let index = startIndex; index < steps.length; index++) {
         const step = steps[index];
+
         const nextArea = areas
             .filter(a => step.line >= a.startLine && step.line <= a.endLine)
             .sort((a, b) => (a.endLine - a.startLine) - (b.endLine - b.startLine))[0] as FlowArea | undefined;
@@ -92,64 +74,23 @@ const collectLineDetailsRecursive = (
                 return index - 1;
 
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            let nextAreaDetails = detailsByArea.get(nextArea!);
-            if (!nextAreaDetails) {
-                nextAreaDetails = {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    line: nextArea!.startLine,
-                    type: 'area',
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    area: nextArea!,
-                    visits: [] as Array<AreaVisit>
-                };
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                detailsByArea.set(nextArea!, nextAreaDetails);
-                result.lines.push(nextAreaDetails);
-            }
-            index = collectAreaVisitRecursive(nextAreaDetails, result.jumps, flow, index);
+            index = collectVisitDetailsRecursive(result, flow, index, nextArea!);
             continue;
         }
 
-        if (area && lastStepDetails && lastStepDetails.line > step.line) {
-            index = collectAreaVisitRecursive(areaDetails, result.jumps, flow, index);
-            continue;
-        }
+        if (area && step.line === area.startLine)
+            return index - 1;
 
         const details = {
             line: step.line,
             type: 'step',
             step
         } as const;
-        lastStepDetails = details;
         result.lines.push(details);
         if (step.tags?.includes('jump') && index < steps.length - 1)
             result.jumps.push({ from: step, to: steps[index + 1] });
     }
     return steps.length;
-};
-
-const inlineSingleVisitAreas = (lines: ReadonlyArray<LineDetails>): Array<LineDetails>  => {
-    return lines.flatMap(details => {
-        if (details.type !== 'area')
-            return details;
-
-        const { visits } = details;
-        if (visits.length > 1) {
-            return {
-                ...details,
-                visits: visits.map(visit => ({
-                    ...visit,
-                    lines: inlineSingleVisitAreas(visit.lines)
-                }))
-            };
-        }
-
-        const { start, lines } = visits[0];
-        return [
-            { line: start.line, type: 'step', step: start } as const,
-            ...inlineSingleVisitAreas(lines)
-        ];
-    });
 };
 
 export const processFlowIntoLineDetails = (flow: Flow | null) => {
@@ -161,7 +102,6 @@ export const processFlowIntoLineDetails = (flow: Flow | null) => {
         return result;
 
     collectLineDetailsRecursive(result, flow, 0);
-    result.lines = inlineSingleVisitAreas(result.lines);
 
     console.log('flow', flow);
     console.log('result', result);

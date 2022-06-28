@@ -6,20 +6,20 @@ import '../../shared/codemirror/addon-jump-arrows';
 import '../../shared/codemirror/mode-cil';
 import { useRecoilValue } from 'recoil';
 import { useEditorCodeRangeSync } from '../../features/code-range-sync/useEditorCodeRangeSync';
-import type { Result, FlowStep } from '../../shared/resultTypes';
+import type { Result, Flow } from '../../shared/resultTypes';
 import { languageOptionState } from '../../shared/state/languageOptionState';
 import { loadedCodeState } from '../../shared/state/loadedCodeState';
 import { defaultCodeSelector, isDefaultCode } from '../../shared/state/defaultCodeSelector';
+import { useRenderExecutionFlow } from '../../features/execution-flow/useRenderExecutionFlow';
 import { useServerOptions } from './internal/useServerOptions';
 import { useServiceUrl } from './internal/useServiceUrl';
 import type { ServerOptions } from './internal/ServerOptions';
-import { useRenderExecutionFlow } from '../../features/execution-flow/useRenderExecutionFlow';
 
 type ResultData = Result['value'];
 
 type Props = {
     initialCached: boolean;
-    executionFlow: ReadonlyArray<FlowStep> | null;
+    executionFlow: Flow | null;
 
     onSlowUpdateWait: () => void;
     onSlowUpdateResult: (value: MirrorSharpSlowUpdateResult<ResultData>) => void;

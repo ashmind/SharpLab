@@ -1,34 +1,70 @@
-import type { DeepPartial } from '../../../../shared/helpers/testing/fromPartial';
-import type { FlowStep } from '../../../../shared/resultTypes';
-import { FLOW_TAG_LOOP_END, FLOW_TAG_LOOP_START, FLOW_TAG_METHOD_RETURN, FLOW_TAG_METHOD_START } from '../tags';
-import { LineDetails, processStepsIntoLineDetails } from './processStepsIntoLineDetails';
+import type { FlowArea, FlowStep } from '../../../../shared/resultTypes';
+import type { AreaVisitDetails, LineDetails, StepDetails } from './detailsTypes';
+import { processFlowIntoLineDetails } from './processFlowIntoLineDetails';
 
-test('nested loops', () => {
-    const steps = [
-        { line: 1, tags: [FLOW_TAG_LOOP_START] },
-        { line: 2, tags: [FLOW_TAG_LOOP_START] },
-        { line: 3 },
-        { line: 4, tags: [FLOW_TAG_LOOP_END] },
-        { line: 5, tags: [FLOW_TAG_LOOP_END] }
-    ] as ReadonlyArray<FlowStep>;
+const loop = (startLine: number, endLine: number): FlowArea =>
+    ({ type: 'loop', startLine, endLine });
+const steps = (values: ReadonlyArray<FlowStep | number>): ReadonlyArray<FlowStep> =>
+    values.map(v => typeof v === 'number' ? ({ line: v }) : v);
 
-    const results = processStepsIntoLineDetails(steps);
+const stepDetails = (value: StepDetails|number): StepDetails =>
+    typeof value === 'number' ? (({ type: 'step', step: { line: value }, line: value })) : value;
+const lineDetails = (value: LineDetails|number): LineDetails =>
+    typeof value === 'number' ? stepDetails(value) : value;
+const loopVisit = (area: FlowArea, start: StepDetails|number, lines: ReadonlyArray<LineDetails|number>): AreaVisitDetails =>
+    ({ type: 'area', area, start: stepDetails(start), lines: lines.map(lineDetails) }) as Omit<AreaVisitDetails, 'order'> as AreaVisitDetails;
 
-    expect(results).toMatchObject([
-        { line: 1, type: 'loop', visits: [{
-            lines: [
-                { line: 2, type: 'loop', visits: [{
-                    lines: [
-                        { line: 3, type: 'step' },
-                        { line: 4, type: 'step' }
-                    ]
-                }] },
-                { line: 5, type: 'step' }
-            ]
-        }] }
-    ] as DeepPartial<ReadonlyArray<LineDetails>>);
+test('repeated loop', () => {
+    const flow = {
+        areas: [loop(1, 2)],
+        steps: steps([1, 2, 1, 2])
+    } as const;
+
+    const results = processFlowIntoLineDetails(flow);
+
+    expect(results.lines).toMatchObject([
+        loopVisit(flow.areas[0], 1, [2]),
+        loopVisit(flow.areas[0], 1, [2])
+    ]);
 });
 
+test('nested loops', () => {
+    const flow = {
+        areas: [
+            loop(1, 5),
+            loop(2, 4)
+        ],
+        steps: steps([1, 2, 3, 4, 5])
+    } as const;
+
+    const results = processFlowIntoLineDetails(flow);
+
+    expect(results.lines).toMatchObject([
+        loopVisit(flow.areas[0], 1, [
+            loopVisit(flow.areas[1], 2, [3, 4]),
+            5
+        ])
+    ]);
+});
+
+test('adjacent loops', () => {
+    const flow = {
+        areas: [
+            loop(1, 2),
+            loop(3, 4)
+        ],
+        steps: steps([1, 2, 3, 4])
+    } as const;
+
+    const results = processFlowIntoLineDetails(flow);
+
+    expect(results.lines).toMatchObject([
+        loopVisit(flow.areas[0], 1, [2]),
+        loopVisit(flow.areas[1], 3, [4])
+    ]);
+});
+
+/*
 test('unfinished parent loop with one iteration is inlined', () => {
     const steps = [
         { line: 1, tags: [FLOW_TAG_LOOP_START] },
@@ -38,7 +74,7 @@ test('unfinished parent loop with one iteration is inlined', () => {
         { line: 5 }
     ] as ReadonlyArray<FlowStep>;
 
-    const results = processStepsIntoLineDetails(steps);
+    const results = processFlowIntoLineDetails(steps);
 
     expect(results).toMatchObject([
         { line: 2, type: 'loop', visits: [{
@@ -110,4 +146,4 @@ test('complex method-loop scenario', () => {
         }] },
         { line: 5, type: 'step' }
     ] as DeepPartial<ReadonlyArray<LineDetails>>);
-});
+});*/
