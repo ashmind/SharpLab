@@ -1,3 +1,4 @@
+
 export const mergeToMap = <TKey, TResult, TUpdated>(
     map: Map<TKey, TResult>,
     updated: ReadonlyArray<TUpdated>,

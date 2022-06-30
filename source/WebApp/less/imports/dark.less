@@ -154,18 +154,14 @@
         color: @error-color;
     }
 
-    .flow-repeat-visit {
-        background-color: transparent;
+    .flow-visit {
         border: 1px solid var(--border-color);
-
-        &:hover {
-            background-color: @dark-highlight-color;
-        }
     }
 
-    .flow-repeat-visit-selected {
+    .flow-visit-selected {
         &, &:hover {
-            background-color: @dark-cm-hint-active-color;
+            background-color: #5d8c8d;
+            color: #fff;
         }
     }
 
@@ -193,16 +189,6 @@
 
     .CodeMirror-jump-arrow-start {
         fill: @dark-background-color;
-    }
-
-    .CodeMirror-jump-arrow-default.CodeMirror-jump-arrow-down {
-        fill: #87afb0;
-        stroke: #87afb0;
-    }
-
-    .CodeMirror-jump-arrow-default.CodeMirror-jump-arrow-up {
-        fill: #b0879b;
-        stroke: #b0879b;
     }
 }
 

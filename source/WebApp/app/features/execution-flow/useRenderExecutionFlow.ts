@@ -6,11 +6,11 @@ import { processFlowIntoLineDetails } from './internal/render/processFlowIntoLin
 import type { TrackerRoot } from './internal/render/trackingTypes';
 import type { AreaVisitDetails, LineDetails, StepDetails } from './internal/render/detailsTypes';
 import { renderNotesWidgets } from './internal/render/renderNotesWidgets';
-import { renderAreaWidgets } from './internal/render/renderAreaWidgets';
+import { renderAreaWidgets, setSelectedVisit } from './internal/render/renderAreaWidgets';
 
-const getAllActiveLines = ({ currentDetails, areaMap }: TrackerRoot) => {
+const getAllActiveLines = ({ details, areaMap }: TrackerRoot) => {
     return [
-        ...currentDetails.lines,
+        ...details.lines,
         ...[...areaMap.values()].flatMap(
             ({ selectedVisit }) => selectedVisit?.lines ?? []
         )
@@ -118,21 +118,53 @@ const renderAll = (cm: CodeMirror.Editor, root: TrackerRoot) => {
     renderNotesWidgets(cm, stepDetailsByLine, root);
 
     const jumps = extractJumpsData(
-        root.currentDetails.jumps,
+        root.details.jumps,
         getAllStepsForJumps(steps, visits, root)
     );
     cm.setJumpArrows(jumps);
 };
 
-const renderExecutionFlow = (cm: CodeMirror.Editor, flow: Flow | null, root: TrackerRoot) => {
-    root.currentDetails = processFlowIntoLineDetails(flow);
-    renderAll(cm, root);
+const applyInitialSelectionIfAny = (
+    cm: CodeMirror.Editor,
+    root: TrackerRoot,
+    rule?: (area: FlowArea) => number | null
+) => {
+    if (!rule)
+        return;
+
+    let selectionUpdated = false;
+    for (const [area, tracker] of root.areaMap.entries()) {
+        const selectedIndex = rule(area);
+        if (selectedIndex == null)
+            continue;
+
+        setSelectedVisit(tracker, tracker.orderedVisits[selectedIndex]);
+        selectionUpdated = true;
+    }
+
+    if (selectionUpdated)
+        renderAll(cm, root);
 };
 
-export const useRenderExecutionFlow = (cm: CodeMirror.Editor | undefined, flow: Flow | null) => {
+const renderExecutionFlow = (
+    cm: CodeMirror.Editor,
+    flow: Flow | null,
+    root: TrackerRoot,
+    initialSelectRule?: (area: FlowArea) => number | null
+) => {
+    root.details = processFlowIntoLineDetails(flow);
+    renderAll(cm, root);
+    applyInitialSelectionIfAny(cm, root, initialSelectRule);
+};
+
+export const useRenderExecutionFlow = (
+    cm: CodeMirror.Editor | undefined,
+    flow: Flow | null,
+    initialSelectRule?: (area: FlowArea) => number | null
+) => {
     const trackerRef = useRef<TrackerRoot>({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        currentDetails: null!,
+        details: null!,
         notesMaps: {
             notes: new Map(),
             exception: new Map()
@@ -145,6 +177,6 @@ export const useRenderExecutionFlow = (cm: CodeMirror.Editor | undefined, flow: 
             return;
 
         const tracker = trackerRef.current;
-        renderExecutionFlow(cm, flow, tracker);
-    }, [cm, flow]);
+        renderExecutionFlow(cm, flow, tracker, initialSelectRule);
+    }, [cm, flow, initialSelectRule]);
 };

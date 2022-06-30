@@ -14,12 +14,12 @@ export type AreaTracker = {
     readonly labelsByVisit: Map<AreaVisitDetails, HTMLLabelElement>;
     readonly visitsByInput: WeakMap<HTMLInputElement, AreaVisitDetails>;
 
+    orderedVisits: ReadonlyArray<AreaVisitDetails>;
     selectedVisit: AreaVisitDetails | null;
 };
 
 export type TrackerRoot = {
-    currentDetails: FlowDetails;
-
+    details: FlowDetails;
     readonly notesMaps: {
         notes: Map<number, NotesTracker>;
         exception: Map<number, NotesTracker>;

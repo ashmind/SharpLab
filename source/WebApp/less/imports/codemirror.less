@@ -81,14 +81,14 @@ textarea, .CodeMirror {
     }
 }
 
-.flow-repeat-visit-selector {
+.flow-visit-selector {
     display: flex;
     font-size: 90%;
     gap: 5px;
 }
 
-.flow-repeat-visit {
-    background: #eee;
+.flow-visit {
+    border: 1px solid var(--border-color);
     padding: 0px 5px;
     cursor: pointer;
     font: inherit;
@@ -97,6 +97,16 @@ textarea, .CodeMirror {
         appearance: none;
         position: fixed;
         opacity: 0;
+    }
+
+    &:hover {
+        background-color: var(--highlight-color);
+    }
+}
+
+.flow-visit-selected {
+    &, &:hover {
+        background-color: #eee;
     }
 }
 

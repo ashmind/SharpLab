@@ -1,5 +1,5 @@
 import type { PartiallyMutable } from '../../../../shared/helpers/partiallyMutable';
-import type { Flow, FlowArea, FlowStep, FlowStepTag } from '../../../../shared/resultTypes';
+import type { Flow, FlowArea, FlowStep } from '../../../../shared/resultTypes';
 
 type ValueTuple = [line: number, value: string, name?: string];
 type AreaTuple = [code: string, startLine: number, endLine: number];
@@ -15,9 +15,7 @@ export type OutputJsonLineFlow = {
     >;
 };
 
-type FlowStepBuilder = Omit<PartiallyMutable<FlowStep, 'notes'|'exception'|'skipped'>, 'tags'> & {
-    tags?: Array<FlowStepTag>;
-};
+type FlowStepBuilder = PartiallyMutable<FlowStep, 'notes'|'exception'|'skipped'|'jump'>;
 
 type FlowBuilder = {
     steps: Array<FlowStepBuilder>;
@@ -79,20 +77,11 @@ const addFlowValue = (
     step.notes += value;
 };
 
-const addFlowTag = (
-    { steps }: FlowBuilder,
-    code: TagCode
-) => {
+const addFlowJump = ({ steps }: FlowBuilder) => {
     if (steps.length === 0)
         return;
 
-    const tag = ({
-        j: 'jump'
-    } as const)[code] ?? `unknown: ${code}`;
-
-    const previous = steps[steps.length - 1];
-    previous.tags ??= [];
-    previous.tags.push(tag);
+    steps[steps.length - 1].jump = true;
 };
 
 const addFlowException = (
@@ -118,8 +107,8 @@ export const parseFlow = (data: OutputJsonLineFlow['flow']): Flow => {
             continue;
         }
 
-        if (typeof item === 'string') {
-            addFlowTag(flow, item);
+        if (item === 'j') {
+            addFlowJump(flow);
             continue;
         }
 

@@ -47,6 +47,7 @@
         "linebreak-style": ["warn", "windows"],
         "eol-last": ["warn", "never"],
         "object-curly-spacing": ["warn", "always"],
+        "key-spacing": ["warn", { "mode": "minimum" }],
         "arrow-parens": ["warn", "as-needed"],
         "dot-location": ["warn", "property"],
         "operator-linebreak": ["warn", "before"],

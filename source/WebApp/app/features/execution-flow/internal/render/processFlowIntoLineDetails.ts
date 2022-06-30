@@ -87,7 +87,7 @@ const collectLineDetailsRecursive = (
             step
         } as const;
         result.lines.push(details);
-        if (step.tags?.includes('jump') && index < steps.length - 1)
+        if (step.jump && index < steps.length - 1)
             result.jumps.push({ from: step, to: steps[index + 1] });
     }
     return steps.length;

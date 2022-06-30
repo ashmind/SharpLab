@@ -84,14 +84,12 @@ export type OutputJsonLineFlow = {
     >;
 };
 
-export type FlowStepTag = 'jump' | `unknown: ${string}`;
-
 export type FlowStep = {
     readonly line: number;
     readonly skipped?: boolean;
     readonly notes?: string;
     readonly exception?: string;
-    readonly tags?: ReadonlyArray<FlowStepTag>;
+    readonly jump?: true;
 };
 
 export type FlowAreaType = 'method' | 'loop' | `unknown: ${string}`;
