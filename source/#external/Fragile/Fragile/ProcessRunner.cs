@@ -16,7 +16,11 @@ namespace Fragile {
     using SafeAllocatedSID = AdvApi32.SafeAllocatedSID;
 
     [SupportedOSPlatform("windows")]
-    public partial class ProcessRunner : IProcessRunner {
+    public class ProcessRunner : IProcessRunner {
+        private static readonly string[] EnvironmentBlock = new[] {
+            $"LOCALAPPDATA={Environment.GetEnvironmentVariable("LOCALAPPDATA")}"
+        };
+
         private readonly ProcessRunnerConfiguration _configuration;
         private readonly SecurityIdentifier _essentialAccessCapabilityIdentifier;
         private readonly byte[] _essentialAccessCapabilitySidBytes;
@@ -98,7 +102,7 @@ namespace Fragile {
                     process,
                     streams!.Value,
                     jobObject,
-                    appContainerProfile.name                    
+                    appContainerProfile.name
                 );
             }
             catch (Exception ex) {
@@ -131,7 +135,7 @@ namespace Fragile {
         }
 
         private (string name, SafeAllocatedSID sid) CreateAppContainerProfile() {
-            var name = "fragile-cage-" + Guid.NewGuid().ToString("N");
+            var name = "fragile-" + Guid.NewGuid().ToString("N");
             UserEnv.CreateAppContainerProfile(
                 name,
                 pszDisplayName: name,
@@ -168,7 +172,7 @@ namespace Fragile {
                         standardStreams.Error.ClientSafePipeHandle
                     }
                 );
-                
+
                 var created = Kernel32.CreateProcess(
                     lpApplicationName: _exeFilePath,
                     lpCommandLine: _commandLine,
@@ -178,7 +182,7 @@ namespace Fragile {
                     Kernel32.CREATE_PROCESS.EXTENDED_STARTUPINFO_PRESENT
                         | Kernel32.CREATE_PROCESS.CREATE_SUSPENDED
                         /*| Kernel32.CREATE_PROCESS.DETACHED_PROCESS*/,
-                    null,
+                    lpEnvironment: EnvironmentBlock,
                     lpCurrentDirectory: _configuration.WorkingDirectoryPath,
                     new Kernel32.STARTUPINFOEX {
                         StartupInfo = {
