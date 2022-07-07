@@ -22,5 +22,9 @@ export const extractJumpsData = (
 
     return jumps
         .filter(({ from, to }) => allowedFrom.has(from) && allowedTo.has(to))
-        .map(({ from, to }) => ({ fromLine: from.line - 1, toLine: to.line - 1 }));
+        .map(({ from, to, exception }) => ({
+            fromLine: from.line - 1,
+            toLine: to.line - 1,
+            options: { throw: exception }
+        }));
 };

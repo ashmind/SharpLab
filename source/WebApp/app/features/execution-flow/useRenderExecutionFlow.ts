@@ -84,8 +84,6 @@ const collectStepsAndVisits = (
 };
 
 const renderAll = (cm: CodeMirror.Editor, root: TrackerRoot) => {
-    console.log('renderAll');
-
     const lines = getAllActiveLines(root);
     const steps = [] as Array<StepDetails>;
     const visits = [] as Array<AreaVisitDetails>;

@@ -1,9 +1,9 @@
-import React, { ComponentProps } from 'react';
+import React from 'react';
 import { RecoilRoot } from 'recoil';
 import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../shared/languages';
 import { languageOptionState } from '../../shared/state/languageOptionState';
-import type { Flow, FlowArea } from '../../shared/resultTypes';
+import type { Flow } from '../../shared/resultTypes';
 import { loadedCodeState } from '../../shared/state/loadedCodeState';
 import { darkModeStory } from '../../shared/testing/darkModeStory';
 import { CodeEditorProps, StableCodeEditor } from './StableCodeEditor';

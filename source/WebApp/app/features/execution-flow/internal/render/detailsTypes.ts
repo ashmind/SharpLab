@@ -19,6 +19,7 @@ export type LineDetails = StepDetails | AreaVisitDetails;
 export type JumpDetails = {
     readonly from: FlowStep;
     readonly to: FlowStep;
+    readonly exception: boolean;
 };
 
 export type FlowDetails = {
