@@ -13,13 +13,6 @@ export const extractJumpsData = (
     const allowedFrom = new Set(steps.filter(s => s.mode !== 'jump-to-only').map(s => s.step));
     const allowedTo = new Set(steps.map(s => s.step));
 
-    console.log({
-        jumps,
-        steps,
-        allowedFrom,
-        allowedTo
-    });
-
     return jumps
         .filter(({ from, to }) => allowedFrom.has(from) && allowedTo.has(to))
         .map(({ from, to, exception }) => ({
