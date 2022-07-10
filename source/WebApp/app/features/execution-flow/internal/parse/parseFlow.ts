@@ -95,7 +95,6 @@ const addFlowException = (
 };
 
 export const parseFlow = (data: OutputJsonLineFlow['flow']): Flow => {
-    console.log('flow', data);
     const flow: FlowBuilder = {
         steps: [],
         areas: new Map()

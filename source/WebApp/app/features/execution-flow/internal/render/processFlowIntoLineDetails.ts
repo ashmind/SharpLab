@@ -102,8 +102,5 @@ export const processFlowIntoLineDetails = (flow: Flow | null) => {
         return result;
 
     collectLineDetailsRecursive(result, flow, 0);
-
-    console.log('flow', flow);
-    console.log('result', result);
     return result;
 };
