@@ -75,8 +75,13 @@ namespace SharpLab.Tests.Execution.Internal {
             public async Task<ContainerExecutionResult> ExecuteAsync(string sessionId, Stream assemblyStream, bool includePerformance, CancellationToken cancellationToken) {
                 var startMarker = Guid.NewGuid();
                 var endMarker = Guid.NewGuid();
+
+                var assemblyBytes = ((MemoryStream)assemblyStream).ToArray();
+                if (assemblyStream.Position > 0)
+                    assemblyBytes = assemblyBytes.AsSpan().Slice((int)assemblyStream.Position).ToArray();
+
                 var executeCommand = new ExecuteCommand(
-                    ((MemoryStream)assemblyStream).ToArray(),
+                    assemblyBytes,
                     startMarker, endMarker,
                     includePerformance
                 );

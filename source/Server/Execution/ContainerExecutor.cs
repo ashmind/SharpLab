@@ -60,8 +60,10 @@ namespace SharpLab.Server.Execution {
             };
             var definition = AssemblyDefinition.ReadAssembly(streams.AssemblyStream, readerParameters);
             try {
-                if (HasNoRewritingAttribute(definition))
+                if (HasNoRewritingAttribute(definition)) {
+                    streams.AssemblyStream.Position = 0;
                     return new(streams.AssemblyStream, null, definition);
+                }
 
                 foreach (var rewriter in _rewriters) {
                     rewriter.Rewrite(definition, session);
@@ -74,7 +76,7 @@ namespace SharpLab.Server.Execution {
                 var rewrittenStream = _memoryStreamManager.GetStream();
                 try {
                     definition.Write(rewrittenStream);
-                    rewrittenStream.Seek(0, SeekOrigin.Begin);
+                    rewrittenStream.Position = 0;
                     rewriteStopwatch?.Stop();
                     return new(rewrittenStream, rewriteStopwatch?.Elapsed, definition);
                 }
