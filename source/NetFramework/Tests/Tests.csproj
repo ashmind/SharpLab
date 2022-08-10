@@ -1,8 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <AssemblyName>SharpLab.Tests</AssemblyName>
     <RootNamespace>SharpLab.Tests</RootNamespace>
+    <Platforms>x64</Platforms>
+    <Platform>x64</Platform>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(CI)' == 'true'">

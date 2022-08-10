@@ -4,7 +4,7 @@ static class C {
 
 #=>
 
-; Desktop CLR <IGNORE> on x86
+; Desktop CLR <IGNORE> on amd64
 
 C.M()
     L0000: mov eax, 0x12345

@@ -10,7 +10,7 @@ static class C {
 
 /* asm
 
-; Desktop CLR <IGNORE> on x86
+; Desktop CLR <IGNORE> on amd64
 
 C+N`1[[System.Int32, mscorlib]].get_M()
     L0000: xor eax, eax

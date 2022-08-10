@@ -150,7 +150,7 @@ namespace SharpLab.Server.Execution.Internal {
         }
 
         private void TryInsertReportMethodArea(ILProcessor entryPointIL, MethodDefinition method, FlowMethods flow, ref int insertIndex) {
-            if (!method.HasBody || method.DebugInformation == null)
+            if (!method.HasBody || method.DebugInformation == null || method == entryPointIL.Body.Method)
                 return;
 
             var startLine = int.MaxValue;
@@ -197,6 +197,8 @@ namespace SharpLab.Server.Execution.Internal {
             method.Body.SimplifyMacros();
 
             var il = method.Body.GetILProcessor();
+            LogILIfEnabled(il, ILLogStep.Initial);
+            
             var instructions = il.Body.Instructions;
             var lastLine = (int?)null;
             var lastLoopReportIndex = 0;
@@ -226,7 +228,8 @@ namespace SharpLab.Server.Execution.Internal {
                           or FlowControl.Call
                           or FlowControl.Return;
                 if (isJump) {
-                    il.InsertBefore(instruction, il.CreateCall(flow.ReportJump));
+                    il.InsertBeforeAndRetargetAll(instruction, il.CreateCall(flow.ReportJump));
+                    LogILIfEnabled(il, ILLogStep.AfterReportJump, i.ToString());
                     i += 1;
                 }
 
@@ -248,6 +251,7 @@ namespace SharpLab.Server.Execution.Internal {
             RewriteExceptionHandlers(il, flow);            
 
             method.Body.OptimizeMacros();
+            LogILIfEnabled(il, ILLogStep.Final);
         }
 
         private void TryInsertReportMethodArguments(ILProcessor il, Instruction instruction, SequencePoint sequencePoint, MethodDefinition method, FlowMethods flow, IWorkSession session, ref int index) {
@@ -408,12 +412,12 @@ namespace SharpLab.Server.Execution.Internal {
             if (!il.Body.HasExceptionHandlers)
                 return;
 
-            var handlers = il.Body.ExceptionHandlers;
+            LogILIfEnabled(il, ILLogStep.BeforeRewriteExceptionHandlers);
 
-            LogILIfEnabled("Initial", il);
+            var handlers = il.Body.ExceptionHandlers;
             for (var i = handlers.Count - 1; i >= 0; i--) {
                 EnsureTryLeave(handlers[i], i, il);
-                LogILIfEnabled($"EnsureTryLeave.{i}", il);
+                LogILIfEnabled(il, ILLogStep.AfterEnsureTryLeave, i.ToString());
             }
 
             for (var i = 0; i < handlers.Count; i++) {
@@ -517,7 +521,7 @@ namespace SharpLab.Server.Execution.Internal {
         }
 
         [Conditional("DEBUG")]
-        private void LogILIfEnabled(string stepName, ILProcessor il) {
+        private void LogILIfEnabled(ILProcessor il, ILLogStep step, string? subStepName = null) {
             #if DEBUG
             if (!DiagnosticLog.IsEnabled())
                 return;
@@ -558,8 +562,19 @@ namespace SharpLab.Server.Execution.Internal {
                 builder.Append(new string(' ', indent));
                 builder.AppendLine(instruction.ToString());
             }
-            DiagnosticLog.LogText("Flow.IL." + il.Body.Method.Name + "." + stepName, builder.ToString());
+            DiagnosticLog.LogText(
+                $"Flow.IL.{il.Body.Method.Name}.{step:D}.{step:G}{(subStepName != null ? "." + subStepName : "")}",
+                builder.ToString()
+            );
             #endif
+        }
+
+        private enum ILLogStep {
+            Initial = 1,
+            AfterReportJump,
+            BeforeRewriteExceptionHandlers,
+            AfterEnsureTryLeave,
+            Final
         }
 
         private struct FlowMethods {

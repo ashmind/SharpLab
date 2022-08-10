@@ -27,36 +27,36 @@ public static class Program {
     {
       "name": "header",
       "offset": 0,
-      "length": 4
+      "length": 8
     },
     {
       "name": "type handle",
-      "offset": 4,
-      "length": 4
+      "offset": 8,
+      "length": 8
     },
     {
       "name": "a",
-      "offset": 8,
+      "offset": 16,
       "length": 4
     },
     {
       "name": "b",
-      "offset": 12,
+      "offset": 20,
       "length": 1
     },
     {
       "name": "n",
-      "offset": 16,
+      "offset": 24,
       "length": 5,
       "nested": [
         {
           "name": "an",
-          "offset": 16,
+          "offset": 24,
           "length": 4
         },
         {
           "name": "bn",
-          "offset": 20,
+          "offset": 28,
           "length": 1
         }
       ]
@@ -67,6 +67,14 @@ public static class Program {
     0,
     0,
     0,
+    0,
+    0,
+    0,
+    0,
+    <IGNORE>,
+    <IGNORE>,
+    <IGNORE>,
+    <IGNORE>,
     <IGNORE>,
     <IGNORE>,
     <IGNORE>,
