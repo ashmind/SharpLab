@@ -1,7 +1,7 @@
 import { asLookup } from '../shared/helpers/asLookup';
 import { CSHARP_RUN_HELP } from './help';
 import { LANGUAGE_CSHARP, LANGUAGE_VB, LANGUAGE_FSHARP, LANGUAGE_IL, type LanguageName } from './languages';
-import { type TargetName, TARGET_RUN, TARGET_CSHARP } from './targets';
+import { type TargetName, TARGET_RUN, TARGET_CSHARP, TARGET_RUN_IL } from './targets';
 
 const normalize = (code: string) => {
     // 8 spaces must match the layout below
@@ -63,7 +63,7 @@ export const DEFAULT_TARGET = TARGET_CSHARP;
 export const DEFAULT_RELEASE = false;
 
 export const getDefaultCode = (language: LanguageName|undefined, target: TargetName|string|undefined) => defaultCode[
-    (target === TARGET_RUN ? language + '.run' : language) as string
+    ((target === TARGET_RUN || target === TARGET_RUN_IL) ? language + '.run' : language) as string
 ] ?? '';
 
 export const isDefaultCode = (code: string) => Object.values(defaultCode).some(c => c === code);

@@ -7,7 +7,7 @@ namespace SharpLab.Server.Execution.Internal {
     // There are some weird problems when I try to compile F# code as an exe (e.g. it tries to
     // do filesystem operations without using the virtual filesystem), so instead I compile
     // it as a library and then fake the entry point.
-    public class FSharpEntryPointRewriter : IContainerAssemblyRewriter {
+    public class FSharpEntryPointRewriter : IAssemblyRewriter {
         public void Rewrite(AssemblyDefinition assembly, IWorkSession session) {
             if (!session.IsFSharp())
                 return;

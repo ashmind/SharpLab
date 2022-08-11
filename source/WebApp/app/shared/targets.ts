@@ -8,6 +8,7 @@ export const TARGET_AST = 'AST';
 export const TARGET_VERIFY = 'Verify';
 export const TARGET_EXPLAIN = 'Explain';
 export const TARGET_RUN = 'Run';
+export const TARGET_RUN_IL = 'Run IL';
 
 export type TargetNameTuple = [
     typeof TARGET_CSHARP,
@@ -17,7 +18,8 @@ export type TargetNameTuple = [
     typeof TARGET_AST,
     typeof TARGET_VERIFY,
     typeof TARGET_EXPLAIN,
-    typeof TARGET_RUN
+    typeof TARGET_RUN,
+    typeof TARGET_RUN_IL
 ];
 
 export type TargetName = TargetNameTuple[number];

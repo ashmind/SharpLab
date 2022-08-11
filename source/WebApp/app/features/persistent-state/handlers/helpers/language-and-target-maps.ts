@@ -1,7 +1,7 @@
 import { asLookup } from '../../../../shared/helpers/asLookup';
 import { assertType } from '../../../../shared/helpers/assertType';
 import { LANGUAGE_CSHARP, LANGUAGE_VB, LANGUAGE_FSHARP, LANGUAGE_IL, type LanguageName } from '../../../../shared/languages';
-import { TARGET_CSHARP, TARGET_VB, TARGET_IL, TARGET_ASM, TARGET_AST, TARGET_RUN, TARGET_VERIFY, TARGET_EXPLAIN, type TargetName } from '../../../../shared/targets';
+import { TARGET_CSHARP, TARGET_VB, TARGET_IL, TARGET_ASM, TARGET_AST, TARGET_RUN, TARGET_VERIFY, TARGET_EXPLAIN, type TargetName, TARGET_RUN_IL } from '../../../../shared/targets';
 
 const mapFromObject = <TObject, TNewKey extends string, TNewValue>(
     object: TObject,
@@ -15,12 +15,12 @@ const mapFromObject = <TObject, TNewKey extends string, TNewValue>(
     return result;
 };
 
-function reverseMap<TMap extends { [key: string]: string }>(map: TMap) {
+const reverseMap = <TMap extends { [key: string]: string }>(map: TMap) => {
     type KeyFromValue<T, V> = { [K in keyof T]: V extends T[K] ? K : never }[keyof T];
     return mapFromObject(map, (key, value) => [value, key]) as {
         [TValue in TMap[keyof TMap]]: KeyFromValue<TMap, TValue>
     };
-}
+};
 
 const languageMap = {
     [LANGUAGE_CSHARP]: 'cs',
@@ -46,6 +46,7 @@ const targetMap = {
     [TARGET_ASM]:     'asm',
     [TARGET_AST]:     'ast',
     [TARGET_RUN]:     'run',
+    [TARGET_RUN_IL]:  'run-il',
     [TARGET_VERIFY]:  'verify',
     [TARGET_EXPLAIN]: 'explain'
 } as const;

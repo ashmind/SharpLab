@@ -8,6 +8,7 @@ using Iced.Intel;
 using JetBrains.Annotations;
 using Microsoft.Diagnostics.Runtime;
 using Microsoft.Diagnostics.Runtime.DacInterface;
+using MirrorSharp.Advanced;
 using SharpLab.Runtime;
 using SharpLab.Runtime.Internal;
 using SharpLab.Server.Common;
@@ -32,9 +33,10 @@ namespace SharpLab.Server.Decompilation {
             _settings = settings;
         }
 
-        public void Decompile(CompilationStreamPair streams, TextWriter codeWriter) {
+        public void Decompile(CompilationStreamPair streams, TextWriter codeWriter, IWorkSession session) {
             Argument.NotNull(nameof(streams), streams);
             Argument.NotNull(nameof(codeWriter), codeWriter);
+            Argument.NotNull(nameof(session), session);
 
             using var loadContext = new CustomAssemblyLoadContext(shouldShareAssembly: _ => true);
             var assembly = loadContext.LoadFromStream(streams.AssemblyStream);

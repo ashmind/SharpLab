@@ -9,9 +9,8 @@ namespace SharpLab.Container.Runtime {
 
     internal partial class FlowWriter : IFlowWriter {
         private static class Limits {
-            public const int MaxRecords = 50;
-            public const int MaxValuesPerLine = 3;
-            public const int MaxNameLength = 10;
+            public const int MaxRecords = 200;
+            public const int MaxNameLength = 20;
 
             public static readonly ValuePresenterLimits Value = new(maxValueLength: 10, maxEnumerableItemCount: 3);
         }
@@ -19,8 +18,7 @@ namespace SharpLab.Container.Runtime {
         private readonly StdoutWriter _stdoutWriter;
         private readonly Utf8ValuePresenter _valuePresenter;
         private readonly byte[] _truncatedNameBytes = new byte[(Limits.MaxNameLength - 1) + Utf8Ellipsis.Length];
-        private readonly FlowRecord[] _records = new FlowRecord[50];
-        private readonly int[] _valueCountsPerLine = new int[75];
+        private readonly FlowRecord[] _records = new FlowRecord[Limits.MaxRecords];
         private int _currentRecordIndex = -1;
 
         public FlowWriter(
@@ -32,28 +30,28 @@ namespace SharpLab.Container.Runtime {
         }
 
         // Must be thread safe
+        public void WriteArea(FlowAreaKind kind, int startLineNumber, int endLineNumber) {
+            TryAddRecord(new (kind, startLineNumber, endLineNumber));
+        }
+
+        // Must be thread safe
         public void WriteLineVisit(int lineNumber) {
             TryAddRecord(new (lineNumber));
         }
 
         // Must be thread safe
         public void WriteValue<T>(T value, string? name, int lineNumber) {
-            if (lineNumber >= _valueCountsPerLine.Length || _valueCountsPerLine[lineNumber] > Limits.MaxValuesPerLine)
-                return;
-
-            var valueCountPerLine = Interlocked.Increment(ref _valueCountsPerLine[lineNumber]);
-            if (valueCountPerLine > Limits.MaxValuesPerLine) {
-                if (valueCountPerLine == Limits.MaxValuesPerLine + 1)
-                    TryAddRecord(new(lineNumber, null, VariantValue.From("…")));
-                return;
-            }
-
             TryAddRecord(new (lineNumber, name, VariantValue.From(value)));
         }
 
         // Must be thread safe
         public void WriteSpanValue<T>(ReadOnlySpan<T> value, string? name, int lineNumber) {
             // TODO (can't store this, have to actually write it)
+        }
+
+        // Must be thread safe
+        public void WriteTag(FlowRecordTag tag) {
+            TryAddRecord(new (tag));
         }
 
         // Must be thread safe
@@ -79,7 +77,6 @@ namespace SharpLab.Container.Runtime {
             var recordCount = Math.Min(_currentRecordIndex + 1, _records.Length);
 
             _currentRecordIndex = -1;
-            Array.Clear(_valueCountsPerLine, 0, _valueCountsPerLine.Length);
 
             if (recordCount == 0)
                 return;
@@ -97,6 +94,30 @@ namespace SharpLab.Container.Runtime {
         private void WriteRecordToWriter(Utf8JsonWriter writer, FlowRecord record) {
             if (record.Value is {} value) {
                 WriteRecordWithValueToWriter(writer, record, value);
+                return;
+            }
+
+            if (record.AreaKind is {} area) {
+                writer.WriteStartArray();
+                writer.WriteStringValue(record.AreaKind switch {
+                    FlowAreaKind.Method => MethodAreaCode,
+                    FlowAreaKind.Loop => LoopAreaCode,
+                    var u => throw new NotSupportedException("Unknown flow area kind: " + u.ToString())
+                });
+                writer.WriteNumberValue(record.StartLineNumber);
+                writer.WriteNumberValue(record.EndLineNumber);
+                writer.WriteEndArray();
+                return;
+            }
+
+            if (record.Tag is {} tag) {
+                var code = tag switch {
+                    FlowRecordTag.LoopStart => LoopStartCode,
+                    FlowRecordTag.LoopEnd => LoopEndCode,
+                    FlowRecordTag.Jump => JumpCode,
+                    _ => throw new NotSupportedException("Unknown flow tag: " + tag.ToString())
+                };
+                writer.WriteStringValue(code);
                 return;
             }
 
@@ -162,24 +183,47 @@ namespace SharpLab.Container.Runtime {
                 Name = name;
                 Value = value;
                 Exception = default;
+                Tag = default;
+                AreaKind = default;
+                EndLineNumber = default;
+            }
+
+            public FlowRecord(FlowRecordTag tag) : this() {
+                Tag = tag;
             }
 
             public FlowRecord(object exception) : this() {
                 Exception = exception;
             }
+            public FlowRecord(FlowAreaKind areaKind, int startLineNumber, int endLineNumber) : this() {
+                AreaKind = areaKind;
+                LineNumber = startLineNumber;
+                EndLineNumber = endLineNumber;
+            }
 
             public int LineNumber { get; }
             public string? Name { get; }
             public VariantValue? Value { get; }
+            public FlowRecordTag? Tag { get; }
             public object? Exception { get; }
+
+            public FlowAreaKind? AreaKind { get; }
+            public int StartLineNumber => LineNumber;
+            public int EndLineNumber { get; }            
 
             // allocates -- debug only
             public override string ToString() {
                 if (Exception != null)
                     return "{exception: " + Exception.GetType().Name + "}";
 
+                if (Tag != null)
+                    return "{tag: " + Tag + "}";
+
                 if (Value != null)
                     return "{value}";
+
+                if (AreaKind != null)
+                    return "{area: " + AreaKind + ", start: " + StartLineNumber + ", end: " + EndLineNumber + "}";
 
                 return "{line: " + LineNumber + "}";
             }

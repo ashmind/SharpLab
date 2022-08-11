@@ -47,10 +47,11 @@
         "linebreak-style": ["warn", "windows"],
         "eol-last": ["warn", "never"],
         "object-curly-spacing": ["warn", "always"],
+        "key-spacing": ["warn", { "mode": "minimum" }],
         "arrow-parens": ["warn", "as-needed"],
         "dot-location": ["warn", "property"],
         "operator-linebreak": ["warn", "before"],
-        "func-style": ["warn", "declaration", { "allowArrowFunctions": true }],
+        "func-style": ["warn", "expression"],
         "prefer-object-spread": "warn",
         "no-mixed-operators": "warn",
         "space-infix-ops": "warn",
@@ -99,7 +100,7 @@
         "import/newline-after-import": "warn",
 
         "react-hooks/exhaustive-deps": ["warn", {
-            "additionalHooks": "useAsyncCallback"
+            "additionalHooks": "useAsyncCallback|useRecoilCallback"
         }]
     }
 }

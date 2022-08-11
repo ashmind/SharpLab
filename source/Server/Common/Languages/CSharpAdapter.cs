@@ -94,9 +94,9 @@ namespace SharpLab.Server.Common.Languages {
         }
 
         public void SetOptionsForTarget(IWorkSession session, string target) {
-            var outputKind = target != TargetNames.Run
-                ? OutputKind.DynamicallyLinkedLibrary
-                : OutputKind.ConsoleApplication;
+            var outputKind = target is TargetNames.Run or TargetNames.RunIL
+                ? OutputKind.ConsoleApplication
+                : OutputKind.DynamicallyLinkedLibrary;
 
             var project = session.Roslyn.Project;
             var options = ((CSharpCompilationOptions)project.CompilationOptions!);

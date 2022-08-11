@@ -3,6 +3,7 @@ using Xunit;
 using Xunit.Abstractions;
 using SharpLab.Tests.Execution.Internal;
 using SharpLab.Tests.Internal;
+using System.Text.RegularExpressions;
 
 namespace SharpLab.Tests.Execution {
     [Collection(TestCollectionNames.Execution)]
@@ -29,12 +30,14 @@ namespace SharpLab.Tests.Execution {
         public async Task Flow_IncludesExpectedValues(string codeFileName) {
             // Arrange
             var code = await TestCode.FromCodeOnlyFileAsync("Flow/Values/" + codeFileName);
+            // required to avoid roslyn guards rejecting consecutive [] in comments
+            var codeWithoutComments = Regex.Replace(code, @"\s*//.*$", "", RegexOptions.Multiline);
 
             // Act
-            var output = await ContainerTestDriver.CompileAndExecuteAsync(code);
+            var output = await ContainerTestDriver.CompileAndExecuteAsync(codeWithoutComments);
 
             // Assert
-            TestOutput.AssertFlowMatchesComments(code, output, _testOutputHelper);
+            TestOutput.AssertFlowMatchesValueComments(code, output, _testOutputHelper);
         }
 
         [Theory]
@@ -66,7 +69,7 @@ namespace SharpLab.Tests.Execution {
             var output = await ContainerTestDriver.CompileAndExecuteAsync(code);
 
             // Assert
-            TestOutput.AssertFlowMatchesComments(code, output, _testOutputHelper);
+            TestOutput.AssertFlowMatchesValueComments(code, output, _testOutputHelper);
         }
 
         [Fact]
@@ -84,7 +87,7 @@ namespace SharpLab.Tests.Execution {
             var output = await ContainerTestDriver.CompileAndExecuteAsync(code);
 
             // Assert
-            TestOutput.AssertFlowMatchesComments(code, output, _testOutputHelper);
+            TestOutput.AssertFlowMatchesValueComments(code, output, _testOutputHelper);
         }
 
         [Fact]
@@ -102,7 +105,7 @@ namespace SharpLab.Tests.Execution {
             var output = await ContainerTestDriver.CompileAndExecuteAsync(code);
 
             // Assert
-            TestOutput.AssertFlowMatchesComments(code, output, _testOutputHelper);
+            TestOutput.AssertFlowMatchesValueComments(code, output, _testOutputHelper);
         }
 
         [Fact]
@@ -118,7 +121,7 @@ namespace SharpLab.Tests.Execution {
             var output = await ContainerTestDriver.CompileAndExecuteAsync(code);
 
             // Assert
-            TestOutput.AssertFlowMatchesComments(code, output, _testOutputHelper);
+            TestOutput.AssertFlowMatchesValueComments(code, output, _testOutputHelper);
         }
     }
 }

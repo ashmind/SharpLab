@@ -86,7 +86,7 @@ namespace SharpLab.Server.MirrorSharp {
             MemoryStream? symbolStream = null;
             try {
                 assemblyStream = _memoryStreamManager.GetStream();
-                if (targetName is TargetNames.Run or TargetNames.IL)
+                if (targetName is TargetNames.Run or TargetNames.IL or TargetNames.RunIL)
                     symbolStream = _memoryStreamManager.GetStream();
 
                 var compilationStopwatch = session.ShouldReportPerformance() ? Stopwatch.StartNew() : null;
@@ -171,7 +171,7 @@ namespace SharpLab.Server.MirrorSharp {
             var decompiler = _decompilers[targetName];
             using (var streams = (CompilationStreamPair)result)
             using (var stringWriter = writer.OpenString()) {
-                decompiler.Decompile(streams, stringWriter);
+                decompiler.Decompile(streams, stringWriter, session);
             }
         }
 

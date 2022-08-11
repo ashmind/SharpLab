@@ -1,5 +1,6 @@
 using System;
 using Autofac;
+using Autofac.Core;
 using JetBrains.Annotations;
 using SharpLab.Server.Decompilation.AstOnly;
 using SharpLab.Server.Decompilation.Internal;
@@ -26,6 +27,10 @@ namespace SharpLab.Server.Decompilation {
                    .As<IDecompiler>()
                    .SingleInstance();
             builder.RegisterType<ILDecompiler>()
+                   .As<IDecompiler>()
+                   .As<IILDecompiler>()
+                   .SingleInstance();
+            builder.RegisterType<ExecutionILDecompiler>()
                    .As<IDecompiler>()
                    .SingleInstance();
 

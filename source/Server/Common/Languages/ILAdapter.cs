@@ -21,7 +21,9 @@ namespace SharpLab.Server.Common.Languages {
         }
 
         public void SetOptionsForTarget(IWorkSession session, string target) {
-            session.IL().Target = target == TargetNames.Run ? Driver.Target.Exe : Driver.Target.Dll;
+            session.IL().Target = target is TargetNames.Run or TargetNames.RunIL
+                ? Driver.Target.Exe
+                : Driver.Target.Dll;
         }
 
         public ImmutableArray<int> GetMethodParameterLines(IWorkSession session, int lineInMethod, int columnInMethod) {

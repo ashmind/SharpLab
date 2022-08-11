@@ -12,16 +12,14 @@ public class C
 
 #=>
 
-; Desktop CLR <IGNORE> on x86
+; Desktop CLR <IGNORE> on amd64
 
 C..ctor()
     L0000: ret
 
 C.M(Int32)
-    L0000: push ebp
-    L0001: mov ebp, esp
-    L0003: mov eax, edx
-    L0005: inc eax
-    L0006: jz L0005
-    L0008: pop ebp
-    L0009: ret
+    L0000: inc edx
+    L0002: test edx, edx
+    L0004: jz L0000
+    L0006: mov eax, edx
+    L0008: ret

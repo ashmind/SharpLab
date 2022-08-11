@@ -231,7 +231,7 @@ const instructions = {
     'xor': 'Bitwise XOR of integer values, returns an integer (0x61)'
 } as { [key: string]: string|undefined };
 
-function render(parent: Element, token: CodeMirror.Token) {
+const render = (parent: Element, token: CodeMirror.Token) => {
     const name = document.createElement('span');
     name.className = 'cm-builtin';
     name.textContent = token.string;
@@ -242,7 +242,7 @@ function render(parent: Element, token: CodeMirror.Token) {
 
     parent.appendChild(name);
     parent.appendChild(description);
-}
+};
 
 CodeMirror.registerHelper('infotip', 'cil', {
     getInfo(cm: CodeMirror.Editor, coords: CodeMirror.Position & { xRel: number }) {

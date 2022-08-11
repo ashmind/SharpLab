@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { SelectHTMLProps, Select } from '../shared/Select';
 import { targetOptionState } from '../shared/state/targetOptionState';
-import { TargetName, TARGET_ASM, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_IL, TARGET_RUN, TARGET_VB, TARGET_VERIFY } from '../shared/targets';
+import { TargetName, TARGET_ASM, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_IL, TARGET_RUN, TARGET_RUN_IL, TARGET_VB, TARGET_VERIFY } from '../shared/targets';
+import { diagnosticTargetsEnabledSelector } from './state/diagnosticTargetsEnabled';
 
 type Props = {
     useAriaLabel?: boolean;
@@ -10,6 +11,7 @@ type Props = {
 
 export const TargetSelect: React.FC<Props> = ({ useAriaLabel, ...htmlProps }) => {
     const [target, setTarget] = useRecoilState(targetOptionState);
+    const diagnosticTargetsEnabled = useRecoilValue(diagnosticTargetsEnabledSelector);
 
     const options = useMemo(() => [
         {
@@ -34,8 +36,14 @@ export const TargetSelect: React.FC<Props> = ({ useAriaLabel, ...htmlProps }) =>
             options: [
                 { label: 'Run', value: TARGET_RUN }
             ]
-        }
-    ] as const, [target]);
+        },
+        ...(diagnosticTargetsEnabled ? [{
+            groupLabel: 'Diagnostic',
+            options: [
+                { label: 'IL (Rewritten for Run)', value: TARGET_RUN_IL }
+            ]
+        }] as const : [])
+    ] as const, [target, diagnosticTargetsEnabled]);
 
     return <Select<TargetName>
         className="option-target option online-only"

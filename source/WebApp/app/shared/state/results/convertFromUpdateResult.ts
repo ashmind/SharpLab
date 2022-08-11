@@ -1,5 +1,5 @@
 import type { MaybeCached } from '../../../features/result-cache/types';
-import type { UpdateResult, DiagnosticError, DiagnosticWarning, ParsedNonErrorResult, AstItem, Explanation, RunResult } from '../../resultTypes';
+import type { UpdateResult, DiagnosticError, DiagnosticWarning, ParsedNonErrorResult, AstItem, Explanation, RunResultLegacyValue, Flow } from '../../resultTypes';
 import { type TargetName, TARGET_AST, TARGET_EXPLAIN, TARGET_VERIFY, TARGET_RUN, TARGET_IL } from '../../targets';
 import { extractRangesFromIL } from './extractRangesFromIL';
 import { parseOutput } from './parseOutput';
@@ -19,6 +19,17 @@ const collectErrorsAndWarnings = (target: TargetName, diagnostics: UpdateResult[
     return { success, errors, warnings } as const;
 };
 
+const convertFromLegacyRunValue = (value: RunResultLegacyValue | null) => {
+    if (!value)
+        return null;
+
+    const { output, flow: steps } = value;
+    return {
+        output,
+        flow: { steps, areas: [] } as Flow
+    };
+};
+
 export const convertFromUpdateResult = (
     { diagnostics, x, cached }: MaybeCached<UpdateResult>, target: TargetName
 ): MaybeCached<ParsedNonErrorResult> => {
@@ -36,7 +47,7 @@ export const convertFromUpdateResult = (
         case TARGET_RUN: {
             const value = (typeof x === 'string')
                 ? parseOutput(x)
-                : x as Exclude<RunResult['value'], string>;
+                : convertFromLegacyRunValue(x as RunResultLegacyValue | null);
             return { type: 'run', value, ...rest };
         }
         case TARGET_IL: {

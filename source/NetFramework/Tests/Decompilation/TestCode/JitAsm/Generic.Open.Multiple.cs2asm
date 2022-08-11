@@ -18,7 +18,7 @@ static class C {
 
 #=>
 
-; Desktop CLR <IGNORE> on x86
+; Desktop CLR <IGNORE> on amd64
 
 C`1.M()
     ; Open generics cannot be JIT-compiled.

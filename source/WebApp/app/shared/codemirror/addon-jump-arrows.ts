@@ -31,7 +31,7 @@ interface JumpArrow {
     readonly svg: JumpSvg;
 }
 
-function debounce(func: () => void, interval: number) {
+const debounce = (func: () => void, interval: number) => {
     let timer: ReturnType<typeof setTimeout>|null = null;
     return () => {
         if (timer)
@@ -41,11 +41,11 @@ function debounce(func: () => void, interval: number) {
             timer = null;
         }, interval);
     };
-}
+};
 
-function createSVGElement<TTagName extends keyof SVGElementTagNameMap>(tagName: TTagName) {
+const createSVGElement = <TTagName extends keyof SVGElementTagNameMap>(tagName: TTagName) => {
     return document.createElementNS('http://www.w3.org/2000/svg', tagName);
-}
+};
 
 type BaseAttributes = {
     class?: string;
@@ -55,6 +55,7 @@ type BaseAttributes = {
 function setAttributes(element: SVGPathElement, attributes: BaseAttributes & { d?: string }): void;
 function setAttributes(element: SVGCircleElement, attributes: BaseAttributes & { cx: string | number; cy: string | number; r: string | number }): void;
 function setAttributes(element: SVGElement, attributes: BaseAttributes): void;
+// eslint-disable-next-line func-style
 function setAttributes(element: SVGElement, attributes: BaseAttributes) {
     for (const key in attributes) {
         element.setAttribute(key, attributes[key as keyof typeof attributes] as string);

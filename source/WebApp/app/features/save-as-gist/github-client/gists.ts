@@ -1,8 +1,8 @@
 import { asLookup } from '../../../shared/helpers/asLookup';
 import { assertType } from '../../../shared/helpers/assertType';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../../shared/languages';
-import type { CodeResult, AstResult, RunResult, VerifyResult, ExplainResult, ErrorResult, Result } from '../../../shared/resultTypes';
-import { TargetName, TARGET_ASM, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_IL, TARGET_RUN, TARGET_VB, TARGET_VERIFY } from '../../../shared/targets';
+import type { CodeResult, AstResult, RunResult, VerifyResult, ExplainResult, ErrorResult, Result, ParsedResult, ParsedRunResult } from '../../../shared/resultTypes';
+import { TargetName, TARGET_ASM, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_IL, TARGET_RUN, TARGET_RUN_IL, TARGET_VB, TARGET_VERIFY } from '../../../shared/targets';
 import { targetMap } from '../../persistent-state/handlers/helpers/language-and-target-maps';
 import type { Gist } from '../Gist';
 import { token } from './githubAuth';
@@ -13,11 +13,12 @@ type TargetResultMap = {
     [TARGET_IL]: CodeResult;
     [TARGET_ASM]: CodeResult;
     [TARGET_AST]: AstResult;
-    [TARGET_RUN]: RunResult;
+    [TARGET_RUN]: ParsedRunResult;
     [TARGET_VERIFY]: VerifyResult;
     [TARGET_EXPLAIN]: ExplainResult;
     // not actually supported anymore, but needed for completeness
     [TARGET_VB]: CodeResult;
+    [TARGET_RUN_IL]: CodeResult;
 };
 
 // Zero-width space (\u200B) is invisible, but ensures that these will be sorted after other files
@@ -32,7 +33,7 @@ const extensionMap = {
 } as const;
 assertType<{ [L in LanguageName]: `.${string}` }>(extensionMap);
 
-async function validateResponseAndParseJsonAsync(response: Response) {
+const validateResponseAndParseJsonAsync = async (response: Response) => {
     if (!response.ok) {
         const text = await response.text();
         const error = new Error(`${response.status} ${response.statusText}\r\n${text}`);
@@ -49,7 +50,7 @@ async function validateResponseAndParseJsonAsync(response: Response) {
             }|undefined;
         };
     }>;
-}
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const readableJson = (o: any) => JSON.stringify(o, null, 4);
@@ -62,6 +63,7 @@ function prepareResultForGist(target: string, result: Result): {
     readonly suffix: string;
     readonly content: string;
 };
+// eslint-disable-next-line func-style
 function prepareResultForGist(target: string, result: Result) {
     switch (target) {
         case TARGET_CSHARP:
@@ -83,7 +85,7 @@ function prepareResultForGist(target: string, result: Result) {
     }
 }
 
-export async function getGistAsync(id: string): Promise<Gist> {
+export const getGistAsync = async (id: string): Promise<Gist> => {
     const gist = await validateResponseAndParseJsonAsync(await fetch(`https://api.github.com/gists/${id}`));
 
     const [codeFileName, codeFile] = Object.entries(gist.files)[0] as [string, { content: string }];
@@ -116,13 +118,13 @@ export async function getGistAsync(id: string): Promise<Gist> {
             branchId: gistOptions.branch ?? null
         }
     };
-}
-
-type CreateGistRequest = Pick<Gist, 'name' | 'code' | 'options'> & {
-    readonly result: Result;
 };
 
-export async function createGistAsync({ name, code, options, result }: CreateGistRequest): Promise<Gist> {
+type CreateGistRequest = Pick<Gist, 'name' | 'code' | 'options'> & {
+    readonly result: ParsedResult;
+};
+
+export const createGistAsync = async ({ name, code, options, result }: CreateGistRequest): Promise<Gist> => {
     if (!token)
         throw new Error("Can't save Gists without GitHub auth.");
 
@@ -172,4 +174,4 @@ export async function createGistAsync({ name, code, options, result }: CreateGis
         code,
         options
     };
-}
+};

@@ -241,6 +241,63 @@
     }
 }
 
+.output-execution-group {
+    border: 1px solid var(--inspection-border-color);
+    padding: 5px;
+
+    & + & {
+        margin-top: 5px;
+    }
+}
+
+.output-execution-step {
+    .code-font();
+
+    display: grid;
+    grid-template-columns: max-content max-content;
+}
+
+.output-execution-step-line {
+    white-space: pre-wrap;
+}
+
+.output-execution-step-notes {
+    background-color: var(--inspection-header-color);
+    margin-left: 10px;
+}
+
+.output-flow-event {
+    .code-font();
+    padding: 5px;
+
+    & + & {
+        border-top: 1px solid var(--inspection-border-color);
+    }
+}
+
+.output-flow-event-part {
+    display: inline-block;
+    padding: 2px 4px;
+
+    & + & {
+        margin-left: 5px;
+    }
+}
+
+.output-flow-event-part-jump-down {
+    background-color: #3f5f5e;
+}
+
+.output-flow-event-part-jump-up {
+    background-color: #5f3f4f;
+}
+
+.output-flow-event-part-notes {
+    .output-flow-event-part + & {
+        background-color: var(--inspection-header-color);
+    }
+}
+
 .root-status-offline {
     .output-disclaimer,
     .output-message-positive {

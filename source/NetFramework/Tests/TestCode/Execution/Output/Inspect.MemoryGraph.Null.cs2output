@@ -14,7 +14,7 @@ public static class Program {
     {
       "id": 1,
       "offset": 0,
-      "size": 4,
+      "size": 8,
       "title": null,
       "value": "null"
     }

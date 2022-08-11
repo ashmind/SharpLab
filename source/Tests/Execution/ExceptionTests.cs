@@ -35,7 +35,7 @@ namespace SharpLab.Tests.Execution {
             var output = await ContainerTestDriver.CompileAndExecuteAsync(code, optimizationLevel: optimizationLevel);
 
             // Assert
-            TestOutput.AssertFlowMatchesComments(code, output, _outputHelper);
+            TestOutput.AssertFlowMatchesValueComments(code, output, _outputHelper);
         }
 
         [Fact]

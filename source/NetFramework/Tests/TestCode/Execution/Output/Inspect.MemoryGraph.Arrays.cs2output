@@ -16,7 +16,7 @@ public static class Program {
     {
       "id": 1,
       "offset": 0,
-      "size": 4,
+      "size": 8,
       "title": null,
       "value": "Int32[] ref"
     }
@@ -58,7 +58,7 @@ public static class Program {
     {
       "id": 6,
       "offset": 0,
-      "size": 4,
+      "size": 8,
       "title": null,
       "value": "String[] ref"
     }

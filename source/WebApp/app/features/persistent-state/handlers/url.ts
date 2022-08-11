@@ -2,7 +2,7 @@
 import { LANGUAGE_CSHARP, type LanguageName } from '../../../shared/languages';
 import { TARGET_CSHARP, type TargetName } from '../../../shared/targets';
 import type { Gist } from '../../save-as-gist/Gist';
-import loadGistFromUrlHashAsync, { type LoadStateFromGistResult } from '../../save-as-gist/loadGistFromUrlHashAsync';
+import { loadGistFromUrlHashAsync, type LoadStateFromGistResult } from '../../save-as-gist/loadGistFromUrlHashAsync';
 import { loadFromLegacyV1, LoadStateFromUrlV1Result } from './url/load-from-v1';
 import precompressor from './url/precompressor';
 import {
@@ -14,6 +14,25 @@ import {
 import type { ExactOptionsData } from './helpers/optionsData';
 
 let lastHash: string|undefined;
+
+const saveHash = (hash: string) => {
+    lastHash = hash;
+    history.replaceState(null, '', '#' + hash);
+};
+
+const saveGist = (code: string, options: ExactOptionsData, gist: Gist) => {
+    if (code !== gist.code)
+        return false;
+
+    const normalize = <T>(o: T|null|undefined) => o != null ? o : null;
+    for (const key of ['language', 'target', 'branchId', 'release'] as const) {
+        if (normalize(options[key]) !== normalize(gist.options[key]))
+            return false;
+    }
+
+    saveHash('gist:' + gist.id);
+    return true;
+};
 
 export const saveStateToUrl = (
     code: string|null|undefined,
@@ -43,25 +62,6 @@ export const saveStateToUrl = (
     saveHash(hash);
     return {};
 };
-
-function saveGist(code: string, options: ExactOptionsData, gist: Gist) {
-    if (code !== gist.code)
-        return false;
-
-    const normalize = <T>(o: T|null|undefined) => o != null ? o : null;
-    for (const key of ['language', 'target', 'branchId', 'release'] as const) {
-        if (normalize(options[key]) !== normalize(gist.options[key]))
-            return false;
-    }
-
-    saveHash('gist:' + gist.id);
-    return true;
-}
-
-function saveHash(hash: string) {
-    lastHash = hash;
-    history.replaceState(null, '', '#' + hash);
-}
 
 export type LoadStateFromUrlV2Result = {
     readonly options: {
@@ -130,6 +130,13 @@ export const loadStateFromUrlAsync = async (): Promise<LoadStateFromUrlResult> =
     }
 };
 
+const getCurrentHash = () => {
+    const hash = window.location.hash;
+    if (!hash)
+        return null;
+    return decodeURIComponent(hash.replace(/^#/, ''));
+};
+
 export const subscribeToUrlStateChanged = (callback: () => void) => {
     window.addEventListener('hashchange', () => {
         const hash = getCurrentHash();
@@ -137,10 +144,3 @@ export const subscribeToUrlStateChanged = (callback: () => void) => {
             callback();
     });
 };
-
-function getCurrentHash() {
-    const hash = window.location.hash;
-    if (!hash)
-        return null;
-    return decodeURIComponent(hash.replace(/^#/, ''));
-}

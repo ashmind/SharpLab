@@ -37,7 +37,7 @@ namespace SharpLab.Container.Execution {
                         ? inner
                         : ex;
                     Output.Write(new SimpleInspection("Exception", exceptionToReport.ToString()));
-                    ContainerFlow.ReportException(exceptionToReport);
+                    Flow.ReportException(exceptionToReport);
                     _flowWriter.FlushAndReset();
                 }
                 catch {
