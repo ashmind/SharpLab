@@ -26,14 +26,16 @@ const createAreaWidgetChoiceElement = (
     return visitLabel;
 };
 
-export const setSelectedVisit = (tracker: AreaTracker, visit: AreaVisitDetails) => {
+export const setSelectedVisit = (tracker: AreaTracker, visit: AreaVisitDetails | null) => {
     if (tracker.selectedVisit) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         tracker.labelsByVisit.get(tracker.selectedVisit)!.classList.remove('flow-visit-selected');
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    tracker.labelsByVisit.get(visit)!.classList.add('flow-visit-selected');
+    if (visit) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        tracker.labelsByVisit.get(visit)!.classList.add('flow-visit-selected');
+    }
     tracker.selectedVisit = visit;
 };
 
@@ -65,13 +67,27 @@ const createAreaWidget = (
 
     // eslint-disable-next-line prefer-const
     let tracker: AreaTracker;
+    let checkedInput = null as HTMLInputElement | null;
     container.addEventListener('change', e => {
-        const visit = visitsByInput.get(e.target as HTMLInputElement);
+        const input = e.target as HTMLInputElement;
+        const visit = visitsByInput.get(input);
         if (!visit)
             return;
 
         setSelectedVisit(tracker, visit);
         requestRenderAll();
+        setTimeout(() => checkedInput = input, 0);
+    });
+
+    container.addEventListener('click', e => {
+        if (e.target !== checkedInput)
+            return;
+
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        checkedInput!.checked = false;
+        setSelectedVisit(tracker, null);
+        requestRenderAll();
+        checkedInput = null;
     });
 
     const widget = cm.addLineWidget(area.startLine - 1, container, { above: true });
