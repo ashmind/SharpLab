@@ -71,6 +71,7 @@ const collectStepsAndVisits = (
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             if (visitCountsByArea.get(line.area)! === 1 && !isRecursive(line)) {
                 visitCountsByArea.set(line.area, 0);
+                results.steps.push(line.start);
                 collectStepsAndVisits(results, line.lines, visitCountsByArea);
                 continue;
             }
