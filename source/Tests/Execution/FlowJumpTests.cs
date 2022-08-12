@@ -15,7 +15,6 @@ namespace SharpLab.Tests.Execution {
 
         [Theory]
         [InlineData("Call.InternalAndExternal.cs")]
-        [InlineData("Loop.Simple.cs")]
         public async Task Flow_IncludesExpectedJumps(string codeFileName) {
             // Arrange
             var code = await TestCode.FromCodeOnlyFileAsync("Flow/Jumps/" + codeFileName);
