@@ -204,12 +204,12 @@ namespace SharpLab.Server.Execution.Internal {
             var lastLoopReportIndex = 0;
             for (var i = 0; i < instructions.Count; i++) {
                 var instruction = instructions[i];
-                                
+
                 var sequencePoint = debug.GetSequencePoint(instruction);
                 var hasLine = HasLine(sequencePoint);
                 if (!hasLine && lastLine == null)
                     continue;
-
+                
                 if (hasLine && sequencePoint!.StartLine != lastLine) {
                     var isMethodStart = i == 0;
                     if (isMethodStart)
@@ -221,13 +221,8 @@ namespace SharpLab.Server.Execution.Internal {
 
                     lastLine = sequencePoint.StartLine;
                 }
-                
-                var isJump = instruction.OpCode.FlowControl
-                          is FlowControl.Branch
-                          or FlowControl.Cond_Branch
-                          or FlowControl.Call
-                          or FlowControl.Return;
-                if (isJump) {
+
+                if (ShouldReportAsJump(instruction, method)) {
                     il.InsertBeforeAndRetargetAll(instruction, il.CreateCall(flow.ReportJump));
                     LogILIfEnabled(il, ILLogStep.AfterReportJump, i.ToString());
                     i += 1;
@@ -252,6 +247,20 @@ namespace SharpLab.Server.Execution.Internal {
 
             method.Body.OptimizeMacros();
             LogILIfEnabled(il, ILLogStep.Final);
+        }
+
+        private static bool ShouldReportAsJump(Instruction instruction, MethodDefinition method) {
+            return instruction.OpCode.FlowControl switch {
+                FlowControl.Branch or FlowControl.Cond_Branch => true,
+
+                // only calls to same-module methods
+                FlowControl.Call => instruction.Operand is MethodDefinition,
+
+                // do not include final return of the entrypoint
+                FlowControl.Return => method != method.Module.EntryPoint,
+                
+                _ => false
+            };
         }
 
         private void TryInsertReportMethodArguments(ILProcessor il, Instruction instruction, SequencePoint sequencePoint, MethodDefinition method, FlowMethods flow, IWorkSession session, ref int index) {

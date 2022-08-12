@@ -14,15 +14,15 @@ namespace SharpLab.Tests.Execution.Internal {
         public static void AssertFlowMatchesValueComments(string code, string output, ITestOutputHelper testOutputHelper) {
             AssertFlowMatchesComments(code, output, AssertCommentMode.Values, testOutputHelper);
         }
+        
+        public static void AssertFlowMatchesJumpComments(string code, string output, ITestOutputHelper testOutputHelper) {
+            AssertFlowMatchesComments(code, output, AssertCommentMode.Jumps, testOutputHelper);
+        }
 
         private static void AssertFlowMatchesComments(string code, string output, AssertCommentMode mode, ITestOutputHelper testOutputHelper) {
             var actual = ApplyActualFlowAsComments(code, output, mode);
             testOutputHelper.WriteLine(actual);
             Assert.Equal(code, actual);
-        }
-
-        private static IEnumerable<string> SplitLinesAndRemoveComments(string code) {
-            return code.Split("\r\n").Select(line => Regex.Replace(line, @"//.+$", ""));
         }
 
         private static string ApplyActualFlowAsComments(string code, string output, AssertCommentMode mode) {
@@ -36,13 +36,13 @@ namespace SharpLab.Tests.Execution.Internal {
         }
 
         private static IReadOnlyDictionary<int, string> ExtractAndGroupFlowNotesForComments(string output, AssertCommentMode mode) {
-            var notesByLineNumber = new Dictionary<int, IList<IList<string>>>();
-            IList<IList<string>> GetOrAddNotesLists(int lineNumber) {
-                if (!notesByLineNumber!.TryGetValue(lineNumber, out var values)) {
-                    values = new List<IList<string>>();
-                    notesByLineNumber.Add(lineNumber, values);
+            var groupsByLineNumber = new Dictionary<int, IList<LineNoteGroup>>();
+            IList<LineNoteGroup> GetOrAddNoteGroups(int lineNumber) {
+                if (!groupsByLineNumber!.TryGetValue(lineNumber, out var groups)) {
+                    groups = new List<LineNoteGroup> { new LineNoteGroup() };
+                    groupsByLineNumber.Add(lineNumber, groups);
                 }
-                return values;
+                return groups;
             }
             
             var lastLineNumber = (int?)null;
@@ -50,23 +50,25 @@ namespace SharpLab.Tests.Execution.Internal {
                 switch (step) {
                     case LineStep l:
                         lastLineNumber = l.LineNumber;
-                        GetOrAddNotesLists(l.LineNumber).Add(new List<string>());
+                        GetOrAddNoteGroups(l.LineNumber).Add(new());
                         break;
                         
-                    case ValueStep v: {
+                    case ValueStep v when mode == AssertCommentMode.Values: {
                         lastLineNumber = v.LineNumber;
-                        var notesLists = GetOrAddNotesLists(v.LineNumber);
-                        if (notesLists.Count == 0)
-                            notesLists.Add(new List<string>());
-
-                        notesLists.Last().Add(v.Name != null ? $"{v.Name}: {v.Value}" : v.Value);
+                        var notesLists = GetOrAddNoteGroups(v.LineNumber);
+                        GetOrAddNoteGroups(v.LineNumber).Last()
+                            .Values.Add(v.Name != null ? $"{v.Name}: {v.Value}" : v.Value);
                         break;
                     }
 
-                    case AreaReport a: {
-                        if (mode == AssertCommentMode.Values)
-                            continue;
+                    case JumpStep j when mode == AssertCommentMode.Jumps && lastLineNumber != null: {
+                        GetOrAddNoteGroups(lastLineNumber.Value).Last().HasJump = true;
+                        break;
+                    }
 
+                    // TODO: Add mode for area tests
+                    /*
+                    case AreaReport a when ???: {
                         var start = GetOrAddNotesLists(a.StartLineNumber);
                         start.Add(new List<string> { a.Type + " start" });
                         start.Add(new List<string>());
@@ -76,15 +78,20 @@ namespace SharpLab.Tests.Execution.Internal {
                         end.Add(new List<string>());
                         break;
                     }
+                    */
                 }
 
             }
 
-            return notesByLineNumber
-                .Where(p => p.Value.Any(v => v.Any()))
+            return groupsByLineNumber
+                .Select(gs => (
+                    line: gs.Key,
+                    notes: string.Join(" ", gs.Value.Where(g => !g.IsEmpty).Select(g => g.ToString()))
+                ))
+                .Where(x => x.notes.Length > 0)
                 .ToDictionary(
-                    p => p.Key,
-                    p => string.Join(" ", p.Value.Where(v => v.Any()).Select(v => "[" + string.Join(", ", v) + "]"))
+                    x => x.line,
+                    x => x.notes
                 );
         }
 
@@ -155,7 +162,18 @@ namespace SharpLab.Tests.Execution.Internal {
         private record AreaReport(string Type, int StartLineNumber, int EndLineNumber) : FlowStep;
 
         private enum AssertCommentMode {
-            Values
+            Values,
+            Jumps
+        }
+
+        private class LineNoteGroup {
+            public IList<string> Values { get; } = new List<string>();
+            public bool HasJump { get; set; }
+            public bool IsEmpty => !Values.Any() && !HasJump;
+            public override string ToString() => string.Join(" ", new[] {
+                Values.Any() ? $"[{string.Join(", ", Values)}]" : null,
+                HasJump ? "jump🠊" : null
+            }.Where(p => p != null));
         }
     }
 }
