@@ -10,28 +10,24 @@ jobs:
          - name: 'WebApp Server / Default'
            package: WebApp.Server.zip
            app: sharplab
-           stop-app: true
            url: https://sharplab.io
            environment: main-server
 
          - name: x64
            package: Server.zip
            app: sl-a-core-x64
-           stop-app: true
            url: https://sl-a-core-x64.azurewebsites.net/status
            environment: main-server-x64
 
          - name: '.NET Framework, x86'
            package: Server.NetFramework.zip
            app: sl-a-netfx
-           stop-app: false
            url: https://sl-a-netfx.azurewebsites.net/status
            environment: main-server-netfx
 
          - name: '.NET Framework, x64'
            package: Server.NetFramework.zip
            app: sl-a-netfx-x64
-           stop-app: false
            url: https://sl-a-netfx-x64.azurewebsites.net/status
            environment: main-server-netfx-x64
 
@@ -63,30 +59,10 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # https://github.com/Azure/webapps-deploy/issues/100
-      - name: "Run azure/CLI@v1: az webapp stop"
-        if: matrix.stop-app
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.30.0
-          inlineScript: az webapp stop --name ${{ matrix.app }} --resource-group SharpLab
-
-      # https://github.com/Azure/webapps-deploy/issues/100#issuecomment-754368190
-      - run: Start-Sleep -Seconds 10
-        if: matrix.stop-app
-        shell: pwsh
-
       - uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ matrix.app }}
           package: ${{ matrix.package }}
-
-      - name: "Run azure/CLI@v1: az webapp start"
-        uses: azure/CLI@v1
-        if: matrix.stop-app
-        with:
-          azcliversion: 2.30.0
-          inlineScript: az webapp start --name ${{ matrix.app }} --resource-group SharpLab
 
       - run: Invoke-RestMethod "${{ matrix.url }}" -MaximumRetryCount 10 -RetryIntervalSec 2
         shell: pwsh
