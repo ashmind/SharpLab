@@ -3,12 +3,17 @@
         "azcliversion",
         "Brunner",
         "creds",
+        "isnotempty",
+        "Kusto",
         "mirrorsharp",
         "msbuild",
         "netfx",
         "pwsh",
         "SHARPLAB",
         "slpublic",
+        "startswith",
+        "strcat",
+        "tostring",
         "webapps"
     ]
 }

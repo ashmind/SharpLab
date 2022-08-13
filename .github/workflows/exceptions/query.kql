@@ -17,10 +17,18 @@ exceptions
     | project itemCount,
               app=tostring(customDimensions['Web App']),
               type=coalesce(containerType, type),
-              method=iif(type != 'System.InvalidProgramException', coalesce(containerMethod, method), '<user code>'),
+              method=case(
+                type == 'System.OutOfMemoryException', '<code>',
+                type == 'System.InvalidProgramException', '<user code>',
+                coalesce(containerMethod, method)
+              ),
               query=strcat(
                   'exceptions\n  | where type == \'', type,
-                  iif(type != 'System.InvalidProgramException', strcat('\'\n  | where method == \'', method, '\''), ''),
+                  iif(
+                    type !in ('System.OutOfMemoryException', 'System.InvalidProgramException'),
+                    strcat('\'\n  | where method == \'', method, '\''),
+                    ''
+                  ),
                   iif(isnotempty(containerType), strcat('\n  | where outerMessage contains \'', containerType, '\''), '')
               )
     | summarize _count=sum(itemCount) by type, method, query, app
