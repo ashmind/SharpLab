@@ -4,8 +4,11 @@
         "Brunner",
         "creds",
         "mirrorsharp",
+        "msbuild",
+        "netfx",
         "pwsh",
         "SHARPLAB",
-        "slpublic"
+        "slpublic",
+        "webapps"
     ]
 }
