@@ -17,11 +17,15 @@ namespace SharpLab.Tests {
         [InlineData("nameof expression", "class C { string f = nameof(C); }", "nameof(C)")]
         [InlineData("declaration with a private protected access modifier", "class C { private protected string f; }", "private protected string f;")]
         public async Task SlowUpdate_ExplainsCSharpFeature(string name, string providedCode, string expectedCode) {
+            // Arrange
             var driver = await NewTestDriverAsync();
             driver.SetText(providedCode);
 
+            // Act
             var result = await driver.SendSlowUpdateAsync<ExplanationData[]>();
 
+            // Assert
+            Assert.NotNull(result.ExtensionResult);
             var explanation = Assert.Single(result.ExtensionResult);
             // some spaces are expected -- currently extra spaces are trimmed by JS
             Assert.Equal(expectedCode, explanation.Code.Trim());
@@ -34,11 +38,15 @@ namespace SharpLab.Tests {
         [InlineData("class C { async void A() { var x = 5; } }", "async void A() { … }")]
         [InlineData("class C { async void A() {} }", "async void A() {}")]
         public async Task SlowUpdate_DoesNotIncludeBlockContentsInExplanationCode(string source, string expected) {
+            // Arrange
             var driver = await NewTestDriverAsync();
             driver.SetText(source);
 
+            // Act
             var result = await driver.SendSlowUpdateAsync<ExplanationData[]>();
 
+            // Assert
+            Assert.NotNull(result.ExtensionResult);
             var explanation = Assert.Single(result.ExtensionResult);
             // some spaces are expected -- currently extra spaces are trimmed by JS
             Assert.Equal(expected, explanation.Code.Trim());
@@ -48,11 +56,15 @@ namespace SharpLab.Tests {
         [InlineData("class C { async void A(int a) {} }", "async void A(…) {}")]
         [InlineData("class C { async void A() {} }", "async void A() {}")]
         public async Task SlowUpdate_DoesNotIncludeParameterListsInExplanationCode(string source, string expected) {
+            // Arrange
             var driver = await NewTestDriverAsync();
             driver.SetText(source);
 
+            // Act
             var result = await driver.SendSlowUpdateAsync<ExplanationData[]>();
 
+            // Assert
+            Assert.NotNull(result.ExtensionResult);
             var explanation = Assert.Single(result.ExtensionResult);
             // some spaces are expected -- currently extra spaces are trimmed by JS
             Assert.Equal(expected, explanation.Code.Trim());

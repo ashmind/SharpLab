@@ -91,7 +91,10 @@ namespace SharpLab.Server.Execution.Internal {
                 }
             }
 
-            var entryPointIL = assembly.MainModule.EntryPoint.Body.GetILProcessor();
+            if (assembly.MainModule.EntryPoint is not {} entryPoint)
+                return;
+            
+            var entryPointIL = entryPoint.Body.GetILProcessor();
             var insertIndex = 0;
             foreach (var module in assembly.Modules) {
                 if (!module.HasTypes)
