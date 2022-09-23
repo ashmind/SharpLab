@@ -10,7 +10,7 @@ using SharpLab.Server.Common.Internal;
 namespace SharpLab.Server.Owin.Platform {
     public class Net48AssemblyDocumentationResolver : IAssemblyDocumentationResolver {
         private static readonly string ReferenceAssemblyRootPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
-            + @"\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7";
+            + @"\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8";
 
         public DocumentationProvider? GetDocumentation([NotNull] Assembly assembly) {
             foreach (var xmlPath in GetCandidatePaths(assembly)) {
