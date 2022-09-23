@@ -85,8 +85,8 @@ namespace SharpLab.Tests.Decompilation {
             await driver.SendSetOptionsAsync(sourceLanguageName, TargetNames.IL);
 
             var result = await driver.SendSlowUpdateAsync<string>();
-            Assert.Equal(
-                new[] { new { Severity = "warning", Id = expectedWarningId } },
+            Assert.Contains(
+                new { Severity = "warning", Id = expectedWarningId },
                 result.Diagnostics.Select(d => new { d.Severity, d.Id }).ToArray()
             );
         }
@@ -99,7 +99,7 @@ namespace SharpLab.Tests.Decompilation {
             await driver.SendSetOptionsAsync(sourceLanguageName, TargetNames.IL);
 
             var result = await driver.SendSlowUpdateAsync<string>();
-            Assert.Empty(result.Diagnostics);
+            Assert.DoesNotContain(result.Diagnostics, d => d.Severity is "warning" or "error");
         }
 
         [Theory]

@@ -38,10 +38,10 @@
     <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.17.0" />
     <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.10.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="3.10.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Features" Version="3.10.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.10.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.3.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="4.3.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Features" Version="4.3.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="4.3.0" />
     <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="2.0.226801" />
     <PackageReference Include="Microsoft.ILVerification" Version="7.0.0-preview.4.22229.4" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.0" />
@@ -50,7 +50,7 @@
     <PackageReference Include="Iced" Version="1.6.0" />
     <PackageReference Include="SharpYaml" Version="1.6.2" />
     <PackageReference Include="System.Composition.AttributedModel" Version="6.0.0" />
-    <PackageReference Include="System.IO.Pipelines" Version="6.0.2" />
+    <PackageReference Include="System.IO.Pipelines" Version="6.0.3" />
     <PackageReference Include="System.Memory" Version="4.5.4" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />

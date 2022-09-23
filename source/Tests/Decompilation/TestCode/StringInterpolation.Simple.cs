@@ -25,7 +25,11 @@ public class C
 {
     public void M()
     {
-        string text = string.Format("This {0} That", 1);
+        DefaultInterpolatedStringHandler defaultInterpolatedStringHandler = new DefaultInterpolatedStringHandler(10, 1);
+        defaultInterpolatedStringHandler.AppendLiteral("This ");
+        defaultInterpolatedStringHandler.AppendFormatted(1);
+        defaultInterpolatedStringHandler.AppendLiteral(" That");
+        string text = defaultInterpolatedStringHandler.ToStringAndClear();
         string text2 = string.Concat("This ", text, " That");
     }
 }

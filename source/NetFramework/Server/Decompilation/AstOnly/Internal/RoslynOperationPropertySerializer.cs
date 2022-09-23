@@ -114,7 +114,10 @@ namespace SharpLab.Server.Decompilation.Internal {
             return property.Name == nameof(IOperation.Language)
                 || property.Name == nameof(IOperation.Kind)
                 || property.Name == nameof(IOperation.Parent)
+                #pragma warning disable CS0618 // Type or member is obsolete
                 || property.Name == nameof(IOperation.Children)
+                #pragma warning restore CS0618 // Type or member is obsolete
+                || property.Name == nameof(IOperation.ChildOperations)
                 || property.Name == nameof(IOperation.Syntax)
                 || property.PropertyType.IsAssignableTo<IOperation>()
                 || property.PropertyType.IsAssignableTo<IEnumerable<IOperation>>();
