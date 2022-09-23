@@ -54,7 +54,8 @@ console.log(`  Web App URL:           ${webAppUrl}`);
 console.log('');
 
 async function updateRoslynBuildPackages(currentBuildId: string|null) {
-    const roslynBuildsUrl = `https://dev.azure.com/dnceng/public/_apis/build/builds?api-version=5.0&definitions=15&reasonfilter=individualCI&resultFilter=succeeded&$top=1&branchName=refs/heads/${branchName}`;
+    // See https://dev.azure.com/dnceng-public/public/_build?definitionId=95
+    const roslynBuildsUrl = `https://dev.azure.com/dnceng-public/public/_apis/build/builds?api-version=5.0&definitions=95&reasonfilter=individualCI&resultFilter=succeeded&$top=1&branchName=refs/heads/${branchName}`;
     const builds = await (await safeFetch(roslynBuildsUrl)).json() as {
         count: number;
         value: ReadonlyArray<{
