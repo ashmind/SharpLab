@@ -94,9 +94,18 @@ async function updateRoslynBuildPackages(currentBuildId: string|null) {
             };
         }>;
     };
-    const roslynPackages = roslynArtifacts.value.find(a => a.name === 'Packages - PreRelease');
-    if (!roslynPackages)
-        throw 'Packages were not found in Roslyn Azure build artifacts.';
+    if (roslynArtifacts.value.length === 0)
+        throw `No Roslyn Azure build artifacts found.`;
+
+    const roslynPackages = roslynArtifacts.value.find(        
+        a => a.name === 'Packages - PreRelease'
+          || a.name === 'Bootstrap Packages - PreRelease'
+    );
+    if (!roslynPackages) {
+        throw `Packages were not found in Roslyn Azure build artifacts.\nAvailable artifacts: ${
+            roslynArtifacts.value.map(a => `\n* ${a.name}`).join('')
+        }`;
+    }
 
     const downloadUrl = roslynPackages.resource.downloadUrl;
     const zipPath = path.join(branchArtifactsRoot, `Packages.${build.id}.zip`);
