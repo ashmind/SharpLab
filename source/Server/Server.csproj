@@ -51,7 +51,7 @@
     <PackageReference Include="SharpYaml" Version="1.6.2" />
     <PackageReference Include="System.Composition.AttributedModel" Version="6.0.0" />
     <PackageReference Include="System.IO.Pipelines" Version="6.0.3" />
-    <PackageReference Include="System.Memory" Version="4.5.4" />
+    <PackageReference Include="System.Memory" Version="4.5.5" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
   </ItemGroup>
