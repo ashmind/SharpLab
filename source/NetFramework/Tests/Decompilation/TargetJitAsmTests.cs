@@ -53,32 +53,56 @@ namespace SharpLab.Tests.Decompilation {
         }
 
         [Theory]
-        [InlineData("class C { static int F = 1; }")]
-        [InlineData("class C { static C() {} }")]
-        [InlineData("class C { class N { static N() {} } }")]
+        [InlineData("class C { static int F = ((Func<int>)(() => throw new ConstructorRanException()))(); }")]
+        [InlineData("class C { static C() => throw new ConstructorRanException(); }")]
+        [InlineData("class C { class N { static N() => throw new ConstructorRanException(); } }")]
         public async Task SlowUpdate_ReturnsNotSupportedError_ForStaticConstructors(string code) {
-            var driver = TestEnvironment.NewDriver().SetText(code);
-            await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.JitAsm);
-
-            await Assert.ThrowsAsync<NotSupportedException>(() => driver.SendSlowUpdateAsync<string>());
-        }
-
-        [Theory]
-        [InlineData("class C { [ModuleInitializer] public static void I() {} }")]
-        [InlineData("class C { public class N { [ModuleInitializer] public static void I() {} } }")]
-        public async Task SlowUpdate_ReturnsNotSupportedError_ForModuleInitializers(string code) {
             var driver = TestEnvironment.NewDriver().SetText(@$"
-                using System.Runtime.CompilerServices;
-                namespace System.Runtime.CompilerServices {{
-                    public class ModuleInitializerAttribute : Attribute {{
-                    }}
-                }}                
+                using System;
+                public class ConstructorRanException: Exception {{}}
 
                 {code}
             ");
             await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.JitAsm);
 
-            await Assert.ThrowsAsync<NotSupportedException>(() => driver.SendSlowUpdateAsync<string>());
+            var (result, exception) = await RecordExceptionOrResultAsync(() => driver.SendSlowUpdateAsync<string>());
+
+            Assert.Empty(result?.JoinErrors() ?? "");
+            Assert.IsType<NotSupportedException>(exception);
+        }
+
+        [Theory]
+        [InlineData("class C { [ModuleInitializer] public static void I() => throw new InitializerRanException(); }")]
+        [InlineData("class C { public class N { [ModuleInitializer] public static void I() => throw new InitializerRanException(); } }")]
+        public async Task SlowUpdate_ReturnsNotSupportedError_ForModuleInitializers(string code) {
+            var driver = TestEnvironment.NewDriver().SetText(@$"
+                using System;
+                using System.Runtime.CompilerServices;
+
+                public class InitializerRanException: Exception {{}}
+
+                namespace System.Runtime.CompilerServices {{
+                    public class ModuleInitializerAttribute : Attribute {{
+                    }}
+                }}
+
+                {code}
+            ");
+            await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.JitAsm);
+
+            var (result, exception) = await RecordExceptionOrResultAsync(() => driver.SendSlowUpdateAsync<string>());
+
+            Assert.Empty(result?.JoinErrors() ?? "");
+            Assert.IsType<NotSupportedException>(exception);
+        }
+
+        private async Task<(T? result, Exception? exception)> RecordExceptionOrResultAsync<T>(Func<Task<T>> callAsync) {
+            try {
+                return (await callAsync(), null);
+            }
+            catch (Exception ex) {
+                return (default, ex);
+            }
         }
     }
 }

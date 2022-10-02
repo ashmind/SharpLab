@@ -69,8 +69,10 @@ namespace SharpLab.Server.Decompilation {
                     }
 
                     foreach (var method in type.DeclaredMethods) {
-                        if (method.IsDefined<ModuleInitializerAttribute>())
-                            throw new NotSupportedException($"Method {method} is a module initializer, which is not supported by SharpLab JIT decompiler.");
+                        foreach (var attribute in method.CustomAttributes) {
+                            if (attribute.AttributeType is { Name: "ModuleInitializerAttribute", Namespace: "System.Runtime.CompilerServices" })
+                                throw new NotSupportedException($"Method {method} is a module initializer, which is not supported by SharpLab JIT decompiler.");
+                        }
                     }
                 }
             }
