@@ -10,7 +10,7 @@ using SharpLab.Runtime;
 namespace SharpLab.Server.Decompilation.Internal {
     public static class IsolatedJitAsmDecompilerCore {
         public static IReadOnlyList<MethodJitResult> JitCompileAndGetMethods(Assembly assembly) {
-            ValidateStaticConstructors(assembly);
+            EnsureNoJitSideEffects(assembly);
             var results = new List<MethodJitResult>();
             foreach (var type in assembly.DefinedTypes) {
                 if (type.IsNested)
@@ -20,18 +20,26 @@ namespace SharpLab.Server.Decompilation.Internal {
             return results;
         }
 
-        // This is a security consideration as PrepareMethod calls static ctors
-        private static void ValidateStaticConstructors(Assembly assembly) {
+        // This is a security consideration as PrepareMethod calls static ctors and module initializers
+        private static void EnsureNoJitSideEffects(Assembly assembly) {
             try {
                 foreach (var type in assembly.DefinedTypes) {
                     foreach (var constructor in type.DeclaredConstructors) {
                         if (constructor.IsStatic)
                             throw new NotSupportedException($"Type {type} has a static constructor, which is not supported by SharpLab JIT decompiler.");
                     }
+
+                    foreach (var method in type.DeclaredMethods) {
+                        foreach (var attribute in method.GetCustomAttributes()) {
+                            var attributeType = attribute.GetType();
+                            if (attributeType.Name == "ModuleInitializerAttribute" && attributeType.Namespace == "System.Runtime.CompilerServices")
+                                throw new NotSupportedException($"Method {method} is a module initializer, which is not supported by SharpLab JIT decompiler.");
+                        }                            
+                    }
                 }
             }
             catch (ReflectionTypeLoadException ex) {
-                throw new NotSupportedException("Unable to validate whether code is using static contructors (not supported by SharpLab JIT decompiler).", ex);
+                throw new NotSupportedException("Unable to validate whether code has static constructors or module initializers (not supported by SharpLab JIT decompiler).", ex);
             }
         }
 

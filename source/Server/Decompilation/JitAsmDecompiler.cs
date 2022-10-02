@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using AshMind.Extensions;
 using Iced.Intel;
 using JetBrains.Annotations;
+using Microsoft.Azure.Documents.SystemFunctions;
 using Microsoft.Diagnostics.Runtime;
 using Microsoft.Diagnostics.Runtime.DacInterface;
 using MirrorSharp.Advanced;
@@ -40,7 +42,7 @@ namespace SharpLab.Server.Decompilation {
 
             using var loadContext = new CustomAssemblyLoadContext(shouldShareAssembly: _ => true);
             var assembly = loadContext.LoadFromStream(streams.AssemblyStream);
-            ValidateStaticConstructors(assembly);
+            EnsureNoJitSideEffects(assembly);
 
             using var runtimeLease = _runtimePool.GetOrCreate();
             var runtime = runtimeLease.Object;
@@ -58,17 +60,22 @@ namespace SharpLab.Server.Decompilation {
             }
         }
 
-        private void ValidateStaticConstructors(Assembly assembly) {
+        private void EnsureNoJitSideEffects(Assembly assembly) {
             try {
                 foreach (var type in assembly.DefinedTypes) {
                     foreach (var constructor in type.DeclaredConstructors) {
                         if (constructor.IsStatic)
                             throw new NotSupportedException($"Type {type} has a static constructor, which is not supported by SharpLab JIT decompiler.");
                     }
+
+                    foreach (var method in type.DeclaredMethods) {
+                        if (method.IsDefined<ModuleInitializerAttribute>())
+                            throw new NotSupportedException($"Method {method} is a module initializer, which is not supported by SharpLab JIT decompiler.");
+                    }
                 }
             }
             catch (ReflectionTypeLoadException ex) {
-                throw new NotSupportedException("Unable to validate whether code is using static contructors (not supported by SharpLab JIT decompiler).", ex);
+                throw new NotSupportedException("Unable to validate whether code has static constructors or module initializers (not supported by SharpLab JIT decompiler).", ex);
             }
         }
 

@@ -66,6 +66,19 @@ namespace SharpLab.Tests.Decompilation {
         }
 
         [Theory]
+        [InlineData("class C { [ModuleInitializer] public static void I() {} }")]
+        [InlineData("class C { public class N { [ModuleInitializer] public static void I() {} } }")]
+        public async Task SlowUpdate_ReturnsNotSupportedError_ForModuleInitializers(string code) {
+            var driver = TestEnvironment.NewDriver().SetText(@$"
+                using System.Runtime.CompilerServices;
+                {code}
+            ");
+            await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.JitAsm);
+
+            await Assert.ThrowsAsync<NotSupportedException>(() => driver.SendSlowUpdateAsync<string>());
+        }
+
+        [Theory]
         [InlineData("[JitGeneric(typeof(int), typeof(int))] class C<T> {}")]
         [InlineData("[JitGeneric(typeof(Span<int>))] class C<T> {}")]
         [InlineData("class C { [JitGeneric(typeof(int), typeof(int))] void M<T>() {} }")]
