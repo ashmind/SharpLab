@@ -145,6 +145,12 @@ namespace SharpLab.Server.Decompilation {
                 return;
             }
 
+            if ((method.MethodImplementationFlags & MethodImplAttributes.InternalCall) == MethodImplAttributes.InternalCall) {
+                WriteSignatureFromReflection(context, method);
+                context.Writer.WriteLine("    ; Cannot produce JIT assembly for an internal call method.");
+                return;
+            }
+
             if ((method.Attributes & MethodAttributes.PinvokeImpl) == MethodAttributes.PinvokeImpl) {
                 WriteSignatureFromReflection(context, method);
                 context.Writer.WriteLine("    ; Cannot produce JIT assembly for a P/Invoke method.");

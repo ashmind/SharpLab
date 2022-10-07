@@ -6,7 +6,6 @@ using Xunit.Abstractions;
 using SharpLab.Runtime.Internal;
 using SharpLab.Server.Common;
 using SharpLab.Tests.Internal;
-using MirrorSharp.Testing.Results;
 
 namespace SharpLab.Tests.Decompilation {
     public class TargetJitAsmTests {
@@ -37,6 +36,7 @@ namespace SharpLab.Tests.Decompilation {
         [InlineData("JitAsm/Vectors.Avx2.cs")]
         [InlineData("JitAsm/Math.FusedMultiplyAdd.Fma.cs2asm")]
         [InlineData("JitAsm/DllImport.cs")] // https://github.com/ashmind/SharpLab/issues/666
+        [InlineData("JitAsm/MethodImpl.InternalCall.cs")] // https://github.com/ashmind/SharpLab/issues/752
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string codeFilePath) {
             // https://github.com/ashmind/SharpLab/issues/514
             if (codeFilePath.Contains(".Fma.") && !Fma.IsSupported)
