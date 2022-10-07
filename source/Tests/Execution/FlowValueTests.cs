@@ -27,6 +27,7 @@ namespace SharpLab.Tests.Execution {
         [InlineData("Variable.LongValue.UnicodeCharBreak.cs")]
         [InlineData("Regression.ToStringNull.cs")] // https://github.com/ashmind/SharpLab/issues/380
         [InlineData("Variable.Array.cs")]
+        [InlineData("Argument.Array.Generic.cs")]
         public async Task Flow_IncludesExpectedValues(string codeFileName) {
             // Arrange
             var code = await TestCode.FromCodeOnlyFileAsync("Flow/Values/" + codeFileName);

@@ -56,6 +56,12 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Execution\TestCode\Flow\Values\Argument.Array.Generic.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
   <Target Name="CopyFrameworkXmlDocumentation" AfterTargets="ResolveReferences">
     <ItemGroup>
       <Content Include="@(Reference->'%(RootDir)%(Directory)%(Filename).xml')" Link="@(Reference->'xmldocs\%(Filename).xml')" Condition="$([System.String]::new('%(Filename)').StartsWith('System.')) and Exists('%(RootDir)%(Directory)%(Filename).xml')">

@@ -397,7 +397,7 @@ namespace SharpLab.Server.Execution.Internal {
             if (valueType is ByReferenceType byRef)
                 return PrepareReportValue(byRef.ElementType, flow.ReportRefValue, flow.ReportRefSpanValue, flow.ReportRefReadOnlySpanValue);
 
-            if (!valueType.IsPrimitive && !valueType.IsGenericParameter) {
+            if (!valueType.IsPrimitive && !valueType.IsGenericParameter && valueType.IsValueType) {
                 var valueTypeDefinition = valueType.Resolve();
                 foreach (var attribute in valueTypeDefinition.CustomAttributes) {
                     // ref structs cannot be reported in a generic way
