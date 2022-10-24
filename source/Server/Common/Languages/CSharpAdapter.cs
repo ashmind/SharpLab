@@ -43,9 +43,11 @@ namespace SharpLab.Server.Common.Languages {
                 "SharpLab.Runtime",
 
                 // Requested
+                "System.Collections.Immutable",
                 "System.Data",
                 "System.Runtime.CompilerServices.Unsafe",
                 "System.Runtime.Intrinsics",
+                "System.Text.Json",
                 "System.Web.HttpUtility",
                 "System.Xml.Linq"
             ).ToImmutableList();
