@@ -74,7 +74,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment: ${{ matrix.environment }}
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.artifact }}
       - uses: azure/login@v1
@@ -132,7 +132,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment: ${{ matrix.environment }}
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: Server.NetFramework
       - uses: azure/login@v1
@@ -161,7 +161,7 @@ jobs:
       - run: 'git show ${{ github.sha }} --format="::set-output name=version_number::%cd" --date=format:%Y-%m-%d-%H%M --no-patch'
         id: version
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
 
       - uses: actions/create-release@v1
         id: create_release
