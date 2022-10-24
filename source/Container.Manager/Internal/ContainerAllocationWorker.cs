@@ -74,8 +74,8 @@ namespace SharpLab.Container.Manager.Internal {
                         includePerformance: false, isWarmup: true,
                         cancellationToken
                     );
-                    if (!result.IsOutputReadSuccess)
-                        throw new Exception($"Warmup output failed:\r\n" + Encoding.UTF8.GetString(result.Output.Span) + Encoding.UTF8.GetString(result.OutputReadFailureMessage.Span));
+                    if (!result.IsSuccess)
+                        throw new Exception($"Warmup failed:\r\n" + Encoding.UTF8.GetString(result.Output.Span) + Encoding.UTF8.GetString(result.FailureMessage.Span));
                 }
                 finally {
                     ArrayPool<byte>.Shared.Return(outputBuffer);

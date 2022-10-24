@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using Fragile;
 
@@ -12,12 +11,23 @@ namespace SharpLab.Container.Manager.Internal {
             IProcessContainer container
         ) {
             _container = container;
-            CancellableOutputStream = new CancellablePipeStream(container.OutputStream);
+            CancellableInputStream = new CancellableInputStream(container.InputStream);
+            CancellableOutputStream = new CancellableOutputStream(container.OutputStream);
         }
 
-        public Stream InputStream => _container.InputStream;
+        public CancellableInputStream CancellableInputStream { get; private init; }
         public Stream CancellableOutputStream { get; private init; }
-        public Process Process => _container.Process;
+        public int FailureCount { get; set; }
+
+        public bool HasExited() {
+            try {
+                return _container.Process.HasExited;
+            }
+            // If process has exited a while ago and handle is no longer functional
+            catch (InvalidOperationException) {
+                return true;
+            }
+        }
 
         public void Dispose() => _container.Dispose();
     }

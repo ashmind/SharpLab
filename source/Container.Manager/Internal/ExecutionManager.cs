@@ -34,7 +34,6 @@ namespace SharpLab.Container.Manager.Internal {
             if (_containerPool.GetSessionContainer(sessionId) is not {} container) {
                 if (_crashSuspensionManager.GetSuspension(sessionId) is {} suspension)
                     return suspension;
-
                 try {
                     container = await _containerPool.AllocateSessionContainerAsync(sessionId, _cleanupWorker.QueueForCleanup, allocationCancellation.Token);
                 }
@@ -52,13 +51,24 @@ namespace SharpLab.Container.Manager.Internal {
                 cancellationToken
             );
 
-            if (!result.IsOutputReadSuccess) {
-                if (container.Process.HasExited)
-                    _containerPool.RemoveSessionContainer(sessionId);
+            if (container.HasExited())
+                return RemoveContainerAndSetSuspension(sessionId, result);
 
-                return _crashSuspensionManager.SetSuspension(sessionId, result);
+            if (result.IsSuccess) {
+                container.FailureCount = 0;
             }
+            else {
+                container.FailureCount += 1;
+                if (container.FailureCount >= 3)
+                    return RemoveContainerAndSetSuspension(sessionId, result);
+            }
+
             return result;
+        }
+
+        private ExecutionOutputResult RemoveContainerAndSetSuspension(string sessionId, ExecutionOutputResult result) {
+            _containerPool.RemoveSessionContainer(sessionId);
+            return _crashSuspensionManager.SetSuspension(sessionId, result);
         }
     }
 }

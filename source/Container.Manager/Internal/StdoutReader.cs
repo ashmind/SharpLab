@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 
 namespace SharpLab.Container.Manager.Internal {
     public class StdoutReader {
-        private static readonly byte[] ExecutionTimedOut = Encoding.UTF8.GetBytes("\n(Execution timed out)");
         private static readonly byte[] StartOfOutputNotFound = Encoding.UTF8.GetBytes("\n(Could not find start of output)");
         private static readonly byte[] UnexpectedEndOfOutput = Encoding.UTF8.GetBytes("\n(Unexpected end of output)");
         private readonly ILogger<StdoutReader> _logger;
@@ -28,16 +27,21 @@ namespace SharpLab.Container.Manager.Internal {
             var outputEndIndex = -1;
             var nextStartMarkerIndexToCompare = 0;
             var nextEndMarkerIndexToCompare = 0;
-            var cancelled = false;
+            var exceptionFailureMessage = ReadOnlyMemory<byte>.Empty;
 
             while (outputEndIndex < 0) {
                 int readCount;
                 try {
                     readCount = await stream.ReadAsync(outputBuffer, currentIndex, outputBuffer.Length - currentIndex, cancellationToken);
                 }
+                catch (IOException ex) {
+                    exceptionFailureMessage = FailureMessages.IOFailure;
+                    _logger.LogInformation(ex, "Failed to read stream");
+                    break;
+                }
                 catch (OperationCanceledException) {
-                    cancelled = true;
-                    _logger.LogDebug("Timeout at stream.ReadAsync");
+                    exceptionFailureMessage = FailureMessages.TimedOut;
+                    _logger.LogDebug("Timed out while reading stream");
                     break;
                 }
 
@@ -46,7 +50,7 @@ namespace SharpLab.Container.Manager.Internal {
                         await Task.Delay(10, cancellationToken);
                     }
                     catch (OperationCanceledException) {
-                        cancelled = true;
+                        exceptionFailureMessage = FailureMessages.TimedOut;
                         break;
                     }
                     continue;
@@ -77,13 +81,13 @@ namespace SharpLab.Container.Manager.Internal {
             }
 
             if (outputStartIndex < 0)
-                return new(outputBuffer.AsMemory(0, currentIndex), StartOfOutputNotFound);
-            if (cancelled)
-                return new(outputBuffer.AsMemory(outputStartIndex, currentIndex - outputStartIndex), ExecutionTimedOut);
+                return ExecutionOutputResult.Failure(StartOfOutputNotFound, outputBuffer.AsMemory(0, currentIndex));
+            if (!exceptionFailureMessage.IsEmpty)
+                return ExecutionOutputResult.Failure(exceptionFailureMessage, outputBuffer.AsMemory(outputStartIndex, currentIndex - outputStartIndex));
             if (outputEndIndex < 0)
-                return new(outputBuffer.AsMemory(outputStartIndex, currentIndex - outputStartIndex), UnexpectedEndOfOutput);
+                return ExecutionOutputResult.Failure(UnexpectedEndOfOutput, outputBuffer.AsMemory(outputStartIndex, currentIndex - outputStartIndex));
 
-            return new(outputBuffer.AsMemory(outputStartIndex, outputEndIndex - outputStartIndex));
+            return ExecutionOutputResult.Success(outputBuffer.AsMemory(outputStartIndex, outputEndIndex - outputStartIndex));
         }
 
         private static int GetMarkerEndIndex(byte[] outputBuffer, int currentIndex, int length, ReadOnlyMemory<byte> marker, ref int nextMarkerIndexToCompare) {

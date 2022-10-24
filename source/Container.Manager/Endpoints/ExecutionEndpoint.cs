@@ -36,7 +36,7 @@ namespace SharpLab.Container.Manager.Endpoints {
             var includePerformance = context.Request.Headers["SL-Debug-Performance"].Count > 0;
             var contentLength = (int)context.Request.Headers.ContentLength!;
 
-            _logger.LogDebug("Processing Execute request");
+            _logger.LogDebug("Starting Execute");
 
             var stopwatch = includePerformance ? Stopwatch.StartNew() : null;
 
@@ -64,11 +64,11 @@ namespace SharpLab.Container.Manager.Endpoints {
 
                 try {
                     context.Response.StatusCode = 200;
-                    if (!result.IsOutputReadSuccess)
+                    if (!result.IsSuccess)
                         context.Response.Headers.Add("SL-Container-Output-Failed", "true");
                     await context.Response.BodyWriter.WriteAsync(result.Output, context.RequestAborted);
-                    if (!result.IsOutputReadSuccess)
-                        await context.Response.BodyWriter.WriteAsync(result.OutputReadFailureMessage, context.RequestAborted);
+                    if (!result.IsSuccess)
+                        await context.Response.BodyWriter.WriteAsync(result.FailureMessage, context.RequestAborted);
 
                     if (stopwatch != null) {
                         // TODO: Prettify. Put into header?
@@ -85,6 +85,7 @@ namespace SharpLab.Container.Manager.Endpoints {
                     ArrayPool<byte>.Shared.Return(bodyBytes);
                 if (outputBuffer != null)
                     ArrayPool<byte>.Shared.Return(outputBuffer);
+                _logger.LogDebug("Completed Execute");
             }
         }
 
