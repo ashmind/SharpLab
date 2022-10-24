@@ -34,16 +34,10 @@ namespace SharpLab.Tests.Decompilation {
         [InlineData("JitAsm/Generic.Nested.AttributeOnNested.cs")]
         [InlineData("JitAsm/Generic.Nested.AttributeOnBoth.cs")]
         [InlineData("JitAsm/Vectors.Avx2.cs")]
-        [InlineData("JitAsm/Math.FusedMultiplyAdd.Fma.cs2asm")]
+        [InlineData("JitAsm/Math.FusedMultiplyAdd.cs")]
         [InlineData("JitAsm/DllImport.cs")] // https://github.com/ashmind/SharpLab/issues/666
         [InlineData("JitAsm/MethodImpl.InternalCall.cs")] // https://github.com/ashmind/SharpLab/issues/752
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string codeFilePath) {
-            // https://github.com/ashmind/SharpLab/issues/514
-            if (codeFilePath.Contains(".Fma.") && !Fma.IsSupported)
-                codeFilePath = codeFilePath.Replace(".Fma.", ".NoFma.");
-            if (codeFilePath.Contains(".Avx2.") && !Avx2.IsSupported)
-                codeFilePath = codeFilePath.Replace(".Avx2.", ".NoAvx2.");
-
             var code = await TestCode.FromFileAsync(codeFilePath);
             var driver = await TestDriverFactory.FromCodeAsync(code);
 
