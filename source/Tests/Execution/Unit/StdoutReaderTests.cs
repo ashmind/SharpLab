@@ -36,7 +36,7 @@ namespace SharpLab.Tests.Execution.Unit {
             );
                         
             Assert.Equal(expectedOutput, Encoding.UTF8.GetString(result.Output.Span));
-            Assert.True(result.IsOutputReadSuccess);
+            Assert.True(result.IsSuccess);
         }
 
         private class Utf8SegmentedAsyncStream : Stream {
