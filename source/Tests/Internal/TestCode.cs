@@ -21,34 +21,38 @@ namespace SharpLab.Tests.Internal {
             { "output", TargetNames.Run },
         };
 
+        private static readonly IReadOnlyDictionary<string, (string start, string end)> CommentMarkers = new Dictionary<string, (string start, string end)>(StringComparer.OrdinalIgnoreCase) {
+            { LanguageNames.CSharp, ("/*", "*/") },
+            { LanguageNames.FSharp, ("(*", "*)") },
+            { LanguageNames.IL, ("/*", "*/") },
+        };
+
+        private static readonly bool ShouldUpdateOnAssert = Environment.GetEnvironmentVariable("SHARPLAB_TEST_UPDATE_SNAPSHOTS") == "true";
+
         public string Original { get; }
         public string SourceLanguageName { get; }
         public string TargetName { get; }
 
         private readonly string _expected;
+        private readonly string? _snapshotFilePath;
 
-        public TestCode(string original, string expected, string sourceLanguageName, string targetName) {
+        public TestCode(string original, string expected, string sourceLanguageName, string targetName, string? snapshotFilePath = null) {
             Original = original;
             SourceLanguageName = sourceLanguageName;
             TargetName = targetName;
             _expected = expected;
+            _snapshotFilePath = snapshotFilePath;
         }
 
         public static Task<string> FromCodeOnlyFileAsync(string relativePath, [CallerFilePath] string callerFilePath = "") {
-            var testBasePath = Path.GetDirectoryName(callerFilePath)!;
-            var fullPath = Path.Combine(AppContext.BaseDirectory, testBasePath, "TestCode", relativePath);
-
-            return File.ReadAllTextAsync(fullPath);
+            return File.ReadAllTextAsync(GetFullPath(relativePath, callerFilePath));
         }
 
         public static async Task<TestCode> FromFileAsync(string relativePath, [CallerFilePath] string callerFilePath = "") {
-            var content = await FromCodeOnlyFileAsync(relativePath, callerFilePath);
+            var fullPath = GetFullPath(relativePath, callerFilePath);
+            var content = await File.ReadAllTextAsync(fullPath);
             var extension = Path.GetExtension(relativePath);
 
-            return FromContent(content, extension);
-        }
-
-        private static TestCode FromContent(string content, string extension) {
             if (extension.Contains("2"))
                 return FromContentFormatV1(content, extension);
 
@@ -62,7 +66,7 @@ namespace SharpLab.Tests.Internal {
                 @"^\s+|\s*\*[/)]\s*$", ""
             );
 
-            return new TestCode(code, expected, from, to);
+            return new TestCode(code, expected, from, to, fullPath);
         }
 
         private static TestCode FromContentFormatV1(string content, string extension) {
@@ -73,12 +77,23 @@ namespace SharpLab.Tests.Internal {
             var fromTo = extension.TrimStart('.').Split('2').Select(x => LanguageAndTargetMap[x]).ToList();
 
             return new TestCode(code, expected, fromTo[0], fromTo[1]);
+        }
+
+        private static string GetFullPath(string relativePath, string callerFilePath) {
+            var testBasePath = Path.GetDirectoryName(callerFilePath)!;
+            return Path.Combine(AppContext.BaseDirectory, testBasePath, "TestCode", relativePath);
 
         }
 
-        public void AssertIsExpected(string? result, ITestOutputHelper output) {
+        public async Task AssertIsExpectedAsync(string? result, ITestOutputHelper output) {
             var cleanResult = RemoveNonDeterminism(result?.Trim());
             output.WriteLine(cleanResult ?? "<null>");
+
+            if (_snapshotFilePath is {} path && cleanResult is {} actual && ShouldUpdateOnAssert) {
+                await UpdateFileAsync(path, actual);
+                return;
+            }
+
             Assert.Equal(NormalizeNewLines(_expected), NormalizeNewLines(cleanResult));
         }
 
@@ -112,6 +127,14 @@ namespace SharpLab.Tests.Internal {
 
         private string? NormalizeNewLines(string? value) {
             return value?.Replace("\r\n", "\n");
+        }
+
+        private async Task UpdateFileAsync(string path, string actual) {
+            var (commentStart, commentEnd) = CommentMarkers[SourceLanguageName];
+            var targetExtension = LanguageAndTargetMap.First(p => p.Value == TargetName).Key;
+
+            var updatedContent = $"{Original}\r\n\r\n{commentStart} {targetExtension}\r\n\r\n{actual}\r\n\r\n{commentEnd}";
+            await File.WriteAllTextAsync(path, updatedContent);
         }
     }
 }

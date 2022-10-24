@@ -57,9 +57,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Execution\TestCode\Flow\Values\Argument.Array.Generic.cs">
+    <None Update=".env">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
 
   <Target Name="CopyFrameworkXmlDocumentation" AfterTargets="ResolveReferences">

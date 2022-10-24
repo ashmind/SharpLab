@@ -3,7 +3,7 @@ public class Simple {
 
 /* il
 
-    .assembly _
+.assembly _
 {
     .custom instance void [System.Runtime]System.Runtime.CompilerServices.CompilationRelaxationsAttribute::.ctor(int32) = (
         01 00 08 00 00 00 00 00

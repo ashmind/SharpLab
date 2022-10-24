@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using MirrorSharp;
@@ -6,6 +7,7 @@ using MirrorSharp.Advanced;
 using MirrorSharp.Advanced.EarlyAccess;
 using MirrorSharp.Testing;
 using SharpLab.Server;
+using SharpLab.Server.Common;
 
 namespace SharpLab.Tests.Internal {
     public static class TestEnvironment {
@@ -29,6 +31,9 @@ namespace SharpLab.Tests.Internal {
             ConnectionSendViewer = Container.ResolveOptional<IConnectionSendViewer>(),
             ExceptionLogger = Container.ResolveOptional<IExceptionLogger>()
         };
+
+        [ModuleInitializer]
+        public static void Initialize() => DotEnv.Load();
 
         public static MirrorSharpTestDriver NewDriver() => MirrorSharpTestDriver.New(MirrorSharpOptions, MirrorSharpServices);
     }

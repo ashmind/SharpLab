@@ -19,14 +19,14 @@ namespace SharpLab.Tests.Decompilation {
         [Theory]
         [InlineData("JitAsm/Simple.cs2asm")]
         [InlineData("JitAsm/MultipleReturns.cs2asm")]
-        [InlineData("JitAsm/ArrayElement.cs2asm")]
-        [InlineData("JitAsm/AsyncRegression.cs2asm")]
+        [InlineData("JitAsm/ArrayElement.cs")]
+        [InlineData("JitAsm/AsyncRegression.cs")]
         [InlineData("JitAsm/ConsoleWrite.cs2asm")]
         [InlineData("JitAsm/JumpBack.cs2asm")] // https://github.com/ashmind/SharpLab/issues/229
         [InlineData("JitAsm/Delegate.cs2asm")]
         [InlineData("JitAsm/Nested.Simple.cs2asm")]
-        [InlineData("JitAsm/Generic.Open.Multiple.cs2asm")]
-        [InlineData("JitAsm/Generic.MethodWithAttribute.cs2asm")]
+        [InlineData("JitAsm/Generic.Open.Multiple.cs")]
+        [InlineData("JitAsm/Generic.MethodWithAttribute.cs")]
         [InlineData("JitAsm/Generic.ClassWithAttribute.cs")]
         // TODO: Diagnose later
         // [InlineData("JitAsm/Generic.MethodWithAttribute.fs2asm")]
@@ -52,7 +52,7 @@ namespace SharpLab.Tests.Decompilation {
 
             var decompiledText = result.ExtensionResult?.Trim();
             Assert.True(string.IsNullOrEmpty(errors), errors);
-            code.AssertIsExpected(decompiledText, _output);
+            await code.AssertIsExpectedAsync(decompiledText, _output);
         }
 
         [Theory]

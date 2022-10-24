@@ -27,7 +27,7 @@ namespace SharpLab.Tests.Decompilation {
 
             var json = result.ExtensionResult?.ToString();
 
-            code.AssertIsExpected(json, _output);
+            await code.AssertIsExpectedAsync(json, _output);
         }
     }
 }

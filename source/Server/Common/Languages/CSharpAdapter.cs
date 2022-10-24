@@ -79,7 +79,8 @@ namespace SharpLab.Server.Common.Languages {
                     // CS1591: Missing XML comment for publicly visible type or member
                     { "CS1591", ReportDiagnostic.Suppress }
                 },
-                allowUnsafe: true
+                allowUnsafe: true,
+                nullableContextOptions: NullableContextOptions.Enable
             );
             options.CSharp.MetadataReferences = _references;
 

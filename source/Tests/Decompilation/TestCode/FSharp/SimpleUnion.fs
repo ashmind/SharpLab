@@ -6,6 +6,7 @@ type T =
     override x.Equals other = false
 
 (* asm
+
 ; Core CLR <IGNORE> on amd64
 
 _+T..ctor()
@@ -136,4 +137,5 @@ _+T.ToString()
 _+T.Equals(System.Object)
     L0000: xor eax, eax
     L0002: ret
+
 *)

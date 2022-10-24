@@ -25,7 +25,7 @@ namespace SharpLab.Tests.Execution {
 
             var output = await ContainerTestDriver.CompileAndExecuteAsync(code.Original);
 
-            code.AssertIsExpected(TestOutput.RemoveFlowJson(output), _testOutputHelper);
+            await code.AssertIsExpectedAsync(TestOutput.RemoveFlowJson(output), _testOutputHelper);
         }
     }
 }
