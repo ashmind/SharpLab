@@ -19,7 +19,7 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: 'true'
       - uses: actions/setup-dotnet@v1
@@ -93,7 +93,7 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: 'true'
       - uses: actions/setup-dotnet@v1
@@ -156,7 +156,7 @@ jobs:
       - deploy-netfx
     if: github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - run: 'git show ${{ github.sha }} --format="::set-output name=version_number::%cd" --date=format:%Y-%m-%d-%H%M --no-patch'
         id: version

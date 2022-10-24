@@ -10,7 +10,7 @@ jobs:
     name: 'Analyze and report exceptions'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
 
       - run: npm ci
         working-directory: ./.github/actions/create-issues-from-app-insights
