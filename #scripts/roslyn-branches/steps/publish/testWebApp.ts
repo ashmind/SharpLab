@@ -25,7 +25,7 @@ export const testWebApp = async ({ url }: { url: string }) => {
             }
 
             const { status } = (e as Partial<SafeFetchError>).response ?? {};
-            const temporary = status === 503 || status === 403;
+            const temporary = status === 503 || status === 403 || (e as { code?: string }).code === 'ECONNRESET';
             if (temporary) {
                 tryTemporary += 1;
             }

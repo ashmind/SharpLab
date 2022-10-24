@@ -94,8 +94,7 @@ export const publishToAzure = async ({
     console.log(`  Deploying web app...`);
     const result = await azureResourceClient.deployments.createOrUpdate(
         resourceGroupName,
-        webAppName.replace(/^sl-b-/, 'sharplab-branch-'),
-        {
+        webAppName.replace(/^sl-b-/, 'sharplab-branch-'), {
             properties: {
                 mode: 'Incremental',
                 template: armTemplate,
