@@ -12,8 +12,8 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: "Run azure/CLI@v1: az storage copy"
-        uses: azure/CLI@v1
+      - name: "Run azure/CLI@e43928ebbc386700c6bb2f42a97a8de31576cfd2: az storage copy"
+        uses: azure/CLI@e43928ebbc386700c6bb2f42a97a8de31576cfd2
         with:
           azcliversion: 2.30.0
           inlineScript: |

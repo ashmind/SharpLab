@@ -25,7 +25,7 @@ jobs:
 
       - run: git lfs checkout
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
           node-version: '16.14.2'
 
@@ -54,8 +54,8 @@ jobs:
           NODE_ENV: test
       - run: npm run test-storybook-ci
 
-      - name: "[Failure] Run actions/upload-artifact@v2 (diff output)"
-        uses: actions/upload-artifact@v2
+      - name: "[Failure] Run actions/upload-artifact@v3 (diff output)"
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: __diff_output__
@@ -68,37 +68,27 @@ jobs:
         env:
           SHARPLAB_TEST_UPDATE_SNAPSHOTS: 'true'
 
-      - name: "[Failure] Run actions/upload-artifact@v2 (updated snapshots)"
-        uses: actions/upload-artifact@v2
+      - name: "[Failure] Run actions/upload-artifact@v3 (updated snapshots)"
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: '__snapshots__ (updated)'
           path: source/WebApp/app/**/__snapshots__/**/*.*
           if-no-files-found: ignore
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: WebApp
           path: source/WebApp/WebApp.zip
           if-no-files-found: error
 
-      - uses: actions/create-release@v1
+      - uses: ncipollo/release-action@b072aaafe138c5ecf1c39f714a76bce6f0d0bc9c
         if: github.ref == 'refs/heads/main'
         id: create_release
         with:
-          tag_name: webapp-release-${{ steps.version.outputs.version_number }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: actions/upload-release-asset@v1
-        if: github.ref == 'refs/heads/main'
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./source/WebApp/WebApp.zip
-          asset_name: WebApp.zip
-          asset_content_type: application/zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: ./source/WebApp/WebApp.zip
+          artifactContentType: application/zip
+          tag: webapp-release-${{ steps.version.outputs.version_number }}
 
   deploy-to-edge:
     name: Deploy (Edge)
@@ -121,8 +111,8 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: "Run azure/CLI@v1: az storage blob upload-batch"
-        uses: azure/CLI@v1
+      - name: "Run azure/CLI@e43928ebbc386700c6bb2f42a97a8de31576cfd2: az storage blob upload-batch"
+        uses: azure/CLI@e43928ebbc386700c6bb2f42a97a8de31576cfd2
         with:
           azcliversion: 2.30.0
           inlineScript: |
