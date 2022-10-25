@@ -22,10 +22,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: 'true'
-      - uses: actions/setup-dotnet@v1
+      - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 6.0.x
-      - uses: microsoft/setup-msbuild@v1.0.2
+      - uses: microsoft/setup-msbuild@v1.1
 
       # https://github.com/actions/setup-dotnet/issues/155
       - run: dotnet nuget locals all --clear
@@ -45,11 +45,11 @@ jobs:
       - run: Compress-Archive -Path 'source/WebApp.Server/bin/Release/net6.0/publish/*' -DestinationPath 'WebApp.Server.zip'
         shell: pwsh
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: Server
           path: Server.zip
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: WebApp.Server
           path: WebApp.Server.zip
@@ -96,7 +96,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: 'true'
-      - uses: actions/setup-dotnet@v1
+      - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 6.0.x
 
@@ -109,7 +109,7 @@ jobs:
       - run: Compress-Archive -Path 'source/NetFramework/Server/bin/publish/*' -DestinationPath 'Server.NetFramework.zip'
         shell: pwsh
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: Server.NetFramework
           path: Server.NetFramework.zip
