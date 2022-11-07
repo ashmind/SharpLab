@@ -4,14 +4,15 @@
   "description": "Build process for Roslyn branches",
   "private": true,
   "scripts": {
-    "generate-run-matrix": "ts-node-script ./generateGitHubRunMatrix.ts",
-    "build-branch": "ts-node-script ./buildBranch.ts"
+    "generate-matrix": "ts-node-script ./flow/prepare/prepareBranchMatrices.ts",
+    "update-branch": "ts-node-script ./flow/update/updateBranch.ts",
+    "cleanup-branch": "ts-node-script ./flow/cleanup/cleanupBranch.ts"
   },
   "devDependencies": {
     "@types/adm-zip": "0.4.33",
     "@types/dateformat": "3.0.1",
     "@types/fs-extra": "9.0.0",
-    "@types/node": "14.0.1",
+    "@types/node": "16.18.0",
     "@types/yargs": "15.0.5",
     "@typescript-eslint/eslint-plugin": "2.33.0",
     "@typescript-eslint/parser": "2.33.0",
