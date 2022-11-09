@@ -18,6 +18,8 @@ jobs:
     # https://github.community/t/duplicate-checks-on-push-and-pull-request-simultaneous-event/18012/5
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: windows-latest
+    env:
+      NUGET_PACKAGES: ${{github.workspace}}/.nuget/packages
     steps:
       - uses: actions/checkout@v3
         with:
@@ -32,6 +34,14 @@ jobs:
 
       # https://github.com/dotnet/sdk/issues/13281
       - run: dotnet nuget add source https://ci.appveyor.com/nuget/vanara-prerelease
+
+      - uses: actions/cache@v3
+        with:
+          path: ${{github.workspace}}/.nuget/packages
+          key: nuget-container-host-${{hashFiles('**/*.csproj')}}
+          # can restore caches from server as well, but should not overwrite them
+          restore-keys: |
+            nuget-
 
       #- run: msbuild source/Native.Profiler/Native.Profiler.vcxproj /p:SolutionName=SharpLab /p:Configuration=Release /p:Platform=x64
       - run: dotnet build source/Tests --configuration Release

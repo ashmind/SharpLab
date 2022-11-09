@@ -93,10 +93,12 @@ namespace Fragile {
 
                 using var processInformation = CreateProcessInAppContainer(appContainerProfile.sid, streams!.Value);
                 process = Process.GetProcessById(unchecked((int)processInformation.dwProcessId));
+                // ensures we can get exit code later
+                _ = process.Handle;
 
                 jobObject = AssignProcessToJobObject(processInformation);
 
-                ((HRESULT)Kernel32.ResumeThread(processInformation.hThread)).ThrowIfFailed();                
+                ((HRESULT)Kernel32.ResumeThread(processInformation.hThread)).ThrowIfFailed();
 
                 return new ProcessContainer(
                     process,

@@ -35,7 +35,8 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ${{github.workspace}}/.nuget/packages
-          key: nuget-${{hashFiles('**/*.csproj')}}
+          key: nuget-server-${{hashFiles('**/*.csproj')}}
+          # can restore caches from container-host as well, but should not overwrite them
           restore-keys: |
             nuget-
 
