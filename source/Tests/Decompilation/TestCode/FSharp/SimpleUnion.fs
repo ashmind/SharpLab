@@ -7,7 +7,7 @@ type T =
 
 (* asm
 
-; Core CLR <IGNORE> on amd64
+; Core CLR <IGNORE> on x64
 
 _+T..ctor()
     L0000: ret
@@ -40,42 +40,41 @@ _+T.__DebugDisplay()
     L003b: mov [rdi+0x18], rdx
     L003f: mov rdx, rdi
     L0042: mov rcx, 0x<IGNORE>
-    L004c: call Microsoft.FSharp.Core.PrintfImpl+Cache`4[[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]].GetParser(Microsoft.FSharp.Core.PrintfFormat`4<System.__Canon,System.__Canon,System.__Canon,System.__Canon>)
-    L0051: mov rbx, rax
-    L0054: mov rbp, [rdi+0x10]
-    L0058: test rbp, rbp
-    L005b: jne short L0069
-    L005d: mov rcx, rbx
-    L0060: cmp [rcx], ecx
-    L0062: call Microsoft.FSharp.Core.PrintfImpl+FormatParser`4[[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]].GetCurriedStringPrinter()
-    L0067: jmp short L00a4
-    L0069: mov rcx, rbx
-    L006c: cmp [rcx], ecx
-    L006e: call Microsoft.FSharp.Core.PrintfImpl+FormatParser`4[[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]].GetStepsForCapturedFormat()
-    L0073: mov r14, rax
-    L0076: mov ecx, [rbx+0x28]
-    L0079: call Microsoft.FSharp.Core.PrintfImpl.StringPrintfEnv(Int32)
-    L007e: mov rcx, rax
-    L0081: mov r8, [rdi+0x18]
-    L0085: mov rdx, rbp
-    L0088: mov r9, r14
-    L008b: cmp [rcx], ecx
-    L008d: call Microsoft.FSharp.Core.PrintfImpl+PrintfEnv`3[[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]].RunSteps(System.Object[], System.Type[], Step[])
-    L0092: mov rdx, rax
-    L0095: mov rcx, 0x<IGNORE>
-    L009f: call Microsoft.FSharp.Core.LanguagePrimitives+IntrinsicFunctions.UnboxGeneric[[System.__Canon, System.Private.CoreLib]](System.Object)
-    L00a4: movsx rdx, byte ptr [rsi]
-    L00a8: mov rcx, rax
-    L00ab: mov rax, [rax]
-    L00ae: mov rax, [rax+0x40]
-    L00b2: mov rax, [rax+0x20]
-    L00b6: add rsp, 0x20
-    L00ba: pop rbx
-    L00bb: pop rbp
-    L00bc: pop rsi
-    L00bd: pop rdi
-    L00be: pop r14
-    L00c0: jmp rax
+    L004c: call qword ptr [0x<IGNORE>]
+    L0052: mov rbx, rax
+    L0055: mov rbp, [rdi+0x10]
+    L0059: test rbp, rbp
+    L005c: jne short L006b
+    L005e: mov rcx, rbx
+    L0061: cmp [rcx], ecx
+    L0063: call qword ptr [0x<IGNORE>]
+    L0069: jmp short L00aa
+    L006b: mov rcx, rbx
+    L006e: cmp [rcx], ecx
+    L0070: call qword ptr [0x<IGNORE>]
+    L0076: mov r14, rax
+    L0079: mov ecx, [rbx+0x28]
+    L007c: call qword ptr [0x<IGNORE>]
+    L0082: mov rcx, rax
+    L0085: mov r8, [rdi+0x18]
+    L0089: mov rdx, rbp
+    L008c: mov r9, r14
+    L008f: cmp [rcx], ecx
+    L0091: call qword ptr [0x<IGNORE>]
+    L0097: mov rdx, rax
+    L009a: mov rcx, 0x<IGNORE>
+    L00a4: call qword ptr [0x<IGNORE>]
+    L00aa: movsx rdx, byte ptr [rsi]
+    L00ae: mov rcx, rax
+    L00b1: mov rax, [rax]
+    L00b4: mov rax, [rax+0x40]
+    L00b8: add rsp, 0x20
+    L00bc: pop rbx
+    L00bd: pop rbp
+    L00be: pop rsi
+    L00bf: pop rdi
+    L00c0: pop r14
+    L00c2: jmp qword ptr [rax+0x20]
 
 _+T.ToString()
     L0000: push r14
@@ -97,42 +96,41 @@ _+T.ToString()
     L003b: mov [rdi+0x18], rdx
     L003f: mov rdx, rdi
     L0042: mov rcx, 0x<IGNORE>
-    L004c: call Microsoft.FSharp.Core.PrintfImpl+Cache`4[[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]].GetParser(Microsoft.FSharp.Core.PrintfFormat`4<System.__Canon,System.__Canon,System.__Canon,System.__Canon>)
-    L0051: mov rbx, rax
-    L0054: mov rbp, [rdi+0x10]
-    L0058: test rbp, rbp
-    L005b: jne short L0069
-    L005d: mov rcx, rbx
-    L0060: cmp [rcx], ecx
-    L0062: call Microsoft.FSharp.Core.PrintfImpl+FormatParser`4[[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]].GetCurriedStringPrinter()
-    L0067: jmp short L00a4
-    L0069: mov rcx, rbx
-    L006c: cmp [rcx], ecx
-    L006e: call Microsoft.FSharp.Core.PrintfImpl+FormatParser`4[[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]].GetStepsForCapturedFormat()
-    L0073: mov r14, rax
-    L0076: mov ecx, [rbx+0x28]
-    L0079: call Microsoft.FSharp.Core.PrintfImpl.StringPrintfEnv(Int32)
-    L007e: mov rcx, rax
-    L0081: mov r8, [rdi+0x18]
-    L0085: mov rdx, rbp
-    L0088: mov r9, r14
-    L008b: cmp [rcx], ecx
-    L008d: call Microsoft.FSharp.Core.PrintfImpl+PrintfEnv`3[[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]].RunSteps(System.Object[], System.Type[], Step[])
-    L0092: mov rdx, rax
-    L0095: mov rcx, 0x<IGNORE>
-    L009f: call Microsoft.FSharp.Core.LanguagePrimitives+IntrinsicFunctions.UnboxGeneric[[System.__Canon, System.Private.CoreLib]](System.Object)
-    L00a4: movsx rdx, byte ptr [rsi]
-    L00a8: mov rcx, rax
-    L00ab: mov rax, [rax]
-    L00ae: mov rax, [rax+0x40]
-    L00b2: mov rax, [rax+0x20]
-    L00b6: add rsp, 0x20
-    L00ba: pop rbx
-    L00bb: pop rbp
-    L00bc: pop rsi
-    L00bd: pop rdi
-    L00be: pop r14
-    L00c0: jmp rax
+    L004c: call qword ptr [0x<IGNORE>]
+    L0052: mov rbx, rax
+    L0055: mov rbp, [rdi+0x10]
+    L0059: test rbp, rbp
+    L005c: jne short L006b
+    L005e: mov rcx, rbx
+    L0061: cmp [rcx], ecx
+    L0063: call qword ptr [0x<IGNORE>]
+    L0069: jmp short L00aa
+    L006b: mov rcx, rbx
+    L006e: cmp [rcx], ecx
+    L0070: call qword ptr [0x<IGNORE>]
+    L0076: mov r14, rax
+    L0079: mov ecx, [rbx+0x28]
+    L007c: call qword ptr [0x<IGNORE>]
+    L0082: mov rcx, rax
+    L0085: mov r8, [rdi+0x18]
+    L0089: mov rdx, rbp
+    L008c: mov r9, r14
+    L008f: cmp [rcx], ecx
+    L0091: call qword ptr [0x<IGNORE>]
+    L0097: mov rdx, rax
+    L009a: mov rcx, 0x<IGNORE>
+    L00a4: call qword ptr [0x<IGNORE>]
+    L00aa: movsx rdx, byte ptr [rsi]
+    L00ae: mov rcx, rax
+    L00b1: mov rax, [rax]
+    L00b4: mov rax, [rax+0x40]
+    L00b8: add rsp, 0x20
+    L00bc: pop rbx
+    L00bd: pop rbp
+    L00be: pop rsi
+    L00bf: pop rdi
+    L00c0: pop r14
+    L00c2: jmp qword ptr [rax+0x20]
 
 _+T.Equals(System.Object)
     L0000: xor eax, eax

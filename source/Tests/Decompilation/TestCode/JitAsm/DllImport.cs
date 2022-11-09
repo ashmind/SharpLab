@@ -8,7 +8,7 @@ public static class NativeMethods
 
 /* asm
 
-; Core CLR <IGNORE> on amd64
+; Core CLR <IGNORE> on x64
 
 NativeMethods.GetLastError()
     ; Cannot produce JIT assembly for a P/Invoke method.

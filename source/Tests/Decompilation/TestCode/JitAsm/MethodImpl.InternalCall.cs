@@ -7,7 +7,7 @@ public static class C {
 
 /* asm
 
-; Core CLR <IGNORE> on amd64
+; Core CLR <IGNORE> on x64
 
 C.M()
     ; Cannot produce JIT assembly for an internal call method.

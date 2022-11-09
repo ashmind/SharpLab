@@ -17,14 +17,14 @@ namespace SharpLab.Tests.Decompilation {
         }
 
         [Theory]
-        [InlineData("JitAsm/Simple.cs2asm")]
-        [InlineData("JitAsm/MultipleReturns.cs2asm")]
+        [InlineData("JitAsm/Simple.cs")]
+        [InlineData("JitAsm/MultipleReturns.cs")]
         [InlineData("JitAsm/ArrayElement.cs")]
         [InlineData("JitAsm/AsyncRegression.cs")]
-        [InlineData("JitAsm/ConsoleWrite.cs2asm")]
-        [InlineData("JitAsm/JumpBack.cs2asm")] // https://github.com/ashmind/SharpLab/issues/229
-        [InlineData("JitAsm/Delegate.cs2asm")]
-        [InlineData("JitAsm/Nested.Simple.cs2asm")]
+        [InlineData("JitAsm/ConsoleWrite.cs")]
+        [InlineData("JitAsm/JumpBack.cs")] // https://github.com/ashmind/SharpLab/issues/229
+        [InlineData("JitAsm/Delegate.cs")]
+        [InlineData("JitAsm/Nested.Simple.cs")]
         [InlineData("JitAsm/Generic.Open.Multiple.cs")]
         [InlineData("JitAsm/Generic.MethodWithAttribute.cs")]
         [InlineData("JitAsm/Generic.ClassWithAttribute.cs")]

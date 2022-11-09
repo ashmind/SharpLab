@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using AshMind.Extensions;
 using Iced.Intel;
 using JetBrains.Annotations;
-using Microsoft.Azure.Documents.SystemFunctions;
 using Microsoft.Diagnostics.Runtime;
 using Microsoft.Diagnostics.Runtime.DacInterface;
 using MirrorSharp.Advanced;
@@ -84,7 +84,7 @@ namespace SharpLab.Server.Decompilation {
         private void WriteJitInfo(ClrInfo clr, TextWriter writer) {
             writer.WriteLine(
                 "; {0:G} CLR {1} on {2}",
-                clr.Flavor, clr.Version, clr.DacInfo.TargetArchitecture.ToString("G").ToLowerInvariant()
+                clr.Flavor, clr.Version, clr.DataTarget.DataReader.Architecture.ToString("G").ToLowerInvariant()
             );
         }
 
@@ -211,7 +211,7 @@ namespace SharpLab.Server.Decompilation {
             var methodLength = clrMethodData.Value.MethodSize;
 
             var reader = new MemoryCodeReader(new IntPtr(unchecked((long)methodAddress)), methodLength);
-            var decoder = Decoder.Create(MapArchitectureToBitness(context.Runtime.DataTarget!.DataReader.Architecture), reader);
+            var decoder = Decoder.Create(MapArchitectureToBitness(context.Runtime.DataTarget.DataReader.Architecture), reader);
 
             var instructions = new InstructionList();
             decoder.IP = methodAddress;
@@ -336,7 +336,7 @@ namespace SharpLab.Server.Decompilation {
 
         private int MapArchitectureToBitness(Architecture architecture) => architecture switch
         {
-            Architecture.Amd64 => 64,
+            Architecture.X64 => 64,
             Architecture.X86 => 32,
             _ => throw new Exception($"Unsupported architecture {architecture}.")
         };

@@ -12,7 +12,7 @@ public class C
 
 /* asm
 
-; Core CLR <IGNORE> on amd64
+; Core CLR <IGNORE> on x64
 
 C..ctor()
     L0000: ret
@@ -20,8 +20,8 @@ C..ctor()
 C.M(System.Runtime.Intrinsics.Vector256`1<Int32>)
     L0000: vzeroupper
     L0003: vmovupd ymm0, [rdx]
-    L0007: vextracti128 xmm0, ymm0, 1
-    L000d: vmovdqu ymm1, [rdx]
+    L0007: vmovdqu ymm1, [rdx]
+    L000b: vextracti128 xmm0, ymm0, 1
     L0011: vpaddd xmm0, xmm1, xmm0
     L0015: vmovd eax, xmm0
     L0019: vzeroupper

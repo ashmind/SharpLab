@@ -6,7 +6,7 @@ static class C {
 
 /* asm
 
-; Core CLR <IGNORE> on amd64
+; Core CLR <IGNORE> on x64
 
 Microsoft.CodeAnalysis.EmbeddedAttribute..ctor()
     L0000: ret
