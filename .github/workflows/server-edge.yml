@@ -14,7 +14,7 @@ on:
 
 jobs:
   build-core:
-    name: 'Build (.NET 6)'
+    name: 'Build (.NET 7)'
     # https://github.community/t/duplicate-checks-on-push-and-pull-request-simultaneous-event/18012/5
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: windows-latest
@@ -26,7 +26,7 @@ jobs:
           submodules: 'true'
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 7.0.x
       - uses: microsoft/setup-msbuild@v1.1
 
       # https://github.com/actions/setup-dotnet/issues/155
@@ -49,9 +49,9 @@ jobs:
       - run: dotnet test source/Tests --no-build --configuration Release
       - run: dotnet publish source/Server --no-build --configuration Release
       - run: dotnet publish source/WebApp.Server --no-build --configuration Release /p:ErrorOnDuplicatePublishOutputFiles=false
-      - run: Compress-Archive -Path 'source/Server/bin/Release/net6.0/publish/*' -DestinationPath 'Server.zip'
+      - run: Compress-Archive -Path 'source/Server/bin/Release/net7.0/publish/*' -DestinationPath 'Server.zip'
         shell: pwsh
-      - run: Compress-Archive -Path 'source/WebApp.Server/bin/Release/net6.0/publish/*' -DestinationPath 'WebApp.Server.zip'
+      - run: Compress-Archive -Path 'source/WebApp.Server/bin/Release/net7.0/publish/*' -DestinationPath 'WebApp.Server.zip'
         shell: pwsh
 
       - uses: actions/upload-artifact@v3
@@ -107,7 +107,7 @@ jobs:
           submodules: 'true'
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 7.0.x
 
       # https://github.com/actions/setup-dotnet/issues/155
       - run: dotnet nuget locals all --clear

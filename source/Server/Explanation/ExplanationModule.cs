@@ -22,9 +22,14 @@ namespace SharpLab.Server.Explanation {
 
             builder.Register(c => {
                 var configuration = c.Resolve<IConfiguration>();
+
                 return new ExternalSyntaxExplanationSettings(
-                    configuration.GetValue<Uri>("App:Explanations:Urls:CSharp"),
-                    configuration.GetValue<TimeSpan>("App:Explanations:UpdatePeriod")
+                    // TODO: Theoretically this needs a helper, but I am looking to deprecate explanations
+                    // feature anyways.
+                    configuration.GetValue<Uri>("App:Explanations:Urls:CSharp")
+                        ?? throw new ("Setting 'App:Explanations:Urls:CSharp' was not found"),
+                    configuration.GetValue<TimeSpan?>("App:Explanations:UpdatePeriod")
+                        ?? throw new("Setting 'App:Explanations:UpdatePeriod' was not found")
                 );
             }).SingleInstance();
         }

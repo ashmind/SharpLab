@@ -26,7 +26,7 @@ namespace SharpLab.Tests.Internal {
                    .SingleInstance();
 
             var configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string> {
+                .AddInMemoryCollection(new Dictionary<string, string?> {
                     { "App:Explanations:Urls:CSharp", "http://testdata/language-syntax-explanations/csharp.yml" },
                     { "App:Explanations:UpdatePeriod", "01:00:00" }
                 })

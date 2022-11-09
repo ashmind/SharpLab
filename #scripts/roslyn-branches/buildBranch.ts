@@ -98,7 +98,7 @@ async function updateRoslynBuildPackages(currentBuildId: string|null) {
     if (roslynArtifacts.value.length === 0)
         throw `No Roslyn Azure build artifacts found.`;
 
-    const roslynPackages = roslynArtifacts.value.find(        
+    const roslynPackages = roslynArtifacts.value.find(
         a => a.name === 'Packages - PreRelease'
           || a.name === 'Bootstrap Packages - PreRelease'
     );
@@ -241,7 +241,7 @@ async function buildSharpLab(roslynPackagesRoot: string) {
     });
 
     return {
-        publishRoot: `${branchSourceRoot}/Server/bin/Release/net6.0/publish`
+        publishRoot: `${branchSourceRoot}/Server/bin/Release/net7.0/publish`
     };
 }
 
