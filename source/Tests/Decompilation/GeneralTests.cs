@@ -103,15 +103,11 @@ namespace SharpLab.Tests.Decompilation {
         }
 
         [Theory]
-        [InlineData(LanguageNames.CSharp, "class X<A,B,C,D,E> { class Y: X<Y,Y,Y,Y,Y> {Y.Y.Y.Y.Y.Y.Y.Y.Y y; } }")] // https://codegolf.stackexchange.com/a/69200
-        [InlineData(LanguageNames.VisualBasic, @"
-            Class X (Of A, B, C, D, E)
-                Class Y Inherits X (Of Y, Y, Y, Y, Y)
-                    Private y As Y.Y.Y.Y.Y.Y.Y.Y.Y
-                End Class
-            End Class
-        ")]
-        public async Task SlowUpdate_ReturnsRoslynGuardException_ForCompilerBombs(string languageName, string code) {
+        [InlineData(LanguageNames.CSharp, "CompilerBomb.Generic.1.cs")]
+        [InlineData(LanguageNames.CSharp, "CompilerBomb.Generic.2.cs")]
+        [InlineData(LanguageNames.VisualBasic, "CompilerBomb.Generic.vb")]
+        public async Task SlowUpdate_ReturnsRoslynGuardException_ForCompilerBombs(string languageName, string codeFilePath) {
+            var code = await TestCode.FromCodeOnlyFileAsync(codeFilePath);
             var driver = TestEnvironment.NewDriver().SetText(code);
             await driver.SendSetOptionsAsync(languageName, TargetNames.IL);
 

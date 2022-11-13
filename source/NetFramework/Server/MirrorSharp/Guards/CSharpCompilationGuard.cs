@@ -16,12 +16,24 @@ namespace SharpLab.Server.MirrorSharp.Guards {
                         throw new RoslynCompilationGuardException("Reference exceeded type nesting limit: " + qualified);
                 }
 
-                foreach (var generic in root.DescendantNodes().OfType<TypeParameterListSyntax>()) {
+                foreach (var generic in root.DescendantNodes(static n => n is not TypeParameterListSyntax).OfType<TypeParameterListSyntax>()) {
                     if (generic.Parameters.Count > 4)
                         throw new RoslynCompilationGuardException("Generic parameter list exceeded size limit: " + generic);
                 }
 
+                foreach (var generic in root.DescendantNodes(static n => n is not TypeArgumentListSyntax).OfType<TypeArgumentListSyntax>()) {
+                    if (GetTotalGenericArgumentCount(generic) > 4)
+                        throw new RoslynCompilationGuardException("Generic argument list exceeded size limit: " + generic);
+                }
             }
+        }
+
+        private int GetTotalGenericArgumentCount(TypeArgumentListSyntax generic) {
+            var count = 0;
+            foreach (var subgeneric in generic.DescendantNodesAndSelf().OfType<TypeArgumentListSyntax>()) {
+                count += subgeneric.Arguments.Count;
+            }
+            return count;
         }
     }
 }
