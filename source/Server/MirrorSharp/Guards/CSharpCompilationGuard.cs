@@ -22,7 +22,7 @@ namespace SharpLab.Server.MirrorSharp.Guards {
                 }
 
                 foreach (var generic in root.DescendantNodes(static n => n is not TypeArgumentListSyntax).OfType<TypeArgumentListSyntax>()) {
-                    if (GetTotalGenericArgumentCount(generic) > 4)
+                    if (GetTotalGenericArgumentCount(generic) > 5)
                         throw new RoslynCompilationGuardException("Generic argument list exceeded size limit: " + generic);
                 }
             }
