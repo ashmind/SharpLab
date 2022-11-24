@@ -114,6 +114,23 @@ namespace SharpLab.Tests.Decompilation {
             await Assert.ThrowsAsync<RoslynCompilationGuardException>(() => driver.SendSlowUpdateAsync<string>());
         }
 
+        [Fact] // https://github.com/ashmind/SharpLab/issues/1232
+        public async Task SlowUpdate_ReturnsRoslynGuardException_ForGenericPointerStackOverflow() {
+            // TODO: Can be removed once https://github.com/dotnet/roslyn/issues/65594 is resolved
+            var code = @"
+                using System.ComponentModel;
+                class C<T>
+                {
+                    [DefaultValue(default(C<delegate*<void>[]>.E))]
+                    enum E { }
+                }
+            ";
+            var driver = TestEnvironment.NewDriver().SetText(code);
+            await driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.IL);
+
+            await Assert.ThrowsAsync<RoslynCompilationGuardException>(() => driver.SendSlowUpdateAsync<string>());
+        }
+
         [Theory]
         [InlineData("x[][][][][]")]
         [InlineData("x [,,,] [,] [,,,]   [,,,] [,]")]
