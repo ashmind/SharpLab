@@ -1,18 +1,26 @@
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
 
+$MatricesPath = './!matrices.txt'
+
 Push-Location "$PSScriptRoot/roslyn-branches"
 try {
-    $matrix = $null
-    npm run generate-run-matrix | % {
-        Write-Host $_
-        if ($_ -match '^::set-output name=matrix::(.+)') {
-            $matrix = ConvertFrom-Json $matches[1]    
-            Write-Host ""
-            Write-Host "[matrix captured by roslyn-branches.ps1]" -ForegroundColor DarkCyan
-        }
+    if (Test-Path $MatricesPath) {
+        Remove-Item $MatricesPath
     }
+    $env:GITHUB_OUTPUT=$MatricesPath
 
+    npm run generate-matrix
+    $matrices = Get-Content $MatricesPath -Raw
+    $matrices -match 'build=(.+)' | Out-Null; $build = (ConvertFrom-Json $matches[1]).include
+    $matrices -match 'cleanup=(.+)' | Out-Null; $cleanup = (ConvertFrom-Json $matches[1]).include
+
+    $build
+    $cleanup
+
+    # TODO: new processing
+
+    <#
     $matrix.include | % {
         $row = $_
         try {
@@ -25,7 +33,7 @@ try {
             }
             Write-Error "Branch $($row.branch) failed: $_"
         }
-    }
+    }#>
 }
 finally {
     Pop-Location

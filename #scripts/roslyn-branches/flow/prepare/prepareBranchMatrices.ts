@@ -1,22 +1,20 @@
 import '../../env';
-import fs from 'fs/promises';
 import path from 'path';
+import fs from 'fs-extra';
 import chalk from 'chalk';
-import execa from 'execa';
+import git from 'simple-git';
 import { nodeSafeTopLevelAwait } from '../../shared/nodeSafeTopLevelAwait';
 import type { Branch } from '../../shared/types';
 import { buildRootPath, rootPath } from '../../shared/paths';
 import { getBranchesJson } from '../../shared/branchesJson';
 import { getCleanupAction } from './cleanup/getCleanupAction';
 
+const ROSLYN_REPO_URL = 'https://github.com/dotnet/roslyn.git';
 const roslynSourcePath = path.join(buildRootPath, 'sources/dotnet.git');
 
 const isCommitMergedToMain = async (commitHash: string) => {
-    const { stdout } = await execa.command(`git --no-pager branch --contains ${commitHash} --format=%(refname:short)`, {
-        cwd: roslynSourcePath
-    });
-
-    return /^main$/m.test(stdout);
+    return (await git(roslynSourcePath).branch([`--contains`, commitHash])).all
+        .some(b => /^main$/.test(b));
 };
 
 const run = async () => {
@@ -30,14 +28,12 @@ const run = async () => {
         include: string;
     };
 
+    console.log(chalk.white('Cloning Roslyn repository...'));
+    await git().clone(ROSLYN_REPO_URL, roslynSourcePath, ['--bare', '--filter=blob:none']);
+
     console.log(chalk.white('Getting git branches...'));
-    console.log(`  git --no-pager branch --format=%(refname:short) (at ${roslynSourcePath})`);
-    const { stdout: branchesString } = await execa.command('git --no-pager branch --format=%(refname:short)', {
-        cwd: roslynSourcePath
-    });
-    const branches = branchesString
-        .split(/[\r\n]+/g)
-        .filter(b => new RegExp(config.include).test(b));
+    const branches = (await git(roslynSourcePath).branchLocal())
+        .all.filter(b => new RegExp(config.include).test(b));
     console.log('');
 
     console.log(chalk.white('Getting branches.json...'));
@@ -54,7 +50,7 @@ const run = async () => {
             ?? await isCommitMergedToMain(branch.commits[0].hash);
         const action = getCleanupAction(branch, merged);
 
-        console.log(`  ${branch.id}`);
+        console.log(`  ${branch.id} => ${action}`);
         return {
             branch: branch.name,
             action
