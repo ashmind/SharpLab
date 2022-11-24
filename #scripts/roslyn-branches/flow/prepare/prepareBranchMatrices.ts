@@ -55,7 +55,8 @@ const run = async () => {
         console.log(`  ${branch.id} => ${action}`);
         return {
             branch: branch.name,
-            action
+            action,
+            optional: (action === 'fail-not-merged')
         };
     }))).filter(a => a.action !== 'wait');
 

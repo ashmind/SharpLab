@@ -66,6 +66,7 @@ jobs:
     name: ${{matrix.branch}} (cleanup)
     needs: generate-matrix
     runs-on: windows-latest
+    continue-on-error: ${{matrix.optional}}
     strategy:
       matrix: ${{fromJson(needs.generate-matrix.outputs.cleanup)}}
       fail-fast: false
