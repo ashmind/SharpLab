@@ -1,0 +1,1 @@
+export const useAzure = process.env.SL_DEPLOY_MODE === 'Azure';

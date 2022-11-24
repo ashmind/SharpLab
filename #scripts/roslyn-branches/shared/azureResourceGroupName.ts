@@ -1,0 +1,1 @@
+export const AZURE_RESOURCE_GROUP_NAME = 'SharpLab';
