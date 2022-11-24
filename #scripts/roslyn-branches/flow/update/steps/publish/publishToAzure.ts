@@ -10,7 +10,7 @@ import { safeFetch } from '../../../../shared/safeFetch';
 import { getAzureCredentialWithSubscriptionId } from '../../../../shared/getAzureCredential';
 import { AZURE_RESOURCE_GROUP_NAME } from '../../../../shared/azureResourceGroupName';
 
-const armTemplatesBasePath = path.join(__dirname, '../../arm/');
+const armTemplatesBasePath = path.join(__dirname, '../../../../arm/');
 
 const deployZip = async ({ webAppName, zipPath, userName, password }: {
     webAppName: string;
