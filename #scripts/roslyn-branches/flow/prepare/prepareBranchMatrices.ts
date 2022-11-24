@@ -12,6 +12,8 @@ import { getCleanupAction } from './cleanup/getCleanupAction';
 const ROSLYN_REPO_URL = 'https://github.com/dotnet/roslyn.git';
 const roslynSourcePath = path.join(buildRootPath, 'sources/dotnet.git');
 
+const branchRunFilter = new RegExp(process.env.SL_BRANCH_FILTER ?? '');
+
 const isCommitMergedToMain = async (commitHash: string) => {
     return (await git(roslynSourcePath).branch([`--contains`, commitHash])).all
         .some(b => /^main$/.test(b));
@@ -32,19 +34,20 @@ const run = async () => {
     await git().clone(ROSLYN_REPO_URL, roslynSourcePath, ['--bare', '--filter=blob:none']);
 
     console.log(chalk.white('Getting git branches...'));
-    const branches = (await git(roslynSourcePath).branchLocal())
-        .all.filter(b => new RegExp(config.include).test(b));
+    const gitBranches = (await git(roslynSourcePath).branchLocal())
+        .all
+        .filter(b => new RegExp(config.include).test(b));
     console.log('');
 
     console.log(chalk.white('Getting branches.json...'));
     const branchesJson = await getBranchesJson();
     const branchesNotInGit = branchesJson
         .filter((j): j is (Branch & { kind: 'roslyn' }) => j.kind === 'roslyn')
-        .filter(j => !branches.some(b => b === j.name));
+        .filter(j => !gitBranches.some(b => b === j.name));
     console.log('');
 
     console.log(chalk.white('Preparing cleanup info...'));
-    const cleanup = (await Promise.all(branchesNotInGit.map(async branch => {
+    const cleanup = (await Promise.all(branchesNotInGit.filter(b => branchRunFilter.test(b.name)).map(async branch => {
         const merged = branch.merged
             ?? await isCommitMergedToMain(branch.commits[0].hash);
         const action = getCleanupAction(branch, merged);
@@ -58,7 +61,7 @@ const run = async () => {
 
     console.log(chalk.white('Writing matrices...'));
     const buildMatrix = {
-        include: branches.map(branch => ({
+        include: gitBranches.filter(b => branchRunFilter.test(b)).map(branch => ({
             branch,
             optional: (branch !== 'main')
         }))
