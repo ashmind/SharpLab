@@ -32,7 +32,7 @@ export const getAzureCredentialWithSubscriptionId = async () => {
         for await (const subscription of subscriptions) {
             if (subscriptionId)
                 throw new Error(`Expected single Azure subscription, but got multiple.`);
-            subscriptionId = subscription.id;
+            ({ subscriptionId } = subscription);
         }
         if (!subscriptionId)
             throw new Error(`Expected single Azure subscription, but got none.`);
