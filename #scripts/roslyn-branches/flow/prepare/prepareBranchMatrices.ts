@@ -37,7 +37,6 @@ const run = async () => {
     console.log('');
 
     console.log(chalk.white('Getting branches.json...'));
-    console.log('  GET https://slbs.azureedge.net/public/branches.json');
     const branchesJson = await getBranchesJson();
     const branchesNotInGit = branchesJson
         .filter((j): j is (Branch & { kind: 'roslyn' }) => j.kind === 'roslyn')

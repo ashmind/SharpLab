@@ -2,35 +2,43 @@ import path from 'path';
 import fs from 'fs-extra';
 import getStream from 'get-stream';
 import { BlobServiceClient } from '@azure/storage-blob';
+import type { BlobDownloadResponse } from '@azure/storage-blob/typings/latest/src/generated/src/models';
 import { getAzureCredential } from './getAzureCredential';
 import { useAzure } from './useAzure';
 import type { Branch } from './types';
 import { buildRootPath } from './paths';
-import { safeFetch } from './safeFetch';
 
 const branchesJsonFileName = 'branches.json';
 
-export const getBranchesJson = async () => await (await safeFetch(
-    'https://slbs.azureedge.net/public/branches.json'
-)).json() as ReadonlyArray<Branch>;
+const getBranchesJsonBlobClient = () => {
+    const blobServiceUrl = 'https://slbs.blob.core.windows.net';
+    const credential = getAzureCredential();
+    const blobServiceClient = new BlobServiceClient(blobServiceUrl, credential);
+    return blobServiceClient.getContainerClient('public')
+        .getBlockBlobClient(branchesJsonFileName);
+};
+
+const parseBranchesFromDownload = async (download: BlobDownloadResponse) => {
+    return JSON.parse(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        await getStream(download.readableStreamBody!)
+    ) as Array<Branch>;
+};
+
+export const getBranchesJson = async (): Promise<ReadonlyArray<Branch>> => {
+    const blobClient = getBranchesJsonBlobClient();
+    const download = await blobClient.download();
+
+    return parseBranchesFromDownload(download);
+};
 
 async function updateInAzureBlob(branch: Branch, branchesJsonArtifactPath: string) {
-    const blobServiceUrl = 'https://slbs.blob.core.windows.net';
-    const credential = await getAzureCredential();
-    const blobServiceClient = new BlobServiceClient(blobServiceUrl, credential/*
-        {
-            async getToken() { return credential.getToken(blobServiceUrl); }
-        }*/
-    );
-    const blobClient = blobServiceClient.getContainerClient('public').getBlockBlobClient('branches.json');
+    const blobClient = getBranchesJsonBlobClient();
 
     console.log(`Downloading current ${branchesJsonFileName} from Azure...`);
     const download = await blobClient.download();
     console.log(`  ETag: ${download.etag ?? '<none>'}`);
-    const branches = JSON.parse(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        await getStream(download.readableStreamBody!)
-    ) as Array<Branch>;
+    const branches = await parseBranchesFromDownload(download);
 
     const branchIndex = branches
         .map((branch, index) => ({ branch, index }))
