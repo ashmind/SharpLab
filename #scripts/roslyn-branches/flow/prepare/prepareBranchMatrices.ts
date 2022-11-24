@@ -65,7 +65,7 @@ const run = async () => {
         }))
     };
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    await fs.appendFile(process.env.GITHUB_OUTPUT!, `build=${JSON.stringify(buildMatrix)}\n`);
+    await fs.appendFile(process.env.GITHUB_OUTPUT!, `update=${JSON.stringify(buildMatrix)}\n`);
 
     const cleanupMatrix = { include: cleanup };
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

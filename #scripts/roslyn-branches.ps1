@@ -12,10 +12,10 @@ try {
 
     npm run generate-matrix
     $matrices = Get-Content $MatricesPath -Raw
-    $matrices -match 'build=(.+)' | Out-Null; $build = (ConvertFrom-Json $matches[1]).include
+    $matrices -match 'update=(.+)' | Out-Null; $update = (ConvertFrom-Json $matches[1]).include
     $matrices -match 'cleanup=(.+)' | Out-Null; $cleanup = (ConvertFrom-Json $matches[1]).include
 
-    $build
+    $update
     $cleanup
 
     # TODO: new processing

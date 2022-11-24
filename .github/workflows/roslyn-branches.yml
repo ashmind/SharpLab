@@ -14,7 +14,8 @@ jobs:
     name: Generate Run Matrix
     runs-on: windows-latest
     outputs:
-      matrix: ${{steps.generate-matrix.outputs.matrix}}
+      update: ${{steps.generate-matrix.outputs.update}}
+      cleanup: ${{steps.generate-matrix.outputs.cleanup}}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -29,7 +30,7 @@ jobs:
     needs: generate-matrix
     runs-on: windows-latest
     strategy:
-      matrix: ${{fromJson(needs.generate-matrix.outputs.matrix)}}
+      matrix: ${{fromJson(needs.generate-matrix.outputs.update)}}
       fail-fast: false
     continue-on-error: ${{matrix.optional}}
     steps:
