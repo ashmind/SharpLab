@@ -2,5 +2,8 @@ import { branchesPromise } from './internal/branchesPromise';
 
 export const resolveBranchAsync = async (branchId: string) => {
     const branches = await branchesPromise;
-    return branches.find(b => b.id === branchId) ?? null;
+    let branch = branches.find(b => b.id === branchId);
+    if (branch?.merged)
+        branch = branches.find(b => b.id === 'main');
+    return branch ?? null;
 };

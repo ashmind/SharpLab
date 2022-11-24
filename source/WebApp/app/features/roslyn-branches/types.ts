@@ -16,6 +16,7 @@ export interface Branch {
         readonly url: string;
     };
 
+    readonly merged?: boolean;
     readonly commits?: ReadonlyArray<Readonly<BranchCommit>>;
 
     readonly sharplab?: {
