@@ -48,6 +48,9 @@ export const groupAndSortBranches = (branches: ReadonlyArray<Branch>) => {
 
     const groups = {} as { [key: string]: PartiallyMutable<BranchGroup, 'branches'>|undefined };
     for (const branch of branches) {
+        if (branch.merged)
+            continue;
+
         if (!branch.group) {
             result.ungrouped.push(branch);
             continue;
