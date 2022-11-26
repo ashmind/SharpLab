@@ -6,6 +6,7 @@
     @dark-text-color: #d0d0d0;
     @dark-highlight-color: #3f3f46;
     @dark-border-color: #3f3f46;
+    @dark-error-color: #f2626a;
     @dark-cm-hint-active-color: #3875b2;
     @dark-cm-elevated-background-color: #333333;
     @dark-message-positive-color: #43a64a;
@@ -114,12 +115,12 @@
     }
 
     .errors header {
-        border-top: 1px solid @error-color;
-        color: @error-color;
+        border-top: 1px solid @dark-error-color;
+        color: @dark-error-color;
     }
 
     &.root-status-error .code header, &.root-status-error .result header {
-        border-bottom: 1px solid @error-color;
+        border-bottom: 1px solid @dark-error-color;
     }
 
     input {
@@ -150,8 +151,8 @@
 
     .flow-line-end-exception {
         background-color: transparent;
-        border: 1px solid @error-color;
-        color: @error-color;
+        border: 1px solid @dark-error-color;
+        color: @dark-error-color;
     }
 
     .flow-visit {
@@ -166,13 +167,17 @@
     }
 
     .inspection-exception header {
-        color: @error-color;
-        border-bottom: 1px solid @error-color;
+        color: @dark-error-color;
+        border-bottom: 1px solid @dark-error-color;
     }
 
     .inspection-warning header {
         color: @warning-color;
         border-bottom: 1px solid @warning-color;
+    }
+
+    .inspection-exception-notice {
+        border-color: @dark-error-color;
     }
 
     ::-webkit-scrollbar {

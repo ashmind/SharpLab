@@ -40,6 +40,17 @@ export const MultilineException = () => <SimpleOutput inspection={{
 }} />;
 export const MultilineExceptionDarkMode = () => <DarkModeRoot><MultilineException /></DarkModeRoot>;
 
+export const ExceptionNoticeBadImageException = () => <SimpleOutput inspection={{
+    type: 'inspection:simple',
+    title: 'Exception',
+    value: `System.BadImageFormatException: Bad IL format.
+   at Program.<<Main>$>g__Test|0_0[T]()
+   at Program.<Main>$(String[] args)
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodInvoker.Invoke(Object obj, IntPtr* args, BindingFlags invokeAttr)`
+}} />;
+export const ExceptionNoticeBadImageExceptionDarkMode = () => <DarkModeRoot><ExceptionNoticeBadImageException /></DarkModeRoot>;
+
 export const Warning = () => <SimpleOutput inspection={{
     type: 'inspection:simple',
     title: 'Warning',
