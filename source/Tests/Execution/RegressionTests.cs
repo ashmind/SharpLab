@@ -29,6 +29,7 @@ namespace SharpLab.Tests.Execution {
         [InlineData("UsingDeclarationsWith2Declarations.cs")]
         [InlineData("UsingDeclarationsWith3Declarations.cs")]
         [InlineData("NoILRewriting.cs")]
+        [InlineData("ConstrainedGeneric.cs")]
         public async Task Execution_DoesNotFail(string codeFileName, string languageName = LanguageNames.CSharp) {
             // Arrange
             var code = await TestCode.FromCodeOnlyFileAsync("Regression/" + codeFileName);

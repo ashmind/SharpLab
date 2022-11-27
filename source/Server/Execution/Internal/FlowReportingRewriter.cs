@@ -218,7 +218,7 @@ namespace SharpLab.Server.Execution.Internal {
                     if (isMethodStart)
                         TryInsertReportMethodArguments(il, instruction, sequencePoint, method, flow, session, ref i);
 
-                    il.InsertBeforeAndRetargetAll(instruction, il.CreateLdcI4Best(sequencePoint.StartLine));
+                    SafeInsertBeforeAndRetargetAll(il, instruction, il.CreateLdcI4Best(sequencePoint.StartLine));
                     il.InsertBefore(instruction, il.CreateCall(flow.ReportLineStart));
                     i += 2;
 
@@ -226,7 +226,7 @@ namespace SharpLab.Server.Execution.Internal {
                 }
 
                 if (ShouldReportAsJump(instruction, method)) {
-                    il.InsertBeforeAndRetargetAll(instruction, il.CreateCall(flow.ReportJump));
+                    SafeInsertBeforeAndRetargetAll(il, instruction, il.CreateCall(flow.ReportJump));
                     LogILIfEnabled(il, ILLogStep.AfterReportJump, i.ToString());
                     i += 1;
                 }
@@ -380,7 +380,7 @@ namespace SharpLab.Server.Execution.Internal {
             if (report == null)
                 return;
 
-            il.InsertBeforeAndRetargetAll(instruction, getValue);
+            SafeInsertBeforeAndRetargetAll(il, instruction, getValue);
             il.InsertBefore(instruction, valueName != null ? il.Create(OpCodes.Ldstr, valueName) : il.Create(OpCodes.Ldnull));
             il.InsertBefore(instruction, il.CreateLdcI4Best(line));
             il.InsertBefore(instruction, il.CreateCall(report));
@@ -473,7 +473,7 @@ namespace SharpLab.Server.Execution.Internal {
         }
 
         private void RewriteCatch(Instruction start, ILProcessor il, FlowMethods flow) {
-            il.InsertBeforeAndRetargetAll(start, il.Create(OpCodes.Dup));
+            SafeInsertBeforeAndRetargetAll(il, start, il.Create(OpCodes.Dup));
             il.InsertBefore(start, il.CreateCall(flow.ReportException));
         }
 
@@ -486,7 +486,7 @@ namespace SharpLab.Server.Execution.Internal {
             var reportCall = il.CreateCall(flow.ReportException);
             var catchHandler = il.Create(OpCodes.Pop);
 
-            il.InsertBeforeAndRetargetAll(outerTryLeave, innerTryLeave);
+            SafeInsertBeforeAndRetargetAll(il, outerTryLeave, innerTryLeave);
             il.InsertBefore(outerTryLeave, reportCall);
             il.InsertBefore(outerTryLeave, il.Create(OpCodes.Ldc_I4_0));
             il.InsertBefore(outerTryLeave, il.Create(OpCodes.Endfilter));
@@ -509,6 +509,33 @@ namespace SharpLab.Server.Execution.Internal {
 
         private bool HasLine([NotNullWhen(true)] SequencePoint? point) {
             return point != null && !point.IsHidden;
+        }
+
+        private static void SafeInsertBeforeAndRetargetAll(ILProcessor il, Instruction target, Instruction instruction) {
+            var actualTarget = target;
+            while (actualTarget.Previous?.OpCode.OpCodeType == OpCodeType.Prefix) {
+                actualTarget = actualTarget.Previous;
+            }
+
+            il.InsertBefore(actualTarget, instruction);
+            RetargetAll(il, actualTarget, instruction);
+        }
+
+        private static void RetargetAll(ILProcessor il, Instruction from, Instruction to) {
+            foreach (var other in il.Body.Instructions) {
+                if (other == to)
+                    continue;
+
+                if (other.Operand == from)
+                    other.Operand = to;
+            }
+
+            if (!il.Body.HasExceptionHandlers)
+                return;
+
+            foreach (var handler in il.Body.ExceptionHandlers) {
+                handler.RetargetAll(from, to);
+            }
         }
 
         private void InsertAfter(ILProcessor il, ref Instruction target, ref int index, Instruction instruction) {
