@@ -21,6 +21,7 @@ using System.Security.Permissions;
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 [assembly: AssemblyVersion("0.0.0.0")]
 [module: UnverifiableCode]
+
 public class C
 {
     public void M()

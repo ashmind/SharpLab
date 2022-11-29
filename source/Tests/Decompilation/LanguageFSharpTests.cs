@@ -14,8 +14,8 @@ namespace SharpLab.Tests.Decompilation {
 
         [Theory]
         [InlineData("FSharp/EmptyType.fs")]
-        [InlineData("FSharp/SimpleMethod.fs2cs")] // https://github.com/ashmind/SharpLab/issues/119
-        [InlineData("FSharp/NotNull.fs2cs")]
+        [InlineData("FSharp/SimpleMethod.fs")] // https://github.com/ashmind/SharpLab/issues/119
+        [InlineData("FSharp/NotNull.fs")]
         [InlineData("FSharp/SimpleUnion.fs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode_ForFSharp(string codeFilePath) {
             var code = await TestCode.FromFileAsync(codeFilePath);

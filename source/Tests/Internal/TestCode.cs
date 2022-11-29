@@ -23,6 +23,7 @@ namespace SharpLab.Tests.Internal {
 
         private static readonly IReadOnlyDictionary<string, (string start, string end)> CommentMarkers = new Dictionary<string, (string start, string end)>(StringComparer.OrdinalIgnoreCase) {
             { LanguageNames.CSharp, ("/*", "*/") },
+            { LanguageNames.VisualBasic, ("/*", "*/") }, // TODO: Sort out
             { LanguageNames.FSharp, ("(*", "*)") },
             { LanguageNames.IL, ("/*", "*/") },
         };
@@ -56,7 +57,7 @@ namespace SharpLab.Tests.Internal {
             if (extension.Contains("2"))
                 return FromContentFormatV1(content, extension);
 
-            var split = Regex.Matches(content, @"[/(]\* (?<to>\S+)").Last();
+            var split = Regex.Matches(content, @"^[/(]\* (?<to>\S+)", RegexOptions.Multiline).Last();
             var from = LanguageAndTargetMap[extension.TrimStart('.')];
             var to = LanguageAndTargetMap[split.Groups["to"].Value];
 

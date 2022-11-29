@@ -21,6 +21,7 @@ using Microsoft.CodeAnalysis;
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 [assembly: AssemblyVersion("0.0.0.0")]
 [module: UnverifiableCode]
+
 public class Point
 {
     [CompilerGenerated]
@@ -47,6 +48,7 @@ public class Point
         return num.GetValueOrDefault();
     }
 }
+
 namespace Microsoft.CodeAnalysis
 {
     [CompilerGenerated]
@@ -55,6 +57,7 @@ namespace Microsoft.CodeAnalysis
     {
     }
 }
+
 namespace System.Runtime.CompilerServices
 {
     [CompilerGenerated]
@@ -76,6 +79,7 @@ namespace System.Runtime.CompilerServices
             NullableFlags = P_0;
         }
     }
+
     [CompilerGenerated]
     [Microsoft.CodeAnalysis.Embedded]
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Method | AttributeTargets.Interface | AttributeTargets.Delegate, AllowMultiple = false, Inherited = false)]

@@ -54,7 +54,8 @@ namespace SharpLab.Server.Decompilation {
 
             SortTree(syntaxTree);
 
-            new CSharpOutputVisitor(codeWriter, FormattingOptions).VisitSyntaxTree(syntaxTree);
+            new ExtendedCSharpOutputVisitor(codeWriter, FormattingOptions)
+                .VisitSyntaxTree(syntaxTree);
         }
 
         private void SortTree(SyntaxTree root) {
@@ -99,7 +100,31 @@ namespace SharpLab.Server.Decompilation {
         {
             var options = FormattingOptionsFactory.CreateAllman();
             options.IndentationString = "    ";
+            options.MinimumBlankLinesBetweenTypes = 1;
             return options;
+        }
+
+        private class ExtendedCSharpOutputVisitor : CSharpOutputVisitor {
+            public ExtendedCSharpOutputVisitor(TextWriter textWriter, CSharpFormattingOptions formattingPolicy) : base(textWriter, formattingPolicy) {
+            }
+
+            public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration) {
+                base.VisitTypeDeclaration(typeDeclaration);
+                if (typeDeclaration.NextSibling is NamespaceDeclaration or TypeDeclaration)
+                    NewLine();
+            }
+
+            public override void VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration) {
+                base.VisitNamespaceDeclaration(namespaceDeclaration);
+                if (namespaceDeclaration.NextSibling is NamespaceDeclaration or TypeDeclaration)
+                    NewLine();
+            }
+
+            public override void VisitAttributeSection(AttributeSection attributeSection) {
+                base.VisitAttributeSection(attributeSection);
+                if (attributeSection is { AttributeTarget: "assembly" or "module", NextSibling: not AttributeSection { AttributeTarget: "assembly" or "module" } })
+                    NewLine();
+            }
         }
     }
 }
