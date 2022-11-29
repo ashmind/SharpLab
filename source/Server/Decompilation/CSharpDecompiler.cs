@@ -1,7 +1,9 @@
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.CSharp.OutputVisitor;
+using ICSharpCode.Decompiler.CSharp.Syntax;
 using ICSharpCode.Decompiler.Metadata;
 using MirrorSharp.Advanced;
 using SharpLab.Server.Common;
@@ -42,15 +44,53 @@ namespace SharpLab.Server.Decompilation {
             Argument.NotNull(nameof(codeWriter), codeWriter);
             Argument.NotNull(nameof(session), session);
 
-            using (var assemblyFile = new PEFile("", streams.AssemblyStream))
-            using (var debugInfo = streams.SymbolStream != null ? _debugInfoFactory(streams.SymbolStream) : null) {
-                var decompiler = new ICSharpCode.Decompiler.CSharp.CSharpDecompiler(assemblyFile, _assemblyResolver, DecompilerSettings) {
-                    DebugInfoProvider = debugInfo
-                };
-                var syntaxTree = decompiler.DecompileWholeModuleAsSingleFile();
+            using var assemblyFile = new PEFile("", streams.AssemblyStream);
+            using var debugInfo = streams.SymbolStream != null ? _debugInfoFactory(streams.SymbolStream) : null;
 
-                new CSharpOutputVisitor(codeWriter, FormattingOptions).VisitSyntaxTree(syntaxTree);
+            var decompiler = new ICSharpCode.Decompiler.CSharp.CSharpDecompiler(assemblyFile, _assemblyResolver, DecompilerSettings) {
+                DebugInfoProvider = debugInfo
+            };
+            var syntaxTree = decompiler.DecompileWholeModuleAsSingleFile();
+
+            SortTree(syntaxTree);
+
+            new CSharpOutputVisitor(codeWriter, FormattingOptions).VisitSyntaxTree(syntaxTree);
+        }
+
+        private void SortTree(SyntaxTree root) {
+            var firstMovedNode = (AstNode?)null;
+            foreach (var node in root.Children) {
+                if (node == firstMovedNode)
+                    break;
+
+                if (node is NamespaceDeclaration @namespace && IsCompilerGenerated(@namespace)) {
+                    node.Remove();
+                    root.AddChildWithExistingRole(node);
+                    firstMovedNode ??= node;
+                }
             }
+        }
+
+        private bool IsCompilerGenerated(NamespaceDeclaration @namespace) {
+            foreach (var member in @namespace.Members) {
+                if (member is not TypeDeclaration type)
+                    return false;
+
+                if (!IsCompilerGenerated(type))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool IsCompilerGenerated(TypeDeclaration type) {
+            foreach (var section in type.Attributes) {
+                foreach (var attribute in section.Attributes) {
+                    if (attribute.Type is SimpleType { Identifier: nameof(CompilerGeneratedAttribute) or "CompilerGenerated" })
+                        return true;
+                }
+            }
+            return false;
         }
 
         public string LanguageName => TargetNames.CSharp;

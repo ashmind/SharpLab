@@ -21,6 +21,32 @@ using Microsoft.CodeAnalysis;
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 [assembly: AssemblyVersion("0.0.0.0")]
 [module: UnverifiableCode]
+public class Point
+{
+    [CompilerGenerated]
+    private int <X>k__BackingField;
+
+    public int X
+    {
+        [CompilerGenerated]
+        get
+        {
+            return <X>k__BackingField;
+        }
+        [CompilerGenerated]
+        set
+        {
+            <X>k__BackingField = value;
+        }
+    }
+
+    [System.Runtime.CompilerServices.NullableContext(1)]
+    public int M(Point p)
+    {
+        Nullable<int> num = ((p != null) ? new Nullable<int>(p.X) : null);
+        return num.GetValueOrDefault();
+    }
+}
 namespace Microsoft.CodeAnalysis
 {
     [CompilerGenerated]
@@ -61,32 +87,6 @@ namespace System.Runtime.CompilerServices
         {
             Flag = P_0;
         }
-    }
-}
-public class Point
-{
-    [CompilerGenerated]
-    private int <X>k__BackingField;
-
-    public int X
-    {
-        [CompilerGenerated]
-        get
-        {
-            return <X>k__BackingField;
-        }
-        [CompilerGenerated]
-        set
-        {
-            <X>k__BackingField = value;
-        }
-    }
-
-    [System.Runtime.CompilerServices.NullableContext(1)]
-    public int M(Point p)
-    {
-        Nullable<int> num = ((p != null) ? new Nullable<int>(p.X) : null);
-        return num.GetValueOrDefault();
     }
 }
 

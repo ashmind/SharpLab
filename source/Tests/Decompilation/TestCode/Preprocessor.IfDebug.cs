@@ -25,6 +25,14 @@ using Microsoft.CodeAnalysis;
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 [assembly: AssemblyVersion("0.0.0.0")]
 [module: UnverifiableCode]
+public class C
+{
+    [System.Runtime.CompilerServices.NullableContext(1)]
+    public string M()
+    {
+        return "Debug";
+    }
+}
 namespace Microsoft.CodeAnalysis
 {
     [CompilerGenerated]
@@ -65,14 +73,6 @@ namespace System.Runtime.CompilerServices
         {
             Flag = P_0;
         }
-    }
-}
-public class C
-{
-    [System.Runtime.CompilerServices.NullableContext(1)]
-    public string M()
-    {
-        return "Debug";
     }
 }
 

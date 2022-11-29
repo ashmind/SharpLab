@@ -26,6 +26,26 @@ using Microsoft.CodeAnalysis;
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 [assembly: AssemblyVersion("0.0.0.0")]
 [module: UnverifiableCode]
+public class C
+{
+    [System.Runtime.CompilerServices.NullableContext(1)]
+    public void M(object o)
+    {
+        bool lockTaken = false;
+        try
+        {
+            Monitor.Enter(o, ref lockTaken);
+            Console.WriteLine();
+        }
+        finally
+        {
+            if (lockTaken)
+            {
+                Monitor.Exit(o);
+            }
+        }
+    }
+}
 namespace Microsoft.CodeAnalysis
 {
     [CompilerGenerated]
@@ -65,26 +85,6 @@ namespace System.Runtime.CompilerServices
         public NullableContextAttribute(byte P_0)
         {
             Flag = P_0;
-        }
-    }
-}
-public class C
-{
-    [System.Runtime.CompilerServices.NullableContext(1)]
-    public void M(object o)
-    {
-        bool lockTaken = false;
-        try
-        {
-            Monitor.Enter(o, ref lockTaken);
-            Console.WriteLine();
-        }
-        finally
-        {
-            if (lockTaken)
-            {
-                Monitor.Exit(o);
-            }
         }
     }
 }
