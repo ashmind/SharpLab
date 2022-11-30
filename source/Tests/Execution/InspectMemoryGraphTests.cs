@@ -14,12 +14,12 @@ namespace SharpLab.Tests.Execution {
         }
 
         [Theory]
-        [InlineData("Int32.cs2output")]
-        [InlineData("String.cs2output")]
+        [InlineData("Int32.cs")]
+        [InlineData("String.cs")]
         [InlineData("Arrays.cs")]
-        [InlineData("Variables.cs2output")]
-        [InlineData("DateTime.cs2output")] // https://github.com/ashmind/SharpLab/issues/379
-        [InlineData("Null.cs2output")]
+        [InlineData("Variables.cs")]
+        [InlineData("DateTime.cs")] // https://github.com/ashmind/SharpLab/issues/379
+        [InlineData("Null.cs")]
         public async Task InspectMemoryGraph_ProducesExpectedOutput(string resourceName) {
             var code = await TestCode.FromFileAsync("Inspect/MemoryGraph/" + resourceName);
 

@@ -54,9 +54,6 @@ namespace SharpLab.Tests.Internal {
             var content = await File.ReadAllTextAsync(fullPath);
             var extension = Path.GetExtension(relativePath);
 
-            if (extension.Contains("2"))
-                return FromContentFormatV1(content, extension);
-
             var split = Regex.Matches(content, @"^[/(]\* (?<to>\S+)", RegexOptions.Multiline).Last();
             var from = LanguageAndTargetMap[extension.TrimStart('.')];
             var to = LanguageAndTargetMap[split.Groups["to"].Value];
@@ -68,16 +65,6 @@ namespace SharpLab.Tests.Internal {
             );
 
             return new TestCode(code, expected, from, to, fullPath);
-        }
-
-        private static TestCode FromContentFormatV1(string content, string extension) {
-            var parts = content.Split("#=>");
-            var code = parts[0].Trim();
-            var expected = parts[1].Trim();
-            // ReSharper disable once PossibleNullReferenceException
-            var fromTo = extension.TrimStart('.').Split('2').Select(x => LanguageAndTargetMap[x]).ToList();
-
-            return new TestCode(code, expected, fromTo[0], fromTo[1]);
         }
 
         private static string GetFullPath(string relativePath, string callerFilePath) {

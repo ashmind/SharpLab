@@ -14,11 +14,11 @@ namespace SharpLab.Tests.Execution {
         }
 
         [Theory]
-        [InlineData("Simple.cs2output")]
-        [InlineData("Struct.cs2output")]
-        [InlineData("Struct.Nested.cs2output")]
-        [InlineData("Int32.cs2output")]
-        //[InlineData("Null.cs2output"/*, true*/)]
+        [InlineData("Simple.cs")]
+        [InlineData("Struct.cs")]
+        [InlineData("Struct.Nested.cs")]
+        [InlineData("Int32.cs")]
+        //[InlineData("Null.cs"/*, true*/)]
         public async Task InspectHeap_ProducesExpectedOutput(string resourceName/*, bool allowExceptions = false*/) {
             var code = await TestCode.FromFileAsync("Inspect/Heap/" + resourceName);
 
