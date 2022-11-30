@@ -133,6 +133,8 @@ namespace SharpLab.Tests.Decompilation {
 
         [Theory]
         [InlineData("x[][][][][]")]
+        [InlineData(";[][][][][] x[][][][][]")]
+        [InlineData(";[x[][][][][]]")]
         [InlineData("x [,,,] [,] [,,,]   [,,,] [,]")]
         [InlineData("x [] [] []   [] []")]
         [InlineData("x[1][2][3][4][5]")]
@@ -152,7 +154,20 @@ namespace SharpLab.Tests.Decompilation {
 
         [Theory]
         [InlineData("Append(Append(Append(Append(hash, (byte)value), value>>8), value>>16), value>>24)")]
+        [InlineData("; [Attribute1] [Attribute2] [Attribute3] [Attribute4] [Attribute5]")]
+        [InlineData("} [Attribute1] [Attribute2] [Attribute3] [Attribute4] [Attribute5]")]
         public async Task SetOptions_ProcessesTokenEdgeCases_WithoutTokenValidationErrors(string code) {
+            var driver = TestEnvironment.NewDriver().SetText(code);
+
+            var exception = await Record.ExceptionAsync(() => driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.IL));
+
+            Assert.Null(exception);
+        }
+
+        [Theory]
+        [InlineData("Attributes.TopLevelSequence.cs")]
+        public async Task SetOptions_ProcessesComplexTokenEdgeCases_WithoutTokenValidationErrors(string codeFilePath) {
+            var code = await TestCode.FromCodeOnlyFileAsync(codeFilePath);
             var driver = TestEnvironment.NewDriver().SetText(code);
 
             var exception = await Record.ExceptionAsync(() => driver.SendSetOptionsAsync(LanguageNames.CSharp, TargetNames.IL));

@@ -31,14 +31,26 @@ namespace SharpLab.Server.MirrorSharp.Guards {
             private int _squareBracketsNestingLevel;
             private readonly int[] _squareBracketsAdjacentPairCounts = new int[BracketsNestingLimit + 1];
 
+            private bool _allowNextTopLevelAdjacentSquareBrackets = true;
+
             public override Encoding Encoding => Encoding.UTF8;
 
             public override void Write(char @char) {
+                if (_squareBracketsNestingLevel == 0) {
+                    if (@char == ';' || @char == '}') {
+                        _allowNextTopLevelAdjacentSquareBrackets = true;
+                        return;
+                    }
+                    else if (!char.IsWhiteSpace(@char) && @char != '[') {
+                        _allowNextTopLevelAdjacentSquareBrackets = false;
+                    }
+                }
+
                 ValidateBrackets(@char, '(', ')', ref _roundBracketsNestingLevel, _roundBracketsAdjacentPairCounts);
-                ValidateBrackets(@char, '[', ']', ref _squareBracketsNestingLevel, _squareBracketsAdjacentPairCounts);
+                ValidateBrackets(@char, '[', ']', ref _squareBracketsNestingLevel, _squareBracketsAdjacentPairCounts, _allowNextTopLevelAdjacentSquareBrackets);
             }
 
-            private void ValidateBrackets(char @char, char openBracket, char closeBracket, ref int nestingLevel, int[] adjacentPairCounts) {
+            private void ValidateBrackets(char @char, char openBracket, char closeBracket, ref int nestingLevel, int[] adjacentPairCounts, bool allowTopLevelAdjacentPairs = false) {
                 if (@char == openBracket) {
                     nestingLevel += 1;
                     if (nestingLevel > BracketsNestingLimit)
@@ -48,12 +60,17 @@ namespace SharpLab.Server.MirrorSharp.Guards {
 
                 if (nestingLevel > 0 && @char == closeBracket) {
                     nestingLevel -= 1;
+                    if (nestingLevel == 0 && allowTopLevelAdjacentPairs)
+                        return;
                     adjacentPairCounts[nestingLevel] += 1;
                     if (adjacentPairCounts[nestingLevel] > BracketsAdjacentPairLimit)
                         throw new RoslynSourceTextGuardException($"Exceeded limit on consecutive {openBracket}{closeBracket}.");
                     Array.Fill(adjacentPairCounts, 0, nestingLevel + 1, adjacentPairCounts.Length - (nestingLevel + 1));
                     return;
                 }
+
+                if (nestingLevel == 0 && allowTopLevelAdjacentPairs)
+                    return;
 
                 if (!char.IsWhiteSpace(@char)) {
                     adjacentPairCounts[nestingLevel] = 0;
