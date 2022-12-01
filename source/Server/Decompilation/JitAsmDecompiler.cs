@@ -53,11 +53,7 @@ namespace SharpLab.Server.Decompilation {
             WriteJitInfo(runtime.ClrInfo, codeWriter);
             WriteProfilerState(codeWriter);
 
-            foreach (var type in assembly.DefinedTypes) {
-                if (type.IsNested)
-                    continue; // it's easier to handle nested generic types recursively, so we suppress all nested for consistency
-                DisassembleAndWriteMembers(context, type);
-            }
+            DisassembleAndWriteTypesInOrder(context, assembly);
         }
 
         private void EnsureNoJitSideEffects(Assembly assembly) {
@@ -93,6 +89,36 @@ namespace SharpLab.Server.Decompilation {
                 return;
 
             writer.WriteLine("; Note: Running under profiler, which affects JIT assembly in heap allocations.");
+        }
+
+        private void DisassembleAndWriteTypesInOrder(JitWriteContext context, Assembly assembly) {
+            var lastNonUserTypeIndex = -1;
+            var types = assembly.GetTypes();
+            for (var i = 0; i < types.Length; i++) {
+                var type = types[i];
+
+                if (type.IsNested)
+                    continue; // it's easier to handle nested generic types recursively, so we suppress all nested for consistency
+
+                if (IsNonUserCode(type)) {
+                    lastNonUserTypeIndex = i;
+                    continue;
+                }
+
+                DisassembleAndWriteMembers(context, type.GetTypeInfo());
+            }
+
+            if (lastNonUserTypeIndex >= 0) {
+                for (var i = 0; i <= lastNonUserTypeIndex; i++) {
+                    DisassembleAndWriteMembers(context, types[i].GetTypeInfo());
+                }
+            }
+        }
+
+        private bool IsNonUserCode(Type type) {
+            // Note: the logic cannot be reused, but should match C# and IL
+            return type.Namespace != null
+                && type.IsDefined<CompilerGeneratedAttribute>();
         }
 
         private void DisassembleAndWriteMembers(JitWriteContext context, TypeInfo type, ImmutableArray<Type>? genericArgumentTypes = null) {

@@ -56,7 +56,7 @@ namespace SharpLab.Server.Decompilation {
             var nonUserTypeHandlesCount = -1;
 
             try {
-                // user code (first)
+                // user code (first)                
                 foreach (var typeHandle in metadata.TypeDefinitions) {
                     var type = metadata.GetTypeDefinition(typeHandle);
                     if (!type.GetDeclaringType().IsNil)
@@ -91,8 +91,9 @@ namespace SharpLab.Server.Decompilation {
         }
 
         private bool IsNonUserCode(MetadataReader metadata, TypeDefinition type) {
-            return type.IsCompilerGenerated(metadata)
-                && !type.NamespaceDefinition.IsNil;
+            // Note: the logic cannot be reused, but should match C# and Jit ASM
+            return !type.NamespaceDefinition.IsNil
+                && type.IsCompilerGenerated(metadata);
         }
 
         public string LanguageName => TargetNames.IL;

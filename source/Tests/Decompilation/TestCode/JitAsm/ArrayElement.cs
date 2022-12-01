@@ -8,6 +8,16 @@ static class C {
 
 ; Core CLR <IGNORE> on x64
 
+C.M(Int32[])
+    L0000: sub rsp, 0x28
+    L0004: cmp dword ptr [rcx+8], 0
+    L0008: jbe short L0012
+    L000a: mov eax, [rcx+0x10]
+    L000d: add rsp, 0x28
+    L0011: ret
+    L0012: call 0x<IGNORE>
+    L0017: int3
+
 Microsoft.CodeAnalysis.EmbeddedAttribute..ctor()
     L0000: ret
 
@@ -39,15 +49,5 @@ System.Runtime.CompilerServices.NullableAttribute..ctor(Byte[])
 System.Runtime.CompilerServices.NullableContextAttribute..ctor(Byte)
     L0000: mov [rcx+8], dl
     L0003: ret
-
-C.M(Int32[])
-    L0000: sub rsp, 0x28
-    L0004: cmp dword ptr [rcx+8], 0
-    L0008: jbe short L0012
-    L000a: mov eax, [rcx+0x10]
-    L000d: add rsp, 0x28
-    L0011: ret
-    L0012: call 0x<IGNORE>
-    L0017: int3
 
 */

@@ -20,6 +20,26 @@ static class C {
 
 ; Core CLR <IGNORE> on x64
 
+C`1.M()
+    ; Open generics cannot be JIT-compiled.
+    ; However you can use attribute SharpLab.Runtime.JitGeneric to specify argument types.
+    ; Example: [JitGeneric(typeof(int)), JitGeneric(typeof(string))] void M<T>() { ... }.
+
+C`1+N.M()
+    ; Open generics cannot be JIT-compiled.
+    ; However you can use attribute SharpLab.Runtime.JitGeneric to specify argument types.
+    ; Example: [JitGeneric(typeof(int)), JitGeneric(typeof(string))] void M<T>() { ... }.
+
+C.M()
+    ; Open generics cannot be JIT-compiled.
+    ; However you can use attribute SharpLab.Runtime.JitGeneric to specify argument types.
+    ; Example: [JitGeneric(typeof(int)), JitGeneric(typeof(string))] void M<T>() { ... }.
+
+C+N`1.M()
+    ; Open generics cannot be JIT-compiled.
+    ; However you can use attribute SharpLab.Runtime.JitGeneric to specify argument types.
+    ; Example: [JitGeneric(typeof(int)), JitGeneric(typeof(string))] void M<T>() { ... }.
+
 Microsoft.CodeAnalysis.EmbeddedAttribute..ctor()
     L0000: ret
 
@@ -51,25 +71,5 @@ System.Runtime.CompilerServices.NullableAttribute..ctor(Byte[])
 System.Runtime.CompilerServices.NullableContextAttribute..ctor(Byte)
     L0000: mov [rcx+8], dl
     L0003: ret
-
-C`1.M()
-    ; Open generics cannot be JIT-compiled.
-    ; However you can use attribute SharpLab.Runtime.JitGeneric to specify argument types.
-    ; Example: [JitGeneric(typeof(int)), JitGeneric(typeof(string))] void M<T>() { ... }.
-
-C`1+N.M()
-    ; Open generics cannot be JIT-compiled.
-    ; However you can use attribute SharpLab.Runtime.JitGeneric to specify argument types.
-    ; Example: [JitGeneric(typeof(int)), JitGeneric(typeof(string))] void M<T>() { ... }.
-
-C.M()
-    ; Open generics cannot be JIT-compiled.
-    ; However you can use attribute SharpLab.Runtime.JitGeneric to specify argument types.
-    ; Example: [JitGeneric(typeof(int)), JitGeneric(typeof(string))] void M<T>() { ... }.
-
-C+N`1.M()
-    ; Open generics cannot be JIT-compiled.
-    ; However you can use attribute SharpLab.Runtime.JitGeneric to specify argument types.
-    ; Example: [JitGeneric(typeof(int)), JitGeneric(typeof(string))] void M<T>() { ... }.
 
 */

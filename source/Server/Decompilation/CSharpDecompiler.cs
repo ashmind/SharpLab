@@ -59,12 +59,13 @@ namespace SharpLab.Server.Decompilation {
         }
 
         private void SortTree(SyntaxTree root) {
+            // Note: the sorting logic cannot be reused, but should match IL and Jit ASM ordering
             var firstMovedNode = (AstNode?)null;
             foreach (var node in root.Children) {
                 if (node == firstMovedNode)
                     break;
 
-                if (node is NamespaceDeclaration @namespace && IsCompilerGenerated(@namespace)) {
+                if (node is NamespaceDeclaration @namespace && IsNonUserCode(@namespace)) {
                     node.Remove();
                     root.AddChildWithExistingRole(node);
                     firstMovedNode ??= node;
@@ -72,7 +73,8 @@ namespace SharpLab.Server.Decompilation {
             }
         }
 
-        private bool IsCompilerGenerated(NamespaceDeclaration @namespace) {
+        private bool IsNonUserCode(NamespaceDeclaration @namespace) {
+            // Note: the logic cannot be reused, but should match IL and Jit ASM
             foreach (var member in @namespace.Members) {
                 if (member is not TypeDeclaration type)
                     return false;

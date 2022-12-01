@@ -13,6 +13,22 @@ static class C<T> {
 
 ; Core CLR <IGNORE> on x64
 
+C`1[[System.Int32, System.Private.CoreLib]].M()
+    L0000: xor eax, eax
+    L0002: ret
+
+C`1[[System.Decimal, System.Private.CoreLib]].M()
+    L0000: xor eax, eax
+    L0002: mov [rcx], eax
+    L0004: mov [rcx+4], eax
+    L0007: mov [rcx+8], rax
+    L000b: mov rax, rcx
+    L000e: ret
+
+C`1[[System.__Canon, System.Private.CoreLib]].M()
+    L0000: xor eax, eax
+    L0002: ret
+
 Microsoft.CodeAnalysis.EmbeddedAttribute..ctor()
     L0000: ret
 
@@ -44,21 +60,5 @@ System.Runtime.CompilerServices.NullableAttribute..ctor(Byte[])
 System.Runtime.CompilerServices.NullableContextAttribute..ctor(Byte)
     L0000: mov [rcx+8], dl
     L0003: ret
-
-C`1[[System.Int32, System.Private.CoreLib]].M()
-    L0000: xor eax, eax
-    L0002: ret
-
-C`1[[System.Decimal, System.Private.CoreLib]].M()
-    L0000: xor eax, eax
-    L0002: mov [rcx], eax
-    L0004: mov [rcx+4], eax
-    L0007: mov [rcx+8], rax
-    L000b: mov rax, rcx
-    L000e: ret
-
-C`1[[System.__Canon, System.Private.CoreLib]].M()
-    L0000: xor eax, eax
-    L0002: ret
 
 */
