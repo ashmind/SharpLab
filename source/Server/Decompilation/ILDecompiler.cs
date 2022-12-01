@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Reflection.Metadata;
 using System.Threading;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Disassembler;
@@ -11,9 +12,14 @@ using SharpLab.Server.Decompilation.Internal;
 namespace SharpLab.Server.Decompilation {
     public class ILDecompiler : IILDecompiler {
         private readonly Func<Stream, IDisposableDebugInfoProvider> _debugInfoFactory;
+        private readonly MemoryPoolSlim<TypeDefinitionHandle> _typeHandleMemoryPool;
 
-        public ILDecompiler(Func<Stream, IDisposableDebugInfoProvider> debugInfoFactory) {
+        public ILDecompiler(
+            Func<Stream, IDisposableDebugInfoProvider> debugInfoFactory,
+            MemoryPoolSlim<TypeDefinitionHandle> typeHandleMemoryPool
+        ) {
             _debugInfoFactory = debugInfoFactory;
+            _typeHandleMemoryPool = typeHandleMemoryPool;
         }
 
         public void Decompile(CompilationStreamPair streams, TextWriter codeWriter, IWorkSession session) {
@@ -39,7 +45,54 @@ namespace SharpLab.Server.Decompilation {
 
             disassembler.WriteAssemblyHeader(assemblyFile);
             output.WriteLine(); // empty line
-            disassembler.WriteModuleContents(assemblyFile);
+
+            var metadata = assemblyFile.Metadata;
+            DecompileTypes(assemblyFile, output, disassembler, metadata);
+        }
+
+        private void DecompileTypes(PEFile assemblyFile, PlainTextOutput output, ReflectionDisassembler disassembler, MetadataReader metadata) {
+            const int MaxNonUserTypeHandles = 10;
+            var nonUserTypeHandlesLease = default(MemoryLease<TypeDefinitionHandle>);
+            var nonUserTypeHandlesCount = -1;
+
+            try {
+                // user code (first)
+                foreach (var typeHandle in metadata.TypeDefinitions) {
+                    var type = metadata.GetTypeDefinition(typeHandle);
+                    if (!type.GetDeclaringType().IsNil)
+                        continue; // not a top-level type
+
+                    if (IsNonUserCode(metadata, type) && nonUserTypeHandlesCount < MaxNonUserTypeHandles) {
+                        if (nonUserTypeHandlesCount == -1) {
+                            nonUserTypeHandlesLease = _typeHandleMemoryPool.RentExact(25);
+                            nonUserTypeHandlesCount = 0;
+                        }
+
+                        nonUserTypeHandlesLease.AsSpan()[nonUserTypeHandlesCount] = typeHandle;
+                        nonUserTypeHandlesCount += 1;
+                        continue;
+                    }
+
+                    disassembler.DisassembleType(assemblyFile, typeHandle);
+                    output.WriteLine();
+                }
+
+                // non-user code (second)
+                if (nonUserTypeHandlesCount > 0) {
+                    foreach (var typeHandle in nonUserTypeHandlesLease.AsSpan().Slice(0, nonUserTypeHandlesCount)) {
+                        disassembler.DisassembleType(assemblyFile, typeHandle);
+                        output.WriteLine();
+                    }
+                }
+            }
+            finally {
+                nonUserTypeHandlesLease.Dispose();
+            }
+        }
+
+        private bool IsNonUserCode(MetadataReader metadata, TypeDefinition type) {
+            return type.IsCompilerGenerated(metadata)
+                && !type.NamespaceDefinition.IsNil;
         }
 
         public string LanguageName => TargetNames.IL;

@@ -1,7 +1,8 @@
 using System;
+using System.Reflection.Metadata;
 using Autofac;
-using Autofac.Core;
 using JetBrains.Annotations;
+using SharpLab.Server.Common;
 using SharpLab.Server.Decompilation.AstOnly;
 using SharpLab.Server.Decompilation.Internal;
 
@@ -9,6 +10,8 @@ namespace SharpLab.Server.Decompilation {
     [UsedImplicitly]
     public class DecompilationModule : Module {
         protected override void Load(ContainerBuilder builder) {
+            builder.RegisterInstance(MemoryPoolSlim<TypeDefinitionHandle>.Shared);
+
             builder.RegisterType<RoslynOperationPropertySerializer>()
                    .As<IRoslynOperationPropertySerializer>()
                    .SingleInstance();
