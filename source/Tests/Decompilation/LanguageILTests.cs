@@ -6,6 +6,7 @@ using SharpLab.Server.Common;
 using System.Linq;
 using System.IO;
 using System;
+using Mobius.ILasm.Core;
 
 namespace SharpLab.Tests.Decompilation {
     public class LanguageILTests {
@@ -281,6 +282,27 @@ namespace SharpLab.Tests.Decompilation {
                     ("error", "IL", "Failed to parse String '[' as BaseTypeRef"),
                     ("error", "IL", "Failed to parse CallConv 'Default' as BaseMethodRef")
                 },
+                result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
+            );
+        }
+
+        [Fact]
+        public async Task SlowUpdate_ReportsErrorDiagnostic_ForUndeclaredParameterReference_WithUnnamedParameter() {
+            // Arrange
+            var driver = await TestDriverFactory.FromCodeAsync("""
+                .method void M(int16) cil managed
+                {
+                    ldarg x
+                    pop
+                }
+            """, LanguageNames.IL, TargetNames.IL);
+
+            // Act
+            var result = await driver.SendSlowUpdateAsync<string>();
+
+            // Assert
+            Assert.Equal(
+                new[] { ("error", "IL", "Undeclared identifier 'x'") },
                 result.Diagnostics.Select(d => (d.Severity, d.Id, d.Message)).ToArray()
             );
         }
