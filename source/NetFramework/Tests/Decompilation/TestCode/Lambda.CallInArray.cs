@@ -24,8 +24,30 @@ using Microsoft.CodeAnalysis;
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 [assembly: AssemblyVersion("0.0.0.0")]
 [module: UnverifiableCode]
-[module: System.Runtime.CompilerServices.RefSafetyRules(11)]
+[module: RefSafetyRules(11)]
+namespace Microsoft.CodeAnalysis
+{
+    [CompilerGenerated]
+    [Embedded]
+    internal sealed class EmbeddedAttribute : Attribute
+    {
+    }
+}
+namespace System.Runtime.CompilerServices
+{
+    [CompilerGenerated]
+    [Embedded]
+    [AttributeUsage(AttributeTargets.Module, AllowMultiple = false, Inherited = false)]
+    internal sealed class RefSafetyRulesAttribute : Attribute
+    {
+        public readonly int Version;
 
+        public RefSafetyRulesAttribute(int P_0)
+        {
+            Version = P_0;
+        }
+    }
+}
 public class C
 {
     [Serializable]
@@ -51,7 +73,6 @@ public class C
         Console.WriteLine(array[3]);
     }
 }
-
 [CompilerGenerated]
 internal sealed class <PrivateImplementationDetails>
 {
@@ -61,31 +82,6 @@ internal sealed class <PrivateImplementationDetails>
     }
 
     internal static readonly __StaticArrayInitTypeSize=16 81C1A5A2F482E82CA2C66653482AB24E6D90944BF183C8164E8F8F8D72DB60DB/* Not supported: data(01 00 00 00 02 00 00 00 03 00 00 00 00 00 00 00) */;
-}
-
-namespace Microsoft.CodeAnalysis
-{
-    [CompilerGenerated]
-    [Embedded]
-    internal sealed class EmbeddedAttribute : Attribute
-    {
-    }
-}
-
-namespace System.Runtime.CompilerServices
-{
-    [CompilerGenerated]
-    [Microsoft.CodeAnalysis.Embedded]
-    [AttributeUsage(AttributeTargets.Module, AllowMultiple = false, Inherited = false)]
-    internal sealed class RefSafetyRulesAttribute : Attribute
-    {
-        public readonly int Version;
-
-        public RefSafetyRulesAttribute(int P_0)
-        {
-            Version = P_0;
-        }
-    }
 }
 
 */
