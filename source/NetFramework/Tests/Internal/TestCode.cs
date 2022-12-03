@@ -67,7 +67,7 @@ namespace SharpLab.Tests.Internal {
             if (extension.Contains("2"))
                 return FromContentFormatV1(content, extension);
 
-            var split = Regex.Matches(content, @"[/(]\* (?<to>\S+)").Cast<Match>().Last();
+            var split = Regex.Matches(content, @"^[/(]\* (?<to>\S+)", RegexOptions.Multiline).Cast<Match>().Last();
             var from = LanguageAndTargetMap[extension.TrimStart('.')];
             var to = LanguageAndTargetMap[split.Groups["to"].Value];
 
