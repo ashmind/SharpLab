@@ -1,10 +1,12 @@
 using System;
+using System.Runtime.CompilerServices;
 using Autofac;
 using MirrorSharp;
 using MirrorSharp.Advanced;
 using MirrorSharp.Advanced.EarlyAccess;
 using MirrorSharp.Testing;
 using SharpLab.Server;
+using SharpLab.Server.Common;
 
 namespace SharpLab.Tests.Internal {
     public static class TestEnvironment {
@@ -25,5 +27,8 @@ namespace SharpLab.Tests.Internal {
         };
 
         public static MirrorSharpTestDriver NewDriver() => MirrorSharpTestDriver.New(MirrorSharpOptions, MirrorSharpServices);
+
+        [ModuleInitializer]
+        public static void Initialize() => DotEnv.Load();
     }
 }

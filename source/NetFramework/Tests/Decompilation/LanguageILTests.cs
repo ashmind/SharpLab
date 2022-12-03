@@ -28,7 +28,7 @@ namespace SharpLab.Tests.Decompilation {
 
             var decompiledText = result.ExtensionResult?.Trim();
             Assert.True(string.IsNullOrEmpty(errors), errors);
-            code.AssertIsExpected(decompiledText, _output);
+            await code.AssertIsExpectedAsync(decompiledText, _output);
         }
 
         [Fact]

@@ -61,8 +61,8 @@ namespace SharpLab.Server.Integration.Azure {
                 return JsonConvert.ToString(new {
                     List = current.List is { } list ? new {
                         Items = new {
-                            Take10 = list.Items.Take(10),
-                            Length = list.Items.Length
+                            Take10 = list.ItemsList.Take(10),
+                            list.ItemsList.Count
                         },
                         list.Span
                     } : null,

@@ -46,6 +46,7 @@ namespace SharpLab.Tests.Decompilation {
         [InlineData("Lock.Simple.cs")]
         [InlineData("Property.InitOnly.cs")]
         [InlineData("Nullable.Reference.Simple.IL.cs")]
+        [InlineData("Scopes.File.cs")]
         public async Task SlowUpdate_ReturnsExpectedDecompiledCode(string codeFilePath) {
             var code = await TestCode.FromFileAsync(codeFilePath);
             var driver = await TestDriverFactory.FromCodeAsync(code);

@@ -52,4 +52,8 @@ System.Runtime.CompilerServices.NullableContextAttribute..ctor(Byte)
     L0000: mov [rcx+8], dl
     L0003: ret
 
+System.Runtime.CompilerServices.RefSafetyRulesAttribute..ctor(Int32)
+    L0000: mov [rcx+8], edx
+    L0003: ret
+
 */

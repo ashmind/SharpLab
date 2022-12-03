@@ -23,4 +23,11 @@ C.M(Int32)
     L0004: mov eax, edx
     L0006: ret
 
+Microsoft.CodeAnalysis.EmbeddedAttribute..ctor()
+    L0000: ret
+
+System.Runtime.CompilerServices.RefSafetyRulesAttribute..ctor(Int32)
+    L0000: mov [rcx+8], edx
+    L0003: ret
+
 */

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Pedantic.IO;
 using SharpLab.Server.Common;
 using Xunit;
@@ -21,17 +22,28 @@ namespace SharpLab.Tests.Internal {
             { "output", TargetNames.Run },
         };
 
+        private static readonly IReadOnlyDictionary<string, (string start, string end)> CommentMarkers = new Dictionary<string, (string start, string end)>(StringComparer.OrdinalIgnoreCase) {
+            { LanguageNames.CSharp, ("/*", "*/") },
+            { LanguageNames.VisualBasic, ("/*", "*/") }, // TODO: Sort out
+            { LanguageNames.FSharp, ("(*", "*)") },
+            { LanguageNames.IL, ("/*", "*/") },
+        };
+
+        private static readonly bool ShouldUpdateOnAssert = Environment.GetEnvironmentVariable("SHARPLAB_TEST_UPDATE_SNAPSHOTS") == "true";
+
         public string Original { get; }
         public string SourceLanguageName { get; }
         public string TargetName { get; }
 
         private readonly string _expected;
+        private readonly string? _snapshotFilePath;
 
-        public TestCode(string original, string expected, string sourceLanguageName, string targetName) {
+        public TestCode(string original, string expected, string sourceLanguageName, string targetName, string? snapshotFilePath = null) {
             Original = original;
             SourceLanguageName = sourceLanguageName;
             TargetName = targetName;
             _expected = expected;
+            _snapshotFilePath = snapshotFilePath;
         }
 
         public static TestCode FromFile(string relativePath, [CallerFilePath] string callerFilePath = "") {
@@ -41,7 +53,7 @@ namespace SharpLab.Tests.Internal {
             var content = File.ReadAllText(fullPath);
             var extension = Path.GetExtension(relativePath);
 
-            return FromContent(content, extension);
+            return FromContent(content, extension, fullPath);
         }
 
         public static TestCode FromResource(string name) {
@@ -51,7 +63,7 @@ namespace SharpLab.Tests.Internal {
             return FromContent(content, extension);
         }
 
-        private static TestCode FromContent(string content, string extension) {
+        private static TestCode FromContent(string content, string extension, string? sourceFilePath = null) {
             if (extension.Contains("2"))
                 return FromContentFormatV1(content, extension);
 
@@ -65,7 +77,7 @@ namespace SharpLab.Tests.Internal {
                 @"^\s+|\s*\*[/)]\s*$", ""
             );
 
-            return new TestCode(code, expected, from, to);
+            return new TestCode(code, expected, from, to, sourceFilePath);
         }
 
         private static TestCode FromContentFormatV1(string content, string extension) {
@@ -78,9 +90,15 @@ namespace SharpLab.Tests.Internal {
             return new TestCode(code, expected, fromTo[0], fromTo[1]);
         }
 
-        public void AssertIsExpected(string? result, ITestOutputHelper output) {
+        public async Task AssertIsExpectedAsync(string? result, ITestOutputHelper output) {
             var cleanResult = RemoveNonDeterminism(result?.Trim());
             output.WriteLine(cleanResult ?? "<null>");
+
+            if (_snapshotFilePath is { } path && cleanResult is { } actual && ShouldUpdateOnAssert) {
+                await UpdateFileAsync(path, actual);
+                return;
+            }
+
             Assert.Equal(NormalizeNewLines(_expected), NormalizeNewLines(cleanResult));
         }
 
@@ -114,6 +132,16 @@ namespace SharpLab.Tests.Internal {
 
         private string? NormalizeNewLines(string? value) {
             return value?.Replace("\r\n", "\n");
+        }
+
+        private async Task UpdateFileAsync(string path, string actual) {
+            var (commentStart, commentEnd) = CommentMarkers[SourceLanguageName];
+            var targetExtension = LanguageAndTargetMap.First(p => p.Value == TargetName).Key;
+
+            var updatedContent = $"{Original}\r\n\r\n{commentStart} {targetExtension}\r\n\r\n{actual}\r\n\r\n{commentEnd}";
+            using (var writer = new StreamWriter(path)) {
+                await writer.WriteAsync(updatedContent);
+            }
         }
     }
 }

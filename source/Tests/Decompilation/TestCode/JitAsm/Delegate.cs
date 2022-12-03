@@ -16,4 +16,11 @@ D.BeginInvoke(System.AsyncCallback, System.Object)
 D.EndInvoke(System.IAsyncResult)
     ; Cannot produce JIT assembly for runtime-implemented method.
 
+Microsoft.CodeAnalysis.EmbeddedAttribute..ctor()
+    L0000: ret
+
+System.Runtime.CompilerServices.RefSafetyRulesAttribute..ctor(Int32)
+    L0000: mov [rcx+8], edx
+    L0003: ret
+
 */

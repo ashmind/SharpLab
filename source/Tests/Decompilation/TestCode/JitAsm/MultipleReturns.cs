@@ -16,4 +16,11 @@ C.M(Boolean)
     L000a: mov eax, 1
     L000f: ret
 
+Microsoft.CodeAnalysis.EmbeddedAttribute..ctor()
+    L0000: ret
+
+System.Runtime.CompilerServices.RefSafetyRulesAttribute..ctor(Int32)
+    L0000: mov [rcx+8], edx
+    L0003: ret
+
 */

@@ -15,9 +15,9 @@ namespace SharpLab.Tests.Decompilation {
         }
 
         [Theory]
-        [InlineData("JitAsm/Simple.cs2asm")]
-        [InlineData("JitAsm/MultipleReturns.cs2asm")]
-        [InlineData("JitAsm/ArrayElement.cs2asm")]
+        [InlineData("JitAsm/Simple.cs")]
+        [InlineData("JitAsm/MultipleReturns.cs")]
+        [InlineData("JitAsm/ArrayElement.cs")]
         // TODO: Understand why these tests are flaky and keep switching between
         // resolving and non-resolving symbols. Since it's .NET Framework, low priority.
         //
@@ -28,11 +28,11 @@ namespace SharpLab.Tests.Decompilation {
         // Resolving
         // [InlineData("JitAsm/AsyncRegression.cs2asm")]
         // [InlineData("JitAsm/ConsoleWrite.cs2asm")]
-        [InlineData("JitAsm/JumpBack.cs2asm")] // https://github.com/ashmind/SharpLab/issues/229
-        [InlineData("JitAsm/Delegate.cs2asm")]
-        [InlineData("JitAsm/Nested.Simple.cs2asm")]
-        [InlineData("JitAsm/Generic.Open.Multiple.cs2asm")]
-        [InlineData("JitAsm/Generic.MethodWithAttribute.cs2asm")]
+        [InlineData("JitAsm/JumpBack.cs")] // https://github.com/ashmind/SharpLab/issues/229
+        [InlineData("JitAsm/Delegate.cs")]
+        [InlineData("JitAsm/Nested.Simple.cs")]
+        [InlineData("JitAsm/Generic.Open.Multiple.cs")]
+        [InlineData("JitAsm/Generic.MethodWithAttribute.cs")]
         [InlineData("JitAsm/Generic.ClassWithAttribute.cs")]
         // TODO: Diagnose later
         // [InlineData("JitAsm/Generic.MethodWithAttribute.fs2asm")]
@@ -49,7 +49,7 @@ namespace SharpLab.Tests.Decompilation {
 
             var decompiledText = result.ExtensionResult?.Trim();
             Assert.True(string.IsNullOrEmpty(errors), errors);
-            code.AssertIsExpected(decompiledText, _output);
+            await code.AssertIsExpectedAsync(decompiledText, _output);
         }
 
         [Theory]

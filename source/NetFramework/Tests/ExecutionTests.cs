@@ -230,7 +230,7 @@ namespace SharpLab.Tests {
             var result = await SendSlowUpdateWithRetryOnMovedObjectsAsync(driver);
 
             AssertIsSuccess(result, allowRuntimeException: allowExceptions);
-            code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _output);
+            await code.AssertIsExpectedAsync(result.ExtensionResult?.GetOutputAsString(), _output);
         }
 
         [Theory]
@@ -247,7 +247,7 @@ namespace SharpLab.Tests {
             var result = await SendSlowUpdateWithRetryOnMovedObjectsAsync(driver);
 
             AssertIsSuccess(result);
-            code.AssertIsExpected(result.ExtensionResult?.GetOutputAsString(), _output);
+            await code.AssertIsExpectedAsync(result.ExtensionResult?.GetOutputAsString(), _output);
         }
 
         [Theory]
