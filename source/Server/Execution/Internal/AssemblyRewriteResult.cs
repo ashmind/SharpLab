@@ -4,31 +4,31 @@ using Mono.Cecil;
 
 namespace SharpLab.Server.Execution.Internal {
     public readonly struct AssemblyStreamRewriteResult : IDisposable {
-        private readonly AssemblyDefinition _assembly;
+        private readonly ModuleDefinition _module;
 
-        public AssemblyStreamRewriteResult(Stream stream, TimeSpan? elapsedTime, AssemblyDefinition assembly) {
+        public AssemblyStreamRewriteResult(Stream stream, TimeSpan? elapsedTime, ModuleDefinition module) {
             Stream = stream;
             ElapsedTime = elapsedTime;
-            _assembly = assembly;
+            _module = module;
         }
 
         public Stream Stream { get; }
         public TimeSpan? ElapsedTime { get; }
 
         public void Dispose() {
-            var assemblyDisposeException = (Exception?)null;
+            var moduleDisposeException = (Exception?)null;
             try {
-                _assembly.Dispose();
+                _module.Dispose();
             }
             catch (Exception ex) {
-                assemblyDisposeException = ex;
+                moduleDisposeException = ex;
             }
 
             try {
                 Stream.Dispose();
             }
-            catch (Exception ex) when (assemblyDisposeException != null) {
-                throw new AggregateException(assemblyDisposeException, ex);
+            catch (Exception ex) when (moduleDisposeException != null) {
+                throw new AggregateException(moduleDisposeException, ex);
             }
         }
     }

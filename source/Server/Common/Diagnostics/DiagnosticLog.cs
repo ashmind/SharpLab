@@ -16,11 +16,11 @@ namespace SharpLab.Server.Common.Diagnostics {
             return _getPathByStepName.Value != null;
         }
 
-        public static void LogAssembly(string stepName, AssemblyDefinition assembly) {
+        public static void LogAssembly(string stepName, ModuleDefinition module) {
             var path = GetLogPathWithoutExtension(stepName);
             if (path == null)
                 return;
-            assembly.Write(path + ".dll");
+            module.Write(path + ".dll");
         }
 
         public static void LogAssembly(string stepName, MemoryStream assemblyStream, MemoryStream? symbolStream) {

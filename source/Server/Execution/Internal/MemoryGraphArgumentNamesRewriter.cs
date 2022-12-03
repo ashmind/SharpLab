@@ -20,23 +20,28 @@ namespace SharpLab.Server.Execution.Internal {
             _languages = languages.ToDictionary(l => l.LanguageName);
         }
 
-        public void Rewrite(AssemblyDefinition assembly, IWorkSession session) {
-            foreach (var module in assembly.Modules) {
-                var argumentMethods = new ArgumentMethods {
-                    AllocateNext = module.ImportReference(AllocateNextMethod),
-                    AddToNext = module.ImportReference(AddToNextMethod)
-                };
+        public void Rewrite(ModuleDefinition module, IWorkSession session) {
+            if (!module.HasTypes)
+                return;
 
-                foreach (var type in module.Types) {
-                    Rewrite(type, session, argumentMethods);
-                    foreach (var nested in type.NestedTypes) {
-                        Rewrite(nested, session, argumentMethods);
-                    }
+            var argumentMethods = new ArgumentMethods {
+                AllocateNext = module.ImportReference(AllocateNextMethod),
+                AddToNext = module.ImportReference(AddToNextMethod)
+            };
+
+            foreach (var type in module.Types) {
+                Rewrite(type, session, argumentMethods);
+                if (!type.HasNestedTypes)
+                    continue;
+                foreach (var nested in type.NestedTypes) {
+                    Rewrite(nested, session, argumentMethods);
                 }
             }
-        }
+    }
 
         private void Rewrite(TypeDefinition type, IWorkSession session, ArgumentMethods argumentMethods) {
+            if (!type.HasMethods)
+                return;
             foreach (var method in type.Methods) {
                 Rewrite(method, session, argumentMethods);
             }

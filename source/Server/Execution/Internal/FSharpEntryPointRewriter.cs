@@ -8,14 +8,14 @@ namespace SharpLab.Server.Execution.Internal {
     // do filesystem operations without using the virtual filesystem), so instead I compile
     // it as a library and then fake the entry point.
     public class FSharpEntryPointRewriter : IAssemblyRewriter {
-        public void Rewrite(AssemblyDefinition assembly, IWorkSession session) {
+        public void Rewrite(ModuleDefinition module, IWorkSession session) {
             if (!session.IsFSharp())
                 return;
 
-            if (assembly.EntryPoint != null)
+            if (module.EntryPoint != null)
                 return;
             
-            var (entryPoint, isStaticConstructor) = FindBestEntryPointCandidate(assembly);
+            var (entryPoint, isStaticConstructor) = FindBestEntryPointCandidate(module);
             if (entryPoint == null)
                 return;
 
@@ -23,15 +23,18 @@ namespace SharpLab.Server.Execution.Internal {
                 entryPoint.Attributes &= ~MethodAttributes.SpecialName & ~MethodAttributes.RTSpecialName;
                 entryPoint.Name = "cctor_rewritten_to_method_by_sharplab";
             }
-            assembly.EntryPoint = entryPoint;
+            module.EntryPoint = entryPoint;
         }
 
-        private (MethodDefinition? method, bool isStaticConstructor) FindBestEntryPointCandidate(AssemblyDefinition assembly) {
+        private (MethodDefinition? method, bool isStaticConstructor) FindBestEntryPointCandidate(ModuleDefinition module) {
+            if (!module.HasTypes)
+                return (null, false);
+
             // First priority -- explicit [<EntryPoint>]
             // Second priority -- top level code (gets compiled into a static ctor)
 
-            MethodDefinition? startup = null;
-            foreach (var type in assembly.MainModule.Types) {
+            var startup = (MethodDefinition?)null;
+            foreach (var type in module.Types) {
                 if (type.Namespace == "<StartupCode$_>" && type.Name == "$_" && type.HasMethods) {
                     foreach (var method in type.Methods) {
                         if (method.IsConstructor && method.IsStatic) {

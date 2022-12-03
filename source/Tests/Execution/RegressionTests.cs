@@ -70,7 +70,7 @@ namespace SharpLab.Tests.Execution {
         [InlineData("void M(ref Span<int> s) {}", "var s = new Span<int>(); M(ref s)")]
         [InlineData("void M(ReadOnlySpan<int> s) {}", "M(new ReadOnlySpan<int>())")]
         [InlineData("void M(ref ReadOnlySpan<int> s) {}", "var s = new ReadOnlySpan<int>(); M(ref s)")]
-        public async Task SlowUpdate_DoesNotFail_OnSpanArguments(string methodCode, string methodCallCode) {
+        public async Task Execution_DoesNotFail_OnSpanArguments(string methodCode, string methodCallCode) {
             // Arrange
             var code = @"
                 using System;
@@ -87,6 +87,19 @@ namespace SharpLab.Tests.Execution {
 
             // Assert
             Assert.DoesNotMatch("Exception:", output);
+        }
+
+        [Theory]
+        [InlineData("NoAssembly.il")]
+        public async Task Execution_ReturnsBadImageFormatException_ForIncorrectIL(string codeFileName) {
+            // Arrange
+            var code = await TestCode.FromCodeOnlyFileAsync("Regression/" + codeFileName);
+
+            // Act
+            var output = await ContainerTestDriver.CompileAndExecuteAsync(code, LanguageNames.IL);
+
+            // Assert
+            Assert.Matches("""title":"Exception","value":"System.BadImageFormatException""", output);
         }
     }
 }

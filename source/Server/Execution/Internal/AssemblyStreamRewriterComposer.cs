@@ -38,36 +38,36 @@ namespace SharpLab.Server.Execution.Internal {
                 SymbolReaderProvider = streams.SymbolStream != null ? _symbolReaderProvider : null
             };
 
-            var definition = AssemblyDefinition.ReadAssembly(streams.AssemblyStream, readerParameters);
+            var module = ModuleDefinition.ReadModule(streams.AssemblyStream, readerParameters);
             try {
-                if (HasNoRewritingAttribute(definition)) {
+                if (module.Assembly is {} assembly && HasNoRewritingAttribute(assembly)) {
                     streams.AssemblyStream.Position = 0;
-                    return new(streams.AssemblyStream, null, definition);
+                    return new(streams.AssemblyStream, null, module);
                 }
 
-                return RewriteInternal(definition, session, rewriteStopwatch);
+                return RewriteInternal(module, session, rewriteStopwatch);
             }
             catch {
-                definition.Dispose();
+                module.Dispose();
                 throw;
             }
         }
 
-        private AssemblyStreamRewriteResult RewriteInternal(AssemblyDefinition definition, IWorkSession session, Stopwatch? rewriteStopwatch) {
+        private AssemblyStreamRewriteResult RewriteInternal(ModuleDefinition module, IWorkSession session, Stopwatch? rewriteStopwatch) {
             foreach (var rewriter in _rewriters) {
-                rewriter.Rewrite(definition, session);
+                rewriter.Rewrite(module, session);
             }
             
             #if DEBUG
-            DiagnosticLog.LogAssembly("2.WithFlow", definition);
+            DiagnosticLog.LogAssembly("2.WithFlow", module);
             #endif
 
             var rewrittenStream = _memoryStreamManager.GetStream();
             try {
-                definition.Write(rewrittenStream);
+                module.Write(rewrittenStream);
                 rewrittenStream.Position = 0;
                 rewriteStopwatch?.Stop();
-                return new(rewrittenStream, rewriteStopwatch?.Elapsed, definition);
+                return new(rewrittenStream, rewriteStopwatch?.Elapsed, module);
             }
             catch {
                 rewrittenStream.Dispose();
@@ -75,11 +75,11 @@ namespace SharpLab.Server.Execution.Internal {
             }
         }
 
-        private bool HasNoRewritingAttribute(AssemblyDefinition definition) {
-            if (!definition.HasCustomAttributes)
+        private bool HasNoRewritingAttribute(AssemblyDefinition assembly) {
+            if (!assembly.HasCustomAttributes)
                 return false;
 
-            foreach (var attribute in definition.CustomAttributes) {
+            foreach (var attribute in assembly.CustomAttributes) {
                 if (attribute.AttributeType.Name == nameof(NoILRewritingAttribute))
                     return true;
             }

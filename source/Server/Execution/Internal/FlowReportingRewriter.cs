@@ -51,58 +51,43 @@ namespace SharpLab.Server.Execution.Internal {
             _languages = languages.ToDictionary(l => l.LanguageName);
         }
 
-        public void Rewrite(AssemblyDefinition assembly, IWorkSession session) {
-            foreach (var module in assembly.Modules) {
-                if (!module.HasTypes)
-                    continue;
+        public void Rewrite(ModuleDefinition module, IWorkSession session) {
+            if (!module.HasTypes)
+                return;
 
-                foreach (var type in module.Types) {
-                    if (HasFlowSupressingCalls(type))
-                        return;
-                }
+            foreach (var type in module.Types) {
+                if (HasFlowSupressingCalls(type))
+                    return;
             }
 
-            FlowMethods mainModuleFlow = default;
-            foreach (var module in assembly.Modules) {
-                if (!module.HasTypes)
-                    continue;
+            var flow = new FlowMethods {
+                ReportMethodArea = module.ImportReference(ReportMethodAreaMethod),
+                ReportLoopArea = module.ImportReference(ReportLoopAreaMethod),
 
-                var flow = new FlowMethods {
-                    ReportMethodArea = module.ImportReference(ReportMethodAreaMethod),
-                    ReportLoopArea = module.ImportReference(ReportLoopAreaMethod),
+                ReportLineStart = module.ImportReference(ReportLineStartMethod),
 
-                    ReportLineStart = module.ImportReference(ReportLineStartMethod),
+                ReportJump = module.ImportReference(ReportJumpMethod),
 
-                    ReportJump = module.ImportReference(ReportJumpMethod),
+                ReportValue = module.ImportReference(ReportValueMethod),
+                ReportRefValue = module.ImportReference(ReportRefValueMethod),
+                ReportSpanValue = module.ImportReference(ReportSpanValueMethod),
+                ReportRefSpanValue = module.ImportReference(ReportRefSpanValueMethod),
+                ReportReadOnlySpanValue = module.ImportReference(ReportReadOnlySpanValueMethod),
+                ReportRefReadOnlySpanValue = module.ImportReference(ReportRefReadOnlySpanValueMethod),
 
-                    ReportValue = module.ImportReference(ReportValueMethod),
-                    ReportRefValue = module.ImportReference(ReportRefValueMethod),
-                    ReportSpanValue = module.ImportReference(ReportSpanValueMethod),
-                    ReportRefSpanValue = module.ImportReference(ReportRefSpanValueMethod),
-                    ReportReadOnlySpanValue = module.ImportReference(ReportReadOnlySpanValueMethod),
-                    ReportRefReadOnlySpanValue = module.ImportReference(ReportRefReadOnlySpanValueMethod),
-
-                    ReportException = module.ImportReference(ReportExceptionMethod),
-                };
-                if (module == assembly.MainModule)
-                    mainModuleFlow = flow;
-                foreach (var type in module.Types) {
-                    Rewrite(type, flow, session);
-                }
+                ReportException = module.ImportReference(ReportExceptionMethod),
+            };
+            foreach (var type in module.Types) {
+                Rewrite(type, flow, session);
             }
 
-            if (assembly.MainModule.EntryPoint is not {} entryPoint)
+            if (module.EntryPoint is not {} entryPoint)
                 return;
             
             var entryPointIL = entryPoint.Body.GetILProcessor();
             var insertIndex = 0;
-            foreach (var module in assembly.Modules) {
-                if (!module.HasTypes)
-                    continue;
-
-                foreach (var type in module.Types) {
-                    TryInsertReportMethodAreaForAllMethods(entryPointIL, type, mainModuleFlow, ref insertIndex);
-                }
+            foreach (var type in module.Types) {
+                TryInsertReportMethodAreaForAllMethods(entryPointIL, type, flow, ref insertIndex);
             }
         }
 
