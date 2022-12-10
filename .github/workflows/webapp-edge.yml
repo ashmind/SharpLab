@@ -19,6 +19,7 @@ jobs:
         working-directory: source/WebApp
     steps:
       - run: git config --global core.autocrlf false
+        working-directory: /home
 
       - uses: actions/checkout@v3
         with:
