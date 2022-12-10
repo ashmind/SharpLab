@@ -15,13 +15,15 @@ export const getCleanupAction = (branch: RoslynBranch, merged: boolean): Cleanup
     if (differenceInDays(new Date(), mergeDetected) < DAYS_UNTIL_STOP)
         return 'wait';
 
-    const stopped = branch.sharplab?.stopped
-        ? new Date(branch.sharplab.stopped)
-        : null;
-    if (!stopped)
+    const { sharplab } = branch;
+
+    if (!sharplab?.stopped)
         return 'stop';
 
-    if (differenceInDays(new Date(), stopped) < DAYS_UNTIL_DELETE)
+    if (sharplab.deleted)
+        return 'done';
+
+    if (differenceInDays(new Date(), new Date(sharplab.stopped)) < DAYS_UNTIL_DELETE)
         return 'wait';
 
     return 'delete';

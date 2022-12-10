@@ -30,7 +30,7 @@ export type MergedRoslynBranch = BaseRoslynBranch & {
     readonly merged: true;
     readonly mergeDetected: string;
     readonly sharplab?: {
-        readonly stopped?: string;
+        readonly stopped?: undefined;
     } | {
         readonly stopped: string;
         readonly deleted?: string;
@@ -52,4 +52,5 @@ export type CleanupAction =
     | 'mark-as-merged'
     | 'wait'
     | 'stop'
-    | 'delete';
+    | 'delete'
+    | 'done';

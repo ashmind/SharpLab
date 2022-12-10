@@ -58,7 +58,7 @@ const run = async () => {
             action,
             optional: (action === 'fail-not-merged')
         };
-    }))).filter(a => a.action !== 'wait');
+    }))).filter(a => a.action !== 'wait' && a.action !== 'done');
 
     console.log(chalk.white('Writing matrices...'));
     const buildMatrix = {
