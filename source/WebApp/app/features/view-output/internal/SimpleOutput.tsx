@@ -1,20 +1,9 @@
 import React from 'react';
 import type { SimpleInspection } from '../../../shared/resultTypes';
+import { ExceptionNotice } from './simple/ExceptionNotice';
 
 type Props = {
     inspection: SimpleInspection;
-};
-
-const getExceptionNotice = (exception: string) => {
-    if (exception.includes('System.BadImageFormatException')) {
-        return <>
-            <p>Note: This exception is likely caused by SharpLab itself, and not the C# compiler.</p>
-
-            <p>Try adding <code>[assembly: SharpLab.Runtime.NoILRewriting]</code> to your code.<br />
-            If exception disappears, this is definitely a SharpLab issue, and should be <a href="https://github.com/ashmind/SharpLab/issues">reported as such</a>.</p>
-        </>;
-    }
-    return null;
 };
 
 export const SimpleOutput: React.FC<Props> = ({ inspection }) => {
@@ -32,12 +21,10 @@ export const SimpleOutput: React.FC<Props> = ({ inspection }) => {
         isWarning && 'inspection-warning'
     ].filter(n => n).join(' ');
 
-    const exceptionNotice = isException && inspection.value && getExceptionNotice(inspection.value);
-
     return <div className={className}>
         <header>{inspection.title}</header>
         {!isTitleOnly && <>
-            {exceptionNotice && <div className="inspection-exception-notice markdown">{exceptionNotice}</div>}
+            {isException && <ExceptionNotice exception={inspection.value} />}
             <div className="inspection-value">{inspection.value}</div>
         </>}
     </div>;

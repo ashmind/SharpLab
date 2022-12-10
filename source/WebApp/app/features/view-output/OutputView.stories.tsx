@@ -1,4 +1,5 @@
 import React from 'react';
+import { RecoilRoot } from 'recoil';
 import { LANGUAGE_CSHARP } from '../../shared/languages';
 import type { OutputItem } from '../../shared/resultTypes';
 import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
@@ -29,7 +30,9 @@ type TemplateProps = {
     output: ReadonlyArray<OutputItem|InspectionGroup>;
 };
 const Template: React.FC<TemplateProps> = ({ output }) => {
-    return <OutputView output={output} sourceCode={''} sourceLanguage={LANGUAGE_CSHARP} />;
+    return <RecoilRoot>
+        <OutputView output={output} sourceCode={''} sourceLanguage={LANGUAGE_CSHARP} />
+    </RecoilRoot>;
 };
 
 export const Empty = () => <Template output={[]} />;

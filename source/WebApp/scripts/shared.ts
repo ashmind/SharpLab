@@ -2,6 +2,7 @@ import path from 'path';
 import execa from 'execa';
 
 export const inputRoot = path.resolve(__dirname, '..');
+export const inputAppRoot = path.resolve(inputRoot, 'app');
 
 export const outputSharedRoot = `${inputRoot}/public`;
 const outputVersion = process.env.NODE_ENV === 'production'

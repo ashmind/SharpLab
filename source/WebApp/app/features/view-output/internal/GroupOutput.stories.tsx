@@ -1,9 +1,14 @@
 import React from 'react';
+import { RecoilRoot } from 'recoil';
+import { recoilTestState } from '../../../shared/helpers/testing/recoilTestState';
 import { DarkModeRoot } from '../../../shared/testing/DarkModeRoot';
 import { GroupOutput } from './GroupOutput';
 
 export default {
-    component: GroupOutput
+    component: GroupOutput,
+    decorators: [
+        (Story: () => JSX.Element) => <RecoilRoot><Story /></RecoilRoot>
+    ]
 };
 
 export const Full = () => <GroupOutput group={{

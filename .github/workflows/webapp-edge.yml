@@ -52,7 +52,7 @@ jobs:
       - run: npm run build-storybook
         env:
           NODE_ENV: test
-      - run: npm run test-storybook-ci
+      - run: npm run test-storybook
 
       - name: "[Failure] Run actions/upload-artifact@v3 (diff output)"
         uses: actions/upload-artifact@v3
@@ -62,11 +62,9 @@ jobs:
           path: source/WebApp/app/**/__snapshots__/**/__diff_output__/**/*.*
           if-no-files-found: ignore
 
-      - name: "[Failure] Run npm run test-storybook-ci (update)"
-        run: npm run test-storybook-ci
+      - name: "[Failure] Run npm run test-storybook-update"
+        run: npm run test-storybook-update
         if: failure()
-        env:
-          SHARPLAB_TEST_UPDATE_SNAPSHOTS: 'true'
 
       - name: "[Failure] Run actions/upload-artifact@v3 (updated snapshots)"
         uses: actions/upload-artifact@v3
