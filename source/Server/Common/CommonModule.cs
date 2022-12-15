@@ -16,6 +16,10 @@ namespace SharpLab.Server.Common {
 
             builder.RegisterInstance(MemoryPoolSlim<byte>.Shared);
 
+            builder.RegisterType<ExceptionLogFilter>()
+                   .As<IExceptionLogFilter>()
+                   .SingleInstance();
+
             builder.RegisterType<AssemblyPathCollector>()
                    .As<IAssemblyPathCollector>()
                    .SingleInstance();
