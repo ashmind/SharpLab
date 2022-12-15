@@ -60,12 +60,12 @@ namespace SharpLab.Tests.Decompilation {
             );
         }
 
-        [Fact]
-        public async Task SlowUpdate_ReturnsUnsupportedWarningDiagnostic_ForAnyPermissionSet() {
+        [Theory]
+        [InlineData(".assembly _ { .permissionset reqmin = () }")]
+        [InlineData(".assembly _ { .permissionset reqmin = ( 01 ) }")]
+        public async Task SlowUpdate_ReturnsUnsupportedWarningDiagnostic_ForAnyPermissionSet(string code) {
             // Arrange
-            var driver = await TestDriverFactory.FromCodeAsync(@"
-                .assembly _ { .permissionset reqmin = ( 01 ) }
-            ", LanguageNames.IL, TargetNames.IL);
+            var driver = await TestDriverFactory.FromCodeAsync(code, LanguageNames.IL, TargetNames.IL);
 
             // Act
             var result = await driver.SendSlowUpdateAsync<string>();
