@@ -1,9 +1,8 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
 import { useMockBranches } from '../../../.storybook/__mocks__/branchesPromise';
 import { fromPartial } from '../../shared/helpers/testing/fromPartial';
-import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
+import { TestSetRecoilState } from '../../shared/helpers/testing/TestSetRecoilState';
+import { darkModeStory } from '../../shared/testing/darkModeStory';
 import { branchOptionState } from './branchOptionState';
 import type { Branch } from './types';
 import { BranchSelect } from './BranchSelect';
@@ -19,9 +18,9 @@ type TemplateProps = {
 const Template: React.FC<TemplateProps> = ({ branches, branch }) => {
     useMockBranches(branches);
     return <header>
-        <RecoilRoot initializeState={recoilTestState([branchOptionState, branch ?? null])}>
+        <TestSetRecoilState state={branchOptionState} value={branch ?? null}>
             <BranchSelect />
-        </RecoilRoot>
+        </TestSetRecoilState>
     </header>;
 };
 
@@ -48,4 +47,4 @@ const DETAILED_BRANCHES = fromPartial<ReadonlyArray<Branch>>([
 
 export const DefaultOnly = () => <Template branches={[]} />;
 export const SpecificBranch = () => <Template branch={DETAILED_BRANCHES[0]} branches={DETAILED_BRANCHES} />;
-export const DarkMode = () => <DarkModeRoot><DefaultOnly /></DarkModeRoot>;
+export const DarkMode = darkModeStory(DefaultOnly);

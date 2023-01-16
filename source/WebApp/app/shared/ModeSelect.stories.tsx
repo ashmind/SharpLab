@@ -1,9 +1,8 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../shared/helpers/testing/recoilTestState';
+import { TestSetRecoilState } from './helpers/testing/TestSetRecoilState';
 import { ModeSelect } from './ModeSelect';
 import { releaseOptionState } from './state/releaseOptionState';
-import { DarkModeRoot } from './testing/DarkModeRoot';
+import { darkModeStory } from './testing/darkModeStory';
 
 export default {
     component: ModeSelect
@@ -14,12 +13,12 @@ type TemplateProps = {
 };
 const Template: React.FC<TemplateProps> = ({ release }) => {
     return <header>
-        <RecoilRoot initializeState={recoilTestState([releaseOptionState, release ?? false])}>
+        <TestSetRecoilState state={releaseOptionState} value={release ?? false}>
             <ModeSelect />
-        </RecoilRoot>
+        </TestSetRecoilState>
     </header>;
 };
 
 export const Debug = () => <Template />;
 export const Release = () => <Template release />;
-export const DarkMode = () => <DarkModeRoot><Release /></DarkModeRoot>;
+export const DarkMode = darkModeStory(Release);

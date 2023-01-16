@@ -1,5 +1,5 @@
 import React from 'react';
-import { DarkModeRoot } from '../shared/testing/DarkModeRoot';
+import { darkModeStory } from '../shared/testing/darkModeStory';
 import { WarningsSection } from './WarningsSection';
 
 export default {
@@ -15,7 +15,7 @@ export const EXAMPLE_WARNINGS = [
 export const Empty = () => <WarningsSection warnings={[]} />;
 
 export const Expanded = () => <WarningsSection warnings={EXAMPLE_WARNINGS} initialState={{ expanded: true }} />;
-export const ExpandedDarkMode = () => <DarkModeRoot><Expanded /></DarkModeRoot>;
+export const ExpandedDarkMode = darkModeStory(Expanded);
 
 export const Collapsed = () => <WarningsSection warnings={EXAMPLE_WARNINGS} />;
-export const CollapsedDarkMode = () => <DarkModeRoot><Collapsed /></DarkModeRoot>;
+export const CollapsedDarkMode = darkModeStory(Collapsed);

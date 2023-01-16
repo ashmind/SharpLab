@@ -1,11 +1,11 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../../../shared/helpers/testing/recoilTestState';
+import { TestSetRecoilState } from '../../../shared/helpers/testing/TestSetRecoilState';
+import { TestWaitForRecoilStates } from '../../../shared/helpers/testing/TestWaitForRecoilStates';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_IL } from '../../../shared/languages';
 import type { SimpleInspection } from '../../../shared/resultTypes';
 import { codeState } from '../../../shared/state/codeState';
 import { languageOptionState } from '../../../shared/state/languageOptionState';
-import { DarkModeRoot } from '../../../shared/testing/DarkModeRoot';
+import { darkModeStory } from '../../../shared/testing/darkModeStory';
 import { SimpleOutput } from './SimpleOutput';
 
 export default {
@@ -16,47 +16,47 @@ type TemplateProps = {
     inspection: SimpleInspection;
     language?: LanguageName;
 };
-const Template: React.FC<TemplateProps> = ({ inspection, language = LANGUAGE_CSHARP }) =>
-    <RecoilRoot initializeState={recoilTestState(
-        [languageOptionState, language],
-        [codeState, '']
-    )}>
+const Template: React.FC<TemplateProps> = ({ inspection, language = LANGUAGE_CSHARP }) => <>
+    <TestSetRecoilState state={languageOptionState} value={language} />
+    <TestSetRecoilState state={codeState} value={''} />
+    <TestWaitForRecoilStates states={[languageOptionState, codeState]}>
         <SimpleOutput inspection={inspection} />
-    </RecoilRoot>;
+    </TestWaitForRecoilStates>
+</>;
 
 export const Default = () => <Template inspection={{
     type: 'inspection:simple',
     title: 'Simple',
     value: 'Test'
 }} />;
-export const DefaultDarkMode = () => <DarkModeRoot><Default /></DarkModeRoot>;
+export const DefaultDarkMode = darkModeStory(Default);
 
 export const Multiline = () => <Template inspection={{
     type: 'inspection:simple',
     title: 'Simple',
     value: 'Line 1\r\nLine 2'
 }} />;
-export const MultilineDarkMode = () => <DarkModeRoot><Multiline /></DarkModeRoot>;
+export const MultilineDarkMode = darkModeStory(Multiline);
 
 export const TitleOnly = () => <Template inspection={{
     type: 'inspection:simple',
     title: 'Test'
 }} />;
-export const TitleOnlyDarkMode = () => <DarkModeRoot><TitleOnly /></DarkModeRoot>;
+export const TitleOnlyDarkMode = darkModeStory(TitleOnly);
 
 export const Exception = () => <Template inspection={{
     type: 'inspection:simple',
     title: 'Exception',
     value: 'Test Exception'
 }} />;
-export const ExceptionDarkMode = () => <DarkModeRoot><Exception /></DarkModeRoot>;
+export const ExceptionDarkMode = darkModeStory(Exception);
 
 export const MultilineException = () => <Template inspection={{
     type: 'inspection:simple',
     title: 'Exception',
     value: 'Test Exception\r\n  at test location'
 }} />;
-export const MultilineExceptionDarkMode = () => <DarkModeRoot><MultilineException /></DarkModeRoot>;
+export const MultilineExceptionDarkMode = darkModeStory(MultilineException);
 
 export const ExceptionNoticeBadImageException = () => <Template inspection={{
     type: 'inspection:simple',
@@ -67,7 +67,7 @@ export const ExceptionNoticeBadImageException = () => <Template inspection={{
    at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
    at System.Reflection.MethodInvoker.Invoke(Object obj, IntPtr* args, BindingFlags invokeAttr)`
 }} />;
-export const ExceptionNoticeBadImageExceptionDarkMode = () => <DarkModeRoot><ExceptionNoticeBadImageException /></DarkModeRoot>;
+export const ExceptionNoticeBadImageExceptionDarkMode = darkModeStory(ExceptionNoticeBadImageException);
 export const ExceptionNoticeBadImageExceptionAssemblyNotFound = () => <Template language={LANGUAGE_IL} inspection={{
     type: 'inspection:simple',
     title: 'Exception',
@@ -84,11 +84,11 @@ export const Warning = () => <Template inspection={{
     title: 'Warning',
     value: 'Test Warning'
 }} />;
-export const WarningDarkMode = () => <DarkModeRoot><Warning /></DarkModeRoot>;
+export const WarningDarkMode = darkModeStory(Warning);
 
 export const MultilineWarning = () => <Template inspection={{
     type: 'inspection:simple',
     title: 'Warning',
     value: 'Test Warning\r\n  at test location'
 }} />;
-export const MultilineWarningDarkMode = () => <DarkModeRoot><MultilineWarning /></DarkModeRoot>;
+export const MultilineWarningDarkMode = darkModeStory(MultilineWarning);

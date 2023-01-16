@@ -42,7 +42,24 @@ try {
 
     npm run build
     if ($LastExitCode -ne 0) {
+        throw "npm run build failed with exit code $LastExitCode"
+    }
+}
+finally {
+    Pop-Location
+}
+
+Write-Host "Preparing externals: mirrorsharp-codemirror-6-preview" -ForegroundColor White
+Push-Location './source/#external/mirrorsharp-codemirror-6-preview/WebAssets'
+try {
+    npm ci
+    if ($LastExitCode -ne 0) {
         throw "npm ci failed with exit code $LastExitCode"
+    }
+
+    npm run build
+    if ($LastExitCode -ne 0) {
+        throw "npm run build failed with exit code $LastExitCode"
     }
 }
 finally {

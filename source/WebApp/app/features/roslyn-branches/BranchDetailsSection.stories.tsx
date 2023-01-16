@@ -1,8 +1,7 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
-import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
 import { fromPartial } from '../../shared/helpers/testing/fromPartial';
+import { TestSetRecoilState } from '../../shared/helpers/testing/TestSetRecoilState';
+import { darkModeStory } from '../../shared/testing/darkModeStory';
 import { BranchDetailsSection } from './BranchDetailsSection';
 import { branchOptionState } from './branchOptionState';
 import type { Branch } from './types';
@@ -17,11 +16,11 @@ type TemplateProps = {
     headerless?: boolean;
     expanded?: boolean;
 };
-const Template: React.FC<TemplateProps> = ({ branch, headerless, expanded } = {}) => <RecoilRoot initializeState={recoilTestState(
-    [branchOptionState, branch ?? null]
-)}>
-    <BranchDetailsSection headerless={headerless} initialState={{ expanded }} />
-</RecoilRoot>;
+const Template: React.FC<TemplateProps> = ({ branch, headerless, expanded } = {}) => {
+    return <TestSetRecoilState state={branchOptionState} value={branch ?? null}>
+        <BranchDetailsSection headerless={headerless} initialState={{ expanded }} />
+    </TestSetRecoilState>;
+};
 
 export const EXAMPLE_BRANCH = fromPartial<Branch>({
     id: 'main',
@@ -40,5 +39,5 @@ export const EXAMPLE_BRANCH = fromPartial<Branch>({
 
 export const Default = () => <Template branch={EXAMPLE_BRANCH} expanded />;
 export const Headerless = () => <Template branch={EXAMPLE_BRANCH} headerless />;
-export const DarkMode = () => <DarkModeRoot><Default /></DarkModeRoot>;
+export const DarkMode = darkModeStory(Default);
 export const Collapsed = () => <Template branch={EXAMPLE_BRANCH} />;

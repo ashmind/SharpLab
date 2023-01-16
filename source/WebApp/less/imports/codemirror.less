@@ -2,7 +2,7 @@
 
 @import (inline) '../../node_modules/codemirror/lib/codemirror.css';
 @import '../../node_modules/mirrorsharp/mirrorsharp.less';
-@import '../../node_modules/mirrorsharp-codemirror-6-preview/mirrorsharp.less';
+@import (inline) '../../node_modules/mirrorsharp-codemirror-6-preview/mirrorsharp.css';
 @import (inline) 'codemirror/addon-jump-arrows.css';
 
 textarea, .CodeMirror {
@@ -134,11 +134,5 @@ textarea, .CodeMirror {
 
     .cm-wrap {
         width: 100%;
-    }
-
-    .theme-dark & .mirrorsharp {
-        // TODO: Not supported yet
-        background-color: #fff;
-        color: #000;
     }
 }

@@ -1,10 +1,9 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../shared/helpers/testing/recoilTestState';
+import { TestSetRecoilState } from './helpers/testing/TestSetRecoilState';
 import { LanguageName, LANGUAGE_CSHARP } from './languages';
 import { LanguageSelect } from './LanguageSelect';
 import { languageOptionState } from './state/languageOptionState';
-import { DarkModeRoot } from './testing/DarkModeRoot';
+import { darkModeStory } from './testing/darkModeStory';
 
 export default {
     component: LanguageSelect
@@ -15,11 +14,11 @@ type TemplateProps = {
 };
 const Template: React.FC<TemplateProps> = ({ language }) => {
     return <header>
-        <RecoilRoot initializeState={recoilTestState([languageOptionState, language])}>
+        <TestSetRecoilState state={languageOptionState} value={language}>
             <LanguageSelect />
-        </RecoilRoot>
+        </TestSetRecoilState>
     </header>;
 };
 
 export const Default = () => <Template language={LANGUAGE_CSHARP} />;
-export const DarkMode = () => <DarkModeRoot><Default /></DarkModeRoot>;
+export const DarkMode = darkModeStory(Default);

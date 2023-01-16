@@ -1,10 +1,9 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../shared/helpers/testing/recoilTestState';
+import { TestSetRecoilState } from './helpers/testing/TestSetRecoilState';
 import { targetOptionState } from './state/targetOptionState';
 import { type TargetName, TARGET_CSHARP, TARGET_RUN } from './targets';
 import { TargetSelect } from './TargetSelect';
-import { DarkModeRoot } from './testing/DarkModeRoot';
+import { darkModeStory } from './testing/darkModeStory';
 
 export default {
     component: TargetSelect
@@ -15,12 +14,12 @@ type TemplateProps = {
 };
 const Template: React.FC<TemplateProps> = ({ target }) => {
     return <header>
-        <RecoilRoot initializeState={recoilTestState([targetOptionState, target])}>
+        <TestSetRecoilState state={targetOptionState} value={target}>
             <TargetSelect />
-        </RecoilRoot>
+        </TestSetRecoilState>
     </header>;
 };
 
 export const Default = () => <Template target={TARGET_CSHARP} />;
 export const Run = () => <Template target={TARGET_RUN} />;
-export const DarkMode = () => <DarkModeRoot><Default /></DarkModeRoot>;
+export const DarkMode = darkModeStory(Default);

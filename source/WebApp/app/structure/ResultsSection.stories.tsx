@@ -1,13 +1,12 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../shared/helpers/testing/recoilTestState';
 import type { Result } from '../shared/resultTypes';
 import { targetOptionState } from '../shared/state/targetOptionState';
 import { TargetName, TARGET_AST, TARGET_CSHARP, TARGET_EXPLAIN, TARGET_RUN, TARGET_VERIFY } from '../shared/targets';
-import { DarkModeRoot } from '../shared/testing/DarkModeRoot';
 import { ResultRoot } from '../shared/testing/ResultRoot';
 import { EXAMPLE_AST } from '../features/view-ast/AstView.stories';
 import { EXAMPLE_OUTPUT } from '../features/view-output/OutputView.stories';
+import { TestSetRecoilState } from '../shared/helpers/testing/TestSetRecoilState';
+import { darkModeStory } from '../shared/testing/darkModeStory';
 import { EXAMPLE_CSHARP_CODE } from './results/CodeView.stories';
 import { EXAMPLE_EXPLANATIONS } from './results/ExplainView.stories';
 import { ResultsSection } from './ResultsSection';
@@ -29,7 +28,7 @@ const Template: React.FC<TemplateProps> = ({ target, value }) => {
                 height: 100%;
             }
         `}</style>
-        <RecoilRoot initializeState={recoilTestState([targetOptionState, target])}>
+        <TestSetRecoilState state={targetOptionState} value={target}>
             <ResultRoot action={{
                 type: 'cachedResult',
                 target,
@@ -41,21 +40,21 @@ const Template: React.FC<TemplateProps> = ({ target, value }) => {
             }}>
                 <ResultsSection />
             </ResultRoot>
-        </RecoilRoot>
+        </TestSetRecoilState>
     </>;
 };
 
 export const Code = () => <Template target={TARGET_CSHARP} value={EXAMPLE_CSHARP_CODE} />;
-export const CodeDarkMode = () => <DarkModeRoot><Code /></DarkModeRoot>;
+export const CodeDarkMode = darkModeStory(Code);
 
 export const Ast = () => <Template target={TARGET_AST} value={EXAMPLE_AST} />;
-export const AstDarkMode = () => <DarkModeRoot><Ast /></DarkModeRoot>;
+export const AstDarkMode = darkModeStory(Ast);
 
 export const Explain = () => <Template target={TARGET_EXPLAIN} value={EXAMPLE_EXPLANATIONS} />;
-export const ExplainDarkMode = () => <DarkModeRoot><Explain /></DarkModeRoot>;
+export const ExplainDarkMode = darkModeStory(Explain);
 
 export const Run = () => <Template target={TARGET_RUN} value={{ output: EXAMPLE_OUTPUT, flow: [] }} />;
-export const RunDarkMode = () => <DarkModeRoot><Run /></DarkModeRoot>;
+export const RunDarkMode = darkModeStory(Run);
 
 export const Verify = () => <Template target={TARGET_VERIFY} value='✔️ Compilation completed.' />;
-export const VerifyDarkMode = () => <DarkModeRoot><Verify /></DarkModeRoot>;
+export const VerifyDarkMode = darkModeStory(Verify);

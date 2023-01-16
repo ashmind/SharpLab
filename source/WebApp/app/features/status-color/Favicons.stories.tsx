@@ -1,6 +1,7 @@
 import React from 'react';
 import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
+import { TestSetRecoilState } from '../../shared/helpers/testing/TestSetRecoilState';
+import { TestWaitForRecoilStates } from '../../shared/helpers/testing/TestWaitForRecoilStates';
 import { useReactTestRender } from '../../shared/helpers/testing/useReactTestRender';
 import { onlineState } from '../../shared/state/onlineState';
 import { minimalResultAction } from '../../shared/testing/minimalResultAction';
@@ -20,14 +21,15 @@ type TemplateProps = {
 };
 
 const renderFavicons = ({ offline, error, dark }: TemplateProps) => {
-    return <RecoilRoot initializeState={recoilTestState(
-        [onlineState, !offline],
-        [userThemeState, (dark ? 'dark' : 'light') as UserTheme]
-    )}>
-        <ResultRoot action={minimalResultAction({ error })}>
-            <Favicons />
-        </ResultRoot>
-    </RecoilRoot>;
+    return <>
+        <TestSetRecoilState state={onlineState} value={!offline} />
+        <TestSetRecoilState state={userThemeState} value={(dark ? 'dark' : 'light') as UserTheme} />
+        <TestWaitForRecoilStates states={[onlineState, userThemeState]}>
+            <ResultRoot action={minimalResultAction({ error })}>
+                <Favicons />
+            </ResultRoot>
+        </TestWaitForRecoilStates>
+    </>;
 };
 
 type FaviconLink = {
@@ -41,7 +43,7 @@ type FaviconLink = {
 
 const Template: React.FC<TemplateProps> = ({ offline, error, dark }) => {
     const faviconLinks = useReactTestRender(
-        () => renderFavicons({ offline, error, dark }),
+        () => <RecoilRoot>{renderFavicons({ offline, error, dark })}</RecoilRoot>,
         ({ root }) => root.findAllByType('link'),
         [offline, error, dark]
     ) as ReadonlyArray<FaviconLink> | undefined;

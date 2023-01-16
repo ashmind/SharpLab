@@ -1,18 +1,15 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../shared/helpers/testing/recoilTestState';
+import { TestSetRecoilState } from '../shared/helpers/testing/TestSetRecoilState';
 import { LanguageName, LANGUAGE_CSHARP } from '../shared/languages';
 import { languageOptionState } from '../shared/state/languageOptionState';
-import { DarkModeRoot } from '../shared/testing/DarkModeRoot';
+import { darkModeStory } from '../shared/testing/darkModeStory';
 import { CodeSection } from './CodeSection';
 
 export default {
     component: CodeSection
 };
 
-export const Default = () => <RecoilRoot initializeState={recoilTestState(
-    [languageOptionState, LANGUAGE_CSHARP as LanguageName]
-)}>
+export const Default = () => <TestSetRecoilState state={languageOptionState} value={LANGUAGE_CSHARP as LanguageName}>
     <CodeSection codeEditor={<code>[Code Editor]</code>} />
-</RecoilRoot>;
-export const DefaultDarkMode = () => <DarkModeRoot><Default /></DarkModeRoot>;
+</TestSetRecoilState>;
+export const DefaultDarkMode = darkModeStory(Default);

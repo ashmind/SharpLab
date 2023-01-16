@@ -1,7 +1,6 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
-import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
-import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
+import { TestSetRecoilState } from '../../shared/helpers/testing/TestSetRecoilState';
+import { darkModeStory } from '../../shared/testing/darkModeStory';
 import { codeEditorPreviewEnabled } from './codeEditorPreviewEnabled';
 import { CodeEditorSwitch } from './CodeEditorSwitch';
 
@@ -15,12 +14,12 @@ type TemplateProps = {
 const Template: React.FC<TemplateProps> = ({ preview } = {}) => <>
     <main />{/* needed for some styles to apply */}
     <footer>
-        <RecoilRoot initializeState={recoilTestState([codeEditorPreviewEnabled, !!preview])}>
+        <TestSetRecoilState state={codeEditorPreviewEnabled} value={!!preview}>
             <CodeEditorSwitch />
-        </RecoilRoot>
+        </TestSetRecoilState>
     </footer>
 </>;
 
 export const Default = () => <Template />;
 export const Preview = () => <Template preview />;
-export const DarkMode = () => <DarkModeRoot><Template /></DarkModeRoot>;
+export const DarkMode = darkModeStory(Default);

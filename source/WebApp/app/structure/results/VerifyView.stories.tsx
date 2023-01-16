@@ -1,5 +1,5 @@
 import React from 'react';
-import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
+import { darkModeStory } from '../../shared/testing/darkModeStory';
 import { VerifyView } from './VerifyView';
 
 export default {
@@ -7,4 +7,4 @@ export default {
 };
 
 export const Success = () => <VerifyView message='✔️ Compilation completed.' />;
-export const SuccessDarkMode = () => <DarkModeRoot><Success /></DarkModeRoot>;
+export const SuccessDarkMode = darkModeStory(Success);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { DarkModeRoot } from '../../../shared/testing/DarkModeRoot';
+import { darkModeStory } from '../../../shared/testing/darkModeStory';
 import { MemoryOutput } from './MemoryOutput';
 
 export default {
@@ -14,7 +14,7 @@ const BASIC_INSPECTION = {
 } as const;
 
 export const Basic = () => <MemoryOutput inspection={BASIC_INSPECTION} />;
-export const BasicDarkMode = () => <DarkModeRoot><Basic /></DarkModeRoot>;
+export const BasicDarkMode = darkModeStory(Basic);
 export const BasicHex = () => <MemoryOutput inspection={BASIC_INSPECTION} initialState={{ mode: 'hex' }} />;
 export const BasicChar = () => <MemoryOutput inspection={BASIC_INSPECTION} initialState={{ mode: 'char' }} />;
 export const String = () => <MemoryOutput inspection={{
@@ -60,4 +60,4 @@ export const StructWithNested = () => <MemoryOutput inspection={{
         4, 0, 0, 0
     ]
 }} />;
-export const StructWithNestedDarkMode = () => <DarkModeRoot><StructWithNested /></DarkModeRoot>;
+export const StructWithNestedDarkMode = darkModeStory(StructWithNested);

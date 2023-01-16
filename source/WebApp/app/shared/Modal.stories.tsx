@@ -1,10 +1,10 @@
 import React from 'react';
 import { Modal } from './Modal';
-import { DarkModeRoot } from './testing/DarkModeRoot';
+import { darkModeStory } from './testing/darkModeStory';
 
 export default {
     component: Modal
 };
 
 export const Default = () => <Modal title="Test Title">Test Content</Modal>;
-export const DarkMode = () => <DarkModeRoot><Default /></DarkModeRoot>;
+export const DarkMode = darkModeStory(Default);

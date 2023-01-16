@@ -1,12 +1,12 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
 import { languageOptionState } from '../../shared/state/languageOptionState';
 import { LanguageName, LANGUAGE_CSHARP } from '../../shared/languages';
 import { targetOptionState } from '../../shared/state/targetOptionState';
 import { TargetName, TARGET_CSHARP } from '../../shared/targets';
-import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
 import { MOBILE_VIEWPORT } from '../../shared/helpers/testing/mobileViewport';
+import { TestSetRecoilState } from '../../shared/helpers/testing/TestSetRecoilState';
+import { TestWaitForRecoilStates } from '../../shared/helpers/testing/TestWaitForRecoilStates';
+import { darkModeStory } from '../../shared/testing/darkModeStory';
 import { MobileSettings } from './MobileSettings';
 
 export default {
@@ -19,15 +19,17 @@ export default {
 type TemplateProps = {
     modalOpen?: boolean;
 };
-const minimalState = recoilTestState(
-    [languageOptionState, LANGUAGE_CSHARP as LanguageName],
-    [targetOptionState, TARGET_CSHARP as TargetName]
-);
-const Template: React.FC<TemplateProps> = ({ modalOpen } = {}) => <RecoilRoot initializeState={minimalState}>
-    <MobileSettings buttonProps={{}} initialState={{ modalOpen }} />
-</RecoilRoot>;
+const Template: React.FC<TemplateProps> = ({ modalOpen } = {}) => {
+    return <>
+        <TestSetRecoilState state={languageOptionState} value={LANGUAGE_CSHARP as LanguageName} />
+        <TestSetRecoilState state={targetOptionState} value={TARGET_CSHARP as TargetName} />
+        <TestWaitForRecoilStates states={[languageOptionState, targetOptionState]}>
+            <MobileSettings buttonProps={{}} initialState={{ modalOpen }} />
+        </TestWaitForRecoilStates>
+    </>;
+};
 
 export const Default = () => <Template />;
-export const DarkMode = () => <DarkModeRoot><Template /></DarkModeRoot>;
+export const DarkMode = darkModeStory(Default);
 export const ModalOpen = () => <Template modalOpen />;
-export const ModalOpenDarkMode = () => <DarkModeRoot><Template modalOpen /></DarkModeRoot>;
+export const ModalOpenDarkMode = darkModeStory(ModalOpen);

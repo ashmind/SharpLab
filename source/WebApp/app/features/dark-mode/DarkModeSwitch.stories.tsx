@@ -1,6 +1,5 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
+import { TestSetRecoilState } from '../../shared/helpers/testing/TestSetRecoilState';
 import { DarkModeSwitch } from './DarkModeSwitch';
 import { UserTheme, userThemeState } from './themeState';
 
@@ -14,9 +13,9 @@ type TemplateProps = {
 const Template: React.FC<TemplateProps> = ({ userTheme }) => <>
     <main />{/* needed for some styles to apply */}
     <footer>
-        <RecoilRoot initializeState={recoilTestState([userThemeState, userTheme])}>
+        <TestSetRecoilState state={userThemeState} value={userTheme}>
             <DarkModeSwitch />
-        </RecoilRoot>
+        </TestSetRecoilState>
     </footer>
 </>;
 

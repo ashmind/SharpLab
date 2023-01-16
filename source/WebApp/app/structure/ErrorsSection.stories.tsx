@@ -1,5 +1,5 @@
 import React from 'react';
-import { DarkModeRoot } from '../shared/testing/DarkModeRoot';
+import { darkModeStory } from '../shared/testing/darkModeStory';
 import { ErrorsSection } from './ErrorsSection';
 
 export default {
@@ -15,4 +15,4 @@ export const EXAMPLE_ERRORS = [
 
 export const Empty = () => <ErrorsSection errors={[]} />;
 export const Full = () => <ErrorsSection errors={EXAMPLE_ERRORS} />;
-export const FullDarkMode = () => <DarkModeRoot><Full /></DarkModeRoot>;
+export const FullDarkMode = darkModeStory(Full);

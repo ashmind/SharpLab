@@ -1,5 +1,5 @@
 import React from 'react';
-import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
+import { darkModeStory } from '../../shared/testing/darkModeStory';
 import { GistSaveModal } from './GistSaveModal';
 
 export default {
@@ -16,4 +16,4 @@ const Template: React.FC<TemplateProps> = () => {
 };
 
 export const Default = () => <Template />;
-export const DarkMode = () => <DarkModeRoot><Template /></DarkModeRoot>;
+export const DarkMode = darkModeStory(Default);

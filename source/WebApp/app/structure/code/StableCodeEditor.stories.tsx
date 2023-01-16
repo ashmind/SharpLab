@@ -1,11 +1,11 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../shared/languages';
 import { languageOptionState } from '../../shared/state/languageOptionState';
 import type { Flow } from '../../shared/resultTypes';
 import { loadedCodeState } from '../../shared/state/loadedCodeState';
 import { darkModeStory } from '../../shared/testing/darkModeStory';
+import { TestSetRecoilState } from '../../shared/helpers/testing/TestSetRecoilState';
+import { TestWaitForRecoilStates } from '../../shared/helpers/testing/TestWaitForRecoilStates';
 import { CodeEditorProps, StableCodeEditor } from './StableCodeEditor';
 
 export default {
@@ -78,10 +78,9 @@ type TemplateProps = {
 const doNothing = () => {};
 
 const Template: React.FC<TemplateProps> = ({ language, loadedCode, executionFlow, initialExecutionFlowSelectRule }) => <>
-    <RecoilRoot initializeState={recoilTestState(
-        [languageOptionState, language],
-        [loadedCodeState, loadedCode]
-    )}>
+    <TestSetRecoilState state={languageOptionState} value={language} />
+    <TestSetRecoilState state={loadedCodeState} value={loadedCode} />
+    <TestWaitForRecoilStates states={[languageOptionState, loadedCodeState]}>
         <StableCodeEditor
             onCodeChange={doNothing}
             onConnectionChange={doNothing}
@@ -91,7 +90,7 @@ const Template: React.FC<TemplateProps> = ({ language, loadedCode, executionFlow
             executionFlow={executionFlow ?? null}
             initialCached
             initialExecutionFlowSelectRule={initialExecutionFlowSelectRule} />
-    </RecoilRoot>
+    </TestWaitForRecoilStates>
 </>;
 
 export const CSharp = () => <Template language={LANGUAGE_CSHARP} loadedCode={`

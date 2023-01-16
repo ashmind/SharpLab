@@ -1,14 +1,9 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../../../shared/helpers/testing/recoilTestState';
-import { DarkModeRoot } from '../../../shared/testing/DarkModeRoot';
+import { darkModeStory } from '../../../shared/testing/darkModeStory';
 import { GroupOutput } from './GroupOutput';
 
 export default {
-    component: GroupOutput,
-    decorators: [
-        (Story: () => JSX.Element) => <RecoilRoot><Story /></RecoilRoot>
-    ]
+    component: GroupOutput
 };
 
 export const Full = () => <GroupOutput group={{
@@ -25,7 +20,7 @@ export const Full = () => <GroupOutput group={{
         { type: 'inspection:simple', title: 'Warning', value: 'Warning\r\n  at test location' }
     ]
 }} />;
-export const FullDarkMode = () => <DarkModeRoot><Full /></DarkModeRoot>;
+export const FullDarkMode = darkModeStory(Full);
 
 export const LimitReached = () => <GroupOutput group={{
     type: 'inspection:group',
@@ -35,4 +30,4 @@ export const LimitReached = () => <GroupOutput group={{
     ],
     limitReached: true
 }} />;
-export const LimitReachedDarkMode = () => <DarkModeRoot><LimitReached /></DarkModeRoot>;
+export const LimitReachedDarkMode = darkModeStory(LimitReached);

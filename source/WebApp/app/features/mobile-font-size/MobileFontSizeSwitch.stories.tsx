@@ -1,8 +1,7 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
-import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
 import { MOBILE_VIEWPORT } from '../../shared/helpers/testing/mobileViewport';
+import { TestSetRecoilState } from '../../shared/helpers/testing/TestSetRecoilState';
+import { darkModeStory } from '../../shared/testing/darkModeStory';
 import { fontSizeState, MobileFontSize } from './fontSizeState';
 import { MobileFontSizeSwitch } from './MobileFontSizeSwitch';
 
@@ -23,12 +22,12 @@ const Template: React.FC<TemplateProps> = ({ fontSize }) => <>
         </pre>
     </main>
     <footer>
-        <RecoilRoot initializeState={recoilTestState([fontSizeState, fontSize])}>
+        <TestSetRecoilState state={fontSizeState} value={fontSize}>
             <MobileFontSizeSwitch />
-        </RecoilRoot>
+        </TestSetRecoilState>
     </footer>
 </>;
 
 export const Default = () => <Template fontSize='default' />;
 export const Large = () => <Template fontSize='large' />;
-export const DarkMode = () => <DarkModeRoot><Template fontSize='default' /></DarkModeRoot>;
+export const DarkMode = darkModeStory(Default);

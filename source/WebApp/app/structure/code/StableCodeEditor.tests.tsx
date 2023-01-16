@@ -5,11 +5,11 @@ import { RecoilRoot } from 'recoil';
 import { branchOptionState } from '../../features/roslyn-branches/branchOptionState';
 import type { Branch } from '../../features/roslyn-branches/types';
 import { DeepPartial, fromPartial } from '../../shared/helpers/testing/fromPartial';
-import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
 import { LanguageName, LANGUAGE_CSHARP } from '../../shared/languages';
 import { languageOptionState } from '../../shared/state/languageOptionState';
 import { loadedCodeState } from '../../shared/state/loadedCodeState';
 import { TestSetRecoilState } from '../../shared/helpers/testing/TestSetRecoilState';
+import { TestWaitForRecoilStates } from '../../shared/helpers/testing/TestWaitForRecoilStates';
 import { StableCodeEditor } from './StableCodeEditor';
 
 const RENDERER_OPTIONS: TestRendererOptions = {
@@ -30,21 +30,20 @@ const render = ({
     loadedCode?: string;
 } = {}) => {
     const branchValue = branch ? fromPartial<Branch>(branch) : null;
-    return <RecoilRoot initializeState={recoilTestState(
-        [languageOptionState, LANGUAGE_CSHARP as LanguageName],
-        [branchOptionState, branchValue],
-        [loadedCodeState, loadedCode]
-    )}>
+    return <RecoilRoot>
+        <TestSetRecoilState state={languageOptionState} value={LANGUAGE_CSHARP as LanguageName} />
         <TestSetRecoilState state={branchOptionState} value={branchValue} />
         <TestSetRecoilState state={loadedCodeState} value={loadedCode} />
-        <StableCodeEditor
-            initialCached={true}
-            executionFlow={null}
-            onCodeChange={doNothing}
-            onConnectionChange={doNothing}
-            onServerError={doNothing}
-            onSlowUpdateResult={doNothing}
-            onSlowUpdateWait={doNothing} />
+        <TestWaitForRecoilStates states={[languageOptionState, branchOptionState, loadedCodeState]}>
+            <StableCodeEditor
+                initialCached={true}
+                executionFlow={null}
+                onCodeChange={doNothing}
+                onConnectionChange={doNothing}
+                onServerError={doNothing}
+                onSlowUpdateResult={doNothing}
+                onSlowUpdateWait={doNothing} />
+        </TestWaitForRecoilStates>
     </RecoilRoot>;
 };
 

@@ -1,7 +1,6 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
 import { TargetLanguageName, TARGET_ASM, TARGET_CSHARP, TARGET_IL } from '../../shared/targets';
-import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
+import { darkModeStory } from '../../shared/testing/darkModeStory';
 import { CodeView, LinkedCodeRange } from './CodeView';
 
 export default {
@@ -15,20 +14,8 @@ type TemplateProps = {
     ranges?: ReadonlyArray<LinkedCodeRange>;
 };
 
-const Template: React.FC<TemplateProps> = ({ code, language, ranges }) => <>
-    <RecoilRoot>
-        <CodeView code={code} language={language} ranges={ranges} />
-    </RecoilRoot>
-</>;
-
-const DarkMode = (Story: {
-    (): JSX.Element;
-    readonly storyName: string;
-}) => {
-    const story = () => <DarkModeRoot><Story /></DarkModeRoot>;
-    story.storyName = Story.storyName + ' (Dark Mode)';
-    return story;
-};
+const Template: React.FC<TemplateProps> = ({ code, language, ranges }) =>
+    <CodeView code={code} language={language} ranges={ranges} />;
 
 const EXAMPLE_CSHARP_CODE = `
 using System.Diagnostics;
@@ -56,7 +43,7 @@ export { EXAMPLE_CSHARP_CODE as EXAMPLE_CSHARP_CODE };
 
 export const CSharp = () => <Template language={TARGET_CSHARP} code={EXAMPLE_CSHARP_CODE} />;
 CSharp.storyName = 'C#';
-export const CSharpDarkMode = DarkMode(CSharp);
+export const CSharpDarkMode = darkModeStory(CSharp);
 
 export const IL = () => <Template language={TARGET_IL} code={`
 .class public auto ansi beforefieldinit C
@@ -89,8 +76,7 @@ export const IL = () => <Template language={TARGET_IL} code={`
 
 } // end of class C
 `.trim()} />;
-IL.storyName = 'IL';
-export const ILDarkMode = DarkMode(IL);
+export const ILDarkMode = darkModeStory(IL);
 
 export const JitAsm = () => <Template language={TARGET_ASM} code={`
 ; Core CLR 6.0.322.12309 on amd64
@@ -126,4 +112,4 @@ C.M()
     L0023: ret
 `.trim()} />;
 JitAsm.storyName = 'JIT ASM';
-export const JitAsmDarkMode = DarkMode(JitAsm);
+export const JitAsmDarkMode = darkModeStory(JitAsm);

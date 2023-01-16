@@ -1,6 +1,5 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
-import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
+import { darkModeStory } from '../../shared/testing/darkModeStory';
 import { AstView } from './AstView';
 
 export default {
@@ -9,9 +8,7 @@ export default {
 };
 
 type TemplateProps = React.ComponentProps<typeof AstView>;
-const Template: React.FC<TemplateProps> = props => <RecoilRoot>
-    <AstView {...props} />
-</RecoilRoot>;
+const Template: React.FC<TemplateProps> = props => <AstView {...props} />;
 
 export const EXAMPLE_AST = [{
     type: 'node',
@@ -197,4 +194,4 @@ export const EXAMPLE_AST = [{
 }];
 
 export const Full = () => <Template roots={EXAMPLE_AST} initialState={{ expanded: true }} />;
-export const FullDarkMode = () => <DarkModeRoot><Full /></DarkModeRoot>;
+export const FullDarkMode = darkModeStory(Full);

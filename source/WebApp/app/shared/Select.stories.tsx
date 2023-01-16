@@ -1,6 +1,6 @@
 import React from 'react';
 import { Select, SelectOptions } from './Select';
-import { DarkModeRoot } from './testing/DarkModeRoot';
+import { darkModeStory } from './testing/darkModeStory';
 
 export default {
     component: Select
@@ -24,4 +24,4 @@ export const InGroup = () => <Template value={'test'} options={[{
         { value: 'test', label: 'Test' }
     ]
 }]} />;
-export const DarkMode = () => <DarkModeRoot><Default /></DarkModeRoot>;
+export const DarkMode = darkModeStory(Default);

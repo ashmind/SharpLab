@@ -1,11 +1,12 @@
 import React from 'react';
 import { RecoilRoot } from 'recoil';
-import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
 import { onlineState } from '../../shared/state/onlineState';
 import { UserTheme, userThemeState } from '../dark-mode/themeState';
 import { useReactTestRender } from '../../shared/helpers/testing/useReactTestRender';
 import { ResultRoot } from '../../shared/testing/ResultRoot';
 import { minimalResultAction } from '../../shared/testing/minimalResultAction';
+import { TestSetRecoilState } from '../../shared/helpers/testing/TestSetRecoilState';
+import { TestWaitForRecoilStates } from '../../shared/helpers/testing/TestWaitForRecoilStates';
 import { ThemeColorMeta } from './ThemeColorMeta';
 
 export default {
@@ -20,19 +21,20 @@ type TemplateProps = {
 };
 
 const renderMeta = ({ offline, error, dark }: TemplateProps) => {
-    return <RecoilRoot initializeState={recoilTestState(
-        [onlineState, !offline],
-        [userThemeState, (dark ? 'dark' : 'light') as UserTheme]
-    )}>
-        <ResultRoot action={minimalResultAction({ error })}>
-            <ThemeColorMeta />
-        </ResultRoot>
-    </RecoilRoot>;
+    return <>
+        <TestSetRecoilState state={onlineState} value={!offline} />
+        <TestSetRecoilState state={userThemeState} value={(dark ? 'dark' : 'light') as UserTheme} />
+        <TestWaitForRecoilStates states={[onlineState, userThemeState]}>
+            <ResultRoot action={minimalResultAction({ error })}>
+                <ThemeColorMeta />
+            </ResultRoot>
+        </TestWaitForRecoilStates>
+    </>;
 };
 
 const Template: React.FC<TemplateProps> = ({ offline, error, dark }) => {
     const metaColor = useReactTestRender(
-        () => renderMeta({ offline, error, dark }),
+        () => <RecoilRoot>{renderMeta({ offline, error, dark })}</RecoilRoot>,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         ({ root }) => root.find(x => x.type === 'meta' && x.props.name === 'theme-color')!.props.content as string,
         [offline, error, dark]

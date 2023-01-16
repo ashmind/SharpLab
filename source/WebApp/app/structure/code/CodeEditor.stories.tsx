@@ -1,7 +1,7 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
 import { codeEditorPreviewEnabled } from '../../features/cm6-preview/codeEditorPreviewEnabled';
-import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
+import { TestSetRecoilState } from '../../shared/helpers/testing/TestSetRecoilState';
+import { TestWaitForRecoilStates } from '../../shared/helpers/testing/TestWaitForRecoilStates';
 import { LanguageName, LANGUAGE_CSHARP } from '../../shared/languages';
 import { languageOptionState } from '../../shared/state/languageOptionState';
 import { loadedCodeState } from '../../shared/state/loadedCodeState';
@@ -17,20 +17,21 @@ type TemplateProps = {
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const doNothing = () => {};
 const Template: React.FC<TemplateProps> = ({ preview } = {}) =>
-    <RecoilRoot initializeState={recoilTestState(
-        [codeEditorPreviewEnabled, !!preview],
-        [languageOptionState, LANGUAGE_CSHARP as LanguageName],
-        [loadedCodeState, 'using System;\r\n\r\nConsole.WriteLine("🌄");']
-    )}>
-        <CodeEditor
-            onCodeChange={doNothing}
-            onConnectionChange={doNothing}
-            onServerError={doNothing}
-            onSlowUpdateResult={doNothing}
-            onSlowUpdateWait={doNothing}
-            executionFlow={null}
-            initialCached />
-    </RecoilRoot>;
+    <>
+        <TestSetRecoilState state={codeEditorPreviewEnabled} value={!!preview} />
+        <TestSetRecoilState state={languageOptionState} value={LANGUAGE_CSHARP as LanguageName} />
+        <TestSetRecoilState state={loadedCodeState} value={'using System;\r\n\r\nConsole.WriteLine("🌄");'} />
+        <TestWaitForRecoilStates states={[codeEditorPreviewEnabled, languageOptionState, loadedCodeState]}>
+            <CodeEditor
+                onCodeChange={doNothing}
+                onConnectionChange={doNothing}
+                onServerError={doNothing}
+                onSlowUpdateResult={doNothing}
+                onSlowUpdateWait={doNothing}
+                executionFlow={null}
+                initialCached />
+        </TestWaitForRecoilStates>
+    </>;
 
 export const Default = () => <Template />;
 export const Preview = () => <Template preview />;

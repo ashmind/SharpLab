@@ -1,18 +1,20 @@
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
-import mirrorsharp, { MirrorSharpOptions, MirrorSharpConnectionState, MirrorSharpInstance, MirrorSharpSlowUpdateResult } from 'mirrorsharp-codemirror-6-preview';
+import mirrorsharp, { MirrorSharpOptions, MirrorSharpConnectionState, MirrorSharpInstance } from 'mirrorsharp-codemirror-6-preview';
 import { useRecoilValue } from 'recoil';
+import type { MirrorSharpSlowUpdateResult as StableMirrorSharpSlowUpdateResult } from 'mirrorsharp';
 import { languageOptionState } from '../../shared/state/languageOptionState';
 import type { Result } from '../../shared/resultTypes';
 import { useServerOptions } from '../../structure/code/internal/useServerOptions';
 import { useServiceUrl } from '../../structure/code/internal/useServiceUrl';
 import type { ServerOptions } from '../../structure/code/internal/ServerOptions';
 import { loadedCodeState } from '../../shared/state/loadedCodeState';
+import { effectiveThemeSelector } from '../dark-mode/themeState';
 
 type ResultData = Result['value'];
 
 type Props = {
     onSlowUpdateWait: () => void;
-    onSlowUpdateResult: (value: MirrorSharpSlowUpdateResult<ResultData>) => void;
+    onSlowUpdateResult: (value: StableMirrorSharpSlowUpdateResult<ResultData>) => void;
     onConnectionChange: (state: MirrorSharpConnectionState) => void;
     onCodeChange: (getCode: () => string) => void;
     onServerError: (message: string) => void;
@@ -36,6 +38,9 @@ export const PreviewCodeEditor: React.FC<Props> = ({
 
     const serviceUrl = useServiceUrl();
     const serverOptions = useServerOptions({ initialCached: true });
+
+    const theme = useRecoilValue(effectiveThemeSelector);
+
     const containerRef = useRef<HTMLDivElement>(null);
 
     const onSlowUpdateWaitRef = useUpdatingRef(onSlowUpdateWait);
@@ -49,12 +54,18 @@ export const PreviewCodeEditor: React.FC<Props> = ({
     const optionsRef = useRef<MirrorSharpOptions<ServerOptions, ResultData>>({
         serviceUrl,
         language,
-        initialText: loadedCode,
-        initialServerOptions: serverOptions,
+        text: loadedCode,
+        serverOptions,
+        theme,
         on: {
             slowUpdateWait: () => onSlowUpdateWaitRef.current(),
-            slowUpdateResult: r => onSlowUpdateResultRef.current(r),
-            connectionChange: s => onConnectionChangeRef.current(s),
+            slowUpdateResult: ({ diagnostics, extensionResult }) => onSlowUpdateResultRef.current({
+                diagnostics,
+                x: extensionResult
+            }),
+            connectionChange: s => onConnectionChangeRef.current(
+                s === 'open' ? 'open' : 'close'
+            ),
             textChange: t => onCodeChangeRef.current(t),
             serverError: e => onServerErrorRef.current(e)
         }
@@ -67,7 +78,7 @@ export const PreviewCodeEditor: React.FC<Props> = ({
 
         return () => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            instanceRef.current!.destroy({});
+            instanceRef.current!.destroy();
         };
     }, []);
 
@@ -84,16 +95,25 @@ export const PreviewCodeEditor: React.FC<Props> = ({
     useEffect(() => {
         if (!instanceRef.current)
             return;
-        if (serverOptions === optionsRef.current.initialServerOptions)
+        if (serverOptions === optionsRef.current.serverOptions)
             return;
-        optionsRef.current = { ...optionsRef.current, initialServerOptions: serverOptions };
+        optionsRef.current = { ...optionsRef.current, serverOptions };
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         instanceRef.current.setServerOptions(serverOptions);
     }, [serverOptions]);
 
+    useEffect(() => {
+        if (!instanceRef.current)
+            return;
+        if (theme === optionsRef.current.theme)
+            return;
+        optionsRef.current = { ...optionsRef.current, theme };
+        instanceRef.current.setTheme(theme);
+    }, [theme]);
+
     return <div className="cm6-preview" ref={containerRef}>
         <small className="disclaimer">
-            The preview editor is very incomplete. Most things (e.g. dark mode) will not work.
+            The preview editor is incomplete. Some things might not work as expected.
         </small>
     </div>;
 };

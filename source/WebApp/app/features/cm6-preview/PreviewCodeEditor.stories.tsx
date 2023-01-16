@@ -1,10 +1,11 @@
 import React from 'react';
-import { RecoilRoot } from 'recoil';
-import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
-import { recoilTestState } from '../../shared/helpers/testing/recoilTestState';
+import { TestSetRecoilState } from '../../shared/helpers/testing/TestSetRecoilState';
+import { TestWaitForRecoilStates } from '../../shared/helpers/testing/TestWaitForRecoilStates';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../shared/languages';
 import { languageOptionState } from '../../shared/state/languageOptionState';
 import { loadedCodeState } from '../../shared/state/loadedCodeState';
+import { darkModeStory } from '../../shared/testing/darkModeStory';
+import { UserTheme, userThemeState } from '../dark-mode/themeState';
 import { PreviewCodeEditor } from './PreviewCodeEditor';
 
 export default {
@@ -19,17 +20,17 @@ type TemplateProps = {
 const doNothing = () => {};
 
 const Template: React.FC<TemplateProps> = ({ language, loadedCode }) => <>
-    <RecoilRoot initializeState={recoilTestState(
-        [languageOptionState, language],
-        [loadedCodeState, loadedCode]
-    )}>
+    <TestSetRecoilState state={languageOptionState} value={language} />
+    <TestSetRecoilState state={loadedCodeState} value={loadedCode} />
+    <TestSetRecoilState state={userThemeState} value={'light' as UserTheme} />
+    <TestWaitForRecoilStates states={[languageOptionState, loadedCodeState, userThemeState]}>
         <PreviewCodeEditor
             onCodeChange={doNothing}
             onConnectionChange={doNothing}
             onServerError={doNothing}
             onSlowUpdateResult={doNothing}
             onSlowUpdateWait={doNothing} />
-    </RecoilRoot>
+    </TestWaitForRecoilStates>
 </>;
 
 export const CSharp = () => <Template language={LANGUAGE_CSHARP} loadedCode={`
@@ -78,11 +79,7 @@ export const IL = () => <Template language={LANGUAGE_IL} loadedCode={`
 }
 `.trim()} />;
 
-export const CSharpDarkMode = () => <DarkModeRoot><CSharp /></DarkModeRoot>;
-CSharpDarkMode.storyName = 'C# (Dark Mode)';
-export const VisualBasicDarkMode = () => <DarkModeRoot><VisualBasic /></DarkModeRoot>;
-VisualBasicDarkMode.storyName = 'Visual Basic (Dark Mode)';
-export const FSharpDarkMode = () => <DarkModeRoot><FSharp /></DarkModeRoot>;
-FSharpDarkMode.storyName = 'F# (Dark Mode)';
-export const ILDarkMode = () => <DarkModeRoot><IL /></DarkModeRoot>;
-ILDarkMode.storyName = 'IL (Dark Mode)';
+export const CSharpDarkMode = darkModeStory(CSharp);
+export const VisualBasicDarkMode = darkModeStory(VisualBasic);
+export const FSharpDarkMode = darkModeStory(FSharp);
+export const ILDarkMode = darkModeStory(IL);

@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { RecoilRoot } from 'recoil';
 import { useMockBranches } from '../../.storybook/__mocks__/branchesPromise';
 import { UserTheme, userThemeState } from '../features/dark-mode/themeState';
 import { EXAMPLE_BRANCH } from '../features/roslyn-branches/BranchDetailsSection.stories';
 import { branchOptionState } from '../features/roslyn-branches/branchOptionState';
 import type { Branch } from '../features/roslyn-branches/types';
 import { MOBILE_VIEWPORT } from '../shared/helpers/testing/mobileViewport';
-import { recoilTestState } from '../shared/helpers/testing/recoilTestState';
 import { getDefaultCode } from '../shared/defaults';
 import { LanguageName, LANGUAGE_CSHARP } from '../shared/languages';
 import type { UpdateResult } from '../shared/resultTypes';
@@ -18,6 +16,8 @@ import type { ResultUpdateAction } from '../shared/state/results/ResultUpdateAct
 import { targetOptionState } from '../shared/state/targetOptionState';
 import { TargetName, TARGET_CSHARP } from '../shared/targets';
 import { ResultRoot } from '../shared/testing/ResultRoot';
+import { TestSetRecoilState } from '../shared/helpers/testing/TestSetRecoilState';
+import { TestWaitForRecoilStates } from '../shared/helpers/testing/TestWaitForRecoilStates';
 import { Body } from './Body';
 import { EXAMPLE_ERRORS } from './ErrorsSection.stories';
 import { EXAMPLE_CSHARP_CODE } from './results/CodeView.stories';
@@ -62,18 +62,19 @@ const Template: React.FC<TemplateProps> = ({ branch, result, offline, dark }) =>
     };
 
     const body = ReactDOM.createPortal(
-        <RecoilRoot initializeState={recoilTestState(
-            [languageOptionState, LANGUAGE_CSHARP as LanguageName],
-            [targetOptionState, TARGET_CSHARP as TargetName],
-            [loadedCodeState, getDefaultCode(LANGUAGE_CSHARP, TARGET_CSHARP)],
-            [userThemeState, (dark ? 'dark' : 'light') as UserTheme],
-            [branchOptionState, branch ?? null],
-            [onlineState, !offline]
-        )}>
-            <ResultRoot action={resultAction}>
-                <Body />
-            </ResultRoot>
-        </RecoilRoot>,
+        <>
+            <TestSetRecoilState state={languageOptionState} value={LANGUAGE_CSHARP as LanguageName} />
+            <TestSetRecoilState state={targetOptionState} value={TARGET_CSHARP as TargetName} />
+            <TestSetRecoilState state={loadedCodeState} value={getDefaultCode(LANGUAGE_CSHARP, TARGET_CSHARP)} />
+            <TestSetRecoilState state={userThemeState} value={(dark ? 'dark' : 'light') as UserTheme} />
+            <TestSetRecoilState state={branchOptionState} value={branch ?? null} />
+            <TestSetRecoilState state={onlineState} value={!offline} />
+            <TestWaitForRecoilStates states={[languageOptionState, targetOptionState, loadedCodeState, userThemeState, branchOptionState, onlineState]}>
+                <ResultRoot action={resultAction}>
+                    <Body />
+                </ResultRoot>
+            </TestWaitForRecoilStates>
+        </>,
         main
     );
 

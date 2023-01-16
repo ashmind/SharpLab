@@ -67,4 +67,6 @@ task('storybook:test:update', async () => {
     await clean();
     process.env[UPDATE_SNAPSHOTS_KEY] = 'true';
     await test();
+}, {
+    timeout: 20 * 60 * 1000
 });

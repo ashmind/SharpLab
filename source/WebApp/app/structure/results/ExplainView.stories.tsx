@@ -1,5 +1,5 @@
 import React from 'react';
-import { DarkModeRoot } from '../../shared/testing/DarkModeRoot';
+import { darkModeStory } from '../../shared/testing/darkModeStory';
 import { ExplainView } from './ExplainView';
 
 export default {
@@ -23,7 +23,7 @@ export const EXAMPLE_EXPLANATIONS = [
 ];
 
 export const Empty = () => <ExplainView explanations={[]} />;
-export const EmptyDarkMode = () => <DarkModeRoot><Empty /></DarkModeRoot>;
+export const EmptyDarkMode = darkModeStory(Empty);
 
 export const Full = () => <ExplainView explanations={EXAMPLE_EXPLANATIONS} />;
-export const FullDarkMode = () => <DarkModeRoot><Full /></DarkModeRoot>;
+export const FullDarkMode = darkModeStory(Full);

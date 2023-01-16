@@ -1,5 +1,5 @@
 import React from 'react';
-import { DarkModeRoot } from '../../../shared/testing/DarkModeRoot';
+import { darkModeStory } from '../../../shared/testing/darkModeStory';
 import { MemoryGraphOutput } from './MemoryGraphOutput';
 
 export default {
@@ -47,4 +47,4 @@ export const Full = () => <MemoryGraphOutput inspection={{
         { from: 7,  to: 8 }
     ]
 }} />;
-export const FullDarkMode = () => <DarkModeRoot><Full /></DarkModeRoot>;
+export const FullDarkMode = darkModeStory(Full);
