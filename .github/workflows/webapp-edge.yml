@@ -43,6 +43,14 @@ jobs:
         run: npm run build
         working-directory: source/#external/mirrorsharp/WebAssets
 
+      - name: Run npm ci (mirrorsharp-codemirror-6-preview)
+        run: npm ci
+        working-directory: source/#external/mirrorsharp-codemirror-6-preview/WebAssets
+
+      - name: Run npm run build (mirrorsharp-codemirror-6-preview)
+        run: npm run build
+        working-directory: source/#external/mirrorsharp-codemirror-6-preview/WebAssets
+
       - run: npm ci
 
       - run: npm run build-ci

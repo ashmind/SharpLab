@@ -13,9 +13,11 @@ export const outputVersionRoot = `${outputSharedRoot}/${outputVersion}`;
 // TODO: expose in oldowan
 export const exec2 = (command: string, args: ReadonlyArray<string>, options?: {
     env?: NodeJS.ProcessEnv;
+    cwd?: string;
 }) => execa(command, args, {
     preferLocal: true,
     stdout: process.stdout,
     stderr: process.stderr,
-    env: options?.env
+    env: options?.env,
+    cwd: options?.cwd
 });

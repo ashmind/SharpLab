@@ -15,7 +15,15 @@ const latest = task('latest', () => jetpack.writeAsync(
     `${outputSharedRoot}/latest`, htmlOutputPath.replace(outputSharedRoot, '').replace(/^[\\/]/, '')
 ));
 
+const cm6PreviewRoot = `${dirname}/node_modules/mirrorsharp-codemirror-6-preview`;
+const installCM6PreviewModules = task('install:cm6-preview-modules', async () => {
+    await exec2('npm', ['install'], { cwd: cm6PreviewRoot });
+}, {
+    watch: [cm6PreviewRoot]
+});
+
 const build = task('build', async () => {
+    await installCM6PreviewModules();
     await jetpack.removeAsync(outputSharedRoot);
     await Promise.all([
         deps(),
