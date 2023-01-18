@@ -9,6 +9,8 @@ on:
       - '!source/Container/**'
       - '!source/Container.Manager/**'
       - '!source/#external/Fragile/**'
+      - '!source/#external/mirrorsharp/WebAssets/**'
+      - '!source/#external/mirrorsharp-codemirror-6-preview/WebAssets/**'
   pull_request:
   workflow_dispatch:
 

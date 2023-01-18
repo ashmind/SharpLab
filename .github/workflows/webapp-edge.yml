@@ -5,6 +5,8 @@ on:
     paths:
     - '.github/workflows/webapp-edge.yml'
     - 'source/WebApp/**'
+    - 'source/#external/mirrorsharp/WebAssets/**'
+    - 'source/#external/mirrorsharp-codemirror-6-preview/WebAssets/**'
   pull_request:
   workflow_dispatch:
 
