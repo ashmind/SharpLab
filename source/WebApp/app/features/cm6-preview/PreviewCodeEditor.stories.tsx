@@ -29,7 +29,8 @@ const Template: React.FC<TemplateProps> = ({ language, loadedCode }) => <>
             onConnectionChange={doNothing}
             onServerError={doNothing}
             onSlowUpdateResult={doNothing}
-            onSlowUpdateWait={doNothing} />
+            onSlowUpdateWait={doNothing}
+            initialCached />
     </TestWaitForRecoilStates>
 </>;
 

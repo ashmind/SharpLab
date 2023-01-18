@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import mirrorsharp, { MirrorSharpOptions, MirrorSharpConnectionState, MirrorSharpInstance } from 'mirrorsharp-codemirror-6-preview';
 import { useRecoilValue } from 'recoil';
 import type { MirrorSharpSlowUpdateResult as StableMirrorSharpSlowUpdateResult } from 'mirrorsharp';
@@ -18,6 +18,7 @@ type Props = {
     onConnectionChange: (state: MirrorSharpConnectionState) => void;
     onCodeChange: (getCode: () => string) => void;
     onServerError: (message: string) => void;
+    initialCached: boolean;
 };
 
 const useUpdatingRef = <T, >(value: T) => {
@@ -27,6 +28,8 @@ const useUpdatingRef = <T, >(value: T) => {
 };
 
 export const PreviewCodeEditor: React.FC<Props> = ({
+    initialCached,
+
     onSlowUpdateWait,
     onSlowUpdateResult,
     onConnectionChange,
@@ -46,10 +49,11 @@ export const PreviewCodeEditor: React.FC<Props> = ({
     const onSlowUpdateWaitRef = useUpdatingRef(onSlowUpdateWait);
     const onSlowUpdateResultRef = useUpdatingRef(onSlowUpdateResult);
     const onConnectionChangeRef = useUpdatingRef(onConnectionChange);
-    const onCodeChangeRef = useUpdatingRef(onCodeChange);
     const onServerErrorRef = useUpdatingRef(onServerError);
 
     const instanceRef = useRef<MirrorSharpInstance<ServerOptions>>();
+
+    const initialConnectionRequestedRef = useRef(!initialCached);
 
     const optionsRef = useRef<MirrorSharpOptions<ServerOptions, ResultData>>({
         serviceUrl,
@@ -57,6 +61,7 @@ export const PreviewCodeEditor: React.FC<Props> = ({
         text: loadedCode,
         serverOptions,
         theme,
+        disconnected: initialCached,
         on: {
             slowUpdateWait: () => onSlowUpdateWaitRef.current(),
             slowUpdateResult: ({ diagnostics, extensionResult }) => onSlowUpdateResultRef.current({
@@ -70,6 +75,19 @@ export const PreviewCodeEditor: React.FC<Props> = ({
             serverError: e => onServerErrorRef.current(e)
         }
     });
+
+    const connectIfInitialWasCached = useCallback(() => {
+        if (initialConnectionRequestedRef.current)
+            return;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        instanceRef.current!.connect();
+        initialConnectionRequestedRef.current = true;
+    }, [instanceRef]);
+
+    const onCodeChangeRef = useUpdatingRef(useCallback((getCode: () => string) => {
+        connectIfInitialWasCached();
+        onCodeChange(getCode);
+    }, [connectIfInitialWasCached, onCodeChange]));
 
     useLayoutEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
