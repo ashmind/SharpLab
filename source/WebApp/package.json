@@ -17,7 +17,7 @@
     "test-storybook-in-container": "ts-node-script ./scripts.ts storybook:test:in-container"
   },
   "engines": {
-    "node": ">=16.14.2"
+    "node": ">=16.17.1"
   },
   "jest": {
     "maxConcurrency": 10,
