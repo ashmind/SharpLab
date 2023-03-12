@@ -9,6 +9,7 @@ import { useServiceUrl } from '../../structure/code/internal/useServiceUrl';
 import type { ServerOptions } from '../../structure/code/internal/ServerOptions';
 import { loadedCodeState } from '../../shared/state/loadedCodeState';
 import { effectiveThemeSelector } from '../dark-mode/themeState';
+import { defaultCodeSelector, isDefaultCode } from '../../shared/state/defaultCodeSelector';
 
 type ResultData = Result['value'];
 
@@ -38,6 +39,7 @@ export const PreviewCodeEditor: React.FC<Props> = ({
 }) => {
     const language = useRecoilValue(languageOptionState);
     const loadedCode = useRecoilValue(loadedCodeState);
+    const defaultCode = useRecoilValue(defaultCodeSelector);
 
     const serviceUrl = useServiceUrl();
     const serverOptions = useServerOptions({ initialCached: true });
@@ -128,6 +130,15 @@ export const PreviewCodeEditor: React.FC<Props> = ({
         optionsRef.current = { ...optionsRef.current, theme };
         instanceRef.current.setTheme(theme);
     }, [theme]);
+
+    useEffect(() => {
+        if (!instanceRef.current)
+            return;
+
+        const code = instanceRef.current.getText();
+        if (code !== defaultCode && isDefaultCode(code))
+            instanceRef.current.setText(defaultCode);
+    }, [defaultCode]);
 
     return <div className="cm6-preview" ref={containerRef}>
         <small className="disclaimer">
