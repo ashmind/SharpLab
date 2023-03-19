@@ -109,6 +109,8 @@
     "webpack-stats-plugin": "1.0.3"
   },
   "dependencies": {
+    "@codemirror/state": "6.1.2",
+    "@codemirror/view": "6.3.0",
     "@fontsource/open-sans": "4.5.10",
     "@fontsource/roboto-condensed": "4.5.8",
     "array.prototype.grouptomap": "1.1.1",

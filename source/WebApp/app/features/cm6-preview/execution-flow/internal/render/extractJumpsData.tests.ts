@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { fromPartial } from '../../../../shared/helpers/testing/fromPartial';
+import { fromPartial } from '../../../../../shared/helpers/testing/fromPartial';
 import { extractJumpsData } from './extractJumpsData';
 
 test('ignores if from step is not on the list', () => {
@@ -29,7 +29,7 @@ test('ignores if from step is on the list, but has jump-to-only', () => {
 test('ignores if to step is not on the list', () => {
     // arrange
     const steps = [{ step: {} }];
-    const jumps = [{ from: steps[0].step, to: {} }];
+    const jumps = [{ from: steps[0]!.step, to: {} }];
 
     // act
     const results = extractJumpsData(fromPartial(jumps), fromPartial(steps));

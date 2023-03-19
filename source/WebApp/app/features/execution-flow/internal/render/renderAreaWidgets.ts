@@ -46,7 +46,8 @@ const createAreaWidget = (
     visits: ReadonlyArray<AreaVisitDetails>,
     requestRenderAll: () => void
 ): AreaTracker => {
-    const { area } = visits[0];
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const { area } = visits[0]!;
 
     const container = document.createElement('div');
     container.className = 'flow-visit-selector';

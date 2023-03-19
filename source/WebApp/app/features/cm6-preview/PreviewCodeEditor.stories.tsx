@@ -2,39 +2,102 @@ import React from 'react';
 import { TestSetRecoilState } from '../../shared/helpers/testing/TestSetRecoilState';
 import { TestWaitForRecoilStates } from '../../shared/helpers/testing/TestWaitForRecoilStates';
 import { LanguageName, LANGUAGE_CSHARP, LANGUAGE_FSHARP, LANGUAGE_IL, LANGUAGE_VB } from '../../shared/languages';
+import type { Flow } from '../../shared/resultTypes';
 import { languageOptionState } from '../../shared/state/languageOptionState';
 import { loadedCodeState } from '../../shared/state/loadedCodeState';
 import { darkModeStory } from '../../shared/testing/darkModeStory';
 import { UserTheme, userThemeState } from '../dark-mode/themeState';
-import { PreviewCodeEditor } from './PreviewCodeEditor';
+import { PreviewCodeEditorProps, PreviewCodeEditor } from './PreviewCodeEditor';
 
 export default {
-    component: PreviewCodeEditor
+    component: PreviewCodeEditor,
+    excludeStories: /^EXAMPLE_/
 };
+
+const code = (raw: string) => raw.replace(/\n/g, '\r\n').trim();
+
+export const EXAMPLE_CODE_WITH_EXECUTION_FLOW = {
+    CODE: code(`
+for (var i = 0; i < 3; i++) {
+    Test(i);
+}
+
+Test(4);
+Test(5);
+Test(6);
+
+int Test(int x) {
+    return x;
+}
+    `),
+    FLOW: {
+        steps: [
+            { line: 1, notes: 'i: 0', jump: true },
+            { line: 2, jump: true },
+            { line: 9, skipped: false, notes: 'x: 0' },
+            { line: 10, jump: true },
+            { line: 11, jump: true, notes: 'return: 0' },
+            { line: 3 },
+            { line: 1, notes: 'i: 1', jump: true },
+            { line: 2, jump: true },
+            { line: 9, skipped: false, notes: 'x: 1' },
+            { line: 10, jump: true },
+            { line: 11, jump: true, notes: 'return: 1' },
+            { line: 3 },
+            { line: 1, notes: 'i: 2', jump: true },
+            { line: 2, jump: true },
+            { line: 9, skipped: false, notes: 'x: 2' },
+            { line: 10, jump: true },
+            { line: 11, jump: true, notes: 'return: 2' },
+            { line: 3 },
+            { line: 1, notes: 'i: 3', jump: true },
+            { line: 5, jump: true },
+            { line: 9, skipped: false, notes: 'x: 4' },
+            { line: 10, jump: true },
+            { line: 11, jump: true, notes: 'return: 4' },
+            { line: 6, jump: true },
+            { line: 9, skipped: false, notes: 'x: 5' },
+            { line: 10, jump: true },
+            { line: 11, jump: true, notes: 'return: 5' },
+            { line: 7, jump: true },
+            { line: 9, skipped: false, notes: 'x: 6' },
+            { line: 10, jump: true },
+            { line: 11, jump: true, notes: 'return: 6' }
+        ],
+        areas: [
+            { type: 'method', startLine: 1, endLine: 7 },
+            { type: 'method', startLine: 9, endLine: 11 },
+            { type: 'loop', startLine: 1, endLine: 3 }
+        ]
+    } as Flow
+} as const;
 
 type TemplateProps = {
     language: LanguageName;
     loadedCode: string;
-};
+    executionFlow?: Flow;
+} & Pick<PreviewCodeEditorProps, 'initialExecutionFlowSelectRule'>;
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const doNothing = () => {};
 
-const Template: React.FC<TemplateProps> = ({ language, loadedCode }) => <>
+const Template: React.FC<TemplateProps> = ({ language, loadedCode, executionFlow, initialExecutionFlowSelectRule }) => <>
     <TestSetRecoilState state={languageOptionState} value={language} />
     <TestSetRecoilState state={loadedCodeState} value={loadedCode} />
     <TestSetRecoilState state={userThemeState} value={'light' as UserTheme} />
     <TestWaitForRecoilStates states={[languageOptionState, loadedCodeState, userThemeState]}>
         <PreviewCodeEditor
+            initialCached
+            executionFlow={executionFlow ?? null}
+            initialExecutionFlowSelectRule={initialExecutionFlowSelectRule}
             onCodeChange={doNothing}
             onConnectionChange={doNothing}
             onServerError={doNothing}
             onSlowUpdateResult={doNothing}
-            onSlowUpdateWait={doNothing}
-            initialCached />
+            onSlowUpdateWait={doNothing} />
     </TestWaitForRecoilStates>
 </>;
 
-export const CSharp = () => <Template language={LANGUAGE_CSHARP} loadedCode={`
+export const CSharp = () => <Template language={LANGUAGE_CSHARP} loadedCode={code(`
 using System;
 public class C {
     public void M() {
@@ -42,10 +105,10 @@ public class C {
         var @string = "abc";
     }
 }
-`.trim()} />;
+`)} />;
 CSharp.storyName = 'C#';
 
-export const VisualBasic = () => <Template language={LANGUAGE_VB} loadedCode={`
+export const VisualBasic = () => <Template language={LANGUAGE_VB} loadedCode={code(`
 Imports System
 Public Class C
     Public Sub M() {
@@ -53,17 +116,17 @@ Public Class C
         Dim [string] = "abc";
     End Sub
 End Class
-`.trim()} />;
+`)} />;
 
-export const FSharp = () => <Template language={LANGUAGE_FSHARP} loadedCode={`
+export const FSharp = () => <Template language={LANGUAGE_FSHARP} loadedCode={code(`
 open System;
 
 let number = 1;
 let string = "abc";
-`.trim()} />;
+`)} />;
 FSharp.storyName = 'F#';
 
-export const IL = () => <Template language={LANGUAGE_IL} loadedCode={`
+export const IL = () => <Template language={LANGUAGE_IL} loadedCode={code(`
 .class public auto ansi abstract sealed beforefieldinit C
     extends System.Object
 {
@@ -78,9 +141,42 @@ export const IL = () => <Template language={LANGUAGE_IL} loadedCode={`
         ret
     }
 }
-`.trim()} />;
+`)} />;
 
 export const CSharpDarkMode = darkModeStory(CSharp);
 export const VisualBasicDarkMode = darkModeStory(VisualBasic);
 export const FSharpDarkMode = darkModeStory(FSharp);
 export const ILDarkMode = darkModeStory(IL);
+
+export const ExecutionFlow = () => <Template
+    language={LANGUAGE_CSHARP}
+    loadedCode={EXAMPLE_CODE_WITH_EXECUTION_FLOW.CODE}
+    executionFlow={EXAMPLE_CODE_WITH_EXECUTION_FLOW.FLOW}
+/>;
+export const ExecutionFlowDarkMode = darkModeStory(ExecutionFlow);
+
+const selectFlowVisit = () => 1;
+export const ExecutionFlowWithSelectedVisits = () => <Template
+    language={LANGUAGE_CSHARP}
+    loadedCode={EXAMPLE_CODE_WITH_EXECUTION_FLOW.CODE}
+    executionFlow={EXAMPLE_CODE_WITH_EXECUTION_FLOW.FLOW}
+    initialExecutionFlowSelectRule={selectFlowVisit}
+/>;
+export const ExecutionFlowWithSelectedVisitsDarkMode = darkModeStory(ExecutionFlowWithSelectedVisits);
+
+export const ExecutionFlowException = () => <Template language={LANGUAGE_CSHARP} loadedCode={`
+try {
+    throw new();
+}
+catch {
+}
+`.trim()} executionFlow={{
+    steps: [
+        { line: 1 },
+        { line: 2, exception: 'Exception' },
+        { line: 4 },
+        { line: 5 }
+    ],
+    areas: []
+}} />;
+export const ExecutionFlowExceptionDarkMode = darkModeStory(ExecutionFlowException);

@@ -81,7 +81,8 @@ const addFlowJump = ({ steps }: FlowBuilder) => {
     if (steps.length === 0)
         return;
 
-    steps[steps.length - 1].jump = true;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    steps[steps.length - 1]!.jump = true;
 };
 
 const addFlowException = (

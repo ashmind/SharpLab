@@ -1,26 +1,34 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import mirrorsharp, { MirrorSharpOptions, MirrorSharpConnectionState, MirrorSharpInstance } from 'mirrorsharp-codemirror-6-preview';
 import { useRecoilValue } from 'recoil';
 import type { MirrorSharpSlowUpdateResult as StableMirrorSharpSlowUpdateResult } from 'mirrorsharp';
+import type { EditorView } from '@codemirror/view';
 import { languageOptionState } from '../../shared/state/languageOptionState';
-import type { Result } from '../../shared/resultTypes';
+import type { Flow, FlowArea, Result } from '../../shared/resultTypes';
 import { useServerOptions } from '../../structure/code/internal/useServerOptions';
 import { useServiceUrl } from '../../structure/code/internal/useServiceUrl';
 import type { ServerOptions } from '../../structure/code/internal/ServerOptions';
 import { loadedCodeState } from '../../shared/state/loadedCodeState';
 import { effectiveThemeSelector } from '../dark-mode/themeState';
 import { defaultCodeSelector, isDefaultCode } from '../../shared/state/defaultCodeSelector';
+import { jumpArrows } from './extensions/jumpArrows';
+import { useRenderExecutionFlowForPreview } from './execution-flow/useRenderExecutionFlowForPreview';
 
 type ResultData = Result['value'];
 
 type Props = {
+    initialCached: boolean;
+    executionFlow: Flow | null;
+    // Test/Storybook only (for now)
+    initialExecutionFlowSelectRule?: (area: FlowArea) => number | null;
+
     onSlowUpdateWait: () => void;
     onSlowUpdateResult: (value: StableMirrorSharpSlowUpdateResult<ResultData>) => void;
     onConnectionChange: (state: MirrorSharpConnectionState) => void;
     onCodeChange: (getCode: () => string) => void;
     onServerError: (message: string) => void;
-    initialCached: boolean;
 };
+export { Props as PreviewCodeEditorProps };
 
 const useUpdatingRef = <T, >(value: T) => {
     const ref = useRef<T>(value);
@@ -30,6 +38,9 @@ const useUpdatingRef = <T, >(value: T) => {
 
 export const PreviewCodeEditor: React.FC<Props> = ({
     initialCached,
+
+    executionFlow,
+    initialExecutionFlowSelectRule,
 
     onSlowUpdateWait,
     onSlowUpdateResult,
@@ -54,6 +65,7 @@ export const PreviewCodeEditor: React.FC<Props> = ({
     const onServerErrorRef = useUpdatingRef(onServerError);
 
     const instanceRef = useRef<MirrorSharpInstance<ServerOptions>>();
+    const [codeMirrorView, setCodeMirrorView] = useState<EditorView | null>(null);
 
     const initialConnectionRequestedRef = useRef(!initialCached);
 
@@ -75,6 +87,9 @@ export const PreviewCodeEditor: React.FC<Props> = ({
             ),
             textChange: t => onCodeChangeRef.current(t),
             serverError: e => onServerErrorRef.current(e)
+        },
+        codeMirror: {
+            extensions: [jumpArrows]
         }
     });
 
@@ -95,10 +110,12 @@ export const PreviewCodeEditor: React.FC<Props> = ({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const container = containerRef.current!;
         instanceRef.current = mirrorsharp(container, optionsRef.current);
+        setCodeMirrorView(instanceRef.current.getCodeMirrorView());
 
         return () => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             instanceRef.current!.destroy();
+            setCodeMirrorView(null);
         };
     }, []);
 
@@ -139,6 +156,8 @@ export const PreviewCodeEditor: React.FC<Props> = ({
         if (code !== defaultCode && isDefaultCode(code))
             instanceRef.current.setText(defaultCode);
     }, [defaultCode]);
+
+    useRenderExecutionFlowForPreview(codeMirrorView, executionFlow, initialExecutionFlowSelectRule);
 
     return <div className="cm6-preview" ref={containerRef}>
         <small className="disclaimer">

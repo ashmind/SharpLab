@@ -8,7 +8,7 @@ const getBranchDisplayName = (branch: Branch) => {
     let displayName = feature
         ? `${feature.language}: ${feature.name}`
         : branch.name;
-    if (branch.commits)
+    if (branch.commits?.[0])
         displayName += ` (${dateFormat(branch.commits[0].date, 'd mmm yyyy')})`;
 
     return displayName;
