@@ -67,6 +67,7 @@ jobs:
     needs: generate-matrix
     runs-on: windows-latest
     continue-on-error: ${{matrix.optional}}
+    if: ${{ needs.generate-matrix.outputs.cleanup != '' && toJson(fromJson(needs.generate-matrix.outputs.cleanup)) != '[]' }}
     strategy:
       matrix: ${{fromJson(needs.generate-matrix.outputs.cleanup)}}
       fail-fast: false
