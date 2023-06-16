@@ -97,9 +97,11 @@ export const loadStateFromUrlAsync = async (): Promise<LoadStateFromUrlResult> =
         const [, optionsPart, codePart] = /^([^|]*)\|([\s\S]*)$/.exec(decompressed)!;
 
         const optionsPacked = (
-            optionsPart.split(',').reduce((result, p) => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            optionsPart!.split(',').reduce((result, p) => {
                 const [key, value] = p.split(':', 2);
-                result[key] = value;
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                result[key!] = value;
                 return result;
             }, {} as { [key: string]: string|undefined })
         );
@@ -113,7 +115,8 @@ export const loadStateFromUrlAsync = async (): Promise<LoadStateFromUrlResult> =
             // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             throw new Error(`Failed to resolve target: ${optionsPacked.t}`);
         }
-        const code = precompressor.decompress(codePart, language);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const code = precompressor.decompress(codePart!, language);
         return {
             options: {
                 branchId: optionsPacked.b,

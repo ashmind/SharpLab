@@ -35,7 +35,8 @@ const getIsRelease = (options: { release: boolean|null|undefined }, overrides: O
 
 export const loadGistFromUrlHashAsync = async (hash: string): Promise<LoadStateFromGistResult> => {
     const parts = hash.replace(/^gist:/, '').split('/');
-    const id = parts[0];
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const id = parts[0]!;
     let gist;
     try {
         gist = await getGistAsync(id);
@@ -51,7 +52,7 @@ export const loadGistFromUrlHashAsync = async (hash: string): Promise<LoadStateF
     // legacy feature: overriding gist settings through URL.
     // Only keeping this for permalink support.
     const overrides = {
-        target: targetMapReverse[parts[1]],
+        target: parts[1] && targetMapReverse[parts[1]],
         branchId: parts[2],
         mode: parts.length > 1 ? (parts[3] ?? 'release') : null
     } as Overrides;

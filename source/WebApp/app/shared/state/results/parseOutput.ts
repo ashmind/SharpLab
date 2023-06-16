@@ -19,7 +19,8 @@ export const parseOutput = (outputString: string) => {
 
     for (const match of outputString.matchAll(/#(\{[^\n]+)\n/g)) {
         try {
-            const json = match[1];
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const json = match[1]!;
             const candidate = JSON.parse(json) as OutputJsonLineData;
             if ('type' in candidate && candidate.type.startsWith('inspection:')) {
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

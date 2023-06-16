@@ -77,7 +77,8 @@ const decompress = (compressed: string, language: LanguageName) => {
     return compressed.replace(/@(\d+|@)/g, (m, $1) => {
         if (m === '@@')
             return '@';
-        return dictionary.entries[parseInt($1, 10)];
+        return dictionary.entries[parseInt($1, 10)]
+            ?? `<unknown: ${m}>`;
     });
 };
 

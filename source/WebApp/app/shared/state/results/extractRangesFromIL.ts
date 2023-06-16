@@ -3,14 +3,16 @@ import type { CodeRange } from '../../CodeRange';
 const regexp = /^(\s*)\/\/ sequence point: \(line (\d+), col (\d+)\) to \(line (\d+), col (\d+)\) in \S+/;
 
 const endOfLastLine = (lines: ReadonlyArray<string>) => {
-    return { line: lines.length - 1, ch: lines[lines.length - 1].length };
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return { line: lines.length - 1, ch: lines[lines.length - 1]!.length };
 };
 
 export const extractRangesFromIL = (code: string) => {
     const ranges = [];
 
     const [newline] = code.match(/\r\n|\r|\n/) ?? ['\n'];
-    const lines = code.split(newline);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const lines = code.split(newline!);
     const clean = [];
 
     let lastRange: {
@@ -28,11 +30,14 @@ export const extractRangesFromIL = (code: string) => {
                 lastRange.result.end = endOfLastLine(clean);
             const range = {
                 source: {
-                    start: { line: parseInt(startLine, 10) - 1, ch: parseInt(startCol, 10) - 1 },
-                    end:   { line: parseInt(endLine, 10) - 1,   ch: parseInt(endCol, 10) - 1   }
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    start: { line: parseInt(startLine!, 10) - 1, ch: parseInt(startCol!, 10) - 1 },
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    end:   { line: parseInt(endLine!, 10) - 1,   ch: parseInt(endCol!, 10) - 1   }
                 } as CodeRange,
                 result: {
-                    start: { line: lineNumber, ch: indent.length }
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    start: { line: lineNumber, ch: indent!.length }
                 }
             };
             ranges.push(range);

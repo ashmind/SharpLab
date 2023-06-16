@@ -2,10 +2,10 @@ import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { codeEditorPreviewEnabled } from '../../features/cm6-preview/codeEditorPreviewEnabled';
 import { PreviewCodeEditor } from '../../features/cm6-preview/PreviewCodeEditor';
-import { CodeEditorProps, StableCodeEditor } from './StableCodeEditor';
+import { StableCodeEditorProps, StableCodeEditor } from './StableCodeEditor';
 
-type Props = CodeEditorProps;
-export { CodeEditorProps };
+type Props = StableCodeEditorProps;
+export { Props as CodeEditorProps };
 
 export const CodeEditor: React.FC<Props> = props => {
     const editorPreviewEnabled = useRecoilValue(codeEditorPreviewEnabled);

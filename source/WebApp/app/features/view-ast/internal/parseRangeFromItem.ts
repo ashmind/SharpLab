@@ -6,7 +6,9 @@ export const parseRangeFromItem = (item: AstItem | null) => {
 
     const [start, end] = item.range.split('-');
     return {
-        start: parseInt(start, 10),
-        end: parseInt(end, 10)
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        start: parseInt(start!, 10),
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        end: parseInt(end!, 10)
     };
 };

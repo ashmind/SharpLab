@@ -29,7 +29,8 @@ const stateMatches = (saved: AppStateTuple, current: AppStateTuple) => {
     const [[, currentOptions], ...currentRest] = current;
 
     return currentOptions.every((value, index) => value === savedOptions[index])
-        && currentRest.every(([, value], index) => value === savedRest[index][1]);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        && currentRest.every(([, value], index) => value === savedRest[index]![1]);
 };
 
 let lastSavedState: AppStateTuple | undefined;

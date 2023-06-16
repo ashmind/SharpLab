@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import groupToMap from 'array.prototype.grouptomap';
 import { DeepPartial, fromPartial } from '../../../../shared/helpers/testing/fromPartial';
 import type { FlowArea } from '../../../../shared/resultTypes';
@@ -159,7 +160,7 @@ test('update, new visit added to area, end order', async () => {
     ]);
     const trackerRoot = mockTrackerRoot();
     renderAreaWidgets(cm, map, trackerRoot);
-    const element = cm.addLineWidget.mock.calls[0][1];
+    const element = cm.addLineWidget.mock.calls[0]![1];
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     map.get(area)!.push({ area, start: { step: { notes: 'i: 2' } }, order: 2 });
 
@@ -185,7 +186,7 @@ test('update, new visit added to area, middle order', async () => {
     ]);
     const trackerRoot = mockTrackerRoot();
     renderAreaWidgets(cm, map, trackerRoot);
-    const element = cm.addLineWidget.mock.calls[0][1];
+    const element = cm.addLineWidget.mock.calls[0]![1];
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     map.get(area)!.push({ area, start: { step: { notes: 'i: 2' } }, order: 2 });
 
@@ -211,7 +212,7 @@ test('update, new visit added to area, start order', async () => {
     ]);
     const trackerRoot = mockTrackerRoot();
     renderAreaWidgets(cm, map, trackerRoot);
-    const element = cm.addLineWidget.mock.calls[0][1];
+    const element = cm.addLineWidget.mock.calls[0]![1];
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     map.get(area)!.push({ area, start: { step: { notes: 'i: 1' } }, order: 1 });
 
@@ -237,7 +238,7 @@ test('update, visit removed from area', async () => {
     ]);
     const trackerRoot = mockTrackerRoot();
     renderAreaWidgets(cm, map, trackerRoot);
-    const element = cm.addLineWidget.mock.calls[0][1];
+    const element = cm.addLineWidget.mock.calls[0]![1];
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     map.get(area)!.splice(1, 1);
 

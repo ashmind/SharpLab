@@ -11,7 +11,8 @@ const convertToD3Node = (
     }
 ) => {
     const { id, isStack, parentId } = node;
-    const element = nodeElementsById[id];
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const element = nodeElementsById[id]!;
     const { left, top, width, height } = getOffsetClientRect(element, containerRect);
     const x = left + (width / 2);
     const y = top + (height / 2);
@@ -71,8 +72,10 @@ export const convertToD3NodesAndLinks = ({ rootElement, nodes, references, heapB
     }
 
     const d3Links = references.map(r => {
-        const source = d3NodesById[r.from];
-        const target = d3NodesById[r.to];
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const source = d3NodesById[r.from]!;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const target = d3NodesById[r.to]!;
         const topLevelSource = !source.data.nested ? source as ExtendedNodeDatum<TopLevelNodeDatumData> : source.data.nested.parent;
         const topLevelTarget = !target.data.nested ? target as ExtendedNodeDatum<TopLevelNodeDatumData> : target.data.nested.parent;
         topLevelSource.data.topLevelLinked.push(topLevelTarget);

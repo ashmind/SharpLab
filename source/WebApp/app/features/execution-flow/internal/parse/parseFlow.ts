@@ -49,7 +49,7 @@ const addFlowLine = (
     { steps }: FlowBuilder,
     line: number
 ) => {
-    const previous = steps[steps.length - 1] as FlowStepBuilder | undefined;
+    const previous = steps[steps.length - 1];
     if (previous?.line === line) {
         previous.skipped = false;
         return;
@@ -63,7 +63,7 @@ const addFlowValue = (
     { steps }: FlowBuilder,
     [line, value, name]: ValueTuple
 ) => {
-    let step = steps[steps.length - 1] as FlowStepBuilder | undefined;
+    let step = steps[steps.length - 1];
     if (step?.line !== line) {
         step = { line, skipped: true, notes: '' };
         steps.push(step);
@@ -92,7 +92,8 @@ const addFlowException = (
     if (steps.length === 0)
         return;
 
-    steps[steps.length - 1].exception = exception;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    steps[steps.length - 1]!.exception = exception;
 };
 
 export const parseFlow = (data: OutputJsonLineFlow['flow']): Flow => {

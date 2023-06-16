@@ -30,7 +30,7 @@ type Props = {
     onCodeChange: (getCode: () => string) => void;
     onServerError: (message: string) => void;
 };
-export { Props as CodeEditorProps };
+export { Props as StableCodeEditorProps };
 
 const useUpdatingRef = <T, >(value: T) => {
     const ref = useRef<T>(value);

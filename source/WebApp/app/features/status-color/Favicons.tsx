@@ -15,7 +15,7 @@ const initial: FaviconsData = (() => {
         .map(e => ({ sizes: e.getAttribute('sizes'), url: e.getAttribute('href') }))
         .filter(i => i.sizes)
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        .map(({ sizes, url }) => ({ size: parseInt(sizes!.split('x')[0], 10), url: url! }));
+        .map(({ sizes, url }) => ({ size: parseInt(sizes!.split('x')[0]!, 10), url: url! }));
 
     return { svgUrl, sizes };
 })();

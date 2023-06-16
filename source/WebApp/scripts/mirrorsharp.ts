@@ -12,7 +12,7 @@ const rewriteCM6PreviewModulesToExact = task('install:cm6-preview-modules:rewrit
     };
     for (const dependency in packageJson.dependencies) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        packageJson.dependencies[dependency] = packageJson.dependencies[dependency]!.replace(/^[^~]/, '');
+        packageJson.dependencies[dependency] = packageJson.dependencies[dependency]!.replace(/^[~^]/, '');
     }
     await jetpack.writeAsync(packageJsonPath, packageJson);
 });

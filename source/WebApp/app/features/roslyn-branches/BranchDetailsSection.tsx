@@ -28,8 +28,9 @@ export const BranchDetailsSection: React.FC<Props> = ({ className, headerless, i
         'details-only branch-details non-code block-section',
         expandedClassName
     );
+    const commit = branch.commits[0];
     return <section className={fullClassName}>
-        {!headerless && <header v-if="header">
+        {!headerless && <header>
             <ExpanderButton />
             <h1>Branch {branch.displayName}</h1>
         </header>}
@@ -38,12 +39,14 @@ export const BranchDetailsSection: React.FC<Props> = ({ className, headerless, i
             {branch.feature?.url && <div className="branch-feature-link">
                 <a href={branch.feature.url} target="_blank">{branch.feature.url}</a>
             </div>}
-            <div>
-                Latest commit{' '}
-                <a href={`https://github.com/dotnet/roslyn/commit/${branch.commits[0].hash}`} target="_blank">{branch.commits[0].hash.substring(0, 7)}</a>
-                {' '}by {branch.commits[0].author}:
-            </div>
-            <div className="branch-commit-message">{branch.commits[0].message.trim()}</div>
+            {commit && <>
+                <div>
+                    Latest commit{' '}
+                    <a href={`https://github.com/dotnet/roslyn/commit/${commit.hash}`} target="_blank">{commit.hash.substring(0, 7)}</a>
+                    {' '}by {commit.author}:
+                </div>
+                <div className="branch-commit-message">{commit.message.trim()}</div>
+            </>}
         </div>
     </section>;
 };

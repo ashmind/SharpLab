@@ -137,7 +137,8 @@ const applyInitialSelectionIfAny = (
         if (selectedIndex == null)
             continue;
 
-        setSelectedVisit(tracker, tracker.orderedVisits[selectedIndex]);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        setSelectedVisit(tracker, tracker.orderedVisits[selectedIndex]!);
         selectionUpdated = true;
     }
 

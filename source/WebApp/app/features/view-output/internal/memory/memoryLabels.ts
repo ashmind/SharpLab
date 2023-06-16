@@ -25,7 +25,7 @@ export interface FinalLabel {
 }
 
 const addLabelsToLevelRecursive = (levels: Array<Array<InterimLabel>>, labels: ReadonlyArray<MemoryInspectionLabel>, index: number) => {
-    let level = levels[index] as Array<InterimLabel>|undefined;
+    let level = levels[index];
     if (!level) {
         level = [];
         levels[index] = level;
@@ -39,12 +39,14 @@ const addLabelsToLevelRecursive = (levels: Array<Array<InterimLabel>>, labels: R
 
 const applyCrossLevelSpansToLabels = (levels: ReadonlyArray<Array<InterimLabel|SpanPlaceholder>>) => {
     for (let i = 0; i < levels.length; i++) {
-        for (const label of levels[i]) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        for (const label of levels[i]!) {
             if (label.nested && label.nested.length > 0)
                 continue;
             label.levelSpan = 1;
             for (let j = i + 1; j < levels.length; j++) {
-                levels[j].push({ offset: label.offset, length: label.length, levelSpanPlaceholder: true });
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                levels[j]!.push({ offset: label.offset, length: label.length, levelSpanPlaceholder: true });
                 label.levelSpan += 1;
             }
         }
@@ -60,7 +62,8 @@ const sortAndAddPaddingBetweenLabels = (labels: ReadonlyArray<InterimLabel|SpanP
     });
 
     for (let i = 0; i < labels.length; i++) {
-        const label = labels[i];
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const label = labels[i]!;
         if (i === 0 && label.offset > 0)
             results.push({ offset: 0, length: label.offset });
 

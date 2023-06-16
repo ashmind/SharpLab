@@ -8,7 +8,7 @@ import {
 
 export type LoadStateFromUrlV1Result = {
     readonly options: {
-        readonly branchId: string;
+        readonly branchId: string | undefined;
         readonly language: LanguageName | undefined;
         readonly target: TargetName | undefined;
         readonly release: boolean;
@@ -21,11 +21,11 @@ export const loadFromLegacyV1 = (hash: string): LoadStateFromUrlV1Result => {
     if (match === null)
         return null;
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     const flags = (match[2] ?? '').match(/^([^>]*?)(>.+?)?(r)?$/) ?? [];
     const code = (() => {
         try {
-            return LZString.decompressFromBase64(match[3]);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            return LZString.decompressFromBase64(match[3]!);
         }
         catch (e) {
             return '';
@@ -35,10 +35,8 @@ export const loadFromLegacyV1 = (hash: string): LoadStateFromUrlV1Result => {
     return {
         options: {
             branchId: match[1],
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-            language: languageMapReverse[flags[1] || 'cs'],
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-            target: targetMapReverseV1[flags[2] || '>cs'],
+            language: languageMapReverse[flags[1] ?? 'cs'],
+            target: targetMapReverseV1[flags[2] ?? '>cs'],
             release: flags[3] === 'r'
         },
         code

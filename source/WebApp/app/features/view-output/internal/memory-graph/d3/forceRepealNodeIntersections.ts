@@ -52,10 +52,12 @@ export const forceRepealNodeIntersections = (getNodeRect: (node: ExtendedNodeDat
     const force = (alpha: number) => {
         const a = strength * alpha;
         for (let i = 0; i < nodes.length; i++) {
-            const firstNode = nodes[i];
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const firstNode = nodes[i]!;
             const firstRect = getNodeRect(firstNode);
             for (let j = i + 1; j < nodes.length; j++) {
-                const secondNode = nodes[j];
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                const secondNode = nodes[j]!;
                 const secondRect = getNodeRect(secondNode);
                 applyForceIfIntersecting({ firstRect, firstNode, secondRect, secondNode, a });
             }

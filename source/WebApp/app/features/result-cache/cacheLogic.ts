@@ -17,7 +17,7 @@ const [cacheEnvironment, cacheCdnBaseUrl] = (() => {
         case 'edge.sharplab.io':
             return override === 'main' ? main : edge;
         default:
-            return { main, edge }[override] ?? local;
+            return (override ? { main, edge }[override] : null) ?? local;
     }
 })();
 
@@ -47,7 +47,8 @@ type CacheData = {
 const encodeArrayBufferToHex = (buffer: ArrayBuffer) => {
     const map = '0123456789abcdef';
     return [...(new Uint8Array(buffer))]
-        .map(v => map[v >> 4] + map[v & 15])
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .map(v => map[v >> 4]! + map[v & 15]!)
         .join('');
 };
 

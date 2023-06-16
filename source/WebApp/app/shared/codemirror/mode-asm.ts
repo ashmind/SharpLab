@@ -40,14 +40,14 @@ CodeMirror.defineMode('asm', () => {
                 return 'tag';
             }
 
-            for (const index in specifiers) {
-                if (stream.match(specifiers[index], true, true)) {
+            for (const specifier of specifiers) {
+                if (stream.match(specifier, true, true)) {
                     return 'keyword';
                 }
             }
 
-            for (const index in registers) {
-                if (stream.match(registers[index], true, true)) {
+            for (const register of registers) {
+                if (stream.match(register, true, true)) {
                     return 'type';
                 }
             }

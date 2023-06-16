@@ -36,7 +36,8 @@ const collectVisitDetailsRecursive = (
     startIndex: number,
     area: FlowArea
 ) => {
-    const startStep = flow.steps[startIndex];
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const startStep = flow.steps[startIndex]!;
     const visit = {
         type: 'area',
         area,
@@ -64,11 +65,12 @@ const collectLineDetailsRecursive = (
     const { steps, areas } = flow;
 
     for (let index = startIndex; index < steps.length; index++) {
-        const step = steps[index];
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const step = steps[index]!;
 
         const nextArea = areas
             .filter(a => step.line >= a.startLine && step.line <= a.endLine)
-            .sort((a, b) => (a.endLine - a.startLine) - (b.endLine - b.startLine))[0] as FlowArea | undefined;
+            .sort((a, b) => (a.endLine - a.startLine) - (b.endLine - b.startLine))[0];
         if (nextArea !== area) {
             if (area && isEndOfAreaVisit(area, step, nextArea))
                 return index - 1;
@@ -87,8 +89,10 @@ const collectLineDetailsRecursive = (
             step
         } as const;
         result.lines.push(details);
-        if ((step.jump || step.exception) && index < steps.length - 1)
-            result.jumps.push({ from: step, to: steps[index + 1], exception: !!step.exception });
+        if ((step.jump || step.exception) && index < steps.length - 1) {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            result.jumps.push({ from: step, to: steps[index + 1]!, exception: !!step.exception });
+        }
     }
     return steps.length;
 };

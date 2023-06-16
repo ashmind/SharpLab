@@ -16,7 +16,8 @@ const branchesUrl = (() => {
         case 'edge.sharplab.io':
             return override === 'main' ? mainUrl : edgeUrl;
         default:
-            return { main: mainUrl, edge: edgeUrl }[override] ?? '!branches.json';
+            return (override ? { main: mainUrl, edge: edgeUrl }[override] : null)
+                ?? '!branches.json';
     }
 })();
 

@@ -7,6 +7,7 @@
         "checkJs": true,
         "noEmit": true,
         "strict": true,
+        "noUncheckedIndexedAccess": true,
         "importsNotUsedAsValues": "error",
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
