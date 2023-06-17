@@ -22,6 +22,9 @@ task('storybook:build', async () => {
 });
 
 task('storybook:test:in-container', async () => {
+    console.log('npm: reinstalling esbuild');
+    await exec2('npm', ['rebuild', 'esbuild']);
+
     console.log('http-server: starting');
     const server = exec2('http-server', ['storybook-static', '--port', '6006', '--silent']);
     try {
@@ -55,7 +58,8 @@ const test = task('storybook:test', async () => {
         `--volume=${inputRoot}:/work`,
         '--workdir=/work',
         ...(process.env[UPDATE_SNAPSHOTS_KEY] === 'true' ? ['--env', `${UPDATE_SNAPSHOTS_KEY}=true`] : []),
-        'mcr.microsoft.com/playwright:v1.22.2-focal',
+        // version should match storybook dependency, see npm ls playwright
+        'mcr.microsoft.com/playwright:v1.35.1-jammy',
         'npm', 'run', 'test-storybook-in-container'
     ]);
 }, {
