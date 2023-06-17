@@ -5,12 +5,20 @@ import { task } from 'oldowan';
 import waitOn from 'wait-on';
 import { exec2, inputAppRoot, inputRoot } from './shared';
 
+const BABEL_ENV = 'storybook';
 const UPDATE_SNAPSHOTS_KEY = 'SHARPLAB_TEST_UPDATE_SNAPSHOTS';
 
+task('storybook:start', async () => {
+    await exec2('storybook', ['dev', '-p', '6006'], { env: { BABEL_ENV } });
+});
+
 task('storybook:build', async () => {
-    // Important not to build it in production mode, as
-    // it will prevent dev-only React hacks used by e.g. favicon stories
-    await exec2('build-storybook', [], { env: { NODE_ENV: 'testing' } });
+    await exec2('storybook', ['build'], { env: {
+        // Important not to build it in production mode, as
+        // it will prevent dev-only React hacks used by e.g. favicon stories
+        NODE_ENV: 'testing',
+        BABEL_ENV
+    } });
 });
 
 task('storybook:test:in-container', async () => {
