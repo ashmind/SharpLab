@@ -8,9 +8,7 @@ import { exec2, inputAppRoot, inputRoot } from './shared';
 const BABEL_ENV = 'storybook';
 const UPDATE_SNAPSHOTS_KEY = 'SHARPLAB_TEST_UPDATE_SNAPSHOTS';
 
-task('storybook:start', async () => {
-    await exec2('storybook', ['dev', '-p', '6006'], { env: { BABEL_ENV } });
-});
+task('storybook:start', () => exec2('storybook', ['dev', '-p', '6006'], { env: { BABEL_ENV } }));
 
 task('storybook:build', async () => {
     await exec2('storybook', ['build'], { env: {
