@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    name: 'Build (.NET 7)'
+    name: 'Build (.NET 8)'
     # https://github.community/t/duplicate-checks-on-push-and-pull-request-simultaneous-event/18012/5
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: windows-latest
@@ -26,7 +26,7 @@ jobs:
           submodules: 'true'
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 7.0.x
+          dotnet-version: 8.0.x
       - uses: microsoft/setup-msbuild@v1.1
 
       # https://github.com/actions/setup-dotnet/issues/155
@@ -47,7 +47,7 @@ jobs:
       - run: dotnet build source/Tests --configuration Release
       - run: dotnet test source/Tests --no-build --configuration Release
       - run: dotnet publish source/Container.Manager --no-build --configuration Release
-      - run: Compress-Archive -Path 'source/Container.Manager/bin/Release/net7.0/publish/*' -DestinationPath 'Container.Manager.zip'
+      - run: Compress-Archive -Path 'source/Container.Manager/bin/Release/net8.0/publish/*' -DestinationPath 'Container.Manager.zip'
         shell: pwsh
 
       - uses: actions/upload-artifact@v3
