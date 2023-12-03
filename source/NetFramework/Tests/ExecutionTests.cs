@@ -67,7 +67,7 @@ namespace SharpLab.Tests {
                 .ToArray();
 
             AssertIsSuccess(result, allowRuntimeException: true);
-            Assert.Contains(new { Line = expectedLineNumber, Exception = expectedExceptionTypeName }, steps);
+            Assert.Contains(new { Line = expectedLineNumber, Exception = (string?)expectedExceptionTypeName }, steps);
         }
 
         [Theory]
@@ -130,7 +130,10 @@ namespace SharpLab.Tests {
                 .ToArray();
 
             AssertIsSuccess(result);
-            Assert.Contains(new { Line = methodStartLine + expectedMethodLineNumber, Notes = expectedNotes, Skipped = expectedSkipped }, steps);
+            Assert.Contains(
+                new { Line = methodStartLine + expectedMethodLineNumber, Notes = (string?)expectedNotes, Skipped = expectedSkipped },
+                steps
+            );
         }
 
         [Fact]
@@ -149,7 +152,7 @@ namespace SharpLab.Tests {
                 .ToArray();
 
             AssertIsSuccess(result);
-            Assert.Contains(new { Line = 5, Notes = "a: 1" }, steps);
+            Assert.Contains(new { Line = 5, Notes = (string?)"a: 1" }, steps);
         }
 
         [Fact]
@@ -168,7 +171,7 @@ namespace SharpLab.Tests {
                 .ToArray();
 
             AssertIsSuccess(result);
-            Assert.Contains(new { Line = 4, Notes = "a: 1" }, steps);
+            Assert.Contains(new { Line = 4, Notes = (string?)"a: 1" }, steps);
         }
 
         [Fact]
@@ -524,12 +527,10 @@ namespace SharpLab.Tests {
         }
 
         private class FlowStepData {
-#pragma warning disable CS8618 // Non-nullable field is uninitialized.
             public int Line { get; set; }
-            public string Exception { get; set; }
-            public string Notes { get; set; }
+            public string? Exception { get; set; }
+            public string? Notes { get; set; }
             public bool Skipped { get; set; }
-#pragma warning restore CS8618 // Non-nullable field is uninitialized.
         }
     }
 }
