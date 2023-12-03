@@ -5,6 +5,7 @@ using SharpLab.Server.Common;
 
 namespace SharpLab.Server.Caching.Internal {
     public class ResultCacheBuilder : IResultCacheBuilder {
+        private const int AesGcmTagLength = 16;
         private readonly string? _branchId;
         private readonly MemoryPoolSlim<byte> _byteMemoryPool;
         private readonly byte[] _branchIdBytes;
@@ -26,10 +27,10 @@ namespace SharpLab.Server.Caching.Internal {
                 iv = _byteMemoryPool.RentExact(12);
                 RandomNumberGenerator.Fill(iv.AsSpan());
 
-                tag = _byteMemoryPool.RentExact(16);
+                tag = _byteMemoryPool.RentExact(AesGcmTagLength);
 
                 encryptedData = _byteMemoryPool.RentExact(resultBytes.Length);
-                using (var aes = new AesGcm(secretKeyBytes))
+                using (var aes = new AesGcm(secretKeyBytes, AesGcmTagLength))
                     aes.Encrypt(iv.AsSpan(), resultBytes.Span, encryptedData.AsSpan(), tag.AsSpan());
 
                 var publicHashBytes = (stackalloc byte[32]);

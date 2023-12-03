@@ -15,6 +15,7 @@ using MirrorSharp.AspNetCore;
 using SharpLab.Server.Common;
 using SharpLab.Server.Common.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 
 namespace SharpLab.Server {
     public class Startup {
@@ -82,7 +83,7 @@ namespace SharpLab.Server {
             var okBytes = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes("OK"));
             e.MapGet("/status", context => {
                 context.Response.ContentType = MediaTypeNames.Text.Plain;
-                return context.Response.BodyWriter.WriteAsync(okBytes, context.RequestAborted).AsTask();
+                return WriteResponseBodyAsync(context, okBytes);
             });
         }
 
@@ -109,8 +110,15 @@ namespace SharpLab.Server {
             stream.Read(bytes, 0, bytes.Length);
             endpoints.MapGet("/branch-version.json", context => {
                 context.Response.ContentType = MediaTypeNames.Application.Json;
-                return context.Response.BodyWriter.WriteAsync(bytes, context.RequestAborted).AsTask();
+                return WriteResponseBodyAsync(context, bytes);
             });
+        }
+
+        private Task WriteResponseBodyAsync(HttpContext context, ReadOnlyMemory<byte> body) {
+            var writeTask = context.Response.BodyWriter.WriteAsync(body, context.RequestAborted);
+            return writeTask.IsCompletedSuccessfully
+                ? Task.CompletedTask
+                : writeTask.AsTask();
         }
 
         protected virtual void MapOtherEndpoints(IEndpointRouteBuilder endpoints) {
