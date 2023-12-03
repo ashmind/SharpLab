@@ -7,13 +7,19 @@ using Mono.Cecil;
 namespace SharpLab.Server.Common.Diagnostics {
     public static class DiagnosticLog {
         private static readonly AsyncLocal<Func<string, string>> _getPathByStepName = new();
+        private static readonly AsyncLocal<Action<string>> _logMessage = new();
 
-        public static void Enable(Func<string, string> getPathByStepName) {
+        public static void Enable(Action<string> logMessage, Func<string, string> getPathByStepName) {
+            _logMessage.Value = logMessage;
             _getPathByStepName.Value = getPathByStepName;
         }
 
         public static bool IsEnabled() {
             return _getPathByStepName.Value != null;
+        }
+
+        public static void LogMessage(string message) {
+            _logMessage.Value?.Invoke(message);
         }
 
         public static void LogAssembly(string stepName, ModuleDefinition module) {

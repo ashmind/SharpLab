@@ -14,6 +14,7 @@ using MirrorSharp.Advanced;
 using SharpLab.Runtime;
 using SharpLab.Runtime.Internal;
 using SharpLab.Server.Common;
+using SharpLab.Server.Common.Diagnostics;
 using SharpLab.Server.Decompilation.Internal;
 
 namespace SharpLab.Server.Decompilation {
@@ -165,6 +166,10 @@ namespace SharpLab.Server.Decompilation {
         }
 
         private void DisassembleAndWriteMethod(JitWriteContext context, MethodBase method) {
+            #if DEBUG
+            DiagnosticLog.LogMessage($"[JitAsm] Processing method {method.Name}");
+            #endif
+
             if ((method.MethodImplementationFlags & MethodImplAttributes.Runtime) == MethodImplAttributes.Runtime) {
                 WriteSignatureFromReflection(context, method);
                 context.Writer.WriteLine("    ; Cannot produce JIT assembly for runtime-implemented method.");
@@ -259,12 +264,17 @@ namespace SharpLab.Server.Decompilation {
         }
 
         private ClrMethodData? FindJitCompiledMethod(JitWriteContext context, RuntimeMethodHandle handle) {
-            context.Runtime.FlushCachedData();
+            lock (context.Runtime.DacLibrary.DacPrivateInterface)
+                context.Runtime.DacLibrary.DacPrivateInterface.Flush();
             var sos = context.Runtime.DacLibrary.SOSDacInterface;
 
             var methodDescAddress = unchecked((ulong)handle.Value.ToInt64());
-            if (!sos.GetMethodDescData(methodDescAddress, 0, out var methodDesc))
+            if (sos.GetMethodDescData(methodDescAddress, 0, out var methodDesc) is var hresult && !hresult) {
+                #if DEBUG
+                DiagnosticLog.LogMessage($"[JitAsm] Failed to get GetMethodDescData(0x{methodDescAddress:X}): {hresult}");
+                #endif
                 return null;
+            }
 
             return GetJitCompiledMethodByMethodDescIfValid(sos, methodDesc)
                 ?? FindJitCompiledMethodInMethodTable(sos, methodDesc);

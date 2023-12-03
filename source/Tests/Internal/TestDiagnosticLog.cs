@@ -29,7 +29,10 @@ namespace SharpLab.Tests.Internal {
                 testType.Name, safeTestName
             );
             #if DEBUG
-            DiagnosticLog.Enable(stepName => Path.Combine(basePath, SafePath(stepName)));
+            DiagnosticLog.Enable(
+                output.WriteLine,
+                stepName => Path.Combine(basePath, SafePath(stepName))
+            );
             #endif
         }
     }

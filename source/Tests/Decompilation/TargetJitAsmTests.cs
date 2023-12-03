@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.Intrinsics.X86;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
