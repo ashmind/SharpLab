@@ -37,7 +37,7 @@
                 "serverFarmId": "[variables('serverfarms_main_id')]",
                 "clientAffinityEnabled": false,
                 "siteConfig": {
-                    "netFrameworkVersion": "v7.0",
+                    "netFrameworkVersion": "v8.0",
                     "publishingUsername": "[concat('$', parameters('sites_name'))]",
                     "use32BitWorkerProcess": true,
                     "webSocketsEnabled": true,
