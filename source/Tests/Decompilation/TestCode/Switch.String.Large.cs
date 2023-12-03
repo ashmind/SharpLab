@@ -38,74 +38,59 @@ public class C
     [NullableContext(1)]
     public string M(string key)
     {
-        uint num = <PrivateImplementationDetails>.ComputeStringHash(key);
-        if (num <= 455788110)
+        if (key != null)
         {
-            if (num != 422232872)
+            int length = key.Length;
+            if (length == 4)
             {
-                if (num != 439010491)
+                switch (key[3])
                 {
-                    if (num == 455788110 && key == "Key6")
-                    {
+                    case '1':
+                        if (!(key == "Key1"))
+                        {
+                            break;
+                        }
+                        return "1";
+                    case '2':
+                        if (!(key == "Key2"))
+                        {
+                            break;
+                        }
+                        return "2";
+                    case '3':
+                        if (!(key == "Key3"))
+                        {
+                            break;
+                        }
+                        return "3";
+                    case '4':
+                        if (!(key == "Key4"))
+                        {
+                            break;
+                        }
+                        return "4";
+                    case '5':
+                        if (!(key == "Key5"))
+                        {
+                            break;
+                        }
+                        return "5";
+                    case '6':
+                        if (!(key == "Key6"))
+                        {
+                            break;
+                        }
                         return "6";
-                    }
-                }
-                else if (key == "Key5")
-                {
-                    return "5";
-                }
-            }
-            else if (key == "Key4")
-            {
-                return "4";
-            }
-        }
-        else if (num <= 506120967)
-        {
-            if (num != 472565729)
-            {
-                if (num == 506120967 && key == "Key1")
-                {
-                    return "1";
+                    case '7':
+                        if (!(key == "Key7"))
+                        {
+                            break;
+                        }
+                        return "7";
                 }
             }
-            else if (key == "Key7")
-            {
-                return "7";
-            }
-        }
-        else if (num != 522898586)
-        {
-            if (num == 539676205 && key == "Key3")
-            {
-                return "3";
-            }
-        }
-        else if (key == "Key2")
-        {
-            return "2";
         }
         return "?";
-    }
-}
-
-[CompilerGenerated]
-internal sealed class <PrivateImplementationDetails>
-{
-    internal static uint ComputeStringHash(string s)
-    {
-        uint num = default(uint);
-        if (s != null)
-        {
-            num = 2166136261u;
-            int num2 = 0;
-            while (num2 < s.Length)
-            {
-                num = (s[num2] ^ num) * 16777619;
-                num2++;
-            }
-        }
-        return num;
     }
 }
 
