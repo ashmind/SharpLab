@@ -12,11 +12,4 @@ public static class C {
 C.M()
     ; Cannot produce JIT assembly for an internal call method.
 
-Microsoft.CodeAnalysis.EmbeddedAttribute..ctor()
-    L0000: ret
-
-System.Runtime.CompilerServices.RefSafetyRulesAttribute..ctor(Int32)
-    L0000: mov [rcx+8], edx
-    L0003: ret
-
 */

@@ -3,10 +3,15 @@ using Microsoft.CodeAnalysis;
 using Xunit;
 using SharpLab.Tests.Execution.Internal;
 using SharpLab.Tests.Internal;
+using Xunit.Abstractions;
 
 namespace SharpLab.Tests.Execution {
     [Collection(TestCollectionNames.Execution)]
     public class FSharpTests {
+        public FSharpTests(ITestOutputHelper output) {
+            // TestDiagnosticLog.Enable(output);
+        }
+
         [Fact]
         public async Task FSharp_Simple() {
             // Arrange
