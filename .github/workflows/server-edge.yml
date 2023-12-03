@@ -16,7 +16,7 @@ on:
 
 jobs:
   build-core:
-    name: 'Build (.NET 7)'
+    name: 'Build (.NET 8)'
     # https://github.community/t/duplicate-checks-on-push-and-pull-request-simultaneous-event/18012/5
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: windows-latest
@@ -28,7 +28,7 @@ jobs:
           submodules: 'true'
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 7.0.x
+          dotnet-version: 8.0.x
       - uses: microsoft/setup-msbuild@v1.1
 
       # https://github.com/actions/setup-dotnet/issues/155
@@ -110,7 +110,7 @@ jobs:
           submodules: 'true'
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 7.0.x
+          dotnet-version: 8.0.x
 
       # https://github.com/actions/setup-dotnet/issues/155
       - run: dotnet nuget locals all --clear
