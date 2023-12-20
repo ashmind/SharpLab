@@ -46,16 +46,16 @@ CodeMirror.defineMode('asm', () => {
                 }
             }
 
-            for (const index in registers) {
-                if (stream.match(registers[index], true, true)) {
-                    return 'type';
-                }
-            }
-
             for (const key in grammar) {
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 if (stream.match(grammar[key as keyof typeof grammar])) {
                     return key;
+                }
+            }
+
+            for (const index in registers) {
+                if (stream.match(registers[index], true, true)) {
+                    return 'type';
                 }
             }
 
