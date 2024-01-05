@@ -7,93 +7,107 @@ using Azure.Storage.Blobs;
 using JetBrains.Annotations;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.Metrics;
 using Microsoft.Azure.Cosmos.Table;
 using SharpLab.Server.Caching.Internal;
 using SharpLab.Server.Common;
 using SharpLab.Server.Monitoring;
 
-namespace SharpLab.Server.Integration.Azure {
-    [UsedImplicitly]
-    public class AzureModule : Module {
-        protected override void Load(ContainerBuilder builder) {
-            // This is available even on local (through a mock)
-            RegisterCacheStore(builder);
+namespace SharpLab.Server.Integration.Azure;
 
-            var keyVaultUrl = Environment.GetEnvironmentVariable("SHARPLAB_KEY_VAULT_URL");
-            if (keyVaultUrl == null)
-                return;
+[UsedImplicitly]
+public class AzureModule : Module {
+    protected override void Load(ContainerBuilder builder) {
+        // This is available even on local (through a mock)
+        RegisterCacheStore(builder);
 
-            RegisterKeyVault(builder, keyVaultUrl);
-            RegisterTableStorage(builder);
-            RegisterApplicationInsights(builder);
-        }
+        var keyVaultUrl = Environment.GetEnvironmentVariable("SHARPLAB_KEY_VAULT_URL");
+        if (keyVaultUrl == null)
+            return;
 
-        private void RegisterCacheStore(ContainerBuilder builder) {
-            const string cacheClientName = "BlobContainerClient-CacheClient";
-            var cachePathPrefix = EnvironmentHelper.GetRequiredEnvironmentVariable("SHARPLAB_CACHE_PATH_PREFIX");
+        RegisterKeyVault(builder, keyVaultUrl);
+        RegisterTableStorage(builder);
+        RegisterApplicationInsights(builder);
+    }
 
-            builder
-                .Register(c => {
-                    var connectionString = c.Resolve<ISecretsClient>().GetSecret("PublicStorageConnectionString");
-                    return new BlobContainerClient(connectionString, "cache");
-                })
-                .Named<BlobContainerClient>(cacheClientName)
-                .SingleInstance();
+    private void RegisterCacheStore(ContainerBuilder builder) {
+        const string cacheClientName = "BlobContainerClient-CacheClient";
+        var cachePathPrefix = EnvironmentHelper.GetRequiredEnvironmentVariable("SHARPLAB_CACHE_PATH_PREFIX");
 
-            builder
-                .RegisterType<AzureBlobResultCacheStore>()
-                .As<IResultCacheStore>()
-                .SingleInstance()
-                .WithParameter("cachePathPrefix", cachePathPrefix)
-                .WithParameter(new ResolvedParameter(
-                    (p, c) => p.ParameterType == typeof(BlobContainerClient),
-                    (p, c) => c.ResolveNamed<BlobContainerClient>(cacheClientName)
-                ));
-        }
+        builder
+            .Register(c => {
+                var connectionString = c.Resolve<ISecretsClient>().GetSecret("PublicStorageConnectionString");
+                return new BlobContainerClient(connectionString, "cache");
+            })
+            .Named<BlobContainerClient>(cacheClientName)
+            .SingleInstance();
 
-        private void RegisterKeyVault(ContainerBuilder builder, string keyVaultUrl) {
-            var secretClient = new SecretClient(new Uri(keyVaultUrl), new ManagedIdentityCredential());
-            builder.RegisterInstance(secretClient)
-                   .AsSelf();
+        builder
+            .RegisterType<AzureBlobResultCacheStore>()
+            .As<IResultCacheStore>()
+            .SingleInstance()
+            .WithParameter("cachePathPrefix", cachePathPrefix)
+            .WithParameter(new ResolvedParameter(
+                (p, c) => p.ParameterType == typeof(BlobContainerClient),
+                (p, c) => c.ResolveNamed<BlobContainerClient>(cacheClientName)
+            ));
+    }
 
-            builder.RegisterType<KeyVaultSecretsClient>()
-                   .As<ISecretsClient>()
-                   .SingleInstance();
-        }
+    private void RegisterKeyVault(ContainerBuilder builder, string keyVaultUrl) {
+        var secretClient = new SecretClient(new Uri(keyVaultUrl), new ManagedIdentityCredential());
+        builder.RegisterInstance(secretClient)
+               .AsSelf();
 
-        private void RegisterTableStorage(ContainerBuilder builder) {
-            builder.Register(c => {
-                var connectionString = c.Resolve<ISecretsClient>().GetSecret("StorageConnectionString");
-                return CloudStorageAccount.Parse(connectionString).CreateCloudTableClient();
-            }).AsSelf()
-              .SingleInstance();
+        builder.RegisterType<KeyVaultSecretsClient>()
+               .As<ISecretsClient>()
+               .SingleInstance();
+    }
 
-            builder.RegisterType<TableStorageFeatureFlagClient>()
-                   .As<IFeatureFlagClient>()
-                   .AsSelf()
-                   .WithParameter("flagKeys", new[] { "ContainerExperimentRollout" })
-                   .WithParameter(new ResolvedParameter(
-                       (p, _) => p.ParameterType == typeof(CloudTable),
-                       (_, c) => c.Resolve<CloudTableClient>().GetTableReference("featureflags")
-                    ))
-                   .SingleInstance();
+    private void RegisterTableStorage(ContainerBuilder builder) {
+        builder.Register(c => {
+            var connectionString = c.Resolve<ISecretsClient>().GetSecret("StorageConnectionString");
+            return CloudStorageAccount.Parse(connectionString).CreateCloudTableClient();
+        }).AsSelf()
+          .SingleInstance();
 
-            builder.RegisterBuildCallback(c => c.Resolve<TableStorageFeatureFlagClient>().Start());
-        }
+        builder.RegisterType<TableStorageFeatureFlagClient>()
+               .As<IFeatureFlagClient>()
+               .AsSelf()
+               .WithParameter("flagKeys", new[] { "ContainerExperimentRollout" })
+               .WithParameter(new ResolvedParameter(
+                   (p, _) => p.ParameterType == typeof(CloudTable),
+                   (_, c) => c.Resolve<CloudTableClient>().GetTableReference("featureflags")
+                ))
+               .SingleInstance();
 
-        private void RegisterApplicationInsights(ContainerBuilder builder) {
-            builder.Register(c => {
-                var instrumentationKey = c.Resolve<ISecretsClient>().GetSecret("AppInsightsInstrumentationKey"); 
-                var configuration = new TelemetryConfiguration { InstrumentationKey = instrumentationKey };
-                return new TelemetryClient(configuration);
-            }).AsSelf()
-              .SingleInstance();
+        builder.RegisterBuildCallback(c => c.Resolve<TableStorageFeatureFlagClient>().Start());
+    }
 
-            var webAppName = EnvironmentHelper.GetRequiredEnvironmentVariable("SHARPLAB_WEBAPP_NAME");
-            builder.RegisterType<ApplicationInsightsMonitor>()
-                   .As<IMonitor>()
-                   .WithParameter("webAppName", webAppName)
-                   .SingleInstance();
-        }
+    private void RegisterApplicationInsights(ContainerBuilder builder) {
+        builder.Register(c => {
+            var instrumentationKey = c.Resolve<ISecretsClient>().GetSecret("AppInsightsInstrumentationKey"); 
+            var configuration = new TelemetryConfiguration { InstrumentationKey = instrumentationKey };
+            return new TelemetryClient(configuration);
+        }).AsSelf()
+          .SingleInstance();
+
+        var webAppName = EnvironmentHelper.GetRequiredEnvironmentVariable("SHARPLAB_WEBAPP_NAME");
+        builder.RegisterType<ApplicationInsightsExceptionMonitor>()
+               .As<IExceptionMonitor>()
+               .WithParameter("webAppName", webAppName)
+               .SingleInstance();
+
+        builder.RegisterType<ApplicationInsightsMetricMonitor>()
+               .AsSelf()
+               .InstancePerDependency();
+
+        builder.Register<MetricMonitorFactory>(c => {
+            var client = c.Resolve<TelemetryClient>();
+            var createMonitor = c.Resolve<Func<Metric, ApplicationInsightsMetricMonitor>>();
+            return (@namespace, name) => {
+                var metric = client.GetMetric(new MetricIdentifier(@namespace, name));
+                return createMonitor(metric);
+            };
+        }).SingleInstance();
     }
 }

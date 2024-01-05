@@ -42,14 +42,3 @@ export const effectiveThemeSelector = selector({
             : userTheme;
     }
 });
-
-/*
-function trackDarkTheme(effectiveTheme: EffectiveTheme) {
-    if (userTheme === 'dark') {
-        trackFeature('Theme: Dark (manual)');
-    }
-    else if (effectiveTheme === 'dark') {
-        trackFeature('Theme: Dark (system)');
-    }
-}
-*/
