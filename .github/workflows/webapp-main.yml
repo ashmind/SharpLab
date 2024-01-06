@@ -2,6 +2,9 @@ name: WebApp (JS) - Main
 
 on: workflow_dispatch
 
+permissions:
+  id-token: write
+
 jobs:
   deploy-to-main:
     name: Deploy (Main)
@@ -10,7 +13,9 @@ jobs:
     steps:
       - uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: "Run azure/CLI@e43928ebbc386700c6bb2f42a97a8de31576cfd2: az storage copy"
         uses: azure/CLI@e43928ebbc386700c6bb2f42a97a8de31576cfd2
