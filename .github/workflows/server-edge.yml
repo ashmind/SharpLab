@@ -14,6 +14,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  id-token: write
+
 jobs:
   build-core:
     name: 'Build (.NET 8)'
@@ -82,6 +85,8 @@ jobs:
            environment: edge-server-x64
     name: 'Deploy to Edge (${{ matrix.name }})'
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     needs: build-core
     if: github.ref == 'refs/heads/main'
     environment: ${{ matrix.environment }}
@@ -142,6 +147,8 @@ jobs:
            environment: edge-server-netfx-x64
     name: 'Deploy to Edge (${{ matrix.name }})'
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     needs: build-netfx
     if: github.ref == 'refs/heads/main'
     environment: ${{ matrix.environment }}
@@ -167,6 +174,8 @@ jobs:
   create-release:
     name: 'Create Release'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     needs:
       - deploy-core
       - deploy-netfx

@@ -33,6 +33,8 @@ jobs:
 
     name: 'Deploy to Main (${{ matrix.name }})'
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     environment: ${{ matrix.environment }}
     steps:
       - uses: actions/github-script@v6

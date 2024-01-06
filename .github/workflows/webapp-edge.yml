@@ -10,15 +10,14 @@ on:
   pull_request:
   workflow_dispatch:
 
-permissions:
-  id-token: write
-
 jobs:
   build:
     name: Build
     # https://github.community/t/duplicate-checks-on-push-and-pull-request-simultaneous-event/18012/5
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     defaults:
       run:
         working-directory: source/WebApp
@@ -110,6 +109,8 @@ jobs:
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feature/execution-flow-output-squashed'
     environment: edge-webapp
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - uses: actions/download-artifact@v3
         with:
