@@ -14,9 +14,6 @@ on:
   pull_request:
   workflow_dispatch:
 
-permissions:
-  id-token: write
-
 jobs:
   build-core:
     name: 'Build (.NET 8)'
