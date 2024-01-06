@@ -51,13 +51,13 @@ namespace SharpLab.Container.Manager {
         }
 
         private void ConfigureAzureDependentServices(IServiceCollection services) {
-            var instrumentationKey = Environment.GetEnvironmentVariable("SHARPLAB_TELEMETRY_KEY");
-            if (instrumentationKey == null) {
-                Console.WriteLine("[WARN] AppInsights instrumentation key was not found.");
+            var connectionString = Environment.GetEnvironmentVariable("SHARPLAB_TELEMETRY_CONNECTION_STRING");
+            if (connectionString == null) {
+                Console.WriteLine("[WARN] AppInsights connection string was not found.");
                 return;
             }
 
-            var configuration = new TelemetryConfiguration { InstrumentationKey = instrumentationKey };
+            var configuration = new TelemetryConfiguration { ConnectionString = connectionString };
             services.AddSingleton(new TelemetryClient(configuration));
             services.AddHostedService<ContainerCountMetricReporter>();
         }
