@@ -55,7 +55,6 @@
     "@storybook/test-runner": "0.1.1",
     "@storybook/testing-library": "0.0.11",
     "@types/adm-zip": "0.4.33",
-    "@types/applicationinsights-js": "1.0.9",
     "@types/autoprefixer": "9.7.2",
     "@types/codemirror": "0.0.78",
     "@types/css-font-loading-module": "0.0.4",

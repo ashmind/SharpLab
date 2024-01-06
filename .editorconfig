@@ -19,6 +19,7 @@ csharp_new_line_before_open_brace = none
 csharp_style_var_for_built_in_types = true:warning
 csharp_style_var_when_type_is_apparent = true:warning
 csharp_style_var_elsewhere = true:warning
+csharp_style_namespace_declarations=file_scoped:warning
 
 dotnet_style_readonly_field = true:warning
 
@@ -30,3 +31,16 @@ dotnet_diagnostic.IDE0005.severity = warning
 
 # IDE0090: 'new' expression can be simplified.
 dotnet_diagnostic.IDE0090.severity = warning
+
+# IDE0300: Use collection expression for array
+# IDE0301: Use collection expression for empty
+# IDE0302: Use collection expression for stackalloc
+# IDE0303: Use collection expression for Create()
+# IDE0304: Use collection expression for builder
+# IDE0305: Use collection expression for fluent
+dotnet_diagnostic.IDE0300.severity = warning
+dotnet_diagnostic.IDE0301.severity = warning
+dotnet_diagnostic.IDE0302.severity = warning
+dotnet_diagnostic.IDE0303.severity = warning
+dotnet_diagnostic.IDE0304.severity = warning
+dotnet_diagnostic.IDE0305.severity = warning

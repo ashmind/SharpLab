@@ -4,20 +4,24 @@ using Microsoft.Extensions.Logging;
 using MirrorSharp.Advanced;
 using SharpLab.Server.MirrorSharp;
 
-namespace SharpLab.Server.Monitoring {
-    public class DefaultLoggerMonitor : IMonitor {
-        private readonly ILogger<DefaultLoggerMonitor> _logger;
+namespace SharpLab.Server.Monitoring; 
+public class DefaultLoggerMonitor : IMonitor {
+    private readonly Func<(string @namespace, string name), DefaultLoggerMetricMonitor> _createMetricMonitor;
+    private readonly ILogger<DefaultLoggerMonitor> _logger;
 
-        public DefaultLoggerMonitor(ILogger<DefaultLoggerMonitor> logger) {
-            _logger = logger;
-        }
+    public DefaultLoggerMonitor(
+        Func<(string @namespace, string name), DefaultLoggerMetricMonitor> createMetricMonitor,
+        ILogger<DefaultLoggerMonitor> logger
+    ) {
+        _createMetricMonitor = createMetricMonitor;
+        _logger = logger;
+    }
 
-        public void Metric(MonitorMetric metric, double value) {
-            _logger.LogInformation("Metric {Namespace} {Name}: {Value}.", metric.Namespace, metric.Name, value);
-        }
+    public IMetricMonitor MetricSlow(string @namespace, string name) {
+        return _createMetricMonitor((@namespace, name));
+    }
 
-        public void Exception(Exception exception, IWorkSession? session, IDictionary<string, string>? extras = null) {
-            _logger.LogError(exception, "[{SessionId}] Exception: {Message}", session?.GetSessionId(), exception.Message);
-        }
+    public void Exception(Exception exception, IWorkSession? session, IDictionary<string, string>? extras = null) {
+        _logger.LogError(exception, "[{SessionId}] Exception: {Message}", session?.GetSessionId(), exception.Message);
     }
 }

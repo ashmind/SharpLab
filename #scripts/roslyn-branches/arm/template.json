@@ -13,9 +13,6 @@
         },
         "serverfarms_main_name": {
             "type": "String"
-        },
-        "components_insights_name": {
-            "type": "String"
         }
     },
     "variables": {
@@ -48,10 +45,6 @@
                         {
                             "name": "SHARPLAB_WEBAPP_NAME",
                             "value": "[parameters('sites_name')]"
-                        },
-                        {
-                            "name": "SHARPLAB_TELEMETRY_KEY",
-                            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('components_insights_name')), '2015-05-01', 'Full').properties.InstrumentationKey]"
                         },
                         {
                             "name": "SHARPLAB_CONTAINER_HOST_URL",

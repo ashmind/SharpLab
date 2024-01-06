@@ -156,7 +156,7 @@
     },
     "typescript.tsdk": "./node_modules/typescript/lib",
     "editor.codeActionsOnSave": {
-        "source.fixAll": true
+        "source.fixAll": "explicit"
     },
     "files.exclude": {
         "**/.git": true,

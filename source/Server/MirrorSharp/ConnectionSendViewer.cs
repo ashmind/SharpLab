@@ -5,59 +5,57 @@ using MirrorSharp.Advanced;
 using MirrorSharp.Advanced.EarlyAccess;
 using SharpLab.Server.Caching;
 using SharpLab.Server.Execution;
-using SharpLab.Server.Monitoring;
 
-namespace SharpLab.Server.MirrorSharp {
-    public class ConnectionSendViewer : IConnectionSendViewer {
-        private readonly IResultCacher _cacher;
-        private readonly IExceptionLogger _exceptionLogger;
-        private readonly IMonitor _monitor;
+namespace SharpLab.Server.MirrorSharp; 
+public class ConnectionSendViewer : IConnectionSendViewer {
+    private readonly IResultCacher _cacher;
+    private readonly IExceptionLogger _exceptionLogger;
+    private readonly ICachingTracker _tracker;
 
-        public ConnectionSendViewer(IResultCacher cacher, IExceptionLogger exceptionLogger, IMonitor monitor) {
-            _cacher = cacher;
-            _exceptionLogger = exceptionLogger;
-            _monitor = monitor;
+    public ConnectionSendViewer(IResultCacher cacher, IExceptionLogger exceptionLogger, ICachingTracker tracker) {
+        _cacher = cacher;
+        _exceptionLogger = exceptionLogger;
+        _tracker = tracker;
+    }
+
+    public Task ViewDuringSendAsync(string messageTypeName, ReadOnlyMemory<byte> message, IWorkSession session, CancellationToken cancellationToken) {
+        if (messageTypeName != "slowUpdate")
+            return Task.CompletedTask;
+
+        if (session.HasCachingSeenSlowUpdateBefore())
+            return Task.CompletedTask;
+
+        // if update should not be cached, we will still not want to cache or measure the next one
+        session.SetCachingHasSeenSlowUpdate();
+
+        if (session.IsCachingDisabled()) {
+            _tracker.TrackNoCacheRequest();
+            return Task.CompletedTask;
         }
 
-        public Task ViewDuringSendAsync(string messageTypeName, ReadOnlyMemory<byte> message, IWorkSession session, CancellationToken cancellationToken) {
-            if (messageTypeName != "slowUpdate")
-                return Task.CompletedTask;
+        if (!ShouldCache(session.GetLastSlowUpdateResult()))
+            return Task.CompletedTask;
 
-            if (session.HasCachingSeenSlowUpdateBefore())
-                return Task.CompletedTask;
+        _tracker.TrackCacheableRequest();
+        return SafeCacheAsync(message, session, cancellationToken);
+    }
 
-            // if update should not be cached, we will still not want to cache or measure the next one
-            session.SetCachingHasSeenSlowUpdate();
+    private bool ShouldCache(object? result) {
+        return result is not ContainerExecutionResult { OutputFailed: true };
+    }
 
-            if (session.IsCachingDisabled()) {
-                _monitor.Metric(CachingMetrics.NoCacheRequestCount, 1);
-                return Task.CompletedTask;
-            }
-
-            if (!ShouldCache(session.GetLastSlowUpdateResult()))
-                return Task.CompletedTask;
-
-            _monitor.Metric(CachingMetrics.CacheableRequestCount, 1);
-            return SafeCacheAsync(message, session, cancellationToken);
+    private async Task SafeCacheAsync(ReadOnlyMemory<byte> message, IWorkSession session, CancellationToken cancellationToken) {
+        try {
+            var key = new ResultCacheKeyData(
+                session.LanguageName,
+                session.GetTargetName()!,
+                session.GetOptimize()!,
+                session.GetText()
+            );
+            await _cacher.CacheAsync(key, message, cancellationToken);
         }
-
-        private bool ShouldCache(object? result) {
-            return result is not ContainerExecutionResult { OutputFailed: true };
-        }
-
-        private async Task SafeCacheAsync(ReadOnlyMemory<byte> message, IWorkSession session, CancellationToken cancellationToken) {
-            try {
-                var key = new ResultCacheKeyData(
-                    session.LanguageName,
-                    session.GetTargetName()!,
-                    session.GetOptimize()!,
-                    session.GetText()
-                );
-                await _cacher.CacheAsync(key, message, cancellationToken);
-            }
-            catch (Exception ex) {
-                _exceptionLogger.LogException(ex, session);
-            }
+        catch (Exception ex) {
+            _exceptionLogger.LogException(ex, session);
         }
     }
 }

@@ -10,9 +10,6 @@
         },
         "vaults_name": {
             "value": "sharplab"
-        },
-        "components_insights_name": {
-            "value": "sharplab-insights"
         }
     }
 }

@@ -37,6 +37,12 @@ namespace SharpLab.Server.Common {
             builder.RegisterType<ILAdapter>()
                    .As<ILanguageAdapter>()
                    .SingleInstance();
+
+            var webAppName = EnvironmentHelper.GetRequiredEnvironmentVariable("SHARPLAB_WEBAPP_NAME");
+            builder.RegisterType<FeatureTracker>()
+                .As<IFeatureTracker>()
+                .SingleInstance()
+                .WithParameter("webAppName", webAppName);
         }
 
         private void RegisterExternals(ContainerBuilder builder) {

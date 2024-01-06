@@ -1,49 +1,92 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Metrics;
 using MirrorSharp.Advanced;
+using MirrorSharp.Internal;
+using Newtonsoft.Json;
 using SharpLab.Server.MirrorSharp;
 using SharpLab.Server.Monitoring;
 
-namespace SharpLab.Server.Azure {
-    public class ApplicationInsightsMonitor : IMonitor {
-        private readonly TelemetryClient _client;
-        private readonly string _webAppName;
+namespace SharpLab.Server.Integration.Azure;
 
-        public ApplicationInsightsMonitor(TelemetryClient client, string webAppName) {
-            _client = Argument.NotNull(nameof(client), client);
-            _webAppName = Argument.NotNullOrEmpty(nameof(webAppName), webAppName);
-        }
+public class ApplicationInsightsMonitor : IMonitor {
+    private readonly TelemetryClient _client;
+    private readonly string _webAppName;
+    private readonly Func<Metric, ApplicationInsightsMetricMonitor> _createMetricMonitor;
 
-        public void Event(string name, IWorkSession? session, IDictionary<string, string>? extras = null) {
-            var telemetry = new EventTelemetry(name);
-            AddDefaultDetails(telemetry, session, extras);
-            _client.TrackEvent(telemetry);
-        }
+    public ApplicationInsightsMonitor(TelemetryClient client, string webAppName, Func<Metric, ApplicationInsightsMetricMonitor> createMetricMonitor) {
+        _client = Argument.NotNull(nameof(client), client);
+        _webAppName = Argument.NotNullOrEmpty(nameof(webAppName), webAppName);
+        _createMetricMonitor = Argument.NotNull(nameof(createMetricMonitor), createMetricMonitor);
+    }
 
-        public void Exception(Exception exception, IWorkSession? session, IDictionary<string, string>? extras = null) {
-            var telemetry = new ExceptionTelemetry(exception) {
-                Properties = {
-                    { "Code", session?.GetText() }
-                }
-            };
-            AddDefaultDetails(telemetry, session, extras);
-            _client.TrackException(telemetry);
-        }
+    public IMetricMonitor MetricSlow(string @namespace, string name) {
+        var metric = _client.GetMetric(new MetricIdentifier(@namespace, name));
+        return _createMetricMonitor(metric);
+    }
 
-        private void AddDefaultDetails<TTelemetry>(TTelemetry telemetry, IWorkSession? session, IDictionary<string, string>? extras)
-            where TTelemetry: ITelemetry, ISupportProperties
-        {
-            telemetry.Context.Session.Id = session?.GetSessionId();
-            telemetry.Properties.Add("Web App", _webAppName);
-            if (extras == null)
-                return;
-
+    public void Event(string eventName, IWorkSession? session, IDictionary<string, string>? extras = null) {
+        var telemetry = new EventTelemetry(eventName) {
+            Context = { Session = { Id = session?.GetSessionId() } },
+            Properties = {
+                { "Web App", _webAppName }
+            }
+        };
+        if (extras != null) {
             foreach (var pair in extras) {
                 telemetry.Properties.Add(pair.Key, pair.Value);
             }
+        }
+        _client.TrackEvent(telemetry);
+    }
+
+    public void Exception(Exception exception, IWorkSession? session, IDictionary<string, string>? extras = null) {
+        var sessionInternals = session as WorkSession;
+        var telemetry = new ExceptionTelemetry(exception) {
+            Context = { Session = { Id = session?.GetSessionId() } },
+            Properties = {
+                { "Web App", _webAppName },
+                { "Code", session?.GetText() },
+                { "Language", session?.LanguageName },
+                { "Target", session?.GetTargetName() },
+                { "Cursor", sessionInternals?.CursorPosition.ToString() },
+                { "Completion", FormatCompletion(sessionInternals) }
+            }
+        };
+        if (extras != null) {
+            foreach (var pair in extras) {
+                telemetry.Properties.Add(pair.Key, pair.Value);
+            }
+        }
+        _client.TrackException(telemetry);
+    }
+
+    private string? FormatCompletion(WorkSession? session) {
+        try {
+            if (session == null)
+                return null;
+
+            var current = session.CurrentCompletion;
+            if (current.List == null && !current.ChangeEchoPending && current.PendingChar == null)
+                return null;
+
+            return JsonConvert.ToString(new {
+                List = current.List is { } list ? new {
+                    Items = new {
+                        Take10 = list.ItemsList.Take(10),
+                        list.ItemsList.Count
+                    },
+                    list.Span
+                } : null,
+                current.ChangeEchoPending,
+                current.PendingChar
+            });
+        }
+        catch (Exception ex) {
+            return "<Failed to format completion: " + ex.ToString() + ">";
         }
     }
 }
