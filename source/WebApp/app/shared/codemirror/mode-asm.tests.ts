@@ -7,6 +7,7 @@ test.each([
         L0016: vmovdqa [rbp-0x20], xmm4
         L001b: vmovdqa [rbp-0x10], xmm4`],
     [ 'je', 'L000e: je short L0015' ],
+    [ 'fstp', 'L002e: fstp qword ptr [ebp-8], st' ],
     [ 'jle', `L0015: jle short L0001` ]
 ] as const)('mode-asm codemirror highlights assembly instructions correctly', async (expectedToken: string, assemblyCode: string) => {
 
