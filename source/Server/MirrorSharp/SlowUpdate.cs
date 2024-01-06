@@ -32,7 +32,7 @@ public class SlowUpdate : ISlowUpdateExtension {
     private readonly IExplainer _explainer;
     private readonly RecyclableMemoryStreamManager _memoryStreamManager;
     private readonly IFeatureTracker _featureTracker;
-    private readonly IExceptionMonitor _exceptionMonitor;
+    private readonly IMonitor _monitor;
     private readonly IMetricMonitor _containerRunCountMonitor;
     private readonly IMetricMonitor _containerFailureCountMonitor;
 
@@ -45,8 +45,7 @@ public class SlowUpdate : ISlowUpdateExtension {
         IExplainer explainer,
         RecyclableMemoryStreamManager memoryStreamManager,
         IFeatureTracker featureTracker,
-        MetricMonitorFactory createMetricMonitor,
-        IExceptionMonitor exceptionMonitor
+        IMonitor monitor
     ) {
         _topLevelProgramSupport = topLevelProgramSupport;
         _compiler = compiler;
@@ -58,9 +57,9 @@ public class SlowUpdate : ISlowUpdateExtension {
         _memoryStreamManager = memoryStreamManager;
         _explainer = explainer;
         _featureTracker = featureTracker;
-        _exceptionMonitor = exceptionMonitor;
-        _containerRunCountMonitor = createMetricMonitor("container-experiment", "Runs: Container");
-        _containerFailureCountMonitor = createMetricMonitor("container-experiment", "Runs: Failed");
+        _monitor = monitor;
+        _containerRunCountMonitor = _monitor.MetricSlow("container-experiment", "Runs: Container");
+        _containerFailureCountMonitor = _monitor.MetricSlow("container-experiment", "Runs: Failed");
     }
 
     public async Task<object?> ProcessAsync(IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {

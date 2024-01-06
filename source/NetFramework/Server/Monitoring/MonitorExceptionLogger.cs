@@ -1,19 +1,19 @@
-﻿using System;
+using System;
 using System.Net.WebSockets;
 using MirrorSharp.Advanced;
 
-namespace SharpLab.Server.Monitoring {
-    public class MonitorExceptionLogger : IExceptionLogger {
-        private readonly IMonitor _monitor;
+namespace SharpLab.Server.Monitoring;
 
-        public MonitorExceptionLogger(IMonitor monitor) {
-            _monitor = monitor;
-        }
+public class MonitorExceptionLogger : IExceptionLogger {
+    private readonly IMonitor _monitor;
 
-        public void LogException(Exception exception, IWorkSession session) {
-            if (exception is WebSocketException)
-                return;
-            _monitor.Exception(exception, session);
-        }
+    public MonitorExceptionLogger(IMonitor monitor) {
+        _monitor = monitor;
+    }
+
+    public void LogException(Exception exception, IWorkSession session) {
+        if (exception is WebSocketException)
+            return;
+        _monitor.Exception(exception, session);
     }
 }

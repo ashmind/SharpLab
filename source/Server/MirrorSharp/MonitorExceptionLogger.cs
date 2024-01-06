@@ -6,9 +6,9 @@ using SharpLab.Server.Monitoring;
 namespace SharpLab.Server.MirrorSharp; 
 public class MonitorExceptionLogger : IExceptionLogger {
     private readonly IExceptionLogFilter _filter;
-    private readonly IExceptionMonitor _monitor;
+    private readonly IMonitor _monitor;
 
-    public MonitorExceptionLogger(IExceptionLogFilter filter, IExceptionMonitor monitor) {
+    public MonitorExceptionLogger(IExceptionLogFilter filter, IMonitor monitor) {
         _filter = filter;
         _monitor = monitor;
     }

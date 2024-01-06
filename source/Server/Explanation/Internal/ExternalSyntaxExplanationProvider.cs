@@ -22,19 +22,19 @@ public class ExternalSyntaxExplanationProvider : ISyntaxExplanationProvider, IDi
     private readonly Serializer _serilializer = new (new() {
         NamingConvention = new FlatNamingConvention()
     });
-    private readonly IExceptionMonitor _exceptionMonitor;
+    private readonly IMonitor _monitor;
     private readonly ISourcePathParser<RoslynNodeContext> _sourcePathParser;
 
     public ExternalSyntaxExplanationProvider(
         Func<HttpClient> httpClientFactory,
         ExternalSyntaxExplanationSettings settings,
         ISourcePathParser<RoslynNodeContext> sourcePathParser,
-        IExceptionMonitor exceptionMonitor
+        IMonitor monitor
     ) {
         _httpClientFactory = httpClientFactory;
         _settings = settings;
         _sourcePathParser = sourcePathParser;
-        _exceptionMonitor = exceptionMonitor;
+        _monitor = monitor;
     }
 
     public async ValueTask<IReadOnlyCollection<SyntaxExplanation>> GetExplanationsAsync(CancellationToken cancellationToken) {
@@ -72,7 +72,7 @@ public class ExternalSyntaxExplanationProvider : ISyntaxExplanationProvider, IDi
                 catch (Exception ex) {
                     // depending on SourcePath version, it's possible that
                     // an explanation fails to parse on some branches
-                    _exceptionMonitor.Exception(ex, session: null);
+                    _monitor.Exception(ex, session: null);
                     continue;
                 }
                 explanations.Add(parsed);
@@ -104,7 +104,7 @@ public class ExternalSyntaxExplanationProvider : ISyntaxExplanationProvider, IDi
                 _explanations = await LoadExplanationsSlowAsync(_updateCancellationSource.Token).ConfigureAwait(false);
             }
             catch (Exception ex) {
-                _exceptionMonitor.Exception(ex, session: null);
+                _monitor.Exception(ex, session: null);
                 // intentionally not re-throwing -- retrying after delay
             }
         }

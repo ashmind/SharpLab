@@ -3,20 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Metrics;
 using MirrorSharp.Advanced;
 using MirrorSharp.Internal;
 using Newtonsoft.Json;
 using SharpLab.Server.MirrorSharp;
 using SharpLab.Server.Monitoring;
 
-namespace SharpLab.Server.Integration.Azure; 
-public class ApplicationInsightsExceptionMonitor : IExceptionMonitor {
+namespace SharpLab.Server.Integration.Azure;
+
+public class ApplicationInsightsMonitor : IMonitor {
     private readonly TelemetryClient _client;
     private readonly string _webAppName;
+    private readonly Func<Metric, ApplicationInsightsMetricMonitor> _createMetricMonitor;
 
-    public ApplicationInsightsExceptionMonitor(TelemetryClient client, string webAppName) {
+    public ApplicationInsightsMonitor(TelemetryClient client, string webAppName, Func<Metric, ApplicationInsightsMetricMonitor> createMetricMonitor) {
         _client = Argument.NotNull(nameof(client), client);
         _webAppName = Argument.NotNullOrEmpty(nameof(webAppName), webAppName);
+        _createMetricMonitor = Argument.NotNull(nameof(createMetricMonitor), createMetricMonitor);
+    }
+
+    public IMetricMonitor MetricSlow(string @namespace, string name) {
+        var metric = _client.GetMetric(new MetricIdentifier(@namespace, name));
+        return _createMetricMonitor(metric);
     }
 
     public void Exception(Exception exception, IWorkSession? session, IDictionary<string, string>? extras = null) {

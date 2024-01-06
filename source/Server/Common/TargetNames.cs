@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 
-namespace SharpLab.Server.Common; 
+namespace SharpLab.Server.Common;
+
 public static class TargetNames {
     public const string CSharp = LanguageNames.CSharp;
     public const string IL = LanguageNames.IL;

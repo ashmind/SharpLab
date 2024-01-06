@@ -3,7 +3,8 @@ using SharpLab.Server.Common;
 using System;
 using Xunit;
 
-namespace SharpLab.Tests.Common.Unit; 
+namespace SharpLab.Tests.Common.Unit;
+
 public class ExceptionLogFilterTests {
     [Fact]
     public void ShouldLog_ReturnsTrue_ForGeneralException() {

@@ -7,7 +7,6 @@ using Azure.Storage.Blobs;
 using JetBrains.Annotations;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.Metrics;
 using Microsoft.Azure.Cosmos.Table;
 using SharpLab.Server.Caching.Internal;
 using SharpLab.Server.Common;
@@ -85,29 +84,20 @@ public class AzureModule : Module {
 
     private void RegisterApplicationInsights(ContainerBuilder builder) {
         builder.Register(c => {
-            var instrumentationKey = c.Resolve<ISecretsClient>().GetSecret("AppInsightsInstrumentationKey"); 
-            var configuration = new TelemetryConfiguration { InstrumentationKey = instrumentationKey };
+            var connectionString = c.Resolve<ISecretsClient>().GetSecret("AppInsightsConnectionString"); 
+            var configuration = new TelemetryConfiguration { ConnectionString = connectionString };
             return new TelemetryClient(configuration);
         }).AsSelf()
           .SingleInstance();
-
-        var webAppName = EnvironmentHelper.GetRequiredEnvironmentVariable("SHARPLAB_WEBAPP_NAME");
-        builder.RegisterType<ApplicationInsightsExceptionMonitor>()
-               .As<IExceptionMonitor>()
-               .WithParameter("webAppName", webAppName)
-               .SingleInstance();
 
         builder.RegisterType<ApplicationInsightsMetricMonitor>()
                .AsSelf()
                .InstancePerDependency();
 
-        builder.Register<MetricMonitorFactory>(c => {
-            var client = c.Resolve<TelemetryClient>();
-            var createMonitor = c.Resolve<Func<Metric, ApplicationInsightsMetricMonitor>>();
-            return (@namespace, name) => {
-                var metric = client.GetMetric(new MetricIdentifier(@namespace, name));
-                return createMonitor(metric);
-            };
-        }).SingleInstance();
+        var webAppName = EnvironmentHelper.GetRequiredEnvironmentVariable("SHARPLAB_WEBAPP_NAME");
+        builder.RegisterType<ApplicationInsightsMonitor>()
+               .As<IMonitor>()
+               .WithParameter("webAppName", webAppName)
+               .SingleInstance();
     }
 }
