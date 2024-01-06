@@ -23,8 +23,14 @@ public class ApplicationInsightsMonitor : IMonitor {
         _createMetricMonitor = Argument.NotNull(nameof(createMetricMonitor), createMetricMonitor);
     }
 
-    public IMetricMonitor MetricSlow(string @namespace, string name) {
-        var metric = _client.GetMetric(new MetricIdentifier(@namespace, name));
+    public IZeroDimensionMetricMonitor MetricSlow(string @namespace, string name)
+        =>  MetricSlowInternal(new (@namespace, name));
+
+    public IOneDimensionMetricMonitor MetricSlow(string @namespace, string name, string dimension)
+        => MetricSlowInternal(new (@namespace, name, dimension));
+
+    private ApplicationInsightsMetricMonitor MetricSlowInternal(MetricIdentifier identifier) {
+        var metric = _client.GetMetric(identifier);
         return _createMetricMonitor(metric);
     }
 

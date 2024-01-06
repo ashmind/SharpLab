@@ -3,10 +3,10 @@ using SharpLab.Server.Monitoring;
 namespace SharpLab.Server.Caching;
 
 public class CachingTracker : ICachingTracker {
-    private readonly IMetricMonitor _cacheableRequestCountMonitor;
-    private readonly IMetricMonitor _noCacheRequestCountMonitor;
-    private readonly IMetricMonitor _blobUploadRequestCountMonitor;
-    private readonly IMetricMonitor _blobUploadErrorCountMonitor;
+    private readonly IZeroDimensionMetricMonitor _cacheableRequestCountMonitor;
+    private readonly IZeroDimensionMetricMonitor _noCacheRequestCountMonitor;
+    private readonly IZeroDimensionMetricMonitor _blobUploadRequestCountMonitor;
+    private readonly IZeroDimensionMetricMonitor _blobUploadErrorCountMonitor;
 
     public CachingTracker(IMonitor monitor) {
         _cacheableRequestCountMonitor = monitor.MetricSlow("caching", "Caching: Cacheable Requests");

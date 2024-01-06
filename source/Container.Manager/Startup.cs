@@ -9,67 +9,67 @@ using SharpLab.Container.Manager.Azure;
 using SharpLab.Container.Manager.Endpoints;
 using SharpLab.Container.Manager.Internal;
 
-namespace SharpLab.Container.Manager {
-    [SupportedOSPlatform("windows")]
-    public class Startup {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+namespace SharpLab.Container.Manager;
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            // TODO: proper DI, e.g. Autofac
-            services.AddSingleton(new ProcessRunnerConfiguration(
-                workingDirectoryPath: AppContext.BaseDirectory,
-                exeFileName: Container.Program.ExeFileName,
-                essentialAccessCapabilitySid: "S-1-15-3-1024-4233803318-1181731508-1220533431-3050556506-2713139869-1168708946-594703785-1824610955",
-                maximumMemorySize: 30 * 1024 * 1024,
-                maximumCpuPercentage: 1
-            ));
-            services.AddSingleton<IProcessRunner, ProcessRunner>();
-            services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+[SupportedOSPlatform("windows")]
+public class Startup {
+    // This method gets called by the runtime. Use this method to add services to the container.
+    // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
 
-            services.AddSingleton<StatusEndpoint>();
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // TODO: proper DI, e.g. Autofac
+        services.AddSingleton(new ProcessRunnerConfiguration(
+            workingDirectoryPath: AppContext.BaseDirectory,
+            exeFileName: Container.Program.ExeFileName,
+            essentialAccessCapabilitySid: "S-1-15-3-1024-4233803318-1181731508-1220533431-3050556506-2713139869-1168708946-594703785-1824610955",
+            maximumMemorySize: 30 * 1024 * 1024,
+            maximumCpuPercentage: 1
+        ));
+        services.AddSingleton<IProcessRunner, ProcessRunner>();
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
-            var authorizationToken = Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_AUTHORIZATION_TOKEN")
-                ?? throw new Exception("Required environment variable SHARPLAB_CONTAINER_HOST_AUTHORIZATION_TOKEN was not provided.");
-            services.AddSingleton(new ExecutionEndpointSettings(authorizationToken));
-            services.AddSingleton<ExecutionEndpoint>();
+        services.AddSingleton<StatusEndpoint>();
 
-            services.AddSingleton<ContainerPool>();
+        var authorizationToken = Environment.GetEnvironmentVariable("SHARPLAB_CONTAINER_HOST_AUTHORIZATION_TOKEN")
+            ?? throw new Exception("Required environment variable SHARPLAB_CONTAINER_HOST_AUTHORIZATION_TOKEN was not provided.");
+        services.AddSingleton(new ExecutionEndpointSettings(authorizationToken));
+        services.AddSingleton<ExecutionEndpoint>();
 
-            services.AddHostedService<ContainerAllocationWorker>();
-            services.AddSingleton<ContainerCleanupWorker>();
-            services.AddHostedService(c => c.GetRequiredService<ContainerCleanupWorker>());
+        services.AddSingleton<ContainerPool>();
 
-            services.AddSingleton<StdinWriter>();
-            services.AddSingleton<StdoutReader>();
-            services.AddSingleton<ExecutionProcessor>();
-            services.AddSingleton<CrashSuspensionManager>();
-            services.AddSingleton<ExecutionManager>();
+        services.AddHostedService<ContainerAllocationWorker>();
+        services.AddSingleton<ContainerCleanupWorker>();
+        services.AddHostedService(c => c.GetRequiredService<ContainerCleanupWorker>());
 
-            ConfigureAzureDependentServices(services);
+        services.AddSingleton<StdinWriter>();
+        services.AddSingleton<StdoutReader>();
+        services.AddSingleton<ExecutionProcessor>();
+        services.AddSingleton<CrashSuspensionManager>();
+        services.AddSingleton<ExecutionManager>();
+
+        ConfigureAzureDependentServices(services);
+    }
+
+    private void ConfigureAzureDependentServices(IServiceCollection services) {
+        var connectionString = Environment.GetEnvironmentVariable("SHARPLAB_TELEMETRY_CONNECTION_STRING");
+        if (connectionString == null) {
+            Console.WriteLine("[WARN] AppInsights connection string was not found.");
+            return;
         }
 
-        private void ConfigureAzureDependentServices(IServiceCollection services) {
-            var connectionString = Environment.GetEnvironmentVariable("SHARPLAB_TELEMETRY_CONNECTION_STRING");
-            if (connectionString == null) {
-                Console.WriteLine("[WARN] AppInsights connection string was not found.");
-                return;
-            }
+        var configuration = new TelemetryConfiguration { ConnectionString = connectionString };
+        services.AddSingleton(new TelemetryClient(configuration));
+        services.AddHostedService<ContainerCountMetricReporter>();
+    }
 
-            var configuration = new TelemetryConfiguration { ConnectionString = connectionString };
-            services.AddSingleton(new TelemetryClient(configuration));
-            services.AddHostedService<ContainerCountMetricReporter>();
-        }
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app) {
+        app.UseRouting();
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app) {
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints => {
-                endpoints.MapGet("/status", app.ApplicationServices.GetRequiredService<StatusEndpoint>().ExecuteAsync);
-                endpoints.MapPost("/", app.ApplicationServices.GetRequiredService<ExecutionEndpoint>().ExecuteAsync);
-            });
-        }
+        app.UseEndpoints(endpoints => {
+            endpoints.MapGet("/status", app.ApplicationServices.GetRequiredService<StatusEndpoint>().ExecuteAsync);
+            endpoints.MapPost("/", app.ApplicationServices.GetRequiredService<ExecutionEndpoint>().ExecuteAsync);
+        });
     }
 }

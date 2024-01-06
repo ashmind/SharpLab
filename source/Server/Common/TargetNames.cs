@@ -1,5 +1,3 @@
-using System.Collections.Immutable;
-
 namespace SharpLab.Server.Common;
 
 public static class TargetNames {
@@ -11,8 +9,4 @@ public static class TargetNames {
     public const string RunIL = "Run IL";
     public const string Verify = "Verify";
     public const string Explain = "Explain";
-
-    public static readonly ImmutableArray<string> All = [
-        CSharp, IL, Ast, JitAsm, Run, RunIL, Verify, Explain
-    ];
 }

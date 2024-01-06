@@ -33,8 +33,8 @@ public class SlowUpdate : ISlowUpdateExtension {
     private readonly RecyclableMemoryStreamManager _memoryStreamManager;
     private readonly IFeatureTracker _featureTracker;
     private readonly IMonitor _monitor;
-    private readonly IMetricMonitor _containerRunCountMonitor;
-    private readonly IMetricMonitor _containerFailureCountMonitor;
+    private readonly IZeroDimensionMetricMonitor _containerRunCountMonitor;
+    private readonly IZeroDimensionMetricMonitor _containerFailureCountMonitor;
 
     public SlowUpdate(
         ICSharpTopLevelProgramSupport topLevelProgramSupport,
@@ -93,7 +93,7 @@ public class SlowUpdate : ISlowUpdateExtension {
         if (targetName is not (TargetNames.Run or TargetNames.Verify) && !_decompilers.ContainsKey(targetName))
             throw new NotSupportedException($"Target '{targetName}' is not (yet?) supported by this branch.");
 
-        _featureTracker.TrackOptimize(session.GetOptimize());
+        _featureTracker.TrackOptimize(session.GetOptimize()!);
 
         MemoryStream? assemblyStream = null;
         MemoryStream? symbolStream = null;

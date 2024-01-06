@@ -4,7 +4,8 @@ using MirrorSharp.Advanced;
 
 namespace SharpLab.Server.Monitoring;
 public interface IMonitor {
-    IMetricMonitor MetricSlow(string @namespace, string name);
+    IZeroDimensionMetricMonitor MetricSlow(string @namespace, string name);
+    IOneDimensionMetricMonitor MetricSlow(string @namespace, string name, string dimension);
     void Event(string eventName, IWorkSession? session, IDictionary<string, string>? extras = null);
     void Exception(Exception exception, IWorkSession? session, IDictionary<string, string>? extras = null);
 }

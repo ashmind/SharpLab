@@ -2,7 +2,7 @@ using System.Diagnostics;
 
 namespace SharpLab.Server.Monitoring;
 
-public class DefaultTraceMetricMonitor : IMetricMonitor {
+public class DefaultTraceMetricMonitor : IZeroDimensionMetricMonitor, IOneDimensionMetricMonitor {
     private readonly string _namespace;
     private readonly string _name;
 
@@ -16,5 +16,9 @@ public class DefaultTraceMetricMonitor : IMetricMonitor {
 
     public void Track(double value) {
         Trace.TraceInformation("Metric {0} {1}: {2}.", _namespace, _name, value);
+    }
+
+    public void Track(string dimension, double value) {
+        Trace.TraceInformation("Metric {0} {1}: {2} {3}.", _namespace, _name, dimension, value);
     }
 }

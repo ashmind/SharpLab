@@ -15,7 +15,11 @@ public class DefaultTraceMonitor : IMonitor {
         _createMetricMonitor = createMetricMonitor;
     }
 
-    public IMetricMonitor MetricSlow(string @namespace, string name) {
+    public IZeroDimensionMetricMonitor MetricSlow(string @namespace, string name) {
+        return _createMetricMonitor((@namespace, name));
+    }
+
+    public IOneDimensionMetricMonitor MetricSlow(string @namespace, string name, string dimension) {
         return _createMetricMonitor((@namespace, name));
     }
 

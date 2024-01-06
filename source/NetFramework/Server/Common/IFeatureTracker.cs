@@ -4,5 +4,5 @@ public interface IFeatureTracker {
     void TrackBranch();
     void TrackLanguage(string languageName);
     void TrackTarget(string targetName);
-    void TrackOptimize(string? optimize);
+    void TrackOptimize(string optimize);
 }
