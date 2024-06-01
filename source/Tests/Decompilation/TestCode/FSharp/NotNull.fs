@@ -34,6 +34,9 @@ namespace <StartupCode$_>
 {
     internal static class $_
     {
+        public static void main@()
+        {
+        }
     }
 }
 

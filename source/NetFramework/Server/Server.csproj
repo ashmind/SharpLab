@@ -48,11 +48,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\#external\mirrorsharp\Common\Common.csproj" />
-    <ProjectReference Include="..\..\#external\mirrorsharp\FSharp\FSharp.csproj" />
-    <ProjectReference Include="..\..\#external\mirrorsharp\IL\IL.csproj" />
-    <ProjectReference Include="..\..\#external\mirrorsharp\VisualBasic\VisualBasic.csproj" />
-    <ProjectReference Include="..\..\#external\mirrorsharp\Owin\Owin.csproj" />
+    <ProjectReference Include="..\..\#external\mirrorsharp-codemirror-6-preview\Common\Common.csproj" />
+    <ProjectReference Include="..\..\#external\mirrorsharp-codemirror-6-preview\FSharp\FSharp.csproj" />
+    <ProjectReference Include="..\..\#external\mirrorsharp-codemirror-6-preview\IL\IL.csproj" />
+    <ProjectReference Include="..\..\#external\mirrorsharp-codemirror-6-preview\VisualBasic\VisualBasic.csproj" />
+    <ProjectReference Include="..\..\#external\mirrorsharp-codemirror-6-preview\Owin\Owin.csproj" />
     <ProjectReference Include="..\..\#external\SourcePath\Roslyn\Roslyn.csproj" />
     <ProjectReference Include="..\Runtime\Runtime.csproj" />
   </ItemGroup>

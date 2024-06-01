@@ -2,7 +2,7 @@ open System
 type C() =
     member this.M() = 5
 
-#=>
+(* cs
 
 using System;
 using System.Reflection;
@@ -27,5 +27,10 @@ namespace <StartupCode$_>
 {
     internal static class $_
     {
+        public static void main@()
+        {
+        }
     }
 }
+
+*)

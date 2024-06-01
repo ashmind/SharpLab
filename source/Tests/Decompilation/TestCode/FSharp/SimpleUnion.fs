@@ -136,4 +136,7 @@ _+T.Equals(System.Object)
     L0000: xor eax, eax
     L0002: ret
 
+<StartupCode$_>.$_.main@()
+    L0000: ret
+
 *)

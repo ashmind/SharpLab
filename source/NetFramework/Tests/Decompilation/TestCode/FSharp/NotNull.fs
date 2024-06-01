@@ -3,7 +3,7 @@ open System
 type C() =
     member __.notNull x = not (isNull x)
 
-#=> 
+(* cs
 
 using System;
 using System.Reflection;
@@ -32,5 +32,10 @@ namespace <StartupCode$_>
 {
     internal static class $_
     {
+        public static void main@()
+        {
+        }
     }
 }
+
+*)

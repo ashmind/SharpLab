@@ -12,12 +12,12 @@ type Empty = class end
 }
 
 .class private auto ansi '<Module>'
-    extends [System.Runtime]System.Object
+    extends [netstandard]System.Object
 {
 } // end of class <Module>
 
 .class public auto ansi abstract sealed _
-    extends [System.Runtime]System.Object
+    extends [netstandard]System.Object
 {
     .custom instance void [FSharp.Core]Microsoft.FSharp.Core.CompilationMappingAttribute::.ctor(valuetype [FSharp.Core]Microsoft.FSharp.Core.SourceConstructFlags) = (
         01 00 07 00 00 00 00 00
@@ -35,8 +35,20 @@ type Empty = class end
 } // end of class _
 
 .class private auto ansi abstract sealed '<StartupCode$_>.$_'
-    extends [System.Runtime]System.Object
+    extends [netstandard]System.Object
 {
+    // Methods
+    .method public static 
+        void main@ () cil managed 
+    {
+        // Method begins at RVA 0x2050
+        // Code size 1 (0x1)
+        .maxstack 8
+        .entrypoint
+
+        IL_0000: ret
+    } // end of method $_::main@
+
 } // end of class <StartupCode$_>.$_
 
 *)

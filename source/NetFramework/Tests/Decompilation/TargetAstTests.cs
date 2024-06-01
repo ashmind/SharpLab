@@ -4,30 +4,30 @@ using Xunit;
 using Xunit.Abstractions;
 using SharpLab.Tests.Internal;
 
-namespace SharpLab.Tests.Decompilation {
-    public class TargetAstTests {
-        private readonly ITestOutputHelper _output;
+namespace SharpLab.Tests.Decompilation;
 
-        public TargetAstTests(ITestOutputHelper output) {
-            _output = output;
-            // TestAssemblyLog.Enable(output);
-        }
+public class TargetAstTests {
+    private readonly ITestOutputHelper _output;
 
-        [Theory]
-        [InlineData("Ast/EmptyClass.cs2ast")]
-        [InlineData("Ast/StructuredTrivia.cs2ast")]
-        [InlineData("Ast/LiteralTokens.cs2ast")]
-        [InlineData("Ast/EmptyType.fs")]
-        [InlineData("Ast/LiteralTokens.fs")]
-        public async Task SlowUpdate_ReturnsExpectedResult(string codeFilePath) {
-            var code = TestCode.FromFile(codeFilePath);
-            var driver = await TestDriverFactory.FromCodeAsync(code);
+    public TargetAstTests(ITestOutputHelper output) {
+        _output = output;
+        // TestAssemblyLog.Enable(output);
+    }
 
-            var result = await driver.SendSlowUpdateAsync<JArray>();
+    [Theory]
+    [InlineData("Ast/EmptyClass.cs2ast")]
+    [InlineData("Ast/StructuredTrivia.cs2ast")]
+    [InlineData("Ast/LiteralTokens.cs2ast")]
+    [InlineData("Ast/EmptyType.fs")]
+    [InlineData("Ast/LiteralTokens.fs")]
+    public async Task SlowUpdate_ReturnsExpectedResult(string codeFilePath) {
+        var code = TestCode.FromFile(codeFilePath);
+        var driver = await TestDriverFactory.FromCodeAsync(code);
 
-            var json = result.ExtensionResult?.ToString();
+        var result = await driver.SendSlowUpdateAsync<JArray>();
 
-            await code.AssertIsExpectedAsync(json, _output);
-        }
+        var json = result.ExtensionResult?.ToString();
+
+        await code.AssertIsExpectedAsync(json, _output);
     }
 }

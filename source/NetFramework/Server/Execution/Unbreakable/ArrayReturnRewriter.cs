@@ -3,31 +3,31 @@ using Mono.Cecil.Cil;
 using Unbreakable.Policy.Internal;
 using SharpLab.Server.Execution.Internal;
 
-namespace SharpLab.Server.Execution.Unbreakable {
-    internal class ArrayReturnRewriter : IMemberRewriterInternal {
-        public static ArrayReturnRewriter Default { get; } = new ArrayReturnRewriter();
+namespace SharpLab.Server.Execution.Unbreakable;
 
-        public string GetShortName() => nameof(ArrayReturnRewriter);
+internal class ArrayReturnRewriter : IMemberRewriterInternal {
+    public static ArrayReturnRewriter Default { get; } = new ArrayReturnRewriter();
 
-        public bool Rewrite(Instruction instruction, MemberRewriterContext context) {
-            var il = context.IL;
+    public string GetShortName() => nameof(ArrayReturnRewriter);
 
-            var method = ((MethodReference)instruction.Operand).Resolve();
-            if (!method.ReturnType.IsArray)
-                return false;
+    public bool Rewrite(Instruction instruction, MemberRewriterContext context) {
+        var il = context.IL;
 
-            var dup = il.Create(OpCodes.Dup);
-            var ldlen = il.Create(OpCodes.Ldlen);
-            var ldloc = il.CreateLdlocBest(context.RuntimeGuardVariable);
-            var call = il.CreateCall(context.RuntimeGuardReferences.FlowThroughGuardCountIntPtrMethod);
-            var pop = il.Create(OpCodes.Pop);
+        var method = ((MethodReference)instruction.Operand).Resolve();
+        if (!method.ReturnType.IsArray)
+            return false;
 
-            context.IL.InsertAfter(instruction, dup);
-            context.IL.InsertAfter(dup, ldlen);
-            context.IL.InsertAfter(ldlen, ldloc);
-            context.IL.InsertAfter(ldloc, call);
-            context.IL.InsertAfter(call, pop);
-            return true;
-        }
+        var dup = il.Create(OpCodes.Dup);
+        var ldlen = il.Create(OpCodes.Ldlen);
+        var ldloc = il.CreateLdlocBest(context.RuntimeGuardVariable);
+        var call = il.CreateCall(context.RuntimeGuardReferences.FlowThroughGuardCountIntPtrMethod);
+        var pop = il.Create(OpCodes.Pop);
+
+        context.IL.InsertAfter(instruction, dup);
+        context.IL.InsertAfter(dup, ldlen);
+        context.IL.InsertAfter(ldlen, ldloc);
+        context.IL.InsertAfter(ldloc, call);
+        context.IL.InsertAfter(call, pop);
+        return true;
     }
 }

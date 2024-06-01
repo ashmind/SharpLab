@@ -37,6 +37,18 @@ type Empty = class end
 .class private auto ansi abstract sealed '<StartupCode$_>.$_'
     extends [mscorlib]System.Object
 {
+    // Methods
+    .method public static 
+        void main@ () cil managed 
+    {
+        // Method begins at RVA 0x2050
+        // Code size 1 (0x1)
+        .maxstack 8
+        .entrypoint
+
+        IL_0000: ret
+    } // end of method $_::main@
+
 } // end of class <StartupCode$_>.$_
 
 *)

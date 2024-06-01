@@ -5,67 +5,66 @@ using MirrorSharp.Advanced;
 using MirrorSharp.FSharp.Advanced;
 using SharpLab.Server.Common.Internal;
 
-namespace SharpLab.Server.Common.Languages {
-    [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-    public class FSharpAdapter : ILanguageAdapter {
-        private readonly AssemblyReferenceDiscoveryTaskSource _referencedAssembliesTaskSource = new();
-        private readonly IAssemblyPathCollector _assemblyPathCollector;
+namespace SharpLab.Server.Common.Languages;
 
-        public string LanguageName => LanguageNames.FSharp;
-        public AssemblyReferenceDiscoveryTask AssemblyReferenceDiscoveryTask => _referencedAssembliesTaskSource.Task;
+[UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
+public class FSharpAdapter : ILanguageAdapter {
+    private readonly AssemblyReferenceDiscoveryTaskSource _referencedAssembliesTaskSource = new();
+    private readonly IAssemblyPathCollector _assemblyPathCollector;
 
-        public FSharpAdapter(IAssemblyPathCollector assemblyPathCollector) {
-            _assemblyPathCollector = assemblyPathCollector;
-        }
+    public string LanguageName => LanguageNames.FSharp;
+    public AssemblyReferenceDiscoveryTask AssemblyReferenceDiscoveryTask => _referencedAssembliesTaskSource.Task;
 
-        public void SlowSetup(MirrorSharpOptions options) {
-            options.EnableFSharp(o => {
-                o.LangVersion = "preview";
+    public FSharpAdapter(IAssemblyPathCollector assemblyPathCollector) {
+        _assemblyPathCollector = assemblyPathCollector;
+    }
 
-                var referencedAssemblyPaths = _assemblyPathCollector.SlowGetAllAssemblyPathsIncludingReferences(
-                    // Essential
-                    "netstandard",
-                    "System.Runtime",
-                    "FSharp.Core",
+    public void SlowSetup(MirrorSharpOptions options) {
+        options.EnableFSharp(o => {
+            o.LangVersion = "preview";
 
-                    // Runtime
-                    "SharpLab.Runtime",
+            var referencedAssemblyPaths = _assemblyPathCollector.SlowGetAllAssemblyPathsIncludingReferences(
+                // Essential
+                "netstandard",
+                "System.Runtime",
+                "FSharp.Core",
 
-                    // Requested
-                    "System.Collections.Immutable",
-                    "System.Data",
-                    "System.Runtime.CompilerServices.Unsafe",
-                    "System.Runtime.Intrinsics",
-                    "System.Text.Json",
-                    "System.Web.HttpUtility",
-                    "System.Xml.Linq"
-                ).ToImmutableArray();
-                _referencedAssembliesTaskSource.Complete(referencedAssemblyPaths);
+                // Runtime
+                "SharpLab.Runtime",
 
-                o.AssemblyReferencePaths = referencedAssemblyPaths;
-                o.TargetProfile = "netstandard";
-            });
-        }
+                // Requested
+                "System.Collections.Immutable",
+                "System.Data",
+                "System.Runtime.CompilerServices.Unsafe",
+                "System.Runtime.Intrinsics",
+                "System.Text.Json",
+                "System.Web.HttpUtility",
+                "System.Xml.Linq"
+            ).ToImmutableArray();
+            _referencedAssembliesTaskSource.Complete(referencedAssemblyPaths);
 
-        public void SetOptimize([NotNull] IWorkSession session, [NotNull] string optimize) {
-            var debug = optimize == Optimize.Debug;
-            var fsharp = session.FSharp();
-            fsharp.ProjectOptions = fsharp.ProjectOptions
-                .WithOtherOptionDebug(debug)
-                .WithOtherOptionOptimize(!debug)
-                .WithOtherOptionDefine("DEBUG", debug);
-        }
+            o.AssemblyReferencePaths = referencedAssemblyPaths;
+            o.TargetProfile = "netstandard";
+        });
+    }
 
-        public void SetOptionsForTarget([NotNull] IWorkSession session, [NotNull] string target) {
-            // I don't use `exe` for Run, see FSharpEntryPointRewriter
-        }
+    public void SetOptimize([NotNull] IWorkSession session, [NotNull] string optimize) {
+        var debug = optimize == Optimize.Debug;
+        var fsharp = session.FSharp();
+        fsharp.ProjectOptions = fsharp.ProjectOptions
+            .WithOtherOptionOptimize(!debug)
+            .WithOtherOptionDefine("DEBUG", debug);
+    }
 
-        public ImmutableArray<int> GetMethodParameterLines(IWorkSession session, int lineInMethod, int columnInMethod) {
-            return ImmutableArray<int>.Empty; // not supported yet
-        }
+    public void SetOptionsForTarget([NotNull] IWorkSession session, [NotNull] string target) {
+        // I don't use `exe` for Run, see FSharpEntryPointRewriter
+    }
 
-        public ImmutableArray<string?> GetCallArgumentIdentifiers([NotNull] IWorkSession session, int callStartLine, int callStartColumn) {
-            return ImmutableArray<string?>.Empty; // not supported yet
-        }
+    public ImmutableArray<int> GetMethodParameterLines(IWorkSession session, int lineInMethod, int columnInMethod) {
+        return []; // not supported yet
+    }
+
+    public ImmutableArray<string?> GetCallArgumentIdentifiers([NotNull] IWorkSession session, int callStartLine, int callStartColumn) {
+        return []; // not supported yet
     }
 }

@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\#external\mirrorsharp\Testing\Testing.csproj" />
+    <ProjectReference Include="..\..\#external\mirrorsharp-codemirror-6-preview\Testing\Testing.csproj" />
     <ProjectReference Include="..\Server\Server.csproj" />
   </ItemGroup>
 
