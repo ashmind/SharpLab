@@ -46,19 +46,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Container.Warmup", "Contain
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mirrorsharp", "mirrorsharp", "{857B6AAC-168B-4C0A-AC0E-9471B1133E18}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "#external\mirrorsharp\Common\Common.csproj", "{85D37C09-55DB-4826-A82C-00306E7F7FFD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "#external\mirrorsharp-codemirror-6-preview\Common\Common.csproj", "{85D37C09-55DB-4826-A82C-00306E7F7FFD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FSharp", "#external\mirrorsharp\FSharp\FSharp.csproj", "{4CB3E2A1-CBB9-40B5-A8E5-5E5BE0A43440}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FSharp", "#external\mirrorsharp-codemirror-6-preview\FSharp\FSharp.csproj", "{4CB3E2A1-CBB9-40B5-A8E5-5E5BE0A43440}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore", "#external\mirrorsharp\AspNetCore\AspNetCore.csproj", "{956D5368-42DC-4449-BE26-3114A0FFA26A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore", "#external\mirrorsharp-codemirror-6-preview\AspNetCore\AspNetCore.csproj", "{956D5368-42DC-4449-BE26-3114A0FFA26A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VisualBasic", "#external\mirrorsharp\VisualBasic\VisualBasic.csproj", "{92675C61-F0E7-4317-AD8F-BF40246CA3BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VisualBasic", "#external\mirrorsharp-codemirror-6-preview\VisualBasic\VisualBasic.csproj", "{92675C61-F0E7-4317-AD8F-BF40246CA3BE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IL", "#external\mirrorsharp\IL\IL.csproj", "{F349EC21-2D0A-4BCF-8416-33783AC420CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IL", "#external\mirrorsharp-codemirror-6-preview\IL\IL.csproj", "{F349EC21-2D0A-4BCF-8416-33783AC420CF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testing", "#external\mirrorsharp\Testing\Testing.csproj", "{25D47016-569C-4CB6-9CB3-B2B8243B3485}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testing", "#external\mirrorsharp-codemirror-6-preview\Testing\Testing.csproj", "{25D47016-569C-4CB6-9CB3-B2B8243B3485}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Owin", "#external\mirrorsharp\Owin\Owin.csproj", "{364367F9-D5DF-4DE0-9BF5-230144E00CE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Owin", "#external\mirrorsharp-codemirror-6-preview\Owin\Owin.csproj", "{364367F9-D5DF-4DE0-9BF5-230144E00CE9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mobius.ILasm", "Mobius.ILasm", "{F2DC8AAC-B7A3-44CA-97C8-6DA6F6285EFA}"
 EndProject
@@ -68,9 +68,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mobius.ILasm.Cli", "#extern
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mobius.ILasm.Tests", "#external\Mobius.ILasm\Mobius.ILasm.Tests\Mobius.ILasm.Tests.csproj", "{7813B6ED-1EFF-4207-BB6C-F9F2C0F59308}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "#external\mirrorsharp\Tests\Tests.csproj", "{C997F73F-0CAC-4558-B2D6-252131C0DBE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "#external\mirrorsharp-codemirror-6-preview\Tests\Tests.csproj", "{C997F73F-0CAC-4558-B2D6-252131C0DBE0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Php", "#external\mirrorsharp\Php\Php.csproj", "{8C981375-A016-4B40-B54C-7A324A4D51F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Php", "#external\mirrorsharp-codemirror-6-preview\Php\Php.csproj", "{8C981375-A016-4B40-B54C-7A324A4D51F0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mobius.ILasm.Tests.SourceGenerator", "#external\Mobius.ILasm\Mobius.ILasm.Tests.SourceGenerator\Mobius.ILasm.Tests.SourceGenerator.csproj", "{09A00830-68F3-4F04-9322-8F83E898A554}"
 EndProject
@@ -78,33 +78,37 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Fragile", "Fragile", "{5792
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fragile", "#external\Fragile\Fragile\Fragile.csproj", "{FD74AE76-B79C-4540-96B6-223A5E12B89A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn33", "#external\mirrorsharp\Internal.Roslyn33\Internal.Roslyn33.csproj", "{4DD9FAA9-682E-46A6-8AD3-EABFF677C14A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn33", "#external\mirrorsharp-codemirror-6-preview\Internal.Roslyn33\Internal.Roslyn33.csproj", "{4DD9FAA9-682E-46A6-8AD3-EABFF677C14A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn36", "#external\mirrorsharp\Internal.Roslyn36\Internal.Roslyn36.csproj", "{1FDC16C3-9941-4567-B969-32A7ECA7A237}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn36", "#external\mirrorsharp-codemirror-6-preview\Internal.Roslyn36\Internal.Roslyn36.csproj", "{1FDC16C3-9941-4567-B969-32A7ECA7A237}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn41", "#external\mirrorsharp\Internal.Roslyn41\Internal.Roslyn41.csproj", "{FA2F0723-B881-4DD6-AD6E-09AF2154D917}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn41", "#external\mirrorsharp-codemirror-6-preview\Internal.Roslyn41\Internal.Roslyn41.csproj", "{FA2F0723-B881-4DD6-AD6E-09AF2154D917}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn42", "#external\mirrorsharp\Internal.Roslyn42\Internal.Roslyn42.csproj", "{2AF6A3B6-85AD-497D-A8B3-56586796B976}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn42", "#external\mirrorsharp-codemirror-6-preview\Internal.Roslyn42\Internal.Roslyn42.csproj", "{2AF6A3B6-85AD-497D-A8B3-56586796B976}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.RoslynLatest", "#external\mirrorsharp\Tests.RoslynLatest\Tests.RoslynLatest.csproj", "{790D1C86-D15B-4CE9-9FEE-F72E32AE2C4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.RoslynLatest", "#external\mirrorsharp-codemirror-6-preview\Tests.RoslynLatest\Tests.RoslynLatest.csproj", "{790D1C86-D15B-4CE9-9FEE-F72E32AE2C4C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.RoslynInternals", "#external\mirrorsharp\Internal.RoslynInternals\Internal.RoslynInternals.csproj", "{35658C61-7D7E-4507-8355-0496FA7DA4E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.RoslynInternals", "#external\mirrorsharp-codemirror-6-preview\Internal.RoslynInternals\Internal.RoslynInternals.csproj", "{35658C61-7D7E-4507-8355-0496FA7DA4E7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn43", "#external\mirrorsharp\Internal.Roslyn43\Internal.Roslyn43.csproj", "{E378A792-A0DE-4BD4-8473-B50EC92209FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn43", "#external\mirrorsharp-codemirror-6-preview\Internal.Roslyn43\Internal.Roslyn43.csproj", "{E378A792-A0DE-4BD4-8473-B50EC92209FD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn44", "#external\mirrorsharp\Internal.Roslyn44\Internal.Roslyn44.csproj", "{23D21D9E-9F29-4ECF-B4D6-690D072E7FF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn44", "#external\mirrorsharp-codemirror-6-preview\Internal.Roslyn44\Internal.Roslyn44.csproj", "{23D21D9E-9F29-4ECF-B4D6-690D072E7FF6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Roslyn44", "#external\mirrorsharp\Tests.Roslyn44\Tests.Roslyn44.csproj", "{F2BB1A4A-15B3-4C56-ACDE-BE52B1D000D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Roslyn44", "#external\mirrorsharp-codemirror-6-preview\Tests.Roslyn44\Tests.Roslyn44.csproj", "{F2BB1A4A-15B3-4C56-ACDE-BE52B1D000D8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn45", "#external\mirrorsharp\Internal.Roslyn45\Internal.Roslyn45.csproj", "{B9D94FA6-CEAF-488F-8B1C-CA93C4F999A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn45", "#external\mirrorsharp-codemirror-6-preview\Internal.Roslyn45\Internal.Roslyn45.csproj", "{B9D94FA6-CEAF-488F-8B1C-CA93C4F999A7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn46", "#external\mirrorsharp\Internal.Roslyn46\Internal.Roslyn46.csproj", "{2042090B-E2E7-4EC9-8A97-48C4F2013861}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn46", "#external\mirrorsharp-codemirror-6-preview\Internal.Roslyn46\Internal.Roslyn46.csproj", "{2042090B-E2E7-4EC9-8A97-48C4F2013861}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn47", "#external\mirrorsharp\Internal.Roslyn47\Internal.Roslyn47.csproj", "{0884F923-37B8-4728-A3EB-AD28CD38A0B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn47", "#external\mirrorsharp-codemirror-6-preview\Internal.Roslyn47\Internal.Roslyn47.csproj", "{0884F923-37B8-4728-A3EB-AD28CD38A0B6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn48", "#external\mirrorsharp\Internal.Roslyn48\Internal.Roslyn48.csproj", "{9D0D0F2F-37BC-485B-AF47-00788E5092A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn48", "#external\mirrorsharp-codemirror-6-preview\Internal.Roslyn48\Internal.Roslyn48.csproj", "{9D0D0F2F-37BC-485B-AF47-00788E5092A2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn49", "#external\mirrorsharp\Internal.Roslyn49\Internal.Roslyn49.csproj", "{70C3477B-8A46-480A-AB1D-0DCD486A55AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn49", "#external\mirrorsharp-codemirror-6-preview\Internal.Roslyn49\Internal.Roslyn49.csproj", "{70C3477B-8A46-480A-AB1D-0DCD486A55AD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn410", "#external\mirrorsharp-codemirror-6-preview\Internal.Roslyn410\Internal.Roslyn410.csproj", "{23253C8E-341C-4613-9834-E7CDBE2D88BA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Internal.Roslyn411", "#external\mirrorsharp-codemirror-6-preview\Internal.Roslyn411\Internal.Roslyn411.csproj", "{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -889,6 +893,42 @@ Global
 		{70C3477B-8A46-480A-AB1D-0DCD486A55AD}.Release|x64.Build.0 = Release|Any CPU
 		{70C3477B-8A46-480A-AB1D-0DCD486A55AD}.Release|x86.ActiveCfg = Release|Any CPU
 		{70C3477B-8A46-480A-AB1D-0DCD486A55AD}.Release|x86.Build.0 = Release|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Debug|x64.Build.0 = Debug|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Debug|x86.Build.0 = Debug|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Debug-Vsix|Any CPU.ActiveCfg = Debug|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Debug-Vsix|Any CPU.Build.0 = Debug|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Debug-Vsix|x64.ActiveCfg = Debug|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Debug-Vsix|x64.Build.0 = Debug|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Debug-Vsix|x86.ActiveCfg = Debug|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Debug-Vsix|x86.Build.0 = Debug|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Release|x64.ActiveCfg = Release|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Release|x64.Build.0 = Release|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Release|x86.ActiveCfg = Release|Any CPU
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA}.Release|x86.Build.0 = Release|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Debug|x64.Build.0 = Debug|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Debug|x86.Build.0 = Debug|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Debug-Vsix|Any CPU.ActiveCfg = Debug|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Debug-Vsix|Any CPU.Build.0 = Debug|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Debug-Vsix|x64.ActiveCfg = Debug|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Debug-Vsix|x64.Build.0 = Debug|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Debug-Vsix|x86.ActiveCfg = Debug|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Debug-Vsix|x86.Build.0 = Debug|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Release|x64.ActiveCfg = Release|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Release|x64.Build.0 = Release|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Release|x86.ActiveCfg = Release|Any CPU
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -933,6 +973,8 @@ Global
 		{0884F923-37B8-4728-A3EB-AD28CD38A0B6} = {857B6AAC-168B-4C0A-AC0E-9471B1133E18}
 		{9D0D0F2F-37BC-485B-AF47-00788E5092A2} = {857B6AAC-168B-4C0A-AC0E-9471B1133E18}
 		{70C3477B-8A46-480A-AB1D-0DCD486A55AD} = {857B6AAC-168B-4C0A-AC0E-9471B1133E18}
+		{23253C8E-341C-4613-9834-E7CDBE2D88BA} = {857B6AAC-168B-4C0A-AC0E-9471B1133E18}
+		{A91AD05D-9BD5-43C3-9A0B-7D0F8CCE0267} = {857B6AAC-168B-4C0A-AC0E-9471B1133E18}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8CE0498A-BD84-493A-92FE-9B9AB146D86D}
