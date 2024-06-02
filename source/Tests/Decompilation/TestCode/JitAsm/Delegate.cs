@@ -4,16 +4,16 @@ delegate void D();
 
 ; Core CLR <IGNORE> on x64
 
-D..ctor(System.Object, IntPtr)
+D..ctor(...)
     ; Cannot produce JIT assembly for runtime-implemented method.
 
 D.Invoke()
     ; Cannot produce JIT assembly for runtime-implemented method.
 
-D.BeginInvoke(System.AsyncCallback, System.Object)
+D.BeginInvoke(...)
     ; Cannot produce JIT assembly for runtime-implemented method.
 
-D.EndInvoke(System.IAsyncResult)
+D.EndInvoke(...)
     ; Cannot produce JIT assembly for runtime-implemented method.
 
 */

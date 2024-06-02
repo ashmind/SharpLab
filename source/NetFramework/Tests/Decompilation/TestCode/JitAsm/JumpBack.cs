@@ -12,7 +12,7 @@ public class C
 
 /* asm
 
-; Desktop CLR <IGNORE> on amd64
+; Desktop CLR <IGNORE> on x64
 
 Microsoft.CodeAnalysis.EmbeddedAttribute..ctor()
     L0000: ret

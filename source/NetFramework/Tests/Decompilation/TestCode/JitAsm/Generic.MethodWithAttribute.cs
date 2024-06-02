@@ -10,7 +10,7 @@ static class C {
 
 /* asm
 
-; Desktop CLR <IGNORE> on amd64
+; Desktop CLR <IGNORE> on x64
 
 Microsoft.CodeAnalysis.EmbeddedAttribute..ctor()
     L0000: ret
@@ -30,8 +30,9 @@ C.M[[System.Decimal, mscorlib]]()
     L000d: mov rax, rcx
     L0010: ret
 
-C.M[[System.String, mscorlib]]()
-    ; Failed to find JIT output for generic method (reference types?).
-    ; If you know a solution, please comment at https://github.com/ashmind/SharpLab/issues/99.
+Unknown (0x<IGNORE>)
+    ; Method signature was not found -- please report this issue.
+    ; Failed to find JIT output. This might appear more frequently than before due to a library update.
+    ; Please monitor https://github.com/ashmind/SharpLab/issues/1334 for progress.
 
 */

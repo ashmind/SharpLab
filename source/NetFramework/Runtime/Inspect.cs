@@ -18,7 +18,7 @@ public static partial class Inspect {
         if (objectType == null)
             throw new Exception($"Failed to find object type for address 0x{address:X}.");
 
-        var objectSize = runtime.Heap.GetObjectSize(address, objectType);
+        var objectSize = runtime.Heap.GetObject(address, objectType).Size;
 
         // Move by one pointer size back -- Object Header,
         // see https://blogs.msdn.microsoft.com/seteplia/2017/05/26/managed-object-internals-part-1-layout/

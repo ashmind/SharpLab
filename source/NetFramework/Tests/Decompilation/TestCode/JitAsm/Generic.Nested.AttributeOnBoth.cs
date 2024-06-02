@@ -12,7 +12,7 @@ static class C<T> {
 
 /* asm
 
-; Desktop CLR <IGNORE> on amd64
+; Desktop CLR <IGNORE> on x64
 
 Microsoft.CodeAnalysis.EmbeddedAttribute..ctor()
     L0000: ret
@@ -25,16 +25,19 @@ C`1+N`1[[System.Int32, mscorlib],[System.Int32, mscorlib]].M(Int32)
     L0000: xor eax, eax
     L0002: ret
 
-C`1+N`1[[System.Int32, mscorlib],[System.__Canon, mscorlib]].M(System.__Canon)
-    L0000: xor eax, eax
-    L0002: ret
+Unknown (0x<IGNORE>)
+    ; Method signature was not found -- please report this issue.
+    ; Failed to find JIT output. This might appear more frequently than before due to a library update.
+    ; Please monitor https://github.com/ashmind/SharpLab/issues/1334 for progress.
 
-C`1+N`1[[System.__Canon, mscorlib],[System.Int32, mscorlib]].M(Int32)
-    L0000: xor eax, eax
-    L0002: ret
+Unknown (0x<IGNORE>)
+    ; Method signature was not found -- please report this issue.
+    ; Failed to find JIT output. This might appear more frequently than before due to a library update.
+    ; Please monitor https://github.com/ashmind/SharpLab/issues/1334 for progress.
 
-C`1+N`1[[System.__Canon, mscorlib],[System.__Canon, mscorlib]].M(System.__Canon)
-    L0000: xor eax, eax
-    L0002: ret
+Unknown (0x<IGNORE>)
+    ; Method signature was not found -- please report this issue.
+    ; Failed to find JIT output. This might appear more frequently than before due to a library update.
+    ; Please monitor https://github.com/ashmind/SharpLab/issues/1334 for progress.
 
 */

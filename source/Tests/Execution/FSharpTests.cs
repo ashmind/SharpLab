@@ -10,7 +10,7 @@ namespace SharpLab.Tests.Execution;
 [Collection(TestCollectionNames.Execution)]
 public class FSharpTests {
     public FSharpTests(ITestOutputHelper output) {
-        TestDiagnosticLog.Enable(output);
+        // TestDiagnosticLog.Enable(output);
     }
 
     [Fact]

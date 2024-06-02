@@ -24,7 +24,7 @@ C.M[[System.Decimal, System.Private.CoreLib]]()
     L000e: ret
 
 C.M[[System.String, System.Private.CoreLib]]()
-    ; Failed to find JIT output for generic method (reference types?).
-    ; If you know a solution, please comment at https://github.com/ashmind/SharpLab/issues/99.
+    ; Failed to find JIT output. This might appear more frequently than before due to a library update.
+    ; Please monitor https://github.com/ashmind/SharpLab/issues/1334 for progress.
 
 */

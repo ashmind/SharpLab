@@ -30,7 +30,7 @@ C`1+N.M()
     ; However you can use attribute SharpLab.Runtime.JitGeneric to specify argument types.
     ; Example: [JitGeneric(typeof(int)), JitGeneric(typeof(string))] void M<T>() { ... }.
 
-C.M()
+C.M[[, _]]()
     ; Open generics cannot be JIT-compiled.
     ; However you can use attribute SharpLab.Runtime.JitGeneric to specify argument types.
     ; Example: [JitGeneric(typeof(int)), JitGeneric(typeof(string))] void M<T>() { ... }.
