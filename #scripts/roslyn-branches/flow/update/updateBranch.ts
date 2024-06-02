@@ -101,6 +101,7 @@ async function updateRoslynBuildPackages(currentBuildId: string|null) {
         a => a.name === 'Packages - PreRelease'
           || a.name === 'Bootstrap Packages - PreRelease'
           || a.name === 'Bootstrap Packages - AnyCpu'
+          || a.name === 'Bootstrap Packages - Default'
     );
     if (!roslynPackages) {
         throw `Packages were not found in Roslyn Azure build artifacts.\nAvailable artifacts: ${
