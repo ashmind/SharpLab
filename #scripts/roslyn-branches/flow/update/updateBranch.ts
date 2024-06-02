@@ -177,7 +177,7 @@ async function buildSharpLab(roslynPackagesRoot: string) {
         // sigh: dotnet.exe should do this, but of course it does not
         const projectPath = projectPathUntyped as string;
         const projectName = path.basename(projectPath);
-        if (/mirrorsharp[/\\]Internal\.Roslyn/i.test(projectPath)) {
+        if (/mirrorsharp[^/\\]*[/\\]Internal\.Roslyn/i.test(projectPath)) {
             console.log(`  ${projectName}`);
             console.log('    Skipping');
             continue;
