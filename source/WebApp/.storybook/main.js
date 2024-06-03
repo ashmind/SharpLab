@@ -14,6 +14,9 @@ module.exports = {
     core: {
         builder: 'webpack5',
     },
+    typescript: {
+        reactDocgen: false,
+    },
     webpackFinal: async (config) => {
         config.resolve.symlinks = false;
         config.resolve.alias[
