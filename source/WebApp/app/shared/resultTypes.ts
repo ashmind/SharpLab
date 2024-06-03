@@ -92,6 +92,8 @@ export type FlowStep = {
     readonly jump?: true;
 };
 
+export type LegacyFlowStep = number | FlowStep;
+
 export type FlowAreaType = 'method' | 'loop' | `unknown: ${string}`;
 
 export type FlowArea = {
@@ -134,7 +136,7 @@ export interface AstResult extends ResultBase {
 
 export type RunResultLegacyValue = {
     readonly output: ReadonlyArray<OutputItem>;
-    readonly flow: ReadonlyArray<FlowStep>;
+    readonly flow: ReadonlyArray<LegacyFlowStep>;
 };
 
 export interface RunResult extends ResultBase {
@@ -161,11 +163,12 @@ export interface ErrorResult extends ResultBase {
 export type NonErrorResult = CodeResult|AstResult|ExplainResult|VerifyResult|RunResult;
 export type Result = NonErrorResult|ErrorResult;
 
+export type ParsedRunResultValue = {
+    readonly output: ReadonlyArray<OutputItem>;
+    readonly flow: Flow | null;
+};
 export type ParsedRunResult = Omit<RunResult, 'value'> & {
-    readonly value: {
-        readonly output: ReadonlyArray<OutputItem>;
-        readonly flow: Flow | null;
-    } | null;
+    readonly value: ParsedRunResultValue | null;
 };
 export type ParsedNonErrorResult = Exclude<Result, RunResult|ErrorResult>|ParsedRunResult;
 export type ParsedResult = ParsedNonErrorResult|ErrorResult;

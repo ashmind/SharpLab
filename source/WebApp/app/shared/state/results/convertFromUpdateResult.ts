@@ -1,5 +1,5 @@
 import type { MaybeCached } from '../../../features/result-cache/types';
-import type { UpdateResult, DiagnosticError, DiagnosticWarning, ParsedNonErrorResult, AstItem, Explanation, RunResultLegacyValue, Flow } from '../../resultTypes';
+import type { UpdateResult, DiagnosticError, DiagnosticWarning, ParsedNonErrorResult, AstItem, Explanation, RunResultLegacyValue, ParsedRunResultValue } from '../../resultTypes';
 import { type TargetName, TARGET_AST, TARGET_EXPLAIN, TARGET_VERIFY, TARGET_RUN, TARGET_IL } from '../../targets';
 import { extractRangesFromIL } from './extractRangesFromIL';
 import { parseOutput } from './parseOutput';
@@ -19,14 +19,19 @@ const collectErrorsAndWarnings = (target: TargetName, diagnostics: UpdateResult[
     return { success, errors, warnings } as const;
 };
 
-const convertFromLegacyRunValue = (value: RunResultLegacyValue | null) => {
+const convertFromLegacyRunValue = (value: RunResultLegacyValue | null): ParsedRunResultValue | null => {
     if (!value)
         return null;
 
-    const { output, flow: steps } = value;
+    const { output, flow } = value;
+    const steps = flow.map(
+        s => typeof s === 'number'
+            ? { type: 'step', line: s }
+            : s
+    );
     return {
         output,
-        flow: { steps, areas: [] } as Flow
+        flow: { steps, areas: [] }
     };
 };
 
