@@ -24,7 +24,7 @@ const saveGist = (code: string, options: ExactOptionsData, gist: Gist) => {
     if (code !== gist.code)
         return false;
 
-    const normalize = <T>(o: T|null|undefined) => o != null ? o : null;
+    const normalize = <T>(o: T|null|undefined) => o ?? null;
     for (const key of ['language', 'target', 'branchId', 'release'] as const) {
         if (normalize(options[key]) !== normalize(gist.options[key]))
             return false;

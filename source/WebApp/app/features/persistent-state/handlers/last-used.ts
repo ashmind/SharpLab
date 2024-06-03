@@ -1,6 +1,6 @@
 ﻿import type { ExactOptionsData, OptionsData } from './helpers/optionsData';
 
-const version = 3 as const;
+const version = 3;
 type OptionsV3 = {
     version: 3;
     options: OptionsData;

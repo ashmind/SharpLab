@@ -25,8 +25,7 @@ const convertToD3Node = (
         topLevelLinked: []
     } as NodeDatumData;
     if (parentId) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const parentD3Node = d3NodesById[parentId]! as ExtendedNodeDatum<TopLevelNodeDatumData>;
+        const parentD3Node = d3NodesById[parentId] as ExtendedNodeDatum<TopLevelNodeDatumData>;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const siblingNodes = parentD3Node.data.node.nestedNodes!;
         data.nested = {

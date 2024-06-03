@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import * as gistsSource from '../../../features/save-as-gist/github-client/gists';
 import { partiallyMutable } from '../../../shared/helpers/partiallyMutable';
 import { fromPartial } from '../../../shared/helpers/testing/fromPartial';
@@ -39,7 +38,7 @@ describe('v2', () => {
 
     test('loads v2 hash', async () => {
         window.location.hash = '#v2:EYLgtghglgdgNAFxFANgHwQUwM4IAQDGA9gCaZA=';
-        const loaded = await loadStateFromUrlAsync()!;
+        const loaded = await loadStateFromUrlAsync();
         expect(loaded).toEqual({
             options: {
                 language: LANGUAGE_CSHARP,

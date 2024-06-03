@@ -87,6 +87,7 @@ const collectLineDetailsRecursive = (
             step
         } as const;
         result.lines.push(details);
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         if ((step.jump || step.exception) && index < steps.length - 1)
             result.jumps.push({ from: step, to: steps[index + 1], exception: !!step.exception });
     }

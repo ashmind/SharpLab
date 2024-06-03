@@ -27,6 +27,7 @@ export type LoadStateFromGistResult = {
 };
 
 const getIsRelease = (options: { release: boolean|null|undefined }, overrides: Overrides) => {
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     if (overrides.mode || options.release == null)
         return overrides.mode !== 'debug';
 

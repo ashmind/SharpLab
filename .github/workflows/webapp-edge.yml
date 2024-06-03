@@ -34,7 +34,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: '16.17.1'
+          node-version: '20.14.0'
 
       - run: 'git show ${{ github.sha }} --format="version_number=%cd" --date=format:%Y-%m-%d-%H%M --no-patch >> $GITHUB_OUTPUT'
         id: version

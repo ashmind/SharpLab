@@ -6,9 +6,11 @@
         "@storybook/*",
         "@types/applicationinsights-js",
         "@types/css-font-loading-module",
+        "@types/jest",
         "babel-loader",
         "codemirror-addon-infotip",
         "codemirror-addon-lint-fix",
+        "jest-environment-jsdom",
         "less-loader",
         "normalize.css",
 
