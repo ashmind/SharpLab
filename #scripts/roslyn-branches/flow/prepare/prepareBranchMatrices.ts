@@ -77,5 +77,8 @@ const run = async () => {
 
 nodeSafeTopLevelAwait(run, e => {
     console.error('::error::' + e);
+    const { stack } = (e as { stack?: string });
+    if (stack)
+        console.error(stack);
     process.exit(1);
 }, { timeoutMinutes: 5 });

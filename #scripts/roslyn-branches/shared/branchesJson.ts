@@ -1,8 +1,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 import getStream from 'get-stream';
-import { BlobServiceClient } from '@azure/storage-blob';
-import type { BlobDownloadResponse } from '@azure/storage-blob/typings/latest/src/generated/src/models';
+import { BlobDownloadResponseParsed, BlobServiceClient } from '@azure/storage-blob';
 import { getAzureCredential } from './getAzureCredential';
 import { useAzure } from './useAzure';
 import type { Branch } from './types';
@@ -18,7 +17,7 @@ const getBranchesJsonBlobClient = () => {
         .getBlockBlobClient(branchesJsonFileName);
 };
 
-const parseBranchesFromDownload = async (download: BlobDownloadResponse) => {
+const parseBranchesFromDownload = async (download: BlobDownloadResponseParsed) => {
     return JSON.parse(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         await getStream(download.readableStreamBody!)
