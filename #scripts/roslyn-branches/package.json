@@ -6,7 +6,9 @@
   "scripts": {
     "generate-matrix": "ts-node-script ./flow/prepare/prepareBranchMatrices.ts",
     "update-branch": "ts-node-script ./flow/update/updateBranch.ts",
-    "cleanup-branch": "ts-node-script ./flow/cleanup/cleanupBranch.ts"
+    "cleanup-branch": "ts-node-script ./flow/cleanup/cleanupBranch.ts",
+
+    "check": "tsc --project tsconfig.json --noEmit --skipLibCheck && eslint . --max-warnings 0 --ext .ts"
   },
   "devDependencies": {
     "@types/adm-zip": "0.4.33",
@@ -23,7 +25,7 @@
     "@azure/arm-appservice": "13.0.3",
     "@azure/arm-resources": "5.1.0",
     "@azure/arm-subscriptions": "5.1.0",
-    "@azure/identity": "3.1.1",
+    "@azure/identity": "4.2.0",
     "@azure/storage-blob": "12.1.1",
     "adm-zip": "0.4.14",
     "chalk": "4.0.0",

@@ -2,7 +2,7 @@ export const nodeSafeTopLevelAwait = (
     call: () => Promise<unknown>,
     handleError: (e: unknown) => void,
     { timeoutMinutes }: { timeoutMinutes: number }
- ) => {
+) => {
     let keepaliveTimer: ReturnType<typeof setTimeout>;
     // https://github.com/nodejs/node/issues/22088
     const keepalive = () => new Promise<void>((_, reject) => keepaliveTimer = setTimeout(
