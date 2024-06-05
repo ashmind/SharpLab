@@ -1,5 +1,5 @@
 import { SubscriptionClient } from '@azure/arm-subscriptions';
-import { ClientSecretCredential, TokenCredential } from '@azure/identity';
+import { ClientSecretCredential, type TokenCredential } from '@azure/identity';
 
 let cachedCredential: TokenCredential | undefined;
 let cachedSubscriptionId: string | undefined;

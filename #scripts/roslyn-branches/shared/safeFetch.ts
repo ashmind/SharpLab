@@ -1,4 +1,4 @@
-import fetch, { RequestInit, Response } from 'node-fetch';
+import fetch, { type RequestInit, Response } from 'node-fetch';
 
 export { Response };
 export type SafeFetchError = Error & { response: Response };

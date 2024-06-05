@@ -1,5 +1,5 @@
 import delay from 'delay';
-import { safeFetch, Response, SafeFetchError } from '../../../../shared/safeFetch';
+import { safeFetch, Response, type SafeFetchError } from '../../../../shared/safeFetch';
 
 export const testWebApp = async ({ url }: { url: string }) => {
     console.log(`GET ${url}/status`);

@@ -5,6 +5,8 @@ $MatricesPath = './!matrices.txt'
 
 Push-Location "$PSScriptRoot/roslyn-branches"
 try {
+    npm run check
+    
     if (Test-Path $MatricesPath) {
         Remove-Item $MatricesPath
     }

@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 import getStream from 'get-stream';
-import { BlobDownloadResponseParsed, BlobServiceClient } from '@azure/storage-blob';
+import { type BlobDownloadResponseParsed, BlobServiceClient } from '@azure/storage-blob';
 import { getAzureCredential } from './getAzureCredential';
 import { useAzure } from './useAzure';
 import type { Branch } from './types';

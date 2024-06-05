@@ -26,6 +26,7 @@ jobs:
         with:
           node-version: '20.14.0'
       - run: npm ci
+      - run: npm run check
       - id: generate-matrix
         run: npm run generate-matrix
         env:

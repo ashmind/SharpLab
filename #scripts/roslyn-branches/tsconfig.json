@@ -8,7 +8,7 @@
         "moduleResolution": "node",
         "noEmit": true,
         "strict": true,
-        "importsNotUsedAsValues": "error",
+        "verbatimModuleSyntax": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true
     }

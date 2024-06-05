@@ -115,7 +115,7 @@ async function updateRoslynBuildPackages(currentBuildId: string|null) {
     if (!(await fs.pathExists(zipPath))) { // Optimization for local only
         console.log(`GET ${downloadUrl} => ${zipPath}`);
         const response = await safeFetch(downloadUrl);
-        await pipeline(response.body, fs.createWriteStream(zipPath));
+        await pipeline(response.body!, fs.createWriteStream(zipPath));
     }
     else {
         console.log(`Found cached ${zipPath}, no need to download`);
