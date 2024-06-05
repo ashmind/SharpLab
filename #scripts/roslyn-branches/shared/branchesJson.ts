@@ -54,7 +54,7 @@ async function updateInAzureBlob(branch: Branch, branchesJsonArtifactPath: strin
     await fs.writeFile(branchesJsonArtifactPath, branchesJson);
 
     console.log(`Uploading updated ${branchesJsonFileName} to Azure...`);
-    await blobClient.upload(branchesJson, branchesJson.length, {
+    await blobClient.upload(branchesJson, Buffer.byteLength(branchesJson), {
         blobHTTPHeaders: {
             blobContentType: 'application/json',
             blobCacheControl: 'max-age=43200' // 12 hours
