@@ -97,7 +97,7 @@ try {
         [Security.AccessControl.AccessControlType]::Allow
     )
 
-    $binPath = './bin/Debug/net7.0'
+    $binPath = './bin/Debug/net8.0'
     $acl = Get-Acl $binPath
     $acl.AddAccessRule($aclRule);
     Set-Acl $binPath -AclObject $acl
