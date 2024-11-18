@@ -14,19 +14,19 @@ on:
 
 jobs:
   build:
-    name: 'Build (.NET 8)'
+    name: 'Build (.NET 9)'
     # https://github.community/t/duplicate-checks-on-push-and-pull-request-simultaneous-event/18012/5
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: windows-latest
     env:
       NUGET_PACKAGES: ${{github.workspace}}/.nuget/packages
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'true'
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 9.0.x
       - uses: microsoft/setup-msbuild@v1.1
 
       # https://github.com/actions/setup-dotnet/issues/155
@@ -47,7 +47,7 @@ jobs:
       - run: dotnet build source/Tests --configuration Release
       - run: dotnet test source/Tests --no-build --configuration Release
       - run: dotnet publish source/Container.Manager --no-build --configuration Release
-      - run: Compress-Archive -Path 'source/Container.Manager/bin/Release/net8.0/publish/*' -DestinationPath 'Container.Manager.zip'
+      - run: Compress-Archive -Path 'source/Container.Manager/bin/Release/net9.0/publish/*' -DestinationPath 'Container.Manager.zip'
         shell: pwsh
 
       - uses: actions/upload-artifact@v3

@@ -17,11 +17,10 @@ C.M[[System.Int32, System.Private.CoreLib]]()
     L0002: ret
 
 C.M[[System.Decimal, System.Private.CoreLib]]()
-    L0000: vzeroupper
-    L0003: vxorps xmm0, xmm0, xmm0
-    L0007: vmovdqu [rcx], xmm0
-    L000b: mov rax, rcx
-    L000e: ret
+    L0000: vxorps xmm0, xmm0, xmm0
+    L0004: vmovdqu [rcx], xmm0
+    L0008: mov rax, rcx
+    L000b: ret
 
 C.M[[System.String, System.Private.CoreLib]]()
     ; Failed to find JIT output. This might appear more frequently than before due to a library update.
