@@ -16,19 +16,19 @@ on:
 
 jobs:
   build-core:
-    name: 'Build (.NET 8)'
+    name: 'Build (.NET 9)'
     # https://github.community/t/duplicate-checks-on-push-and-pull-request-simultaneous-event/18012/5
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: windows-latest
     env:
       NUGET_PACKAGES: ${{github.workspace}}/.nuget/packages
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'true'
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 9.0.x
       - uses: microsoft/setup-msbuild@v1.1
 
       # https://github.com/actions/setup-dotnet/issues/155
@@ -52,9 +52,9 @@ jobs:
       - run: dotnet test source/Tests --no-build --configuration Release
       - run: dotnet publish source/Server --no-build --configuration Release
       - run: dotnet publish source/WebApp.Server --no-build --configuration Release /p:ErrorOnDuplicatePublishOutputFiles=false
-      - run: Compress-Archive -Path 'source/Server/bin/Release/net8.0/publish/*' -DestinationPath 'Server.zip'
+      - run: Compress-Archive -Path 'source/Server/bin/Release/net9.0/publish/*' -DestinationPath 'Server.zip'
         shell: pwsh
-      - run: Compress-Archive -Path 'source/WebApp.Server/bin/Release/net8.0/publish/*' -DestinationPath 'WebApp.Server.zip'
+      - run: Compress-Archive -Path 'source/WebApp.Server/bin/Release/net9.0/publish/*' -DestinationPath 'WebApp.Server.zip'
         shell: pwsh
 
       - uses: actions/upload-artifact@v3
@@ -109,12 +109,12 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'true'
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 9.0.x
 
       # https://github.com/actions/setup-dotnet/issues/155
       - run: dotnet nuget locals all --clear
@@ -178,7 +178,7 @@ jobs:
       - deploy-netfx
     if: github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - run: 'git show ${{ github.sha }} --format="version_number=%cd" --date=format:%Y-%m-%d-%H%M --no-patch >> $GITHUB_OUTPUT'
         id: version
