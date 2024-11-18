@@ -222,6 +222,7 @@ async function buildSharpLab(roslynPackagesRoot: string) {
         '--source', 'https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json',
         '--source', 'https://ci.appveyor.com/nuget/vanara-prerelease',
         '--source', roslynPackagesRoot,
+        '-p:NuGetAudit=false',
         '--verbosity', 'minimal'
     ], {
         stdout: 'inherit',
