@@ -55,7 +55,7 @@ public class C
 internal sealed class <PrivateImplementationDetails>
 {
     [StructLayout(LayoutKind.Explicit, Pack = 1, Size = 16)]
-    private struct __StaticArrayInitTypeSize=16
+    internal struct __StaticArrayInitTypeSize=16
     {
     }
 

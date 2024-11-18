@@ -51,9 +51,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '20.14.0'
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/setup-dotnet@v4
         with:
-            dotnet-version: 8.0.x
+            dotnet-version: 9.0.x
       - run: npm ci
       - run: npm run update-branch -- ${{matrix.branch}}
         env:

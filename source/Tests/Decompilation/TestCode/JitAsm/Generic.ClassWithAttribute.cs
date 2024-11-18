@@ -18,13 +18,12 @@ C`1[[System.Int32, System.Private.CoreLib]].M()
     L0002: ret
 
 C`1[[System.Decimal, System.Private.CoreLib]].M()
-    L0000: vzeroupper
-    L0003: vxorps xmm0, xmm0, xmm0
-    L0007: vmovdqu [rcx], xmm0
-    L000b: mov rax, rcx
-    L000e: ret
+    L0000: vxorps xmm0, xmm0, xmm0
+    L0004: vmovdqu [rcx], xmm0
+    L0008: mov rax, rcx
+    L000b: ret
 
-C`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]].M()
+C`1[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]].M()
     ; Failed to find JIT output. This might appear more frequently than before due to a library update.
     ; Please monitor https://github.com/ashmind/SharpLab/issues/1334 for progress.
 

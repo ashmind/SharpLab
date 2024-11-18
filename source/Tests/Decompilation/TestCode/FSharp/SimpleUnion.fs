@@ -44,37 +44,37 @@ _+T.__DebugDisplay()
     L0052: mov rdi, rax
     L0055: mov rbp, [rsi+0x10]
     L0059: test rbp, rbp
-    L005c: jne short L006b
+    L005c: jne short L0084
     L005e: mov rcx, rdi
     L0061: cmp [rcx], ecx
     L0063: call qword ptr [0x<IGNORE>]
-    L0069: jmp short L00aa
-    L006b: mov rcx, rdi
-    L006e: cmp [rcx], ecx
-    L0070: call qword ptr [0x<IGNORE>]
-    L0076: mov r14, rax
-    L0079: mov ecx, [rdi+0x28]
-    L007c: call qword ptr [0x<IGNORE>]
-    L0082: mov rcx, rax
-    L0085: mov r8, [rsi+0x18]
-    L0089: mov rdx, rbp
-    L008c: mov r9, r14
-    L008f: cmp [rcx], ecx
-    L0091: call qword ptr [0x<IGNORE>]
-    L0097: mov rdx, rax
-    L009a: mov rcx, 0x<IGNORE>
-    L00a4: call qword ptr [0x<IGNORE>]
-    L00aa: movzx edx, byte ptr [rbx]
-    L00ad: mov rcx, rax
-    L00b0: mov rax, [rax]
-    L00b3: mov rax, [rax+0x40]
-    L00b7: add rsp, 0x20
-    L00bb: pop rbx
-    L00bc: pop rbp
-    L00bd: pop rsi
-    L00be: pop rdi
-    L00bf: pop r14
-    L00c1: jmp qword ptr [rax+0x20]
+    L0069: movzx edx, byte ptr [rbx]
+    L006c: mov rcx, rax
+    L006f: mov rax, [rax]
+    L0072: mov rax, [rax+0x40]
+    L0076: add rsp, 0x20
+    L007a: pop rbx
+    L007b: pop rbp
+    L007c: pop rsi
+    L007d: pop rdi
+    L007e: pop r14
+    L0080: jmp qword ptr [rax+0x20]
+    L0084: mov rcx, rdi
+    L0087: cmp [rcx], ecx
+    L0089: call qword ptr [0x<IGNORE>]
+    L008f: mov r14, rax
+    L0092: mov ecx, [rdi+0x28]
+    L0095: call qword ptr [0x<IGNORE>]
+    L009b: mov rcx, rax
+    L009e: mov r8, [rsi+0x18]
+    L00a2: mov rdx, rbp
+    L00a5: mov r9, r14
+    L00a8: cmp [rcx], ecx
+    L00aa: call qword ptr [0x<IGNORE>]
+    L00b0: mov rdx, rax
+    L00b3: mov rcx, 0x<IGNORE>
+    L00bd: call qword ptr [0x<IGNORE>]
+    L00c3: jmp short L0069
 
 _+T.ToString()
     ; Failed to find JIT output. This might appear more frequently than before due to a library update.

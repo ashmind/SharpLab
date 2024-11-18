@@ -11,8 +11,7 @@ public static class C {
 ; Core CLR <IGNORE> on x64
 
 C.M(Double, Double, Double)
-    L0000: vzeroupper
-    L0003: vfmadd213sd xmm0, xmm1, xmm2
-    L0008: ret
+    L0000: vfmadd213sd xmm0, xmm1, xmm2
+    L0005: ret
 
 */

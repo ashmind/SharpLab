@@ -18,13 +18,12 @@ C..ctor()
     L0000: ret
 
 C.M(System.Runtime.Intrinsics.Vector256`1<Int32>)
-    L0000: vzeroupper
-    L0003: vmovups ymm0, [rdx]
-    L0007: vmovaps ymm1, ymm0
-    L000b: vextracti128 xmm0, ymm0, 1
-    L0011: vpaddd xmm0, xmm1, xmm0
-    L0015: vmovd eax, xmm0
-    L0019: vzeroupper
-    L001c: ret
+    L0000: vmovups ymm0, [rdx]
+    L0004: vmovaps ymm1, ymm0
+    L0008: vextracti128 xmm0, ymm0, 1
+    L000e: vpaddd xmm0, xmm0, xmm1
+    L0012: vmovd eax, xmm0
+    L0016: vzeroupper
+    L0019: ret
 
 */
